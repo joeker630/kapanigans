@@ -568,7 +568,7 @@ Build a library of **white, colorable clothing pieces** for Fashion Show (#5), s
 
 ---
 
-## 10. 🆕 Avatar builder art (farm style)
+## 10. 🛠️ Avatar builder (engine and dressing room built with code-drawn parts; generated art still to come)
 
 Build the **simple parts for the avatar builder** (#3 farmer avatars, used as every player's avatar across Kapanigans) in the **same chunky 3D style as the farm animals** (`art/farm/`).
 
@@ -592,12 +592,19 @@ Build the **simple parts for the avatar builder** (#3 farmer avatars, used as ev
 - One dress-up engine, built once: slots, layering, tinting, patterns and saving each look per persona.
 - Avatar parts and Fashion Show clothes can mix: a Fashion Show piece can be worn by your avatar, and your avatar can walk the runway.
 
+**✅ Built so far (code-drawn parts, no image credits used)**
+- **Dressing room** (👗 Dress up on your home-screen card): Skin (6), Face (6: happy, big smile, surprised, sleepy, silly, wink), Hair (10 styles + 10 colors), Hat (7 + none, any color), Clothes (overalls, farm dress, plaid shirt, apron, T-shirt, hoodie, any of 12 colors), Extras for Big/grown-ups (glasses, freckles, rosy cheeks, bow), 🎲 surprise me. Violet's level gets bigger tiles and no Extras tab.
+- Saved per person in Firebase (`families/<code>/looks/<person>`), the same on every device.
+- The avatar replaces the emoji (and photo) on the home screen, "Who are you?", seat chips, zone labels, inbox and the video tile when the camera is off; the farm farmer wears the avatar's face and hair under the straw hat.
+- **Swapping in art later:** each part is one slot in `avatarSVG()` (skin, face, hair back/front, hat, outfit, extras). Generated cutouts can replace a slot's drawing one at a time without changing the dressing room or saved looks.
+- Still to do: unlockables (pumpkin and chicken costumes, pets) once Farmstand coins can buy them; generated art per the table above.
+
 **Acceptance criteria**
 - [ ] Every part matches the farm animals' style side by side on a contact sheet
-- [ ] At least 6 skin tones, 10 hairstyles, 6 hats and 6 outfits at launch
-- [ ] Hair and clothes can be tinted to any color
-- [ ] An avatar stays readable at small sizes (seat chips, lobby)
-- [ ] Each person's avatar shows up the same on every device
+- [x] At least 6 skin tones, 10 hairstyles, 6 hats and 6 outfits at launch
+- [x] Hair and clothes can be tinted to any color
+- [x] An avatar stays readable at small sizes (seat chips, lobby)
+- [x] Each person's avatar shows up the same on every device
 
 **🔍 Decisions needed**
 - ~~Body size~~ → decided: **everyone is the same size**, kids and grown-ups use the same base body.
