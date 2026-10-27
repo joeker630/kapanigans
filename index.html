@@ -504,6 +504,98 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
   .little .sw{width:60px;height:60px}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* task overlay */
+.task{position:fixed;inset:0;z-index:44;background:var(--sky);display:flex;flex-direction:column;padding:calc(10px + env(safe-area-inset-top,0px)) max(14px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(14px,env(safe-area-inset-left,0px));gap:8px}
+.thead{display:flex;align-items:center;gap:10px}
+.thead h1{flex:1;min-width:0;font-size:clamp(20px,3.6vw,30px)}
+.tprompt{font-family:var(--display);font-size:clamp(24px,4.6vw,40px);text-align:center;text-wrap:balance;line-height:1.15;min-height:1.2em}
+.tdots{display:flex;gap:8px;justify-content:center}
+.tdots i{width:14px;height:14px;border-radius:50%;background:var(--sky-deep)}
+.tdots i.on{background:var(--quinn)}
+.tarea{flex:1;min-height:0;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+.tdone{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:rgba(214,236,255,.92);border-radius:24px}
+.tdone .em{font-size:min(30vw,150px);line-height:1;animation:popin .5s ease-out}
+.tdone h2{font-size:clamp(32px,7vw,56px)}
+.tdone p{margin:0;font-size:20px}
+
+/* shared task bits */
+.opts{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;max-width:900px}
+.opt{background:var(--paper);border-radius:26px;min-width:110px;min-height:110px;padding:10px 16px;display:grid;place-items:center;box-shadow:0 6px 0 var(--sky-deep);font-family:var(--display);font-size:56px;line-height:1;border:4px solid transparent}
+.opt:active{transform:translateY(3px);box-shadow:0 3px 0 var(--sky-deep)}
+.opt svg{width:84px;height:84px;display:block}
+.little .opt{min-width:140px;min-height:140px;font-size:80px}
+.little .opt svg{width:110px;height:110px}
+.opt.ok{border-color:#2ECC40;background:#E9FBEA}
+.wig{animation:nudge .45s}
+.glow{animation:hintp 1s ease-in-out infinite;border-color:var(--sun-deep)!important}
+@keyframes hintp{0%,100%{box-shadow:0 6px 0 var(--sky-deep),0 0 0 0 rgba(255,200,61,.8)}50%{box-shadow:0 6px 0 var(--sky-deep),0 0 0 16px rgba(255,200,61,0)}}
+.show{background:var(--paper);border-radius:26px;padding:12px 28px;box-shadow:0 6px 0 var(--sky-deep);font-family:var(--display);font-size:clamp(60px,14vw,120px);line-height:1.05;text-align:center}
+.show.emo{font-size:clamp(64px,15vw,130px)}
+.show.word{letter-spacing:.2em}
+
+/* counting field */
+.field{position:relative;width:min(100%,900px);flex:1;min-height:220px;background:rgba(255,255,255,.55);border-radius:28px;border:3px dashed var(--sky-deep)}
+.field .ci{position:absolute;transform:translate(-50%,-50%);font-size:var(--fs,48px);line-height:1;width:1.3em;height:1.3em;display:grid;place-items:center;border-radius:50%;transition:transform .2s}
+.field .ci.got{transform:translate(-50%,-50%) scale(1.12)}
+.field .ci.got::after{content:attr(data-n);position:absolute;right:-.15em;top:-.2em;font-family:var(--display);font-size:.42em;background:var(--quinn);color:#fff;border-radius:999px;min-width:1.2em;height:1.2em;display:grid;place-items:center;padding:0 .15em}
+.field .ci.mark::after{content:"";position:absolute;right:0;top:0;width:.35em;height:.35em;border-radius:50%;background:var(--violet)}
+.field .ci.gone{opacity:.35}
+.field .ci.gone::before{content:"✖";position:absolute;color:var(--fox);font-size:.8em}
+.basketbox{display:flex;align-items:center;gap:10px;background:#FFF3D6;border:4px solid #E7C98F;border-radius:26px;padding:8px 18px;min-height:90px;font-size:44px;flex-wrap:wrap;justify-content:center;max-width:900px}
+.basketbox .lab{font-size:54px}
+.groups{display:flex;gap:16px;width:min(100%,900px);flex:1;min-height:200px}
+.group{flex:1;background:var(--paper);border-radius:26px;box-shadow:0 6px 0 var(--sky-deep);display:flex;flex-wrap:wrap;align-content:center;justify-content:center;gap:4px;padding:12px;font-size:clamp(28px,5vw,44px);border:4px solid transparent}
+.sum{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;font-family:var(--display);font-size:clamp(30px,6vw,52px)}
+.sum .pile{display:flex;flex-wrap:wrap;max-width:240px;gap:2px;justify-content:center;background:var(--paper);border-radius:20px;padding:8px 12px;font-size:clamp(26px,4.4vw,38px)}
+
+/* letters */
+.slots{display:flex;gap:10px}
+.slots span{width:70px;height:84px;border-radius:16px;background:var(--paper);border-bottom:6px solid var(--ink-soft);display:grid;place-items:center;font-family:var(--display);font-size:52px}
+.tiles .opt{min-width:84px;min-height:84px;font-size:48px}
+.tiles .opt.used{visibility:hidden}
+
+/* pattern */
+.pline{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;max-width:1000px}
+.pline .pc{background:var(--paper);border-radius:18px;min-width:76px;min-height:76px;display:grid;place-items:center;font-size:48px;padding:4px 8px;line-height:1.05;box-shadow:0 4px 0 var(--sky-deep)}
+.pline .pc.q{background:#FFF3D6;border:4px dashed var(--sun-deep);font-family:var(--display);color:var(--sun-deep)}
+.pline .pc.stack{font-size:26px;max-width:110px;flex-wrap:wrap}
+.little .pline .pc{min-width:96px;min-height:96px;font-size:62px}
+
+/* memory */
+.mgrid{display:grid;gap:12px;width:min(100%,760px);flex:1;min-height:0;align-content:center}
+.memc{aspect-ratio:1;max-height:100%;perspective:600px;border:0;padding:0;background:none}
+.memc .in{position:relative;width:100%;height:100%;transition:transform .35s;transform-style:preserve-3d}
+.memc.up .in{transform:rotateY(180deg)}
+.memc .f,.memc .b{position:absolute;inset:0;border-radius:20px;display:grid;place-items:center;backface-visibility:hidden;-webkit-backface-visibility:hidden;box-shadow:0 5px 0 var(--sky-deep)}
+.memc .b{background:var(--quinn);background-image:radial-gradient(circle,rgba(255,255,255,.25) 3px,transparent 0);background-size:18px 18px;font-size:min(8vw,44px)}
+.memc .f{background:var(--paper);transform:rotateY(180deg);font-size:min(11vw,64px)}
+.memc.done .f{background:#E9FBEA}
+
+/* drag stage (jigsaw + building) */
+.dstage{position:relative;width:100%;flex:1;min-height:0;overflow:hidden;touch-action:none}
+.dsin{position:absolute;left:0;top:0;transform-origin:0 0}
+.dboard{position:absolute;background:#fff;border-radius:14px;box-shadow:0 6px 0 var(--sky-deep)}
+.dslot{position:absolute;box-sizing:border-box;border:2px dashed rgba(43,33,64,.18)}
+.dpiece{position:absolute;touch-action:none;cursor:grab;transition:transform .15s}
+.dpiece canvas{display:block;width:100%;height:100%;border-radius:4px;box-shadow:0 4px 10px rgba(43,33,64,.3)}
+.dpiece.drag{z-index:20;filter:drop-shadow(0 10px 14px rgba(43,33,64,.35));transition:none}
+.dpiece.set{cursor:default;z-index:1}
+.dpiece.set canvas{box-shadow:none;border-radius:0}
+.dpiece svg{display:block;width:100%;height:100%;overflow:visible}
+.rot{position:absolute;right:-12px;top:-12px;width:30px;height:30px;border-radius:50%;background:var(--sun);font-size:16px;display:grid;place-items:center;box-shadow:0 2px 0 var(--sun-deep);pointer-events:none}
+.dpiece.set .rot{display:none}
+
+/* tracing */
+.tracewrap{position:relative;width:100%;flex:1;min-height:0;display:grid;place-items:center}
+.tracecv{background:#fff;border-radius:28px;box-shadow:0 6px 0 var(--sky-deep);touch-action:none;max-width:100%;max-height:100%}
+@media (max-width:520px){.opt{min-width:84px;min-height:84px;font-size:42px}.little .opt{min-width:104px;min-height:104px;font-size:58px}.little .opt svg{width:80px;height:80px}.opt svg{width:64px;height:64px}.slots span{width:52px;height:64px;font-size:38px}}
+.sum .pile span{display:inline-block}
+.sum .pile .gone{position:relative;opacity:.45}
+.sum .pile .gone::after{content:"✖";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);color:var(--fox);font-size:.9em;opacity:1}
+.group.ok{border-color:#2ECC40;background:#E9FBEA}
+.group:active{transform:translateY(3px)}
+.show svg{width:clamp(110px,22vw,180px);height:clamp(110px,22vw,180px);display:block}
+
 </style>
 
 </head>
@@ -643,6 +735,12 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
   </div>
   <div id="farmBody"><canvas id="farmCv"></canvas></div>
 </section>
+<div class="task" id="task" hidden>
+  <div class="thead"><button class="round" id="tClose" aria-label="Stop">✖️</button><h1 id="tTitle"></h1><button class="round" id="tSay" aria-label="Say it again">🔊</button></div>
+  <div class="tprompt" id="tPrompt"></div>
+  <div class="tdots" id="tDots"></div>
+  <div class="tarea" id="tArea"></div>
+</div>
 
 <!-- ============ BEDTIME STORY: make ============ -->
 <section class="screen" id="story" hidden>
@@ -747,7 +845,7 @@ function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i)
 function rng(seed){let a=seed>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 function esc(s){return String(s).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]))}
 function kidOf(k){return KIDS[k] || (k==="kapanigans"?SYS:KIDS.bear)}
-function show(id){if(screen==="reader"&&id!=="reader")hush();if(screen==="inbox"&&id!=="inbox"&&typeof stopRec==="function")stopRec();for(const s of ["setup","pick","lobby","game","story","reader","inbox","grown","farm"]) $("#"+s).hidden = s!==id; screen=id; if(typeof renderVideoUI==="function") renderVideoUI(); if(id==="pick"&&typeof syncMailBadges==="function"){syncMailBadges();renderPickClaims()}
+function show(id){if(screen==="reader"&&id!=="reader")hush();if(screen==="inbox"&&id!=="inbox"&&typeof stopRec==="function")stopRec();for(const s of ["setup","pick","lobby","game","story","reader","inbox","grown","farm"]) $("#"+s).hidden = s!==id; if(id!=="farm"&&tk) closeTask(true); screen=id; if(typeof renderVideoUI==="function") renderVideoUI(); if(id==="pick"&&typeof syncMailBadges==="function"){syncMailBadges();renderPickClaims()}
   if(me&&room&&id!=="game"&&id!=="setup") setPresence({scr:id});
   if(typeof tickStats==="function") tickStats()}
 /* ---------------- read-aloud helper ---------------- */
@@ -2366,7 +2464,7 @@ const stat={acc:{},hours:{},kid:null,last:Date.now(),lastFlush:Date.now(),hidden
 function activity(){
   if(document.visibilityState!=="visible"||!me) return null;
   if(screen==="game") return game&&game.watch?"watch":"color";
-  return {story:"story",reader:"story",inbox:"inbox",lobby:"lobby"}[screen]||null;
+  return {story:"story",reader:"story",inbox:"inbox",lobby:"lobby",farm:"farm"}[screen]||null;
 }
 function tickStats(){
   const now=Date.now(), dt=Math.min(now-stat.last,15000); stat.last=now;
@@ -2692,12 +2790,12 @@ function farmTap(e){
   const hit=[...fm.animals].sort((a,b)=>(b.i+b.j)-(a.i+a.j)).find(a=>{const p=fIso(a.i,a.j),H=fm.th*2.2*a.h;return Math.abs(x-p.x)<H*.5&&y<p.y+fm.th*.3&&y>p.y-H});
   if(hit){
     if(hit.state==="sleep"){hit.state="idle";hit.until=now+1500;hit.hop=1;say(`The ${hit.name} woke up!`);fPop(hit,"❗")}
-    else{hit.state="eat";hit.until=now+4000;hit.hop=1;say(`The ${hit.name} is eating ${hit.food}. Yum!`);fPop(hit,hit.food==="corn"?"🌽":"🌿")}
+    else farmChore("feed",{animal:hit},()=>{const t=performance.now();hit.state="eat";hit.until=t+4000;hit.hop=1;say(`The ${hit.name} is eating ${hit.food}. Yum!`);fPop(hit,hit.food==="corn"?"🌽":"🌿")});
     blip(700,.12,"sine");return}
   const sx=x-fm.ox,sy=y-fm.oy,i=(sy/(fm.th/2)+sx/(fm.tw/2))/2,j=(sy/(fm.th/2)-sx/(fm.tw/2))/2;
   const plot=fm.plots.find(p=>i>=p.i&&i<p.i+1&&j>=p.j&&j<p.j+1);
   if(plot){const st=fStage(plot,now),c=FARM_CROPS[plot.crop];
-    if(st==="ripe"){fm.basket[plot.crop]++;plot.born=now;say(`You picked a ${c.name}!`);fPopAt(fIso(plot.i+.5,plot.j+.5),c.icon);blip(900,.15,"triangle");farmBasket()}
+    if(st==="ripe") farmChore("harvest",{plot},()=>{fm.basket[plot.crop]++;plot.born=performance.now();say(`You picked a ${c.name}!`);fPopAt(fIso(plot.i+.5,plot.j+.5),c.icon);blip(900,.15,"triangle");farmBasket()});
     else say(st==="sprout"?`A little ${c.name} sprout. It needs time to grow.`:`The ${c.name} is growing. Almost ready!`);return}
   if(i>0&&j>0&&i<fm.N&&j<fm.N){ // call the nearest awake animal over
     const a=fm.animals.filter(a=>a.state!=="sleep").sort((p,q)=>Math.hypot(p.i-i,p.j-j)-Math.hypot(q.i-i,q.j-j))[0];
@@ -2747,6 +2845,660 @@ function farmFrame(now){
   g.textAlign="center";fm.pops=fm.pops.filter(p=>(p.t+=dt)<1.2);for(const p of fm.pops){g.globalAlpha=1-p.t/1.2;g.font=`${th*.7}px system-ui`;g.fillText(p.txt,p.x,p.y-p.t*th*1.2)}g.globalAlpha=1;
   fm.raf=requestAnimationFrame(farmFrame);
 }
+
+/* ============ FARM PUZZLES ============
+   Every farm action is done by solving a quick learning puzzle, with a Little version (Violet, age 3-4) and a Big
+   version (Quinn, age 5-7). The action only happens once the puzzle is solved.
+   To hook up a new action:  farmPuzzle("milk", {title:"🥛 Milk the cow", item:{em:"🥛",one:"pail",many:"pails"}, pic:"cow/stand", reward:"+1 🥛"}, ()=>{ ...do it... })
+   Each action has a main puzzle type (backlog #3 table). Now and then it borrows a different type instead, picking the
+   one this player did least recently, so all 8 kinds keep coming around. Every attempt goes to logAttempt(). */
+const FARM_ACTIONS={plant:"pattern",water:"color",harvest:"count",feed:"letters",collect:"memory",milk:"jigsaw",shear:"trace",build:"build",sell:"count"};
+const FARM_MIX=.6; // chance of borrowing another puzzle type; lower it once more actions are built
+function puzzleFor(action){
+  const main=FARM_ACTIONS[action];
+  if(main&&Math.random()>=FARM_MIX){pickType([main]);return main}
+  return pickType(TASK_TYPES.filter(t=>t!==main));
+}
+function farmPuzzle(action,o,done){
+  if(tk) return false;
+  openTask({type:puzzleFor(action),lvl:lvl(),chore:action,title:o.title,ctx:{item:o.item,pic:o.pic},reward:o.reward,onWin:done,onQuit:o.onQuit});
+  return true;
+}
+function farmChore(ch,o,done){
+  if(ch==="feed"){const a=o.animal, food=a.food==="corn"?{em:"🌽",one:"corn",many:"corn"}:{em:"🌿",one:"bunch of grass",many:"bunches of grass"};
+    return farmPuzzle("feed",{title:`${food.em} Feed the ${a.name}`,item:food,pic:a.k+"/stand",reward:`${food.em} Yum! Thank you!`},done)}
+  const c=FARM_CROPS[o.plot.crop];
+  return farmPuzzle("harvest",{title:`🧺 Pick the ${c.name}`,item:{em:c.icon,one:c.name,many:c.name+"s"},pic:o.plot.crop+"/ripe",reward:`+1 ${c.icon}`},done);
+}
+
+/* ---- tasks ---- */
+const TASK_TYPES=["count","letters","color","jigsaw","build","trace","pattern","memory"];
+const SKILL={count:"counting",letters:"letters",color:"colors and shapes",jigsaw:"puzzles",build:"building shapes",trace:"tracing",pattern:"patterns",memory:"memory"};
+const PUZZLE_NAMES={count:"counting",letters:"letters and words",color:"colors and shapes",jigsaw:"jigsaw puzzle",build:"building shapes",trace:"tracing",pattern:"what comes next",memory:"memory match"};
+const PRAISE=["Great job!","You did it!","Yay!","Super!","Awesome!","Nice work!","Woo hoo!"];
+const NUMW=["zero","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen","eighteen","nineteen","twenty"];
+const rint=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pickOne=a=>a[Math.floor(Math.random()*a.length)];
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+
+function pickType(types){
+  let lru={}; try{lru=JSON.parse(load("kp.tasks."+me)||"{}")||{}}catch(e){}
+  const t=shuffle(types).sort((a,b)=>(lru[a]||0)-(lru[b]||0))[0];
+  lru[t]=Date.now(); store("kp.tasks."+me,JSON.stringify(lru)); return t;
+}
+
+/* ---------------- task engine ---------------- */
+var tk=null; // var, not let: show() looks at it and can run before this line
+function roundsFor(type,L){return ["count","letters","color","pattern"].includes(type)?(L==="little"?2:3):(type==="trace"&&L!=="little"?2:1)}
+function openTask(o){
+  if(tk) closeTask(false);
+  tk=Object.assign({round:0,rounds:roundsFor(o.type,o.lvl),wrong:0,hinted:false,t0:Date.now(),fx:[],store:{},ctx:{}},o);
+  const T=$("#task"); T.hidden=false; T.classList.toggle("little",o.lvl==="little");
+  $("#tTitle").textContent=o.title||"";
+  nextRound();
+}
+function nextRound(){
+  if(!tk) return;
+  for(const f of tk.fx.splice(0)) try{f()}catch(e){}
+  const A=$("#tArea"); A.innerHTML=""; $("#tPrompt").textContent="";
+  $("#tDots").innerHTML=tk.rounds>1?Array.from({length:tk.rounds},(_,i)=>`<i class="${i<=tk.round?"on":""}"></i>`).join(""):"";
+  tk.miss=0; tk.hintFn=null; tk.won=false;
+  TASKS[tk.type](taskApi(A));
+}
+function taskApi(A){
+  const my=tk;
+  const api={area:A,lvl:my.lvl,L:my.lvl==="little",ctx:my.ctx||{},round:my.round,store:my.store,
+    live:()=>tk===my&&!my.won,
+    ask(text,spoken){my.ask=spoken||text;$("#tPrompt").textContent=text;setTimeout(()=>{if(tk===my)say(my.ask)},200)},
+    win(wait=0,quiet=false){
+      if(tk!==my||my.won) return; my.won=true;
+      setTimeout(()=>{
+        if(tk!==my) return;
+        if(my.round<my.rounds-1){blip(990,.15,"triangle",.12);if(!quiet)say(pickOne(PRAISE));setTimeout(()=>{if(tk===my){my.round++;nextRound()}},quiet?300:1000)}
+        else finishTask();
+      },wait);
+    },
+    miss(node,spoken){
+      if(tk!==my||my.won) return; my.wrong++; my.miss++; blip(200,.18,"sine",.1);
+      if(node){node.classList.remove("wig");void node.offsetWidth;node.classList.add("wig")}
+      if(my.miss>=2&&my.hintFn){my.hinted=true;my.hintFn();say(my.lvl==="little"?"Here it is!":"Here's a hint!")}
+      else say(spoken||(my.lvl==="little"?"Try again!":"Not quite. Try again!"));
+    },
+    hint(fn){my.hintFn=fn},
+    after(fn){my.fx.push(fn)},
+  };
+  return api;
+}
+function finishTask(){
+  const my=tk; if(!my) return; taskStat(true,my); tada();
+  const msg=pickOne(PRAISE); say(msg);
+  $("#tArea").append(el("div","tdone",`<span class="em">🎉</span><h2>${esc(msg)}</h2>${my.reward?`<p>${esc(my.reward)}</p>`:""}`));
+  setTimeout(()=>{if(tk!==my)return;closeTask(false);my.onWin&&my.onWin()},1700);
+}
+function closeTask(quit){
+  if(!tk) return; const my=tk; tk=null;
+  for(const f of my.fx.splice(0)) try{f()}catch(e){}
+  $("#task").hidden=true; $("#tArea").innerHTML="";
+  if(quit){taskStat(false,my);my.onQuit&&my.onQuit()}
+}
+function taskStat(done,my){
+  if(!my) return;
+  logAttempt({puzzle:`${PUZZLE_NAMES[my.type]} (${my.chore})`,skill:SKILL[my.type],ms:Date.now()-my.t0,wrong:my.wrong,hint:my.hinted,done:!!done});
+}
+$("#tClose").onclick=()=>{hush();closeTask(true)};
+$("#tSay").onclick=()=>{if(tk&&tk.ask)say(tk.ask)};
+
+/* ---- shared task pieces ---- */
+const TASKS={};
+function order(api,list){if(!api.store.order)api.store.order=shuffle(list);return api.store.order[api.round%api.store.order.length]}
+function itemOf(api){return api.ctx.item||{em:"🥕",one:"carrot",many:"carrots"}}
+function nWord(n,c){return `${NUMW[n]||n} ${n===1?c.one:c.many}`}
+// big tappable answer buttons; items: [{html, ok, name}]
+function choices(api,items,o={}){
+  const row=el("div","opts"+(o.cls?" "+o.cls:"")); let right=null;
+  for(const it of items){
+    const b=el("button","opt",it.html); if(it.ok) right=b; if(it.label) b.setAttribute("aria-label",it.label);
+    b.onclick=()=>{if(!api.live())return;
+      if(it.ok){b.classList.add("ok");if(it.name)say(it.name);if(o.onRight)o.onRight(b,it);api.win(o.wait||900,!!o.quiet)}
+      else api.miss(b,it.wrongSay)};
+    row.append(b);
+  }
+  (o.into||api.area).append(row); api.hint(()=>right&&right.classList.add("glow")); return row;
+}
+function numOpts(api,ans,pool,o={}){
+  const others=shuffle([...new Set(pool.filter(x=>x>=0&&x!==ans))]).slice(0,(o.k||3)-1);
+  return choices(api,shuffle([ans,...others]).map(v=>({html:String(v),ok:v===ans,name:String(v)})),o);
+}
+// scatter n tappable things over a field that fills the space
+function scatter(parent,n,em,o={}){
+  const f=el("div","field"); parent.append(f);
+  const r=f.getBoundingClientRect(); const w=Math.max(220,r.width),h=Math.max(180,r.height);
+  const cells=Math.ceil(n*1.7)+1; const cols=Math.max(1,Math.round(Math.sqrt(cells*w/h))); const rows=Math.ceil(cells/cols);
+  const cw=w/cols,ch=h/rows; f.style.setProperty("--fs",clamp(Math.min(cw,ch)*.6,26,o.max||110)+"px");
+  return shuffle([...Array(cols*rows).keys()]).slice(0,n).map(i=>{
+    const c=i%cols,rr=Math.floor(i/cols),x=(c+.5+(Math.random()-.5)*.3)*cw,y=(rr+.5+(Math.random()-.5)*.3)*ch;
+    const b=el("button","ci",em); b.style.left=(x/w*100)+"%"; b.style.top=(y/h*100)+"%"; f.append(b); return b});
+}
+function emRow(em,n,cls){return Array.from({length:n},(_,i)=>`<span${cls&&cls(i)?` class="${cls(i)}"`:""}>${em}</span>`).join("")}
+
+/* ---- 1. counting ---- */
+TASKS.count=api=>{
+  const c=itemOf(api);
+  const sub=api.L?order(api,["tap","put"]):order(api,["how","sum","more"]);
+  ({tap:countTap,put:countPut,how:countHow,sum:countSum,more:countMore})[sub](api,c);
+};
+function countTap(api,c){
+  const n=api.round?rint(3,5):rint(2,5); let k=0;
+  api.ask(`Count the ${c.many}!`,`Let's count the ${c.many}! Tap each one.`);
+  scatter(api.area,n,c.em).forEach(b=>b.onclick=()=>{
+    if(!api.live()||b.classList.contains("got"))return;
+    k++; b.dataset.n=k; b.classList.add("got"); blip(480+k*90,.12,"triangle"); say(NUMW[k]);
+    if(k===n){setTimeout(()=>say(`${nWord(n,c)}!`),650);api.win(1900,true)}
+  });
+}
+function countPut(api,c){
+  const n=rint(1,5),extra=rint(1,3); let k=0;
+  api.ask(`Put ${n} ${n===1?c.one:c.many} in the basket!`,`Put ${nWord(n,c)} in the basket!`);
+  const box=el("div","basketbox",`<span class="lab">🧺</span><span class="show" style="font-size:44px;padding:4px 14px;box-shadow:none">${n}</span><span style="font-size:18px;color:var(--violet)">${"●".repeat(n)}</span>`);
+  box.style.order=2; api.area.append(box);
+  scatter(api.area,n+extra,c.em).forEach(b=>b.onclick=()=>{
+    if(!api.live()||k>=n)return;
+    k++; b.remove(); box.append(el("span",null,c.em)); blip(480+k*90,.12,"triangle"); say(NUMW[k]);
+    if(k===n){setTimeout(()=>say(`${nWord(n,c)} in the basket!`),600);api.win(2000,true)}
+  });
+}
+function countHow(api,c){
+  const n=api.round===0?rint(6,12):rint(9,20);
+  api.ask(`How many ${c.many}?`,`How many ${c.many}? You can tap them to help you count.`);
+  scatter(api.area,n,c.em,{max:80}).forEach(b=>b.onclick=()=>{b.classList.toggle("mark");blip(620,.05)});
+  numOpts(api,n,[n-2,n-1,n+1,n+2,n+10]);
+}
+function countSum(api,c){
+  const add=!api.store.sub; api.store.sub=add;
+  if(add){
+    const a=rint(1,5),b=rint(1,Math.min(5,10-a));
+    api.ask(`${a} + ${b} = ?`,`${nWord(a,c)} plus ${nWord(b,c)}. How many in all?`);
+    api.area.append(el("div","sum",`<span class="pile">${emRow(c.em,a)}</span><span>+</span><span class="pile">${emRow(c.em,b)}</span><span>= ?</span>`));
+    numOpts(api,a+b,[a+b-1,a+b+1,a+b+2,a,b]);
+  } else {
+    const a=rint(4,10),b=rint(1,a-2);
+    api.ask(`${a} − ${b} = ?`,`${nWord(a,c)}. Take away ${NUMW[b]}. How many are left?`);
+    api.area.append(el("div","sum",`<span class="pile">${emRow(c.em,a,i=>i>=a-b?"gone":"")}</span><span>= ?</span>`));
+    numOpts(api,a-b,[a-b-1,a-b+1,a,b]);
+  }
+}
+function countMore(api,c){
+  let a=rint(3,9); const d=api.round>=2?rint(1,2):rint(2,4); let b=Math.min(12,a+d); a=b-d;
+  const sides=shuffle([a,b]);
+  api.ask(`Which side has more ${c.many}?`);
+  const g=el("div","groups"); let right;
+  for(const n of sides){
+    const x=el("button","group",emRow(c.em,n)); x.setAttribute("aria-label",nWord(n,c));
+    if(n===b) right=x;
+    x.onclick=()=>{if(!api.live())return;if(n===b){x.classList.add("ok");say(`Yes! ${b} is more than ${a}.`);api.win(1500,true)}else api.miss(x,`That side has ${n}. Try the other side!`)};
+    g.append(x);
+  }
+  api.area.append(g); api.hint(()=>right.classList.add("glow"));
+}
+
+/* ---- 2. letters and words ---- */
+const UP_EASY="ABCDEFGHIKLMNOPRSTUVWXYZ".split("");
+const LIT_SIM={M:"WN",W:"MV",N:"MZ",E:"F",F:"E",O:"QCD",Q:"O",C:"GO",G:"C",P:"RB",R:"PB",B:"PR",V:"WY",U:"V",I:"LT",L:"I",T:"I",D:"O"};
+const similar=(a,b)=>(LIT_SIM[a]||"").includes(b)||(LIT_SIM[b]||"").includes(a);
+const LOW_CONF={b:"dpq",d:"bpq",p:"bdq",q:"bdp",n:"mu",m:"nw",u:"nv",h:"nk",g:"qj",a:"oe",e:"ac",t:"fl",f:"tl",j:"gi",r:"nv"};
+const FIRST_WORDS=[["cow","🐮"],["pig","🐷"],["hen","🐔"],["sheep","🐑"],["duck","🦆"],["goat","🐐"],["horse","🐴"],["apple","🍎"],["corn","🌽"],["egg","🥚"],
+  ["frog","🐸"],["bee","🐝"],["moon","🌙"],["sun","☀️"],["tractor","🚜"],["owl","🦉"],["rabbit","🐰"],["mouse","🐭"],["worm","🪱"],["kite","🪁"],["lemon","🍋"],
+  ["nest","🪺"],["umbrella","☂️"],["van","🚐"],["zebra","🦓"],["yarn","🧶"],["banana","🍌"],["dog","🐶"],["igloo","🧊"],["jam","🍯"]];
+const SPELL_WORDS=[["CAT","🐱"],["DOG","🐶"],["PIG","🐷"],["HEN","🐔"],["COW","🐮"],["SUN","☀️"],["BUG","🐛"],["BEE","🐝"],["EGG","🥚"],["HAT","🎩"],
+  ["BUS","🚌"],["FOX","🦊"],["OWL","🦉"],["CUP","🥤"],["BED","🛏️"],["HAY","🌾"],["MUD","🟤"],["JAM","🍯"],["MAP","🗺️"],["NUT","🥜"]];
+TASKS.letters=api=>{
+  const sub=api.L?order(api,["find","match"]):order(api,["lower","first","spell"]);
+  ({find:letFind,match:letMatch,lower:letLower,first:letFirst,spell:letSpell})[sub](api);
+};
+function letDistract(t,k){return shuffle(UP_EASY.filter(x=>x!==t&&!similar(x,t))).slice(0,k)}
+function letFind(api){
+  const t=Math.random()<.6?pickOne(["V","I","O","L","E","T"]):pickOne(["A","B","C","D","M","S","X","Q"]);
+  api.ask(`Find the letter ${t}!`);
+  choices(api,shuffle([t,...letDistract(t,api.round?3:2)]).map(x=>({html:x,ok:x===t,name:x,wrongSay:`That's ${x}. Find ${t}!`})));
+}
+function letMatch(api){
+  const t=pickOne(UP_EASY);
+  api.ask("Find the same letter!",`This is ${t}. Find another ${t}!`);
+  api.area.append(el("div","show",t));
+  choices(api,shuffle([t,...letDistract(t,2)]).map(x=>({html:x,ok:x===t,name:x,wrongSay:`That's ${x}. Look again!`})));
+}
+function letLower(api){
+  const U=pickOne("ABDEFGHJMNPQRT".split("")),l=U.toLowerCase();
+  const conf=(LOW_CONF[l]||"").split("").filter(Boolean);
+  const pool=shuffle([...new Set([...shuffle(conf).slice(0,2),...shuffle("abdefghjkmnpqrstuwy".split("").filter(x=>x!==l))])]).filter(x=>x!==l);
+  const ds=[...new Set([...conf.slice(0,2),...pool])].slice(0,3);
+  api.ask(`Which small letter goes with ${U}?`,`Which small letter goes with big ${U}?`);
+  api.area.append(el("div","show",U));
+  choices(api,shuffle([l,...ds]).map(x=>({html:x,ok:x===l,name:`small ${x}`})));
+}
+function letFirst(api){
+  const [w,e]=pickOne(FIRST_WORDS),f=w[0].toUpperCase();
+  const ds=shuffle(UP_EASY.filter(x=>x!==f)).slice(0,api.round>=2?3:2);
+  api.ask("What letter does it start with?",`${w}. What letter does ${w} start with?`);
+  api.area.append(el("div","show emo",e));
+  choices(api,shuffle([f,...ds]).map(x=>({html:x,ok:x===f,name:`${x}! ${w} starts with ${x}.`})),{wait:2400,quiet:true});
+}
+function letSpell(api){
+  const [w,e]=pickOne(SPELL_WORDS); const letters=w.split("");
+  const extra=shuffle("ABCDEFGHIKLMNOPRSTUW".split("").filter(x=>!letters.includes(x))).slice(0,2);
+  api.ask(`Spell ${w.toLowerCase()}!`,`Spell ${w.toLowerCase()}!`);
+  api.area.append(el("div","show emo",e));
+  const slots=el("div","slots",letters.map(()=>"<span></span>").join("")); api.area.append(slots);
+  let k=0; const row=el("div","opts tiles"); const tiles=[];
+  for(const x of shuffle([...letters,...extra])){
+    const b=el("button","opt",x); tiles.push([x,b]);
+    b.onclick=()=>{if(!api.live()||b.classList.contains("used"))return;
+      if(x===letters[k]){b.classList.add("used");slots.children[k].textContent=x;k++;blip(600+k*80,.1,"triangle");say(x);
+        api.hint(nextHint);
+        if(k===letters.length){setTimeout(()=>say(`${letters.join(", ")}. ${w.toLowerCase()}!`),500);api.win(2300,true)}}
+      else api.miss(b,`Not ${x}. What sound comes next?`)};
+    row.append(b);
+  }
+  const nextHint=()=>{const t=tiles.find(([x,b])=>x===letters[k]&&!b.classList.contains("used"));if(t)t[1].classList.add("glow")};
+  api.hint(nextHint); api.area.append(row);
+}
+
+/* ---- 3. colors and shapes ---- */
+function regPoly(n,r=42,rot=-90){return Array.from({length:n},(_,i)=>{const a=(rot+i*360/n)*PI/180;return`${(50+r*Math.cos(a)).toFixed(1)},${(52+r*Math.sin(a)).toFixed(1)}`}).join(" ")}
+function starPts(){return Array.from({length:10},(_,i)=>{const a=(-90+i*36)*PI/180,r=i%2?19:44;return`${(50+r*Math.cos(a)).toFixed(1)},${(53+r*Math.sin(a)).toFixed(1)}`}).join(" ")}
+const SHAPES={
+  circle:`<circle cx="50" cy="50" r="40"/>`, square:`<rect x="13" y="13" width="74" height="74" rx="3"/>`,
+  triangle:`<polygon points="50,10 92,86 8,86"/>`, star:`<polygon points="${starPts()}"/>`,
+  heart:`<path d="M50 88C20 66 6 50 6 32 6 18 18 8 31 8c9 0 15 5 19 12 4-7 10-12 19-12 13 0 25 10 25 24 0 18-14 34-44 56z"/>`,
+  oval:`<ellipse cx="50" cy="50" rx="45" ry="27"/>`, rectangle:`<rect x="5" y="27" width="90" height="46" rx="2"/>`,
+  diamond:`<polygon points="50,5 84,50 50,95 16,50"/>`, trapezoid:`<polygon points="29,24 71,24 95,76 5,76"/>`,
+  pentagon:`<polygon points="${regPoly(5,44)}"/>`, hexagon:`<polygon points="${regPoly(6,44,0)}"/>`, octagon:`<polygon points="${regPoly(8,44,-112.5)}"/>`,
+  balloon:`<path d="M50 6C25 6 15 27 15 42c0 20 19 34 31 38l-4 8h16l-4-8c12-4 31-18 31-38C85 27 75 6 50 6z"/><path d="M50 88q-7 5 0 10" fill="none"/>`,
+};
+const SIDES={triangle:3,square:4,rectangle:4,diamond:4,trapezoid:4,pentagon:5,hexagon:6,octagon:8};
+function shapeSvg(kind,fill,scale=1){
+  return `<svg viewBox="0 0 100 100" aria-hidden="true"><g fill="${fill}" stroke="${INK}" stroke-width="${(4/scale).toFixed(1)}" stroke-linejoin="round" transform="translate(50 50) scale(${scale}) translate(-50 -50)">${SHAPES[kind]}</g></svg>`;
+}
+const BIG_COLS=[["red","#FF3B3B"],["blue","#2D8CFF"],["green","#2ECC40"],["yellow","#FFD600"],["purple","#8B5CF6"],["orange","#FF8A00"]];
+const LIT_COLS=LITTLE_COLORS.map(h=>[COLOR_NAMES[h].toLowerCase(),h]);
+TASKS.color=api=>{
+  const sub=api.L?order(api,["tap","shape","sort"]):order(api,["two","name","sides"]);
+  ({tap:colTap,shape:colShape,sort:colSort,two:colTwo,name:colName,sides:colSides})[sub](api);
+};
+function colTap(api){
+  const cols=shuffle(LIT_COLS).slice(0,api.round?4:3),[tn]=cols[0];
+  api.ask(`Tap the ${tn} balloon!`);
+  choices(api,shuffle(cols).map(([n,h])=>({html:shapeSvg("balloon",h),ok:n===tn,name:n,label:`${n} balloon`,wrongSay:`That one is ${n}. Find ${tn}!`})));
+}
+function colShape(api){
+  const kinds=shuffle(["circle","square","triangle","star","heart"]).slice(0,api.round?4:3),t=kinds[0],cols=shuffle(LIT_COLS);
+  api.ask(`Find the ${t}!`);
+  choices(api,shuffle(kinds).map((k,i)=>({html:shapeSvg(k,cols[i][1]),ok:k===t,name:k,label:k,wrongSay:`That's a ${k}. Find the ${t}!`})));
+}
+function colTwo(api){
+  const shapes=["circle","square","triangle","star","heart"],sizes=["big","small"];
+  const T={sz:pickOne(sizes),c:pickOne(BIG_COLS),sh:pickOne(shapes)}; const key=o=>`${o.sz}|${o.c[0]}|${o.sh}`;
+  const opts=[T],seen=new Set([key(T)]);
+  const add=o=>{if(opts.length<6&&!seen.has(key(o))){seen.add(key(o));opts.push(o)}};
+  add({...T,sz:T.sz==="big"?"small":"big"}); add({...T,c:pickOne(BIG_COLS.filter(c=>c!==T.c))}); add({...T,sh:pickOne(shapes.filter(s=>s!==T.sh))});
+  for(let i=0;i<40&&opts.length<6;i++) add({sz:pickOne(sizes),c:Math.random()<.5?T.c:pickOne(BIG_COLS),sh:Math.random()<.5?T.sh:pickOne(shapes)});
+  const phrase=o=>`${o.sz} ${o.c[0]} ${o.sh}`;
+  api.ask(`Tap the ${phrase(T)}!`);
+  choices(api,shuffle(opts).map(o=>({html:shapeSvg(o.sh,o.c[1],o.sz==="big"?1:.55),ok:o===T,name:phrase(o),label:phrase(o),wrongSay:`That's a ${phrase(o)}. Try again!`})));
+}
+function colName(api){
+  const t=pickOne(["oval","diamond","hexagon","pentagon","octagon","rectangle","trapezoid"]);
+  const others=shuffle(["oval","diamond","hexagon","pentagon","octagon","rectangle","trapezoid","circle","triangle","square","star","heart"].filter(x=>x!==t)).slice(0,3);
+  const cols=shuffle(BIG_COLS);
+  api.ask(`Find the ${t}!`);
+  choices(api,shuffle([t,...others]).map((k,i)=>({html:shapeSvg(k,cols[i][1]),ok:k===t,name:k,label:k,wrongSay:`That's a ${k}. Try again!`})));
+}
+function colSides(api){
+  const t=pickOne(Object.keys(SIDES)),n=SIDES[t];
+  api.ask(`How many sides?`,`How many sides does this ${t} have? Count them!`);
+  api.area.append(el("div","show",shapeSvg(t,pickOne(BIG_COLS)[1])));
+  numOpts(api,n,[3,4,5,6,8],{onRight:()=>say(`${n}! A ${t} has ${NUMW[n]} sides.`),wait:2400,quiet:true});
+}
+function colSort(api){
+  const two=shuffle(LIT_COLS.filter(([n])=>["red","yellow","green","blue","purple","pink"].includes(n))).slice(0,2);
+  api.ask("Put the balloons in the same color basket!");
+  const S=mkStage(api), list=shuffle([two[0],two[0],two[1],two[1]]); let done=0;
+  const bw=Math.min(420,S.LW*.44), bh=Math.min(230,S.LH*.32), by=S.LH-bh-20;
+  const baskets=two.map(([n,h],i)=>{const x=(S.LW/2)+(i?20:-20-bw);
+    const d=el("div","dboard",`<div style="position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:center;font-size:${bh*.42}px;padding-bottom:8px">🧺</div>`);
+    Object.assign(d.style,{left:x+"px",top:by+"px",width:bw+"px",height:bh+"px",border:`8px solid ${h}`,background:lighten(h,.82)});
+    S.inner.append(d); return {n,h,x,y:by,filled:0}});
+  const sz=Math.min(170,(S.LW-60)/4,by*.8);
+  list.forEach(([n,h],i)=>{
+    const pc={el:el("div","dpiece",shapeSvg("balloon",h)),w:sz,h:sz,r:0,n};
+    pc.home=[S.LW*(i+.5)/4,Math.max(sz/2+10,by*.45)]; [pc.x,pc.y]=pc.home; S.inner.append(pc.el); placePiece(pc);
+    draggable(S,pc,{onTap:()=>say(n),onDrop:()=>{
+      const b=baskets.find(b=>pc.x>b.x-40&&pc.x<b.x+bw+40&&pc.y>b.y-60&&pc.y<b.y+bh+40);
+      if(!b) return;
+      if(b.n===n){pc.set=true;pc.el.classList.add("set");b.filled++;pc.w=pc.h=sz*.7;pc.x=b.x+bw*(b.filled===1?.3:.7);pc.y=b.y+bh*.38;placePiece(pc);blip(700+done*80,.12,"triangle");say(n);
+        if(++done===list.length) api.win(500)}
+      else {api.miss(null,`That's the ${b.n} basket. Find the ${n} one!`);[pc.x,pc.y]=pc.home;placePiece(pc)}
+    }});
+  });
+}
+
+/* ---- drag stage used by sorting, jigsaw and building ---- */
+function mkStage(api){
+  const st=el("div","dstage"); api.area.append(st);
+  const r=st.getBoundingClientRect(), LW=1000, LH=Math.round(clamp(1000*Math.max(1,r.height)/Math.max(1,r.width),560,2100));
+  const inner=el("div","dsin"); inner.style.width=LW+"px"; inner.style.height=LH+"px"; st.append(inner);
+  const S={el:st,inner,LW,LH,s:1,z:10};
+  const fit=()=>{const r=st.getBoundingClientRect();if(!r.width)return;S.s=Math.min(r.width/LW,r.height/LH);inner.style.transform=`translate(${(r.width-LW*S.s)/2}px,${(r.height-LH*S.s)/2}px) scale(${S.s})`};
+  fit(); if(window.ResizeObserver){const ro=new ResizeObserver(fit);ro.observe(st);api.after(()=>ro.disconnect())}
+  S.toL=e=>{const r=inner.getBoundingClientRect();return[(e.clientX-r.left)/S.s,(e.clientY-r.top)/S.s]};
+  return S;
+}
+function placePiece(pc){pc.el.dataset.r=pc.r||0;pc.el.style.width=pc.w+"px";pc.el.style.height=pc.h+"px";pc.el.style.left=(pc.x-pc.w/2)+"px";pc.el.style.top=(pc.y-pc.h/2)+"px";pc.el.style.transform=`rotate(${pc.r||0}deg)`}
+function draggable(S,pc,o){
+  let g=null;
+  pc.el.addEventListener("pointerdown",e=>{if(pc.set)return;e.preventDefault();try{pc.el.setPointerCapture(e.pointerId)}catch(_){}
+    const [lx,ly]=S.toL(e); g={lx,ly,x:pc.x,y:pc.y,cx:e.clientX,cy:e.clientY,moved:false,id:e.pointerId}; pc.el.classList.add("drag"); pc.el.style.zIndex=++S.z});
+  pc.el.addEventListener("pointermove",e=>{if(!g||e.pointerId!==g.id)return;const [lx,ly]=S.toL(e);
+    if(Math.hypot(e.clientX-g.cx,e.clientY-g.cy)>9) g.moved=true;
+    pc.x=clamp(g.x+lx-g.lx,20,S.LW-20); pc.y=clamp(g.y+ly-g.ly,20,S.LH-20); placePiece(pc)});
+  const up=e=>{if(!g||e.pointerId!==g.id)return;const moved=g.moved;g=null;pc.el.classList.remove("drag");
+    if(!moved){if(o.onTap)o.onTap(pc)} else if(o.onDrop) o.onDrop(pc)};
+  pc.el.addEventListener("pointerup",up); pc.el.addEventListener("pointercancel",up);
+}
+// board on the left (landscape) or top (portrait); loose pieces go in the tray. sizes(bw,bh) lists each loose piece's
+// width and height for that board size, and the board shrinks until they all fit the tray without overlapping.
+function shelfPack(tray,sizes,gap=18){
+  const idx=sizes.map((_,i)=>i).sort((a,b)=>sizes[b][1]-sizes[a][1]), rows=[]; let row=null;
+  for(const i of idx){const [w,h]=sizes[i];if(!row||row.w+gap+w>tray.w){row={items:[],w:-gap,h:0};rows.push(row)}row.w+=gap+w;row.h=Math.max(row.h,h);row.items.push(i)}
+  const H=rows.reduce((a,r)=>a+r.h,0)+gap*(rows.length-1), fits=H<=tray.h&&rows.every(r=>r.w<=tray.w);
+  const last=rows[rows.length-1].h, k=H>tray.h?Math.max(.35,(tray.h-last)/Math.max(1,H-last)):1;
+  const pos=[]; let y=tray.y+(H<=tray.h?(tray.h-H)/2:0);
+  for(const r of rows){let x=tray.x+Math.max(0,(tray.w-r.w)/2);
+    for(const i of r.items){const [w,h]=sizes[i];pos[i]=[x+w/2+(Math.random()-.5)*10,y+r.h/2+(Math.random()-.5)*10];x+=w+gap}
+    y+=(r.h+gap)*k}
+  return {pos,fits};
+}
+function stageLayout(S,aspect,sizes){
+  const m=24, land=S.LW/S.LH>=1.15;
+  const lay=f=>{let bx,by,bw,bh,tray;
+    if(land){bw=Math.min(S.LW*f,(S.LH-2*m)*aspect);bh=bw/aspect;bx=m;by=(S.LH-bh)/2;tray={x:bx+bw+m,y:m,w:S.LW-bx-bw-2*m,h:S.LH-2*m}}
+    else{bw=Math.min(S.LW-2*m,S.LH*f*aspect);bh=bw/aspect;bx=(S.LW-bw)/2;by=m;tray={x:m,y:by+bh+m,w:S.LW-2*m,h:S.LH-by-bh-2*m}}
+    return {bx,by,bw,bh,tray}};
+  let best=null;
+  for(let f=.62;f>=.3;f-=.02){const L=lay(f),pk=shelfPack(L.tray,sizes(L.bw,L.bh));L.spots=pk.pos.map(([x,y])=>[clamp(x,30,S.LW-30),clamp(y,30,S.LH-30)]);best=L;if(pk.fits)break}
+  return best;
+}
+
+/* ---- 4. jigsaw puzzles ---- */
+const PIC_EM={hen:"🐔",cow:"🐮",pig:"🐷",sheep:"🐑",carrot:"🥕",pumpkin:"🎃"};
+const PIC_KEYS=["hen/stand","cow/stand","pig/stand","sheep/stand","carrot/ripe","pumpkin/ripe"];
+function puzzlePicture(key,w,h){
+  const cv=document.createElement("canvas"); cv.width=w; cv.height=h; const t=cv.getContext("2d");
+  const sky=t.createLinearGradient(0,0,0,h); sky.addColorStop(0,"#8FD3FF"); sky.addColorStop(1,"#D8F1FF"); t.fillStyle=sky; t.fillRect(0,0,w,h);
+  t.fillStyle="#FFD23F"; t.beginPath(); t.arc(w*.85,h*.18,h*.11,0,PI*2); t.fill();
+  t.fillStyle="#fff"; for(const [x,y,s] of [[.18,.17,1],[.5,.1,.7]]){t.beginPath();t.ellipse(w*x,h*y,w*.07*s,h*.05*s,0,0,PI*2);t.ellipse(w*x+w*.05*s,h*y-h*.02,w*.05*s,h*.05*s,0,0,PI*2);t.fill()}
+  t.fillStyle="#7CC94E"; t.beginPath(); t.moveTo(0,h*.66); t.quadraticCurveTo(w*.5,h*.56,w,h*.68); t.lineTo(w,h); t.lineTo(0,h); t.fill();
+  t.fillStyle="#5DAE38"; for(let i=0;i<14;i++){const x=(i+.5)/14*w;t.beginPath();t.ellipse(x,h*.9+((i*37)%11),w*.02,h*.03,0,0,PI*2);t.fill()}
+  const img=farmImg(key);
+  if(img&&img.complete&&img.naturalWidth){const s=Math.min(w*.62/img.naturalWidth,h*.78/img.naturalHeight);const iw=img.naturalWidth*s,ih=img.naturalHeight*s;t.drawImage(img,(w-iw)/2,h*.95-ih,iw,ih)}
+  else {t.font=`${Math.round(h*.6)}px serif`;t.textAlign="center";t.textBaseline="bottom";t.fillText(PIC_EM[key.split("/")[0]]||"🐮",w/2,h*.95)}
+  return cv;
+}
+TASKS.jigsaw=api=>{
+  const key=api.ctx.pic||pickOne(PIC_KEYS);
+  const img=farmImg(key);
+  if(img&&!img.complete&&!api.store.waited){api.store.waited=true;const go=()=>{if(api.live())buildJigsaw(api,key)};img.onload=img.onerror=go;const t=setTimeout(go,1500);api.after(()=>clearTimeout(t));return}
+  buildJigsaw(api,key);
+};
+function buildJigsaw(api,key){
+  if(api.area.querySelector(".dstage")) return;
+  const L=api.L, cols=L?2:4, rows=L?2:3;
+  api.ask("Put the puzzle together!",L?`Put the puzzle together! Drag each piece to its spot.`:`Put the puzzle together! Tap a piece to turn it.`);
+  const n=cols*rows, S=mkStage(api), lay=stageLayout(S,4/3,(w,h)=>Array(n).fill([w/cols,h/rows])), {bx,by,bw,bh}=lay, spots=shuffle(lay.spots), pw=bw/cols, ph=bh/rows;
+  const pic=puzzlePicture(key,Math.round(bw*2),Math.round(bh*2));
+  const board=el("div","dboard"); Object.assign(board.style,{left:bx+"px",top:by+"px",width:bw+"px",height:bh+"px"});
+  if(L){const ghost=document.createElement("canvas");ghost.width=pic.width;ghost.height=pic.height;const g=ghost.getContext("2d");g.globalAlpha=.25;g.drawImage(pic,0,0);
+    Object.assign(ghost.style,{position:"absolute",inset:"0",width:"100%",height:"100%",borderRadius:"14px"});board.append(ghost)}
+  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){const s=el("div","dslot");Object.assign(s.style,{left:c*pw+"px",top:r*ph+"px",width:pw+"px",height:ph+"px"});board.append(s)}
+  S.inner.append(board);
+  let placed=0, turnTold=false;
+  for(let i=0;i<n;i++){
+    const c=i%cols,r=Math.floor(i/cols), cv=document.createElement("canvas"); cv.width=Math.round(pic.width/cols); cv.height=Math.round(pic.height/rows);
+    cv.getContext("2d").drawImage(pic,c*cv.width,r*cv.height,cv.width,cv.height,0,0,cv.width,cv.height);
+    const pc={el:el("div","dpiece"),w:pw,h:ph,r:L?0:pickOne([0,90,180,270]),tx:bx+(c+.5)*pw,ty:by+(r+.5)*ph};
+    pc.el.append(cv); pc.el.dataset.target=`${pc.tx},${pc.ty}`; if(!L) pc.el.append(el("span","rot","↻"));
+    [pc.x,pc.y]=spots[i]; S.inner.append(pc.el); placePiece(pc);
+    const ok=()=>((pc.r%360)+360)%360===0;
+    const trySnap=()=>{
+      if(Math.hypot(pc.x-pc.tx,pc.y-pc.ty)>Math.min(pw,ph)*(L?.5:.36)) return;
+      if(!ok()){if(!turnTold){turnTold=true;say("Almost! Tap it to turn it.")}return}
+      pc.set=true; pc.el.classList.add("set"); pc.x=pc.tx; pc.y=pc.ty; pc.el.style.zIndex=1; placePiece(pc); blip(620+placed*40,.12,"triangle");
+      if(++placed===n) api.win(400);
+    };
+    draggable(S,pc,{onDrop:trySnap,onTap:()=>{if(L){blip(500,.06);return}pc.r+=90;placePiece(pc);blip(560,.06);setTimeout(trySnap,180)}});
+  }
+}
+
+/* ---- 5. building shapes ---- */
+// parts: t = rect | tri (point up) | rtri (square corner bottom-left) | circ; w,h = size; x,y = center; r = turn in degrees
+const BUILDS={
+  little:[
+    {name:"house",em:"🏠",parts:[{t:"rect",w:2,h:2,x:2,y:3.1},{t:"tri",w:2.4,h:1.2,x:2,y:1.5}]},
+    {name:"ice cream cone",em:"🍦",parts:[{t:"circ",w:1.8,h:1.8,x:2,y:1.5},{t:"tri",w:1.8,h:2,x:2,y:3.4,r:180}]},
+    {name:"square",em:"🟥",parts:[{t:"rtri",w:2.4,h:2.4,x:2,y:2.5},{t:"rtri",w:2.4,h:2.4,x:2,y:2.5,r:180}]},
+    {name:"snowman",em:"⛄",parts:[{t:"circ",w:1.4,h:1.4,x:2,y:1.2},{t:"circ",w:2.2,h:2.2,x:2,y:3}]},
+    {name:"sailboat",em:"⛵",parts:[{t:"tri",w:2,h:2,x:2,y:1.9},{t:"rect",w:3,h:.8,x:2,y:3.3}]},
+    {name:"ice cream with a cherry",em:"🍒",parts:[{t:"circ",w:.6,h:.6,x:2,y:.45},{t:"circ",w:1.8,h:1.8,x:2,y:1.65},{t:"tri",w:1.8,h:2,x:2,y:3.55,r:180}]},
+    {name:"tree",em:"🌲",parts:[{t:"tri",w:2.4,h:1.6,x:2,y:1.3},{t:"tri",w:3,h:1.6,x:2,y:2.9},{t:"rect",w:.8,h:1,x:2,y:4.2}]},
+  ],
+  big:[
+    {name:"rocket",em:"🚀",parts:[{t:"rect",w:1.2,h:2.6,x:3,y:2.9},{t:"tri",w:1.2,h:1,x:3,y:1.1},{t:"rtri",w:1,h:1,x:1.9,y:3.7,r:270},{t:"rtri",w:1,h:1,x:4.1,y:3.7},{t:"tri",w:1.2,h:.8,x:3,y:4.6,r:180}]},
+    {name:"house",em:"🏡",parts:[{t:"tri",w:3,h:1.5,x:3,y:1.25},{t:"rect",w:1,h:2,x:2,y:3},{t:"rect",w:1,h:2,x:3,y:3},{t:"rect",w:1,h:2,x:4,y:3},{t:"circ",w:1,h:1,x:5.4,y:.9}]},
+    {name:"tree",em:"🎄",parts:[{t:"tri",w:2,h:1,x:3,y:1},{t:"tri",w:3,h:1,x:3,y:2},{t:"tri",w:4,h:1,x:3,y:3},{t:"rect",w:.8,h:1,x:3,y:4},{t:"circ",w:.7,h:.7,x:3,y:.15}]},
+    {name:"sailboat",em:"⛵",parts:[{t:"rect",w:3,h:.8,x:3,y:4},{t:"rtri",w:.8,h:.8,x:1.1,y:4,r:180},{t:"rtri",w:.8,h:.8,x:4.9,y:4,r:90},{t:"rtri",w:1.5,h:1.5,x:2.25,y:2.85,r:270},{t:"rtri",w:1.5,h:1.5,x:3.75,y:2.85}]},
+    {name:"cat",em:"🐱",parts:[{t:"rect",w:2,h:2,x:3,y:2.5},{t:"tri",w:.8,h:.8,x:2.4,y:1.1},{t:"tri",w:.8,h:.8,x:3.6,y:1.1},{t:"rect",w:3,h:1.4,x:3,y:4.2},{t:"rect",w:.5,h:1.6,x:4.8,y:3.9}]},
+    {name:"fish",em:"🐟",parts:[{t:"tri",w:2,h:1.2,x:2.4,y:2.5,r:270},{t:"tri",w:2,h:1.2,x:3.6,y:2.5,r:90},{t:"tri",w:1.4,h:1,x:1.3,y:2.5,r:90},{t:"tri",w:.8,h:.6,x:3,y:1.2},{t:"circ",w:.5,h:.5,x:4.9,y:1.4}]},
+  ],
+};
+const PART_COLS=["#FF3B3B","#FF8A00","#FFD600","#2ECC40","#2D8CFF","#8B5CF6","#FF5FA2"];
+function partShape(p,fill,u,extra=""){
+  const w=p.w*u,h=p.h*u, a=`fill="${fill}" ${extra}`;
+  if(p.t==="rect") return `<rect x="0" y="0" width="${w}" height="${h}" ${a}/>`;
+  if(p.t==="circ") return `<ellipse cx="${w/2}" cy="${h/2}" rx="${w/2}" ry="${h/2}" ${a}/>`;
+  if(p.t==="tri") return `<polygon points="${w/2},0 ${w},${h} 0,${h}" ${a}/>`;
+  return `<polygon points="0,0 0,${h} ${w},${h}" ${a}/>`;
+}
+function partBox(p){const q=((p.r||0)%180+180)%180===90;return q?[p.h,p.w]:[p.w,p.h]}
+function sameTurn(p,ra,rb){const d=(((ra-rb)%360)+360)%360;if(p.t==="circ"||(p.t==="rect"&&Math.abs(p.w-p.h)<.01))return true;if(p.t==="rect")return d%180===0;return d===0}
+TASKS.build=api=>{
+  const L=api.L, D=pickOne(BUILDS[L?"little":"big"]);
+  api.ask(`${D.em} Build the ${D.name}!`,L?`Build the ${D.name}! Drag the shapes into the picture.`:`Build the ${D.name}! Drag the shapes in. Tap a shape to turn it.`);
+  let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9; for(const p of D.parts){const [w,h]=partBox(p);x0=Math.min(x0,p.x-w/2);x1=Math.max(x1,p.x+w/2);y0=Math.min(y0,p.y-h/2);y1=Math.max(y1,p.y+h/2)}
+  const sym=p=>p.t==="circ"||(p.t==="rect"&&Math.abs(p.w-p.h)<.01);
+  // loose pieces start turned the wrong way for Big builders (tap to turn), the right way for Little ones
+  const loose=shuffle(D.parts).map(p=>{let r=L?(p.r||0):pickOne([0,90,180,270]);if(!L&&!sym(p)&&sameTurn(p,r,p.r||0))r+=90;return{p,r}});
+  const uOf=(w,h)=>Math.min(w*.88/(x1-x0),h*.88/(y1-y0));
+  const S=mkStage(api), {bx,by,bw,bh,spots}=stageLayout(S,1.15,(w,h)=>{const uu=uOf(w,h);return loose.map(({p,r})=>partBox({...p,r}).map(v=>v*uu+8))});
+  const u=Math.min(bw*.88/(x1-x0),bh*.88/(y1-y0)), ox=bx+bw/2-(x0+x1)/2*u, oy=by+bh/2-(y0+y1)/2*u;
+  const board=el("div","dboard"); Object.assign(board.style,{left:bx+"px",top:by+"px",width:bw+"px",height:bh+"px",background:"#FFFDF5"}); S.inner.append(board);
+  const sil=D.parts.map(p=>{const w=p.w*u,h=p.h*u,cx=ox+p.x*u-bx,cy=oy+p.y*u-by;
+    return `<g transform="translate(${cx-w/2} ${cy-h/2}) rotate(${p.r||0} ${w/2} ${h/2})">${partShape(p,"#D9D2E6",u,L?`stroke="#8E82AA" stroke-width="4" stroke-dasharray="10 8"`:`stroke="#D9D2E6" stroke-width="2"`)}</g>`}).join("");
+  board.insertAdjacentHTML("beforeend",`<svg width="${bw}" height="${bh}" style="position:absolute;inset:0;overflow:visible">${sil}</svg>`);
+  const targets=D.parts.map(p=>({p,x:ox+p.x*u,y:oy+p.y*u,filled:false}));
+  let placed=0,turnTold=false;
+  const c0=rint(0,PART_COLS.length-1);
+  loose.forEach(({p,r},i)=>{
+    const fill=PART_COLS[(D.parts.indexOf(p)+c0)%PART_COLS.length];
+    const pc={el:el("div","dpiece"),w:p.w*u,h:p.h*u,p,r};
+    pc.el.innerHTML=`<svg viewBox="0 0 ${pc.w} ${pc.h}">${partShape(p,fill,u,`stroke="${INK}" stroke-width="5" stroke-linejoin="round"`)}</svg>`;
+    pc.el.dataset.target=`${ox+p.x*u},${oy+p.y*u}`; pc.el.dataset.goal=p.r||0;
+    if(!L&&!sym(p)) pc.el.append(el("span","rot","↻"));
+    [pc.x,pc.y]=spots[i]; S.inner.append(pc.el); placePiece(pc);
+    const trySnap=()=>{
+      const tol=u*(L?.75:.45);
+      const near=targets.filter(t=>!t.filled&&t.p.t===p.t&&Math.abs(t.p.w-p.w)<.01&&Math.abs(t.p.h-p.h)<.01&&Math.hypot(pc.x-t.x,pc.y-t.y)<tol);
+      if(!near.length) return;
+      const t=near.find(t=>sameTurn(p,pc.r,t.p.r||0));
+      if(!t){if(!turnTold){turnTold=true;say("So close! Tap it to turn it.")}return}
+      t.filled=true; pc.set=true; pc.el.classList.add("set"); pc.x=t.x; pc.y=t.y; pc.r=t.p.r||0; pc.el.style.zIndex=1; placePiece(pc);
+      blip(620+placed*60,.12,"triangle"); if(++placed===D.parts.length){setTimeout(()=>say(`You built a ${D.name}!`),300);api.win(1600,true)}
+    };
+    draggable(S,pc,{onDrop:trySnap,onTap:()=>{if(L||sym(p)){blip(500,.06);return}pc.r+=90;placePiece(pc);blip(560,.06);setTimeout(trySnap,180)}});
+  });
+};
+
+/* ---- 6. tracing letters and numbers ---- */
+// strokes in a 100-wide box: capitals and numbers sit between y=10 and y=90; small letters between 45 and 90
+function arcPts(cx,cy,rx,ry,a0,a1,n){n=n||Math.max(8,Math.round(Math.abs(a1-a0)/10));const p=[];for(let i=0;i<=n;i++){const a=(a0+(a1-a0)*i/n)*PI/180;p.push([cx+rx*Math.cos(a),cy+ry*Math.sin(a)])}return p}
+const GLYPHS={
+  V:[[[22,10],[50,90],[78,10]]], I:[[[50,10],[50,90]]], O:[arcPts(50,50,30,40,-90,-450)], L:[[[30,10],[30,90],[74,90]]],
+  E:[[[30,10],[30,90]],[[30,10],[72,10]],[[30,50],[64,50]],[[30,90],[72,90]]], T:[[[20,10],[80,10]],[[50,10],[50,90]]],
+  A:[[[50,10],[22,90]],[[50,10],[78,90]],[[34,62],[66,62]]], C:[arcPts(54,50,30,40,-40,-320)],
+  H:[[[26,10],[26,90]],[[74,10],[74,90]],[[26,50],[74,50]]], U:[[[26,10],[26,62],...arcPts(50,62,24,28,180,0).slice(1),[74,10]]],
+  a:[arcPts(48,67.5,19,22.5,-20,-380),[[68,45],[68,90]]], b:[[[32,10],[32,90]],arcPts(51,67.5,19,22.5,195,525)],
+  c:[arcPts(52,67.5,21,22.5,-40,-320)], d:[arcPts(48,67.5,19,22.5,-20,-340),[[68,10],[68,90]]],
+  e:[[[29,67.5],[71,67.5],...arcPts(50,67.5,21,22.5,0,-320).slice(1)]], i:[[[50,45],[50,90]],[[50,27]]], l:[[[50,10],[50,90]]],
+  n:[[[30,45],[30,90]],[[30,90],[30,64],...arcPts(50,64,20,18,180,360).slice(1),[70,90]]], o:[arcPts(50,67.5,21,22.5,-90,-450)],
+  q:[arcPts(48,67.5,19,22.5,-20,-380),[[68,45],[68,118]]], t:[[[50,18],[50,90]],[[33,45],[67,45]]],
+  u:[[[30,45],[30,70],...arcPts(50,70,20,20,180,0).slice(1)],[[70,45],[70,90]]],
+  0:[arcPts(50,50,26,40,-90,-450)], 1:[[[36,24],[52,10],[52,90]]], 2:[[...arcPts(50,32,22,22,190,375),[28,90],[74,90]]],
+  3:[[...arcPts(48,30,21,20,210,450),...arcPts(48,70,24,20,-90,150).slice(1)]], 4:[[[58,10],[22,64],[80,64]],[[60,10],[60,90]]],
+  5:[[[35,10],[33,44],...arcPts(50,65,22,23,-130,150).slice(1)],[[35,10],[72,10]]], 6:[[[64,10],[34,52],...arcPts(50,68,20,22,195,555).slice(1)]],
+  7:[[[24,10],[76,10],[42,90]]], 8:[arcPts(50,30,17,20,-90,-450),arcPts(50,70,22,20,-90,270)], 9:[arcPts(48,32,19,22,-10,-370),[[67,32],[64,90]]],
+};
+function traceTarget(api){
+  if(api.store.glyph) return api.store.glyph;
+  let g; if(api.L) g=pickOne(Math.random()<.7?["V","I","O","L","E","T"]:["A","C","H","U"]);
+  else g=Math.random()<.5?pickOne("abcdeilnoqtu".split("")):String(rint(0,20));
+  return api.store.glyph=g;
+}
+TASKS.trace=api=>{
+  const g=traceTarget(api), isNum=/^\d+$/.test(g), L=api.L, faint=!L&&api.round>0;
+  const what=`${isNum?"number":"letter"} ${g}`;
+  api.ask(`${faint?"Now trace it again":"Trace the "+(isNum?"number":"letter")} ${g}${faint?"!":""}`,
+    L?`Trace the letter ${g}! Follow the star.`:faint?`Great! Now trace the ${what} again, with a faint line.`:`Trace the ${what}. Follow the arrows.`);
+  const chars=g.split(""), low=!isNum&&g===g.toLowerCase()&&g!==g.toUpperCase();
+  const boxH=low?125:100, top=low?5:0;
+  // strokes in glyph-box units laid out side by side
+  const strokes=[]; chars.forEach((ch,ci)=>{const dx=ci*80-(chars.length>1&&ch==="1"?10:0);for(const s of GLYPHS[ch]) strokes.push(s.map(([x,y])=>[x+dx,y-top]))});
+  const totalW=100+(chars.length-1)*80;
+  const cps=strokes.map(s=>{const out=[s[0]];for(let i=1;i<s.length;i++){const [ax,ay]=s[i-1],[bx,by]=s[i],d=Math.hypot(bx-ax,by-ay),k=Math.max(1,Math.round(d/5));for(let j=1;j<=k;j++)out.push([ax+(bx-ax)*j/k,ay+(by-ay)*j/k])}return out});
+  const wrap=el("div","tracewrap"); api.area.append(wrap);
+  const cv=el("canvas","tracecv"); wrap.append(cv); const ctx=cv.getContext("2d");
+  cv.dataset.cps=JSON.stringify(cps.map(s=>s.map(([x,y])=>[Math.round(x),Math.round(y)]))); cv.dataset.box=`${totalW+30},${boxH+20}`;
+  const K=kidOf(me), ink=K.hue||"#7C4DFF";
+  let si=0, ci=0, active=false, sc=1, ox=0, oy=0, dpr=1, W0=0, H0=0;
+  const tolBase=L?17:faint?13:11;
+  const fit=()=>{const r=wrap.getBoundingClientRect();if(!r.width)return;dpr=window.devicePixelRatio||1;
+    const aw=Math.min(r.width,r.height*(totalW+30)/(boxH+20)), ah=aw*(boxH+20)/(totalW+30);W0=aw;H0=ah;
+    cv.style.width=aw+"px"; cv.style.height=ah+"px"; cv.width=Math.round(aw*dpr); cv.height=Math.round(ah*dpr);
+    sc=aw/(totalW+30); ox=15; oy=10; draw()};
+  const P=([x,y])=>[(x+ox)*sc*dpr,(y+oy)*sc*dpr];
+  const path=(pts,upto)=>{ctx.beginPath();pts.slice(0,upto??pts.length).forEach((p,i)=>{const [X,Y]=P(p);i?ctx.lineTo(X,Y):ctx.moveTo(X,Y)});if(pts.length===1||upto===1){const [X,Y]=P(pts[0]);ctx.lineTo(X+.1,Y)}};
+  function draw(){
+    const U=sc*dpr; ctx.clearRect(0,0,cv.width,cv.height); ctx.lineCap=ctx.lineJoin="round";
+    // guide
+    for(const s of cps){path(s);ctx.strokeStyle=faint?"rgba(43,33,64,.07)":"#ECE7F4";ctx.lineWidth=(L?24:16)*U;ctx.stroke();
+      if(!faint){path(s);ctx.setLineDash([2*U,5*U]);ctx.strokeStyle="#B9AFCF";ctx.lineWidth=3*U;ctx.stroke();ctx.setLineDash([])}}
+    // done ink
+    cps.forEach((s,i)=>{const n=i<si?s.length:i===si?ci:0;if(n<1)return;path(s,Math.max(n,1));ctx.strokeStyle=ink;ctx.lineWidth=(L?15:10)*U;ctx.stroke()});
+    if(si>=cps.length) return;
+    const s=cps[si], nx=s[Math.min(ci,s.length-1)];
+    if(L){const [X,Y]=P(nx);ctx.font=`${22*U}px serif`;ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("⭐",X,Y)}
+    else {
+      if(!faint&&ci<s.length-1){const a=s[ci],b=s[Math.min(ci+3,s.length-1)];const [X1,Y1]=P(a),[X2,Y2]=P(b);const ang=Math.atan2(Y2-Y1,X2-X1);
+        const off=ci===0?9*U:0,[sx,sy]=[X1+Math.cos(ang)*off,Y1+Math.sin(ang)*off],[hx,hy]=[sx+Math.cos(ang)*14*U,sy+Math.sin(ang)*14*U];
+        ctx.strokeStyle="#2ECC40";ctx.lineWidth=3*U;ctx.beginPath();ctx.moveTo(sx,sy);ctx.lineTo(hx,hy);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(hx,hy);ctx.lineTo(hx-Math.cos(ang-.5)*6*U,hy-Math.sin(ang-.5)*6*U);ctx.moveTo(hx,hy);ctx.lineTo(hx-Math.cos(ang+.5)*6*U,hy-Math.sin(ang+.5)*6*U);ctx.stroke()}
+      cps.forEach((st,i)=>{if(i<si||(faint&&i!==si))return;if(i===si&&ci>0)return;const [X,Y]=P(st[0]);ctx.beginPath();ctx.arc(X,Y,7*U,0,PI*2);ctx.fillStyle=i===si?"#2ECC40":"#9BE5A3";ctx.fill();
+        if(!faint){ctx.fillStyle="#fff";ctx.font=`bold ${9*U}px sans-serif`;ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(String(i+1),X,Y+.5*U)}});
+    }
+  }
+  const toG=e=>{const r=cv.getBoundingClientRect();return[(e.clientX-r.left)/(r.width/(totalW+30))-ox,(e.clientY-r.top)/(r.height/(boxH+20))-oy]};
+  const step=p=>{
+    if(si>=cps.length) return;
+    const s=cps[si], tol=tolBase;
+    if(!active){
+      const back=ci>0?s[ci-1]:s[0];
+      if(Math.hypot(p[0]-back[0],p[1]-back[1])<tol*1.4||Math.hypot(p[0]-s[ci][0],p[1]-s[ci][1])<tol){active=true;if(ci===0)ci=1}
+      else return;
+    }
+    let best=-1; for(let j=ci;j<Math.min(s.length,ci+5);j++) if(Math.hypot(p[0]-s[j][0],p[1]-s[j][1])<tol) best=j;
+    if(best>=ci){ci=best+1;if(ci%4===0)blip(500+ci*6,.04,"triangle",.05)}
+    if(ci>=s.length){
+      blip(880,.12,"triangle"); si++; ci=0; active=false;
+      if(si>=cps.length){draw();setTimeout(()=>say(isNum?`${g}!`:`${g}!`),200);api.win(900);return}
+      const n=cps[si][0]; if(Math.hypot(p[0]-n[0],p[1]-n[1])<tol){active=true;ci=1}
+    }
+    draw();
+  };
+  let down=false;
+  cv.addEventListener("pointerdown",e=>{e.preventDefault();down=true;try{cv.setPointerCapture(e.pointerId)}catch(_){};step(toG(e));if(!active&&si<cps.length){api.store.offs=(api.store.offs||0)+1;if(api.store.offs%3===0)say(L?"Start at the star!":"Start at the green dot!")}});
+  cv.addEventListener("pointermove",e=>{if(down)step(toG(e))});
+  const up=()=>{down=false;active=false};
+  cv.addEventListener("pointerup",up); cv.addEventListener("pointercancel",up);
+  fit(); if(window.ResizeObserver){const ro=new ResizeObserver(fit);ro.observe(wrap);api.after(()=>ro.disconnect())}
+};
+
+/* ---- 7. patterns ---- */
+const PAT_ITEMS=["🍎","🍌","🥕","🌽","🍓","🐣","🐮","🐷","🌻","🥚","🍐","🐑","🎃","🐝","🦆","🍇"];
+TASKS.pattern=api=>{
+  const sub=api.L?"ab":order(api,["core","grow","skip"]);
+  ({ab:patAB,core:patCore,grow:patGrow,skip:patSkip})[sub](api);
+};
+function patLine(api,cells){const line=el("div","pline");const q=el("div","pc q","?");for(const c of cells)line.append(el("div","pc"+(c.cls?" "+c.cls:""),c.html));line.append(q);api.area.append(line);return q}
+function patAB(api){
+  const [A,B,C]=shuffle(PAT_ITEMS).slice(0,3), seq=[A,B,A,B,A];
+  api.ask("What comes next?");
+  const q=patLine(api,seq.map(x=>({html:x})));
+  choices(api,shuffle(api.round?[A,B,C]:[A,B]).map(x=>({html:x,ok:x===B})),{onRight:()=>{q.className="pc";q.textContent=B},wait:900});
+}
+function patCore(api){
+  const core=pickOne(["ABC","AABB","ABB","AAB"]), its=shuffle(PAT_ITEMS).slice(0,4), map={A:its[0],B:its[1],C:its[2]};
+  const n=core.length*2+rint(0,core.length-1), seq=Array.from({length:n},(_,i)=>map[core[i%core.length]]), ans=map[core[n%core.length]];
+  api.ask("What comes next?","Look at the pattern. What comes next?");
+  const q=patLine(api,seq.map(x=>({html:x})));
+  const opts=[...new Set([...core].map(k=>map[k]))]; opts.push(its[3]);
+  choices(api,shuffle(opts).map(x=>({html:x,ok:x===ans})),{onRight:()=>{q.className="pc";q.textContent=ans},wait:900});
+}
+function patGrow(api){
+  const it=pickOne(PAT_ITEMS), stp=api.round>=2?2:1, vals=[stp,2*stp,3*stp], ans=4*stp;
+  const stack=n=>emRow(it,n);
+  api.ask("What comes next?","Look how it grows! What comes next?");
+  const q=patLine(api,vals.map(n=>({html:stack(n),cls:"stack"})));
+  choices(api,shuffle([ans,ans-stp,ans+stp].filter(x=>x>0)).map(n=>({html:`<span style="font-size:26px;display:flex;flex-wrap:wrap;max-width:140px;justify-content:center">${stack(n)}</span>`,ok:n===ans,name:NUMW[n],label:nWord(n,{one:"one",many:"of them"})})),
+    {onRight:()=>{q.className="pc stack";q.innerHTML=stack(ans)},wait:900});
+}
+function patSkip(api){
+  const st=pickOne(api.round>=2?[5,10]:[2,5,10]), start=st*rint(0,2), seq=[start+st,start+2*st,start+3*st], ans=start+4*st;
+  api.ask(`${seq.join(", ")}, ?`,`${seq.join(", ")}. What number comes next?`);
+  const q=patLine(api,seq.map(x=>({html:`<span style="font-family:var(--display)">${x}</span>`})));
+  numOpts(api,ans,[ans+1,ans-1,ans+st,ans+2],{onRight:()=>{q.className="pc";q.innerHTML=`<span style="font-family:var(--display)">${ans}</span>`;say(`${ans}! We count by ${NUMW[st]}s.`)},wait:2400,quiet:true});
+}
+
+/* ---- 8. memory match ---- */
+const MEM_EMS=["🐮","🐷","🐔","🐑","🐴","🐰","🐶","🐱","🐸","🦆","🌻","🍎","🥕","🌽","🍓","🎃","🥚","🐝","🦋","🐞"];
+TASKS.memory=api=>{
+  const L=api.L, pairs=L?3:6, ems=shuffle(MEM_EMS).slice(0,pairs), deck=shuffle([...ems,...ems]);
+  api.ask("Find the matching pairs!",L?"Look closely! Then find the matching pairs.":"Find all the matching pairs!");
+  const g=el("div","mgrid"); api.area.append(g);
+  const fit=()=>{const r=api.area.getBoundingClientRect();if(!r.width)return;let best={cols:2,s:60};
+    for(let cols=2;cols<=deck.length;cols++){const rows=Math.ceil(deck.length/cols);if(cols*rows-deck.length>=cols)continue;
+      const s=Math.min((r.width-12*(cols-1))/cols,(r.height-12*(rows-1))/rows);if(s>best.s)best={cols,s}}
+    const s=Math.floor(Math.min(best.s,L?210:160)); g.style.gridTemplateColumns=`repeat(${best.cols},${s}px)`; g.style.width="auto"; g.style.flex="none"; g.style.fontSize=s+"px"};
+  let open=[], lock=!!L, found=0;
+  const cards=deck.map((e,i)=>{const b=el("button","memc"+(L?" up":""),`<div class="in"><div class="b">🌾</div><div class="f">${e}</div></div>`);b.setAttribute("aria-label","card");
+    b.onclick=()=>{if(lock||!api.live()||b.classList.contains("up"))return;b.classList.add("up");blip(600,.06);open.push([e,b]);
+      if(open.length===2){const [[e1,b1],[e2,b2]]=open;open=[];
+        if(e1===e2){b1.classList.add("done");b2.classList.add("done");blip(880,.15,"triangle");found++;if(found===pairs)api.win(500)}
+        else{lock=true;api.store.misses=(api.store.misses||0)+1;tk&&tk.wrong++;setTimeout(()=>{b1.classList.remove("up");b2.classList.remove("up");lock=false},900)}}};
+    g.append(b);return b});
+  fit(); if(window.ResizeObserver){const ro=new ResizeObserver(fit);ro.observe(api.area);api.after(()=>ro.disconnect())}
+  if(L){const t=setTimeout(()=>{cards.forEach(c=>c.classList.remove("up"));lock=false;say("Now find the pairs!")},3200);api.after(()=>clearTimeout(t))}
+};
+
+
 function openFarm(){if(!fm.cv)farmInit();show("farm");farmBasket();farmFit();fm.last=performance.now();if(!fm.raf)fm.raf=requestAnimationFrame(farmFrame);
   sayLittle("Drag to look around the farm. Tap an animal to feed it. Tap a sparkly crop to pick it!")}
 $("#playFarm").onclick=()=>{sayLittle("Kapanigan Farmstand");openFarm()};

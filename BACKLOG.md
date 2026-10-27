@@ -77,7 +77,8 @@ A **live co-op farm** the kids share. Every farm action is done by solving a sho
   - The map is **16 × 16 tiles** (was 8 × 8). About 9 tiles fit across an iPad, and the farm fills the height of an upright phone. Drag to look around.
   - Animals stay inside a fenced **pasture** (a dashed line until fence art exists). Crops are in their own **field**.
   - Animals walk at about a third of the old speed, take short strolls, and spend most of their time grazing (6–10 s) and napping (12–20 s).
-- **Ready to use:** `logAttempt()` for the grown-up dashboard (#8), `say()` / `sayLittle()` read-aloud, Firebase under `families/<code>/`, and `tools/genart.py` for isometric art.
+- **Puzzle engine (Oct 27):** all 8 puzzle types below are built, each with a Little and a Big version. Feeding an animal and picking a ripe crop now open a puzzle; the action happens when it's solved. See **✅ Puzzle engine** below.
+- **Ready to use:** `farmPuzzle()` to put a puzzle in front of any farm action, `logAttempt()` for the grown-up dashboard (#8), `say()` / `sayLittle()` read-aloud, Firebase under `families/<code>/`, and `tools/genart.py` for isometric art.
 
 ### 🧩 Every action is a puzzle
 Puzzle types come from the **Age-appropriate tasks** chat. That chat is building them into the Farmstand as a reusable puzzle engine. **Its output defines the final puzzle behind each action.** The table below is the starting mapping, and any puzzle type can be swapped in. Each action has a **main puzzle** and draws from the others now and then so it doesn't get stale.
@@ -93,6 +94,25 @@ Puzzle types come from the **Age-appropriate tasks** chat. That chat is building
 | 🧶 Shear the sheep | Tracing | Trace a thick dotted letter from her name, following the star | Thin path with stroke-order arrows, lowercase and 0–20, then without dots |
 | 🔨 Build (fence, stable) | Building shapes | Drag 2–3 pieces into a silhouette | Tangram, 4–7 pieces, rotation allowed |
 | 💰 Sell at the farmstand | Counting money | Tap one coin per item ("3 carrots, tap 3 coins") | Add up prices, then make change up to 20 |
+
+### ✅ Puzzle engine (built Oct 27)
+- **Hook up an action:** `farmPuzzle("milk", {title:"🥛 Milk the cow", item:{em:"🥛",one:"pail",many:"pails"}, pic:"cow/stand", reward:"+1 🥛"}, () => { /* do the action */ })`. `item` is what counting puzzles count; `pic` is the isometric sprite the jigsaw uses.
+- **Which puzzle:** `FARM_ACTIONS` holds each action's main type from the table above. With `FARM_MIX` = 0.6 the action borrows a different type 60% of the time, picking the one that player did least recently, so all 8 come around while only feed and harvest exist. Lower it as more actions are built.
+- **What's in each type:**
+
+| Type | Little (Violet, 3–4) | Big (Quinn, 5–7) |
+|---|---|---|
+| Counting | Tap each one to count 2–5 (counts out loud); put 1–5 in the basket | How many? (6–20, tap to mark); add or take away within 10 with pictures; which side has more? |
+| Letters & words | Find the letter (mostly V-I-O-L-E-T); find the same letter | Big letter to small letter (with b/d/p/q tricks); what letter does 🐮 start with?; spell a 3-letter word with tiles |
+| Colors & shapes | Tap the red balloon; find the circle; drag balloons into the same color basket | Tap the small blue triangle (two clues); find the hexagon, octagon, trapezoid…; how many sides? |
+| Jigsaw | 4 big pieces over a faint picture | 12 pieces, no picture, pieces start turned (tap to turn) |
+| Building shapes | 2–3 shapes into dotted outlines (house, ice cream, snowman, sailboat, tree, square from two triangles) | 5 shapes into a solid silhouette (rocket, house, tree, sailboat, cat, fish), shapes start turned |
+| Tracing | Thick letter path, follow the star ⭐ | Lowercase letters and numbers 0–20 with numbered start dots and arrows, then again with a faint line |
+| Patterns | AB: 🍎🍌🍎🍌🍎 ? | ABC, AABB, ABB, AAB; growing (1, 2, 3 → 4); counting by 2s, 5s and 10s |
+| Memory match | 3 pairs, face-up preview | 6 pairs, no preview |
+
+- Counting, letters, colors and patterns are 2 quick rounds for Little and 3 for Big. Every prompt is spoken, with a 🔊 button to repeat it. After two wrong tries the right answer glows (Little and Big).
+- Not built yet: Big's star rating or streak, counting money for **Sell**, and co-op tiers on the same chore.
 
 **Rules for every puzzle** (from the Age-appropriate tasks chat):
 - **Little:** no fail state. A wrong tap wiggles and stays put. Every prompt is spoken, and a puzzle is done in under a minute.
