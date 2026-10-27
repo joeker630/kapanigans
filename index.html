@@ -484,6 +484,9 @@ h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance;l
 .replylab{font-weight:800;font-size:16px;color:#5b5175}
 .reacted{width:100%;text-align:center;font-family:var(--display);font-size:28px;animation:popin .4s ease-out}
 .badge{background:#E5484D;color:#fff;border-radius:999px;padding:1px 8px;font-size:13px;margin-left:4px;vertical-align:middle}
+.colormode{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 10px}
+.colormode button{background:var(--paper);border-radius:999px;padding:10px 16px;font-weight:800;font-size:16px;box-shadow:0 3px 0 var(--sky-deep);border:3px solid transparent}
+.colormode button.on{background:var(--sun);border-color:var(--ink)}
 .sentbox{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
 .sentbox .gift{font-size:110px;animation:fly 1.6s ease-in forwards}
 @keyframes fly{0%{transform:scale(.6)}30%{transform:scale(1.15) rotate(-6deg)}60%{transform:scale(1) rotate(4deg)}100%{transform:translateY(-30vh) scale(.4);opacity:0}}
@@ -1029,6 +1032,7 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
   <div class="inner">
     <div class="row"><h2>Pick a picture</h2><button class="round" id="closeSheet" aria-label="Close">✖️</button></div>
     <div class="who" id="whoStarts"></div>
+    <div class="colormode" id="colorMode"><button data-m="own">🧩 Everyone gets their own part</button><button data-m="shared">🤝 Share the whole page</button></div>
     <div class="pics" id="pics"></div>
   </div>
 </div>
@@ -1467,7 +1471,7 @@ function zoneRects(n){
   if(n===3) return [[0,0,400,H],[400,0,400,H],[800,0,400,H]];
   return [[0,0,W/2,H/2],[W/2,0,W/2,H/2],[0,H/2,W/2,H/2],[W/2,H/2,W/2,H/2]];
 }
-const zoneOf = s => zoneRects(game.seats.length)[s];
+const zoneOf = s => game.shared?[0,0,W,H]:zoneRects(game.seats.length)[s];
 function inZone(s,x,y){const [zx,zy,zw,zh]=zoneOf(s);return x>=zx&&x<zx+zw&&y>=zy&&y<zy+zh}
 
 /* ---------------- painting ---------------- */
@@ -1530,7 +1534,10 @@ function fillRegion(o){
   for(let yy=0;yy<h;yy++){let li=(y0+yy)*W+x0, p=yy*w*4;for(let xx=0;xx<w;xx++,li++,p+=4){if(P.labels[li]===L){d[p]=r;d[p+1]=g;d[p+2]=bl;d[p+3]=255}}}
   pctx.putImageData(img,x0,y0);
 }
-function redrawSeat(s){const [x,y,w,h]=zoneOf(s);pctx.clearRect(x,y,w,h);for(const o of game.ops[s]) renderOp(o)}
+function redrawSeat(s){
+  if(game.shared){ // one shared page: repaint everyone's strokes in the order they were made (push keys sort by time)
+    pctx.clearRect(0,0,W,H); for(const o of game.ops.flat().sort((a,b)=>a.i<b.i?-1:a.i>b.i?1:0)) renderOp(o); return}
+  const [x,y,w,h]=zoneOf(s);pctx.clearRect(x,y,w,h);for(const o of game.ops[s]) renderOp(o)}
 
 /* ---------------- Live room on Firebase ----------------
    families/<CODE>/live/presence/<peer>  who's here (removed by the server when a device drops)
@@ -1675,11 +1682,15 @@ function renderLobby(){
   if(!$("#picSheet").hidden) renderWho();
 }
 let picInvite=null;
-function renderWho(){
-  if(picInvite){const names=picInvite.map(pp=>{const q=peers().find(x=>x.peer===pp);return q&&q.presence?kidOf(q.presence.kid).name:"them"});$("#whoStarts").textContent=`Just you and ${names.join(" & ")}. Everyone gets their own part.`;return}
+let picShared=load("kp.shared")==="1";
+function syncColorMode(){const n=picInvite?picInvite.length+1:Math.min(4,lobbyPlayers().length);const box=$("#colorMode");box.hidden=n<2;
+  box.querySelectorAll("button").forEach(b=>b.classList.toggle("on",(b.dataset.m==="shared")===picShared))}
+$("#colorMode").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;picShared=b.dataset.m==="shared";store("kp.shared",picShared?"1":"0");blip(600,.06);sayLittle(picShared?"Share the whole page!":"Everyone gets their own part!");syncColorMode();renderWho()});
+function renderWho(){ syncColorMode(); const partTxt=picShared?"Everyone colors the whole page together.":"Everyone gets their own part.";
+  if(picInvite){const names=picInvite.map(pp=>{const q=peers().find(x=>x.peer===pp);return q&&q.presence?kidOf(q.presence.kid).name:"them"});$("#whoStarts").textContent=`Just you and ${names.join(" & ")}. ${partTxt}`;return}
   const pl=lobbyPlayers().slice(0,4);
   const extra=lobbyPlayers().length-4;
-  $("#whoStarts").textContent = pl.length>1 ? `Starts for ${pl.map(p=>kidOf(p.presence.kid).name).join(", ")}. Everyone gets their own part.${extra>0?` (4 players max)`:""}` : "Just you right now. Anyone who opens Kapanigans with your family code shows up here.";
+  $("#whoStarts").textContent = pl.length>1 ? `Starts for ${pl.map(p=>kidOf(p.presence.kid).name).join(", ")}. ${partTxt}${extra>0?` (4 players max)`:""}` : "Just you right now. Anyone who opens Kapanigans with your family code shows up here.";
 }
 function openPics(invite){
   picInvite=Array.isArray(invite)?invite:null;
@@ -1701,9 +1712,9 @@ function startColoring(pic){
   let seats;
   if(picInvite){seats=[{k:me,p:myPeer}];for(const pp of picInvite){const q=peers().find(x=>x.peer===pp);if(q&&q.presence&&KIDS[q.presence.kid])seats.push({k:q.presence.kid,p:pp})}picInvite=null}
   else seats=lobbyPlayers().slice(0,4).map(p=>({k:p.presence.kid,p:p.peer}));
-  const g={e:Date.now().toString(36)+uid,pic,seats};
+  const g={e:Date.now().toString(36)+uid,pic,seats}; if(picShared&&seats.length>1) g.shared=true;
   if(room&&room.root){const TS=firebase.database.ServerValue.TIMESTAMP;
-    room.root.child("games/"+g.e+"/meta").set({pic,at:TS}).catch(()=>{});
+    room.root.child("games/"+g.e+"/meta").set({pic,at:TS,shared:!!g.shared}).catch(()=>{});
     room.root.child("gameIndex/"+g.e).set(TS).catch(()=>{});
     pruneGames();}
   send("start",g);
@@ -1714,12 +1725,12 @@ function startColoring(pic){
 
 /* ---------------- game ---------------- */
 function enterGame(g,seat,rejoin){
-  game={e:g.e,pic:g.pic,seats:g.seats.slice(0,4),seat,ops:g.seats.slice(0,4).map(()=>[]),seen:new Set(),done:false,refs:[],lastSeen:g.seats.slice(0,4).map(()=>Date.now())};
+  game={e:g.e,pic:g.pic,shared:g.shared===true,seats:g.seats.slice(0,4),seat,ops:g.seats.slice(0,4).map(()=>[]),seen:new Set(),done:false,refs:[],lastSeen:g.seats.slice(0,4).map(()=>Date.now())};
   const P=buildPic(g.pic);
   actxArt.putImageData(P.art,0,0);
   pctx.clearRect(0,0,W,H);
   game.watch=seat<0; if(!rejoin) bump("colorGames"); if(game.watch) bump("watched");
-  setPresence({scr:game.watch?"watch":"game",g:{e:g.e,pic:g.pic,seats:game.seats},seat:game.watch?null:seat,done:false,cx:null,cy:null});
+  setPresence({scr:game.watch?"watch":"game",g:Object.assign({e:g.e,pic:g.pic,seats:game.seats},game.shared?{shared:true}:{}),seat:game.watch?null:seat,done:false,cx:null,cy:null});
   $("#doneBtn").hidden=game.watch;
   show("game"); $("#party").hidden=true;
   buildTray(); renderZones(); renderSeats(); fitBoard();
@@ -1768,6 +1779,8 @@ new ResizeObserver(()=>{const vb=$("#vid"),tray=$("#tray");if(screen!=="game"||!
 
 function renderZones(){
   const z=$("#zones");z.innerHTML="";
+  if(game.shared){const d=document.createElement("div");d.className="zone "+(game.watch?"":"mine");d.style.cssText="left:0;top:0;width:100%;height:100%;--k:var(--sun-deep)";
+    if(game.seats.length>1) d.innerHTML=`<span class="ztag" style="--k:var(--sun-deep)">🤝 Everyone colors everywhere</span>`; z.append(d); return}
   const rects=zoneRects(game.seats.length);
   game.seats.forEach((s,i)=>{
     const k=kidOf(s.k),[x,y,w,h]=rects[i];
