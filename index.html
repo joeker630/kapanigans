@@ -544,6 +544,36 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
 .tdone .em{font-size:min(30vw,150px);line-height:1;animation:popin .5s ease-out}
 .tdone h2{font-size:clamp(32px,7vw,56px)}
 .tdone p{margin:0;font-size:20px}
+.tstars{font-size:clamp(34px,7vw,52px);letter-spacing:4px}.tstars .dim{filter:grayscale(1);opacity:.3}
+.tstreak{display:flex;gap:8px}.tstreak i{font-style:normal;font-size:28px;filter:grayscale(1);opacity:.25}.tstreak i.on{filter:none;opacity:1;animation:popin .4s ease-out}
+.tdone .tbonus{font-family:var(--display);font-size:26px;color:#C2410C}.tdone .tsmall{font-size:16px;color:var(--ink-soft)}
+.coin{display:inline-grid;place-items:center;width:1.25em;height:1.25em;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FFF3B0,#FFC83D 55%,#E09B00);box-shadow:inset 0 -.08em 0 rgba(0,0,0,.18),0 .06em 0 #B97E00;border:.06em solid #C98A00;font-family:var(--display);font-size:1em;line-height:1;vertical-align:middle;background-size:cover;box-sizing:border-box}
+.coin b{font-size:.55em;color:#7A4A00}.coin.c5{background:radial-gradient(circle at 35% 30%,#FFFFFF,#D9DEE6 55%,#9AA4B2);border-color:#8A94A2}.coin.c5 b{color:#3B4250}
+.coin.c10{width:1.45em;height:1.45em;background:radial-gradient(circle at 35% 30%,#FFE1C2,#E8995A 55%,#B5651D);border-color:#9A5418}.coin.c10 b{color:#5A2E08}
+.coin.art{background-color:transparent;box-shadow:none;border:0}
+.field .ci .coin{font-size:inherit}
+.msold{display:flex;gap:10px;font-size:min(14vw,64px);flex-wrap:wrap;justify-content:center}.msold .mit{transition:.2s;filter:grayscale(.6);opacity:.55}.msold .mit.paid{filter:none;opacity:1;transform:scale(1.1)}
+.mjar{display:flex;align-items:center;gap:4px;min-height:60px;font-size:40px;background:var(--paper);border-radius:999px;padding:4px 16px;box-shadow:0 4px 0 var(--sky-deep);order:2}
+.msale{display:flex;flex-direction:column;gap:8px;align-items:center;font-size:clamp(28px,6vw,46px)}
+.mline{display:flex;align-items:center;gap:10px}.mline .pile{letter-spacing:2px}.mx{font-size:.6em;color:var(--ink-soft)}
+.mpay{display:flex;align-items:center;gap:10px;font-size:clamp(26px,5vw,40px);font-family:var(--display)}
+.msum{font-family:var(--display);font-size:clamp(24px,5vw,36px)}.mhint{font-size:16px;color:var(--ink-soft);font-family:var(--body)}
+.mtray{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;min-height:64px;font-size:46px;background:rgba(255,255,255,.6);border-radius:22px;padding:6px 14px;border:3px dashed var(--sky-deep);max-width:900px}
+.mbar .opt.coin{min-width:0;min-height:0;width:1.6em;height:1.6em;font-size:64px;padding:0;border-radius:50%}
+.mbar .opt.coin{background:radial-gradient(circle at 35% 30%,#FFF3B0,#FFC83D 55%,#E09B00);border:4px solid #C98A00;box-shadow:0 6px 0 #B97E00}
+.mbar .opt.coin.c5{background:radial-gradient(circle at 35% 30%,#FFFFFF,#D9DEE6 55%,#9AA4B2);border-color:#8A94A2;box-shadow:0 6px 0 #6B7480}
+.mbar .opt.coin.c10{width:1.75em;height:1.75em;background:radial-gradient(circle at 35% 30%,#FFE1C2,#E8995A 55%,#B5651D);border-color:#9A5418;box-shadow:0 6px 0 #7A4010}
+.mbar .opt.coin b{font-size:.5em}
+.coopboard{overflow:visible}.coreg{position:absolute;box-sizing:border-box;border:3px solid rgba(43,33,64,.12);border-radius:10px}.coreg.mine{border-color:var(--sun-deep);background:rgba(255,200,61,.12)}
+.coreg canvas{position:absolute;inset:0;width:100%;height:100%;border-radius:8px}
+.cotag{position:absolute;top:-30px;left:4px;background:var(--paper);border-radius:999px;padding:2px 10px;font-size:16px;box-shadow:0 2px 0 var(--sky-deep);white-space:nowrap}
+.coreg.mine .cotag{background:var(--sun)}
+.dslot.glow{background:rgba(255,200,61,.45)}
+.dpiece.pop{animation:popin .4s ease-out}
+.coopbar{position:fixed;left:50%;top:calc(70px + env(safe-area-inset-top,0px));transform:translateX(-50%);display:flex;align-items:center;gap:10px;background:var(--paper);border-radius:999px;padding:6px 8px 6px 14px;box-shadow:0 5px 0 var(--sun-deep);border:3px solid var(--sun);max-width:calc(100% - 24px);z-index:40}
+.coopbar .cface{font-size:34px}.coopbar .ctext{font-size:16px;line-height:1.2}.coopbar .bigbtn{white-space:nowrap;font-size:18px;padding:8px 16px}
+.coopwait{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}.coopwait .em{font-size:80px}.coopwait p{margin:0;font-size:18px}
+
 
 /* shared task bits */
 .opts{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;max-width:900px}
@@ -759,9 +789,10 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
     <h1>🥕 Farmstand</h1>
     <button class="basket" id="farmGoods" aria-label="My basket"></button>
     <button class="basket jarchip" id="farmJar" aria-label="My Moolah"></button>
+    <button class="round" id="fTeam" aria-label="Do a chore together">🤝</button>
     <button class="round" id="fHome" aria-label="Home">🏠</button>
   </div>
-  <div id="farmBody"><canvas id="farmCv"></canvas></div>
+  <div id="farmBody"><canvas id="farmCv"></canvas><div class="coopbar" id="farmCoop" hidden></div></div>
 </section>
 <div class="task" id="task" hidden>
   <div class="thead"><button class="round" id="tClose" aria-label="Stop">✖️</button><h1 id="tTitle"></h1><button class="round" id="tSay" aria-label="Say it again">🔊</button></div>
@@ -2846,9 +2877,9 @@ function farmConnect(){
   const local=/[?&]farmlocal\b/.test(location.search)||!window.firebase||!firebase.database||!familyCode;
   if(F.code===familyCode&&(F.ref||F.local))return;
   if(F.ref)F.ref.off();F.ref=null;F.st=null;F.code=familyCode;F.anim.clear();
-  if(local){F.local=true;F.st=fDefault();fChanged();return}
+  if(local){F.local=true;F.st=fDefault();fChanged();coopConnect();return}
   try{if(!firebase.apps.length)firebase.initializeApp(FIREBASE)}catch(e){}
-  F.local=false;F.ref=firebase.database().ref("families/"+familyCode+"/farm");
+  F.local=false;F.ref=firebase.database().ref("families/"+familyCode+"/farm");setTimeout(coopConnect,0);
   F.ref.on("value",s=>{const v=s.val();if(!v||!v.v){F.ref.transaction(x=>x&&x.v?x:fDefault());return}F.st=v;fChanged()},()=>{});
   clearTimeout(F.waitT);F.waitT=setTimeout(()=>{if(!F.st){F.st=fDefault();fChanged();toast("Can't reach the farm. Check the Wi-Fi.")}},5000);
 }
@@ -2877,7 +2908,7 @@ function farmDo(action,info){
   else if(action==="plant")o={title:`🌱 Plant ${GOODS[info.crop].names}`,item:gItem(info.crop),pic:cropPic(info.crop),reward:"🌱 Planted!"};
   else if(action==="water")o={title:`💧 Water the ${GOODS[info.crop].names}`,item:{em:"💧",one:"drop of water",many:"drops of water"},pic:cropPic(info.crop),reward:"💧 Ahh, thank you!"};
   else if(action==="harvest")o={title:`🧺 Pick the ${GOODS[info.crop].names}`,item:gItem(info.crop),pic:cropPic(info.crop),reward:`+${info.count||1} ${GOODS[info.crop].icon}`};
-  else if(action==="sell"){const g=Object.keys(info.items)[0];o={title:"🧺 Sell at the farmstand",item:{em:"🪙",one:"Moolah coin",many:"Moolah coins"},pic:cropPic(g),reward:`+${info.price} 🪙`}}
+  else if(action==="sell"){const g=Object.keys(info.items)[0];o={title:"🧺 Sell at the farmstand",item:gItem(g),pic:cropPic(g),reward:`+${info.price} 🪙`,ctx:{sale:{items:info.items,price:info.price}}}}
   else if(action==="build")o={title:`🔨 Build: ${info.item}`,item:{em:"🪵",one:"board",many:"boards"},reward:"🎉 Built!"};
   else if(action==="deliver"){const g=Object.keys(info.items)[0];o={title:"📋 Pack the order",item:gItem(g),pic:cropPic(g),reward:`+${info.price} 🪙`};action="sell"}
   else return Promise.resolve(true);
@@ -2898,7 +2929,7 @@ function farmInit(){
     if(!d.moved&&Math.hypot(dx,dy)<12)return;d.moved=true;const k=devicePixelRatio||1;fm.camX=d.cx-dx*k;fm.camY=d.cy-dy*k;farmClamp()});
   const up=e=>{const d=fm.drag;fm.drag=null;if(d&&!d.moved&&e.type==="pointerup")farmTap(e)};
   fm.cv.addEventListener("pointerup",up);fm.cv.addEventListener("pointercancel",up);
-  $("#farmJar").onclick=openJar;$("#farmGoods").onclick=openBasket;
+  $("#farmJar").onclick=openJar;$("#farmGoods").onclick=openBasket;$("#fTeam").onclick=openTeam;
 }
 function farmFit(){const b=$("#farmBody").getBoundingClientRect(),d=devicePixelRatio||1;
   fm.cv.width=b.width*d;fm.cv.height=b.height*d;fm.cv.style.width=b.width+"px";fm.cv.style.height=b.height+"px";
@@ -3176,6 +3207,93 @@ function writeOrder(){
     body.append(b)});
 }
 
+/* ---- co-op chores: kids do one chore together, each at their own level, for one shared result ----
+   families/<CODE>/coop/<sid> = {chore, type, title, pic, target, host, at, status:"open"|"playing"|"done"|"off",
+     members:{<who>:{lvl,at}}, order:[who…], lv:{<who>:"little"|"big"}, prog:{<who>:{<piece>:true}}, left}
+   Generic: each chore names a puzzle type. That type builds its shared version when api.ctx.coop is set
+   (jigsaw today; see buildCoopJigsaw). The host's device starts the session once a second player joins. */
+const COOP_CHORES={
+  milk:{type:"jigsaw",title:"🥛 Milk the cow together",em:"🥛",pic:"cow/stand",verb:"milk the cow",
+    find:()=>(Object.entries(F.st.animals||{}).find(([,a])=>a&&a.k==="cow"&&animalState(a,Date.now())==="ready")||[])[0],
+    none:"No cow is ready to milk yet. Feed a cow, then milk it together!",
+    finish:s=>{const up={};for(const w of s.order||Object.keys(s.members||{}))up[`goods/${w}/milk`]=INC(1);fUpd(up);
+      if(s.target)fTx("animals/"+s.target,x=>{if(!x)return;x.ready=0;return x})}},
+};
+const COOP_TTL=10*60e3;
+const CO={ref:null,sess:{},opened:new Set(),said:new Set(),waiting:null,listeners:new Set()};
+function coopConnect(){
+  if(CO.ref)CO.ref.off();CO.sess={};CO.ref=null;
+  if(F.ref){CO.ref=F.ref.parent.child("coop");CO.ref.on("value",s=>{CO.sess=s.val()||{};coopChanged()},()=>{});
+    CO.ref.once("value",s=>{const up={};for(const [id,x] of Object.entries(s.val()||{}))if(!x||Date.now()-(+x.at||0)>3600e3)up[id]=null;if(Object.keys(up).length)CO.ref.update(up).catch(()=>{})})}
+  coopChanged();
+}
+function coopUpd(ch){if(CO.ref)CO.ref.update(ch).catch(()=>{});else{for(const [k,v] of Object.entries(ch))setPath(CO.sess,k,v);coopChanged()}}
+function coopTx(path,fn){
+  if(CO.ref)return CO.ref.child(path).transaction(fn).then(r=>r.committed,()=>false);
+  const v=fn(JSON.parse(JSON.stringify(getPath(CO.sess,path)??null)));if(v===undefined)return Promise.resolve(false);setPath(CO.sess,path,v);coopChanged();return Promise.resolve(true)}
+const coopFresh=s=>s&&Date.now()-(+s.at||0)<COOP_TTL;
+function coopChanged(){for(const f of [...CO.listeners])try{f()}catch(e){}coopTick()}
+function coopTick(){
+  if(!me)return;
+  for(const [sid,s] of Object.entries(CO.sess)){
+    if(!s||!s.members)continue;const inIt=!!s.members[me];
+    // host starts the session when a helper joins
+    if(s.status==="open"&&s.host===me&&Object.keys(s.members).length>=2){
+      const order=Object.entries(s.members).sort((a,b)=>a[1].at-b[1].at).map(([w])=>w),lv={};for(const w of order)lv[w]=s.members[w].lvl||"big";
+      coopUpd({[sid+"/status"]:"playing",[sid+"/order"]:order,[sid+"/lv"]:lv});continue}
+    if(s.status==="playing"&&inIt&&!CO.opened.has(sid)&&!tk&&screen==="farm"){CO.opened.add(sid);openCoopTask(sid,s)}
+    if(s.status==="off"&&inIt&&tk&&tk.ctx&&tk.ctx.coop&&tk.ctx.coop.sid===sid){closeTask(false);const w=s.left&&s.left!==me?kidOf(s.left).name:"Your helper";
+      toast(`🤝 ${w} had to go. Try again later!`);say(`${w} had to go. Let's try again later!`)}
+  }
+  if(CO.waiting){const s=CO.sess[CO.waiting];if(!s||s.status!=="open"){if(F.sheet&&F.sheet.coop)closeSheet();CO.waiting=null}}
+  coopBanner();
+}
+function coopBanner(){
+  const b=$("#farmCoop");if(!b)return;
+  const inv=screen==="farm"&&!tk&&Object.entries(CO.sess).find(([,s])=>s&&s.status==="open"&&coopFresh(s)&&s.members&&!s.members[me]&&Object.keys(s.members).length<4&&COOP_CHORES[s.chore]);
+  if(!inv){b.hidden=true;b.dataset.sid="";return}
+  const [sid,s]=inv,H=kidOf(s.host),C=COOP_CHORES[s.chore];
+  if(!b.hidden&&b.dataset.sid===sid)return; // already showing; don't rebuild under a finger
+  b.dataset.sid=sid;b.hidden=false;b.innerHTML=`<span class="cface">${H.face}</span><span class="ctext"><b>${esc(H.name)}</b> wants help: ${esc(C.title)}</span>`;
+  const j=el("button","bigbtn","🤝 Join");j.onclick=()=>joinTeam(sid);b.append(j);
+  if(!CO.said.has(sid)){CO.said.add(sid);blip(660,.15,"triangle");say(`${H.name} wants help to ${C.verb}! Tap Join to help.`)}
+}
+function openTeam(){
+  fSheet("🤝 Do a chore together",body=>{
+    body.append(el("p","fnote",little()?"Pick a chore. Someone can come help you!":"Pick a chore. Everyone else on the farm gets an invite, and each of you does your own part."));
+    const grid=el("div","choices");
+    for(const [k,C] of Object.entries(COOP_CHORES))grid.append(fBtn("",C.em,C.title.replace(/^\S+\s/,""),PUZZLE_NAMES[C.type]||"",()=>startTeam(k),C.find()?false:C.none));
+    body.append(grid)});
+  say(little()?"Pick a chore to do together!":"");
+}
+function startTeam(k){
+  const C=COOP_CHORES[k],target=C.find();if(!target){say(C.none);return}
+  const sid=CO.ref?CO.ref.push().key:"c"+Date.now();
+  coopUpd({[sid]:{chore:k,type:C.type,title:C.title,pic:C.pic,target,host:me,at:Date.now(),status:"open",members:{[me]:{lvl:lvl(),at:Date.now()}}}});
+  CO.waiting=sid;
+  fSheet("🤝 Waiting for a helper…",body=>{
+    body.append(el("div","coopwait",`<span class="em">${C.em}</span><p>${little()?"Waiting for someone to come help!":"Everyone on the farm got an invite. The chore starts when someone joins."}</p>`));
+    const x=el("button","ghost","Stop waiting");x.onclick=()=>{coopUpd({[sid]:null});CO.waiting=null;closeSheet()};body.append(x)});
+  F.sheet.coop=true;say(little()?"Waiting for someone to help you!":"Waiting for a helper.");
+}
+function joinTeam(sid){
+  if(tk)return;
+  coopTx(sid,s=>{if(!s||s.status!=="open"||!s.members||s.members[me]||Object.keys(s.members).length>=4)return;s.members[me]={lvl:lvl(),at:Date.now()};return s})
+    .then(ok=>{if(ok){blip(880,.12,"triangle");say("You joined! Let's do it together!")}else toast("That chore already started.")});
+}
+function openCoopTask(sid,s){
+  const C=COOP_CHORES[s.chore];if(!C){return}
+  closeSheet();CO.waiting=null;
+  openTask({type:s.type,lvl:lvl(),chore:s.chore+" together",title:s.title,ctx:{pic:s.pic,coop:{sid}},reward:`+1 ${C.em} for everyone!`,
+    onWin:()=>{fPopAt(fIso(8,4),C.em)},onQuit:()=>{const x=CO.sess[sid];if(x&&x.status==="playing")coopUpd({[sid+"/status"]:"off",[sid+"/left"]:me})}});
+}
+// called by the shared puzzle when every piece is in; whoever gets there first hands out the result
+function coopComplete(sid){
+  coopTx(sid+"/status",st=>st==="playing"?"done":undefined).then(ok=>{if(!ok)return;const s=CO.sess[sid];const C=s&&COOP_CHORES[s.chore];if(C)C.finish(s)})
+}
+// Quinn's 5-in-a-row bonus (called by finishTask)
+function farmStreakBonus(){if(screen==="farm"&&me){fUpd({["jars/"+me]:INC(2)});toast("🔥 5 in a row! +2 🪙")}}
+
 /* ---- drawing ---- */
 function fPop(w,txt){fPopAt(fIso(w.i,w.j),txt,fm.th*2.2*((ANIMALS[(F.st.animals[w.id]||{}).k]||{}).h||1))}
 function fPopAt(p,txt,up=fm.th*1.6){fm.pops.push({x:p.x,y:p.y-up,txt,t:0})}
@@ -3261,6 +3379,7 @@ function farmFrame(t){
   items.sort((a,b)=>a.d-b.d).forEach(it=>it.draw());
   g.textAlign="center";fm.pops=fm.pops.filter(p=>(p.t+=dt)<1.2);for(const p of fm.pops){g.globalAlpha=1-p.t/1.2;g.font=`${th*.7}px system-ui`;g.fillText(p.txt,p.x,p.y-p.t*th*1.2)}g.globalAlpha=1;
   if(t-(fm.oChk||0)>5000){fm.oChk=t;ensureOrders()}
+  if(t-(fm.cChk||0)>1000){fm.cChk=t;coopTick()}
   fm.raf=requestAnimationFrame(farmFrame);
 }
 /* ============ FARM PUZZLES ============
@@ -3269,7 +3388,7 @@ function farmFrame(t){
    To hook up a new action:  farmPuzzle("milk", {title:"🥛 Milk the cow", item:{em:"🥛",one:"pail",many:"pails"}, pic:"cow/stand", reward:"+1 🥛"}, ()=>{ ...do it... })
    Each action has a main puzzle type (backlog #3 table). Now and then it borrows a different type instead, picking the
    one this player did least recently, so all 8 kinds keep coming around. Every attempt goes to logAttempt(). */
-const FARM_ACTIONS={plant:"pattern",water:"color",harvest:"count",feed:"letters",collect:"memory",milk:"jigsaw",shear:"trace",build:"build",sell:"count"};
+const FARM_ACTIONS={plant:"pattern",water:"color",harvest:"count",feed:"letters",collect:"memory",milk:"jigsaw",shear:"trace",build:"build",sell:"money"};
 const FARM_MIX=.6; // chance of borrowing another puzzle type; lower it once more actions are built
 function puzzleFor(action){
   const main=FARM_ACTIONS[action];
@@ -3278,14 +3397,14 @@ function puzzleFor(action){
 }
 function farmPuzzle(action,o,done){
   if(tk) return false;
-  openTask({type:puzzleFor(action),lvl:lvl(),chore:action,title:o.title,ctx:{item:o.item,pic:o.pic},reward:o.reward,onWin:done,onQuit:o.onQuit});
+  openTask({type:puzzleFor(action),lvl:lvl(),chore:action,title:o.title,ctx:Object.assign({item:o.item,pic:o.pic},o.ctx||{}),reward:o.reward,onWin:done,onQuit:o.onQuit});
   return true;
 }
 
 /* ---- tasks ---- */
-const TASK_TYPES=["count","letters","color","jigsaw","build","trace","pattern","memory"];
-const SKILL={count:"counting",letters:"letters",color:"colors and shapes",jigsaw:"puzzles",build:"building shapes",trace:"tracing",pattern:"patterns",memory:"memory"};
-const PUZZLE_NAMES={count:"counting",letters:"letters and words",color:"colors and shapes",jigsaw:"jigsaw puzzle",build:"building shapes",trace:"tracing",pattern:"what comes next",memory:"memory match"};
+const TASK_TYPES=["count","letters","color","jigsaw","build","trace","pattern","memory","money"];
+const SKILL={money:"counting money",count:"counting",letters:"letters",color:"colors and shapes",jigsaw:"puzzles",build:"building shapes",trace:"tracing",pattern:"patterns",memory:"memory"};
+const PUZZLE_NAMES={money:"counting money",count:"counting",letters:"letters and words",color:"colors and shapes",jigsaw:"jigsaw puzzle",build:"building shapes",trace:"tracing",pattern:"what comes next",memory:"memory match"};
 const PRAISE=["Great job!","You did it!","Yay!","Super!","Awesome!","Nice work!","Woo hoo!"];
 const NUMW=["zero","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen","eighteen","nineteen","twenty"];
 const rint=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
@@ -3301,7 +3420,7 @@ function pickType(types){
 
 /* ---------------- task engine ---------------- */
 var tk=null; // var, not let: show() looks at it and can run before this line
-function roundsFor(type,L){return ["count","letters","color","pattern"].includes(type)?(L==="little"?2:3):(type==="trace"&&L!=="little"?2:1)}
+function roundsFor(type,L){if(type==="money")return L==="little"?1:2;return ["count","letters","color","pattern"].includes(type)?(L==="little"?2:3):(type==="trace"&&L!=="little"?2:1)}
 function openTask(o){
   if(tk) closeTask(false);
   tk=Object.assign({round:0,rounds:roundsFor(o.type,o.lvl),wrong:0,hinted:false,t0:Date.now(),fx:[],store:{},ctx:{}},o);
@@ -3344,8 +3463,16 @@ function taskApi(A){
 function finishTask(){
   const my=tk; if(!my) return; taskStat(true,my); tada();
   const msg=pickOne(PRAISE); say(msg);
-  $("#tArea").append(el("div","tdone",`<span class="em">🎉</span><h2>${esc(msg)}</h2>${my.reward?`<p>${esc(my.reward)}</p>`:""}`));
-  setTimeout(()=>{if(tk!==my)return;closeTask(false);my.onWin&&my.onWin()},1700);
+  let extra="";
+  if(my.lvl!=="little"){ // Big: stars for this puzzle and a 5-in-a-row meter that only ever goes up
+    const st=starsFor(my),sk=bumpStreak();
+    extra=`<div class="tstars">${"⭐".repeat(st)}<span class="dim">${"⭐".repeat(3-st)}</span></div>`+
+      `<div class="tstreak">${[0,1,2,3,4].map(i=>`<i class="${i<sk.n?"on":""}">🔥</i>`).join("")}</div>`+
+      (sk.full?`<p class="tbonus">5 in a row!${typeof farmStreakBonus==="function"&&screen==="farm"?" +2 🪙":""}</p>`:`<p class="tsmall">${sk.n} in a row</p>`);
+    if(sk.full){setTimeout(()=>{if(tk===my)say("Five in a row! Super farmer!")},1100);if(typeof farmStreakBonus==="function")farmStreakBonus()}
+  }
+  $("#tArea").append(el("div","tdone",`<span class="em">🎉</span><h2>${esc(msg)}</h2>${extra}${my.reward?`<p>${esc(my.reward)}</p>`:""}`));
+  setTimeout(()=>{if(tk!==my)return;closeTask(false);my.onWin&&my.onWin()},my.lvl!=="little"?2400:1700);
 }
 function closeTask(quit){
   if(!tk) return; const my=tk; tk=null;
@@ -3659,8 +3786,9 @@ function puzzlePicture(key,w,h){
 TASKS.jigsaw=api=>{
   const key=api.ctx.pic||pickOne(PIC_KEYS);
   const img=farmImg(key);
-  if(img&&!img.complete&&!api.store.waited){api.store.waited=true;const go=()=>{if(api.live())buildJigsaw(api,key)};img.onload=img.onerror=go;const t=setTimeout(go,1500);api.after(()=>clearTimeout(t));return}
-  buildJigsaw(api,key);
+  const build=api.ctx.coop?buildCoopJigsaw:buildJigsaw;
+  if(img&&!img.complete&&!api.store.waited){api.store.waited=true;const go=()=>{if(api.live())build(api,key)};img.onload=img.onerror=go;const t=setTimeout(go,1500);api.after(()=>clearTimeout(t));return}
+  build(api,key);
 };
 function buildJigsaw(api,key){
   if(api.area.querySelector(".dstage")) return;
@@ -3910,10 +4038,122 @@ TASKS.memory=api=>{
 };
 
 
+/* ---- 9. counting money (Sell at the farmstand) ----
+   Little: tap one coin per item sold ("3 carrots, tap 3 coins").
+   Big: round 1 adds up the prices; round 2 makes change from 10 or 20 by tapping coins.
+   Uses the real sale (api.ctx.sale = {items:{carrot:2}, price}) and the Moolah prices in GOODS. */
+const COIN_ART="coins/moolah"; // art batch C; coins are drawn in code until that image exists
+function coinEl(v,tag="span",cls=""){const c=el(tag,"coin"+(v>=10?" c10":v>=5?" c5":"")+(cls?" "+cls:""),`<b>${v}</b>`);
+  const im=farmImg(COIN_ART);if(im&&im.complete&&im.naturalWidth&&!im.bad){c.classList.add("art");c.style.backgroundImage=`url(${im.src})`}
+  c.setAttribute("aria-label",`${v} Moolah`);return c}
+function moneySale(api){
+  if(api.store.sale)return api.store.sale;
+  const s=api.ctx.sale,ok=([k])=>GOODS[k];let lines=s&&s.items?Object.entries(s.items).filter(ok).map(([k,n])=>[k,n]):[];
+  const tot=ls=>ls.reduce((a,[k,n])=>a+n*GOODS[k].price,0),good=ls=>ls.length&&ls.length<=3&&tot(ls)>=2&&tot(ls)<=19&&tot(ls)!==10;
+  if(api.L){ // Little counts items, not prices
+    const one=lines[0],n=lines.reduce((a,[,n])=>a+n,0);
+    if(!(one&&lines.length===1&&n>=1&&n<=5)){const k=one?one[0]:pickOne(Object.keys(GOODS));lines=[[k,rint(2,5)]]}
+  } else if(!good(lines)){
+    let tries=0;do{lines=shuffle(Object.keys(GOODS)).slice(0,rint(1,3)).map(k=>[k,rint(1,Math.max(1,Math.floor(7/GOODS[k].price)))])}while(!good(lines)&&++tries<40);
+    if(!good(lines))lines=[["carrot",3],["egg",2]];
+  }
+  return api.store.sale={lines,total:tot(lines)};
+}
+const saleSay=lines=>lines.map(([k,n])=>`${NUMW[n]||n} ${n===1?GOODS[k].name:GOODS[k].names}`).join(" and ");
+TASKS.money=api=>{const sale=moneySale(api);(api.L?moneyTap:api.round===0?moneyAdd:moneyChange)(api,sale)};
+function moneyTap(api,sale){
+  const [k,n]=sale.lines[0],G=GOODS[k];let got=0;
+  const m=sale.lines[0][1];
+  api.ask(`${G.icon} × ${m}: tap ${m} ${m===1?"coin":"coins"}!`,`You sold ${saleSay(sale.lines)}! Tap ${NUMW[m]} ${m===1?"coin":"coins"}, one for each.`);
+  const row=el("div","msold");const marks=[];for(let i=0;i<m;i++){const s=el("span","mit",G.icon);marks.push(s);row.append(s)}api.area.append(row);
+  const jar=el("div","mjar",`<span class="lab">🫙</span>`);api.area.append(jar);
+  const coins=scatter(api.area,m+rint(1,3),"");
+  coins.forEach(b=>{b.append(coinEl(1));b.onclick=()=>{
+    if(!api.live()||got>=m)return;got++;b.remove();jar.append(coinEl(1));marks[got-1].classList.add("paid");blip(900+got*80,.1,"triangle");say(NUMW[got]);
+    if(got===m){setTimeout(()=>say(`${NUMW[m]} ${m===1?"coin":"coins"}!`),600);api.win(1700,true)}}});
+}
+function saleRows(sale){const box=el("div","msale");
+  for(const [k,n] of sale.lines){const G=GOODS[k],r=el("div","mline");r.append(el("span","pile",emRow(G.icon,n)),el("span","mx","×"),coinEl(G.price),el("span","mx","each"));box.append(r)}
+  return box}
+function moneyAdd(api,sale){
+  api.ask("How much Moolah in all?",`You sold ${sale.lines.map(([k,n])=>`${NUMW[n]||n} ${n===1?GOODS[k].name:GOODS[k].names} for ${NUMW[GOODS[k].price]} each`).join(", and ")}. How much Moolah in all?`);
+  api.area.append(saleRows(sale));
+  const t=sale.total,p=GOODS[sale.lines[0][0]].price;
+  numOpts(api,t,[t-1,t+1,t+2,t-2,t+p,t-p],{k:4});
+}
+function moneyChange(api,sale){
+  const t=sale.total,paid=t<10?10:20,ch=paid-t;let give=[];
+  api.ask(`They pay ${paid}. Give ${"change"}!`,`It costs ${NUMW[t]}. They pay with ${NUMW[paid]}. Tap coins to give the right change.`);
+  const top=el("div","mpay");top.append(el("span",null,`Costs <b>${t}</b>`),el("span","mx","·"),el("span",null,"Paid"),coinEl(paid));api.area.append(top);
+  const tray=el("div","mtray"),sum=el("div","msum");api.area.append(sum,tray);
+  const show=()=>{tray.innerHTML="";for(const v of give)tray.append(coinEl(v));const s=give.reduce((a,b)=>a+b,0);sum.innerHTML=`Change: <b>${s}</b>`};show();
+  const bar=el("div","opts mbar");
+  for(const v of ch>=10?[1,5,10]:[1,5]){const b=coinEl(v,"button","opt");b.onclick=()=>{if(!api.live())return;give.push(v);show();blip(700+v*20,.08,"triangle");
+    const s=give.reduce((a,b)=>a+b,0);say(String(s));
+    if(s===ch){b.classList.add("ok");setTimeout(()=>say(`${NUMW[t]}, and ${NUMW[ch]} more makes ${NUMW[paid]}!`),500);api.win(2200,true)}
+    else if(s>ch){api.miss(tray,`That's ${NUMW[s]}. Too much! Let's start over.`);setTimeout(()=>{give=[];show()},700)}};bar.append(b)}
+  const back=el("button","ghost","↩️ Take one back");back.onclick=()=>{give.pop();show()};
+  api.area.append(bar,back);
+  api.hint(()=>{sum.innerHTML+=` <span class="mhint">(count up from ${t} to ${paid}: you need ${ch})</span>`});
+}
+
+/* ---- star streak for Big players: stars for each puzzle and up to 5 in a row. Nothing is ever taken away. ---- */
+function starsFor(my){return my.wrong===0&&!my.hinted?3:my.wrong<=2?2:1}
+function bumpStreak(){let n=+(load("kp.streak."+me)||0)||0;n=Math.min(5,n+1);const full=n>=5;store("kp.streak."+me,full?"0":String(n));return {n,full}}
+
+/* ---- co-op jigsaw: one picture, each player places their own tier of pieces ----
+   Blocks sit side by side in join order: a Little player gets 4 big pieces (a 4×4 block of 2×2 cells),
+   a Big player 12 small pieces (a 3×4 block). Everyone sees the others' pieces land live. */
+function buildCoopJigsaw(api,key){
+  if(api.area.querySelector(".dstage"))return;
+  const sid=api.ctx.coop.sid,S0=CO.sess[sid];if(!S0)return;
+  const order=S0.order||Object.keys(S0.members||{}),lv=S0.lv||{},ROWS=4,pieces=[];let col=0;const blocks=[];
+  for(const w of order){const L=(lv[w]||"big")==="little";let i=0;blocks.push({w,c0:col,cols:L?4:3,L});
+    if(L){for(let r=0;r<2;r++)for(let c=0;c<2;c++)pieces.push({who:w,i:i++,cx:col+c*2,cy:r*2,cw:2,ch:2,L})}
+    else{for(let r=0;r<4;r++)for(let c=0;c<3;c++)pieces.push({who:w,i:i++,cx:col+c,cy:r,cw:1,ch:1,L})}
+    col+=L?4:3}
+  const COLS=col,mine=pieces.filter(p=>p.who===me),L=api.L,others=order.filter(w=>w!==me).map(w=>kidOf(w).name);
+  api.ask(L?"Put your big pieces in your part!":"Team puzzle! Do your part.",L?`Let's do it together with ${others.join(" and ")}! Drag your big pieces into your part of the picture.`:
+    `Team puzzle with ${others.join(" and ")}! Put your pieces in your part. Tap a piece to turn it.`);
+  const S=mkStage(api),lay=stageLayout(S,COLS/ROWS,(w,h)=>mine.map(p=>[w/COLS*p.cw,h/ROWS*p.ch])),{bx,by,bw,bh}=lay,cw=bw/COLS,chh=bh/ROWS,spots=shuffle(lay.spots);
+  const pic=puzzlePicture(key,Math.round(bw*2),Math.round(bh*2)),kx=pic.width/COLS,ky=pic.height/ROWS;
+  const board=el("div","dboard coopboard");Object.assign(board.style,{left:bx+"px",top:by+"px",width:bw+"px",height:bh+"px"});
+  for(const b of blocks){const reg=el("div","coreg"+(b.w===me?" mine":""));Object.assign(reg.style,{left:b.c0*cw+"px",top:0,width:b.cols*cw+"px",height:bh+"px"});
+    if(b.w===me&&L){const g=document.createElement("canvas");g.width=Math.round(b.cols*kx);g.height=pic.height;const x=g.getContext("2d");x.globalAlpha=.28;x.drawImage(pic,b.c0*kx,0,g.width,g.height,0,0,g.width,g.height);reg.append(g)}
+    const K=kidOf(b.w);reg.append(el("span","cotag",`${K.face} ${b.w===me?"You":esc(K.name)}`));board.append(reg)}
+  for(const p of pieces){const s=el("div","dslot");Object.assign(s.style,{left:p.cx*cw+"px",top:p.cy*chh+"px",width:p.cw*cw+"px",height:p.ch*chh+"px"});board.append(s)}
+  S.inner.append(board);
+  const crop=p=>{const cv=document.createElement("canvas");cv.width=Math.round(p.cw*kx);cv.height=Math.round(p.ch*ky);cv.getContext("2d").drawImage(pic,p.cx*kx,p.cy*ky,p.cw*kx,p.ch*ky,0,0,cv.width,cv.height);return cv};
+  const drawn=new Set();
+  const putOther=p=>{const k=p.who+":"+p.i;if(drawn.has(k))return;drawn.add(k);const d=el("div","dpiece set");d.append(crop(p));
+    Object.assign(d.style,{left:(bx+p.cx*cw)+"px",top:(by+p.cy*chh)+"px",width:p.cw*cw+"px",height:p.ch*chh+"px",zIndex:1});d.classList.add("pop");S.inner.append(d)};
+  const placed=()=>{const s=CO.sess[sid];let n=0;for(const p of pieces){if(p.who===me?mineSet.has(p.i):s&&s.prog&&s.prog[p.who]&&s.prog[p.who][p.i])n++}return n};
+  const mineSet=new Set(),saved=(S0.prog&&S0.prog[me])||{};
+  const check=()=>{if(placed()===pieces.length)coopComplete(sid);else if(mine.every(p=>mineSet.has(p.i))&&!api.store.toldWait){api.store.toldWait=true;
+    api.ask("Great job! Waiting for your team…",`Great job! Now let's wait for ${others.join(" and ")}.`)}};
+  mine.forEach((p,n)=>{
+    const pc={el:el("div","dpiece"),w:p.cw*cw,h:p.ch*chh,r:L?0:pickOne([0,90,180,270]),tx:bx+(p.cx+p.cw/2)*cw,ty:by+(p.cy+p.ch/2)*chh};
+    pc.el.append(crop(p));pc.el.dataset.target=`${pc.tx},${pc.ty}`;if(!L)pc.el.append(el("span","rot","↻"));[pc.x,pc.y]=spots[n];S.inner.append(pc.el);placePiece(pc);
+    const set=quiet=>{pc.set=true;pc.r=0;pc.el.classList.add("set");pc.x=pc.tx;pc.y=pc.ty;pc.el.style.zIndex=1;placePiece(pc);mineSet.add(p.i);
+      if(!quiet){blip(620+mineSet.size*40,.12,"triangle");coopUpd({[`${sid}/prog/${me}/${p.i}`]:true})}};
+    if(saved[p.i]){set(true);return}
+    const trySnap=()=>{if(Math.hypot(pc.x-pc.tx,pc.y-pc.ty)>Math.min(pc.w,pc.h)*(L?.45:.36))return;
+      if(((pc.r%360)+360)%360!==0){if(!api.store.turnTold){api.store.turnTold=true;say("Almost! Tap it to turn it.")}return}
+      set(false);check()};
+    draggable(S,pc,{onDrop:trySnap,onTap:()=>{if(L){blip(500,.06);return}pc.r+=90;placePiece(pc);blip(560,.06);setTimeout(trySnap,180)}});
+  });
+  api.hint(()=>{for(const p of mine)if(!mineSet.has(p.i)){const s=board.querySelectorAll(".dslot")[pieces.indexOf(p)];if(s)s.classList.add("glow");break}});
+  const sync=()=>{if(!api.live())return;const s=CO.sess[sid];if(!s)return;
+    for(const p of pieces)if(p.who!==me&&s.prog&&s.prog[p.who]&&s.prog[p.who][p.i]){if(!drawn.has(p.who+":"+p.i)){putOther(p);blip(500,.06)}}
+    if(s.status==="done"){api.win(500);return}
+    check()};
+  CO.listeners.add(sync);api.after(()=>CO.listeners.delete(sync));sync();
+}
+
 function openFarm(){if(!me){goLobby();return}if(!fm.cv)farmInit();farmConnect();show("farm");farmHeader();farmFit();fm.last=performance.now();if(!fm.raf)fm.raf=requestAnimationFrame(farmFrame);
   sayLittle("Drag to look around the farm. Tap the bubbles to help the animals and plants!")}
 $("#playFarm").onclick=()=>{sayLittle("Kapanigan Farmstand");openFarm()};
-if(/[?&]farmlocal\b/.test(location.search))window.__farm={F,fm,tapPlot,tapAnimal,tapStruct,openStore,openOrders,openJar,openSell,buyIt,storeItems,deliver,sendGift,win:finishTask,quit:()=>closeTask(true)}; // testing only
+if(/[?&]farmlocal\b/.test(location.search))window.__farm={F,fm,CO,coopUpd,coopTick,startTeam,joinTeam,tk:()=>tk,tapPlot,tapAnimal,tapStruct,openStore,openOrders,openJar,openSell,buyIt,storeItems,deliver,sendGift,win:finishTask,quit:()=>closeTask(true)}; // testing only
 })();
 </script>
 </body>

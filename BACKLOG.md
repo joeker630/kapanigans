@@ -144,11 +144,24 @@ Puzzle types come from the **Age-appropriate tasks** chat. That chat is building
 | Memory match | 3 pairs, face-up preview | 6 pairs, no preview |
 
 - Counting, letters, colors and patterns are 2 quick rounds for Little and 3 for Big. Every prompt is spoken, with a 🔊 button to repeat it. After two wrong tries the right answer glows (Little and Big).
-- Not built yet: Big's star rating or streak, counting money for **Sell**, and co-op tiers on the same chore.
+- ✅ **Counting money (Sell), Oct 27:** a 9th puzzle type, `money`, set as the main puzzle for Sell (`FARM_ACTIONS.sell="money"`). It uses the real sale and the Moolah prices.
+  - **Little:** "🥚 × 3: tap 3 coins". Each tapped coin flies into the jar and lights up one item.
+  - **Big:** round 1 adds up the sale (for example "3 carrots × 1 each and 1 pumpkin × 5 each"). Round 2 makes change from 10 or 20 by tapping 1, 5 and 10 coins. Too much starts the tray over gently, there's a "Take one back" button, and the hint says what to count up to.
+  - Coins are drawn in code: gold 1, silver 5, copper 10. They switch to `art/iso/farm/coins/moolah.webp` automatically once that art exists.
+- ✅ **Stars and streak for Big, Oct 27:** each finished puzzle shows 1–3 ⭐ (3 with no wrong tries, 2 with up to 2, otherwise 1) and a 🔥 meter of 5.
+  - The meter only goes up; wrong tries and backing out never take anything away.
+  - At 5 in a row: "Five in a row! Super farmer!", +2 Moolah on the farm, and the meter starts over. It's kept per person on each device.
+  - Little is unchanged.
+- ✅ **Co-op chores, Oct 27 (jigsaw first):** the 🤝 button on the farm starts a team chore. Today that's **🥛 Milk the cow together**, which needs a cow with milk ready.
+  - Everyone else on the farm gets an invite banner (read aloud) with a Join button. The chore starts as soon as a second player joins.
+  - **Shared jigsaw:** one picture, split into blocks in join order. Each Little gets a 4×4 block of 4 big pieces (with a faint guide picture), and each Big a 3×4 block of 12 small pieces that can be turned. Name tags show whose part is whose, and the others' pieces land live.
+  - When the last piece goes in, everyone celebrates, each player gets 1 🥛, and the cow's milk is used. If someone backs out, everyone sees "had to go, try again later" and nothing is lost.
+  - **Session (generic):** `families/<code>/coop/<id>` = `{chore, type, title, pic, target, host, at, status: open|playing|done|off, members, order, lv, prog:{who:{piece:true}}}`. A new team chore is an entry in `COOP_CHORES` (puzzle type, picture, what it needs, what it gives). A new puzzle type joins by building its shared version when `api.ctx.coop` is set, like `buildCoopJigsaw`. Sessions older than an hour are cleaned up.
+  - Next: more team chores (shear together, a team harvest) and co-op versions of other puzzle types.
 
 **Rules for every puzzle** (from the Age-appropriate tasks chat):
 - **Little:** no fail state. A wrong tap wiggles and stays put. Every prompt is spoken, and a puzzle is done in under a minute.
-- **Big:** may show a star rating or a short streak of up to 5, and still never punishes a wrong answer.
+- **Big:** shows a star rating and a streak of up to 5 (built), and never punishes a wrong answer.
 - Every attempt calls `logAttempt({puzzle, skill, ms, wrong, hint, done})`.
 - **Co-op:** each kid solves their own tier of the same chore. For example, Violet places 4 big jigsaw pieces and Quinn places 12 small ones to finish one milk pail.
 
