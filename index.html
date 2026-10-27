@@ -119,7 +119,11 @@ h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance;l
 .seats{display:flex;gap:6px;flex:1;min-width:0;flex-wrap:wrap}
 .seat{display:flex;align-items:center;gap:4px;background:var(--paper);border-radius:999px;padding:3px 10px 3px 5px;border:3px solid var(--k);font-size:14px}
 .seat .face{font-size:20px}
-.seat.away{opacity:.45}
+.seat .dot{width:10px;height:10px;border-radius:50%;background:#2ECC40;flex:none}
+.seat.st-wait .dot{background:var(--sun-deep);animation:blink 1s ease-in-out infinite}
+.seat.st-off{opacity:.45}.seat.st-off .dot{background:#aaa}
+.seat small{font-size:11px;color:var(--ink-soft);font-weight:800}
+@keyframes blink{50%{opacity:.25}}
 .seat .chk{font-size:14px}
 .reacts{display:flex;gap:4px}
 .reacts button{width:44px;height:44px;border-radius:50%;background:var(--paper);font-size:22px;box-shadow:0 3px 0 var(--sky-deep)}
@@ -515,7 +519,6 @@ h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance;l
 <div class="floaters" id="floaters"></div>
 <div class="toast" id="toast" hidden></div>
 
-<script src="https://unpkg.com/mqtt@5.15.1/dist/mqtt.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
 <script>
@@ -549,7 +552,6 @@ const SIZES = [8,18,34];
 const STAMPS = ["star","heart","flower","bubble"];
 
 /* ---------------- state ---------------- */
-const BROKER = new URLSearchParams(location.search).get("broker") || "wss://broker.hivemq.com:8884/mqtt";
 let room = null, myPeer = Math.random().toString(36).slice(2,8)+Math.random().toString(36).slice(2,8);
 let familyCode = null;
 let me = null;            // kid key
@@ -785,58 +787,85 @@ function fillRegion(o){
 }
 function redrawSeat(s){const [x,y,w,h]=zoneOf(s);pctx.clearRect(x,y,w,h);for(const o of game.ops[s]) renderOp(o)}
 
-/* ---------------- MQTT room (same relay as the 31 game) ---------------- */
+/* ---------------- Live room on Firebase ----------------
+   families/<CODE>/live/presence/<peer>  who's here (removed by the server when a device drops)
+   families/<CODE>/live/cursor/<peer>    finger position while drawing (~5 per second)
+   families/<CODE>/live/events/<push>    short-lived moments: game start, reactions
+   families/<CODE>/live/signal/<peer>    video call setup messages for that device
+   families/<CODE>/games/<e>/ops/<seat>  every stroke, saved, so a dropped or late device just reloads them */
+function clean(v){return v===undefined?null:JSON.parse(JSON.stringify(v))}
 function makeRoom(code){
-  const base="kapanigans/v1/"+code.toLowerCase()+"/", me=myPeer, pTopic=base+"p/"+me, sTopic=base+"s/"+me;
-  let ok=false, pres={}, snap=null, pubT=null, queued=false, dead=false;
-  const handlers={}, peerFns=[], connFns=[], sigFns=[], storeFns=[], peerMap=new Map();
+  if(!window.firebase||!firebase.database) return null;
+  try{if(!firebase.apps.length) firebase.initializeApp(FIREBASE)}catch(e){return null}
+  const db=firebase.database(), root=db.ref("families/"+code), live=root.child("live"), me=myPeer, TS=firebase.database.ServerValue.TIMESTAMP;
+  const presRef=live.child("presence/"+me), curRef=live.child("cursor/"+me), sigRef=live.child("signal/"+me), evRef=live.child("events");
+  let ok=false, dead=false, pres={}, snap=null, queued=false, pubT=null, curT=null, curPending=undefined, offset=0;
+  const handlers={}, peerFns=[], connFns=[], sigFns=[], presMap=new Map(), curMap=new Map(), offs=[];
+  const listen=(ref,ev,fn)=>{ref.on(ev,fn,()=>{});offs.push(()=>ref.off(ev,fn))};
   const notify=()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;snap=null;for(const f of peerFns)f({})})};
-  const setOk=v=>{if(ok!==v){ok=v;for(const f of connFns)f(v)}};
-  const client=mqtt.connect(BROKER,{clientId:"kpg_"+me,clean:true,keepalive:30,reconnectPeriod:2500,connectTimeout:10000,
-    will:{topic:pTopic,payload:"",retain:true,qos:0}});
-  const pub=()=>{pubT=null;if(ok&&!dead)client.publish(pTopic,JSON.stringify(Object.assign({},pres,{ts:Date.now()})),{retain:true,qos:0})};
-  const schedule=()=>{if(!pubT)pubT=setTimeout(pub,90)};
-  client.on("connect",()=>{client.subscribe([base+"p/+",base+"e",sTopic],{qos:0});setOk(true);pub()});
-  client.on("close",()=>setOk(false)); client.on("offline",()=>setOk(false)); client.on("error",()=>{});
-  client.on("message",(topic,buf)=>{
-    const s=buf.toString();
-    if(topic.startsWith(base+"p/")){
-      const id=topic.slice(base.length+2); if(id===me||!/^[a-z0-9]{4,20}$/.test(id)) return;
-      if(!s){if(peerMap.delete(id))notify();return}
-      let d;try{d=JSON.parse(s)}catch(e){return} if(!d||typeof d!=="object") return;
-      if(typeof d.ts==="number"&&Date.now()-d.ts>60000) return; // stale leftover
-      peerMap.set(id,{peer:id,sameTab:false,isMe:false,kind:"viewer",presence:Object.freeze(d),seen:Date.now()}); notify(); return;
-    }
-    if(topic.startsWith(base+"g/")||topic.startsWith(base+"t/")){
-      const [kind,to,id]=topic.slice(base.length).split("/");
-      if(!/^[a-z]{2,20}$/.test(to)||!/^[a-z0-9]{4,40}$/.test(id)) return;
-      let d=null; if(s){try{d=JSON.parse(s)}catch(e){return}}
-      for(const f of storeFns) f(kind,to,id,d); return;
-    }
-    let m;try{m=JSON.parse(s)}catch(e){return} if(!m||typeof m!=="object") return;
-    if(topic===base+"e"){ if(typeof m.t!=="string"||typeof m.f!=="string") return; for(const f of handlers[m.t]||[]) f({topic:m.t,peer:m.f,sameTab:m.f===me,isMe:m.f===me,data:m.d}); }
-    else if(topic===sTopic){ if(typeof m.f==="string") for(const f of sigFns) f(m); }
+  const writePres=()=>{clearTimeout(pubT);pubT=null;if(dead)return;presRef.set(Object.assign(clean(pres),{ts:TS})).catch(()=>{})};
+  const schedule=()=>{if(!pubT)pubT=setTimeout(writePres,120)};
+  listen(db.ref(".info/serverTimeOffset"),"value",s=>{offset=s.val()||0});
+  listen(db.ref(".info/connected"),"value",s=>{
+    const v=!!s.val();
+    if(v&&!dead){presRef.onDisconnect().remove();curRef.onDisconnect().remove();sigRef.onDisconnect().remove();writePres()}
+    if(ok!==v){ok=v;for(const f of connFns)f(v);notify()}
   });
-  const hb=setInterval(()=>{if(ok)pub();const now=Date.now();let ch=false;for(const [id,p] of peerMap) if(now-p.seen>25000){peerMap.delete(id);ch=true} if(ch)notify()},8000);
-  const vis=()=>{if(document.visibilityState==="visible")pub()};
+  const pq=live.child("presence");
+  const pUpd=s=>{const id=s.key;if(id===me||!/^[a-z0-9]{4,20}$/.test(id))return;const d=s.val();if(!d||typeof d!=="object")return;presMap.set(id,d);notify()};
+  listen(pq,"child_added",pUpd); listen(pq,"child_changed",pUpd); listen(pq,"child_removed",s=>{if(presMap.delete(s.key))notify()});
+  const cq=live.child("cursor");
+  const cUpd=s=>{if(s.key===me)return;const d=s.val();if(d&&typeof d.x==="number"&&typeof d.y==="number"){curMap.set(s.key,d);notify()}};
+  listen(cq,"child_added",cUpd); listen(cq,"child_changed",cUpd); listen(cq,"child_removed",s=>{if(curMap.delete(s.key))notify()});
+  // events: only ones sent after we arrived
+  evRef.once("value").then(all=>{
+    if(dead) return; let last=null; const old=Date.now()+offset-60000;
+    all.forEach(c=>{last=c.key;const v=c.val();if(!v||typeof v.at!=="number"||v.at<old)c.ref.remove().catch(()=>{})});
+    const q=last?evRef.orderByKey().startAfter(last):evRef;
+    listen(q,"child_added",s=>{const m=s.val();if(!m||typeof m.t!=="string"||typeof m.f!=="string")return;
+      for(const f of handlers[m.t]||[]) f({topic:m.t,peer:m.f,sameTab:m.f===me,isMe:m.f===me,data:m.d})});
+  }).catch(()=>{});
+  listen(sigRef,"child_added",s=>{const m=s.val();s.ref.remove().catch(()=>{});if(m&&typeof m.f==="string")for(const f of sigFns)f(m)});
+  const hb=setInterval(()=>{if(ok)writePres()},25000);
+  const vis=()=>{if(document.visibilityState==="visible"&&!dead){db.goOnline();writePres()}};
   document.addEventListener("visibilitychange",vis);
+  const fresh=d=>!(typeof d.ts==="number"&&Date.now()+offset-d.ts>75000);
   return {
+    root, key:()=>root.push().key,
     connected:()=>ok,
-    emit:(t,d)=>{if(ok&&!dead)client.publish(base+"e",JSON.stringify({t,f:me,d}));return Promise.resolve()},
+    emit:(t,d)=>{if(dead)return Promise.resolve();const r=evRef.push();r.set({t,f:me,d:clean(d),at:TS}).catch(()=>{});setTimeout(()=>r.remove().catch(()=>{}),20000);return Promise.resolve()},
     on:(t,f)=>{(handlers[t]=handlers[t]||[]).push(f);return()=>{}},
-    presence:p=>{const n=Object.assign({},pres);for(const k in p){if(p[k]===null)delete n[k];else n[k]=p[k]}pres=n;snap=null;schedule();notify();return Promise.resolve()},
-    peers:()=>snap||(snap=[{peer:me,sameTab:true,isMe:true,kind:"viewer",presence:pres},...peerMap.values()]),
+    presence:p=>{
+      const n=Object.assign({},pres); let presChanged=false;
+      for(const k in p){
+        if(k==="cx"||k==="cy") continue;
+        presChanged=true; if(p[k]===null) delete n[k]; else n[k]=p[k];
+      }
+      if("cx" in p||"cy" in p){
+        curPending=(p.cx==null||p.cy==null)?null:{x:p.cx,y:p.cy};
+        if(curPending===null){clearTimeout(curT);curT=null;curRef.remove().catch(()=>{})}
+        else if(!curT) curT=setTimeout(()=>{curT=null;if(curPending&&!dead)curRef.set(curPending).catch(()=>{})},200);
+      }
+      if(presChanged){pres=n;snap=null;schedule();notify()}
+      return Promise.resolve();
+    },
+    peers:()=>{
+      if(snap) return snap;
+      const arr=[{peer:me,sameTab:true,isMe:true,kind:"viewer",presence:pres}];
+      for(const [id,d] of presMap){if(!fresh(d))continue;const c=curMap.get(id);
+        arr.push({peer:id,sameTab:false,isMe:false,kind:"viewer",presence:Object.freeze(c?Object.assign({},d,{cx:c.x,cy:c.y}):d)})}
+      return snap=arr;
+    },
     onPeers:f=>{peerFns.push(f);setTimeout(()=>f({}),0);return()=>{}},
     onConnection:f=>{connFns.push(f);setTimeout(()=>f(ok),0);return()=>{}},
-    signal:(to,m)=>{if(ok&&!dead&&/^[a-z0-9]{4,20}$/.test(to))client.publish(base+"s/"+to,JSON.stringify(Object.assign({},m,{f:me})))},
+    signal:(to,m)=>{if(!dead&&/^[a-z0-9]{4,20}$/.test(to))live.child("signal/"+to).push(Object.assign(clean(m),{f:me})).catch(()=>{})},
     onSignal:f=>sigFns.push(f),
-    // retained "mailbox" messages (best effort until Firebase): kind g = story gift, t = thank-you
-    put:(kind,to,id,obj)=>{if(!ok||dead)return false;client.publish(base+kind+"/"+to+"/"+id,obj?JSON.stringify(obj):"",{retain:true,qos:1});return true},
-    onStore:f=>storeFns.push(f),
-    end:()=>{dead=true;clearInterval(hb);document.removeEventListener("visibilitychange",vis);try{if(ok)client.publish(pTopic,"",{retain:true});client.end(false)}catch(e){}}
+    end:()=>{dead=true;clearInterval(hb);clearTimeout(pubT);clearTimeout(curT);document.removeEventListener("visibilitychange",vis);offs.forEach(o=>o());
+      presRef.remove().catch(()=>{});curRef.remove().catch(()=>{});sigRef.remove().catch(()=>{})}
   };
 }
 addEventListener("pagehide",()=>{if(room)room.end()});
+addEventListener("pageshow",e=>{if(e.persisted&&familyCode)connect(familyCode)});
 
 /* ---------------- room / network ---------------- */
 function send(topic,data){if(room&&room.connected()) room.emit(topic,data).catch(()=>{})}
@@ -849,8 +878,6 @@ function lobbyPlayers(){
 }
 function gamePeers(){if(!game)return[];return peers().filter(p=>p.presence&&p.presence.scr==="game"&&p.presence.g&&p.presence.g.e===game.e)}
 
-const replayQ=[];
-setInterval(()=>{for(let i=0;i<2&&replayQ.length;i++){const m=replayQ.shift();send("op",m)}},100);
 
 function wireRoom(){
   room.onConnection(ok=>{const s=$("#status");s.classList.toggle("on",ok);s.lastElementChild.textContent=ok?"Connected":"Connecting…"},()=>{});
@@ -865,26 +892,6 @@ function wireRoom(){
     const g=m.data; if(!Array.isArray(g.seats)||!PICS[g.pic]) return;
     const idx=g.seats.findIndex(s=>s.p===myPeer);
     if(idx>=0){blip(880,.2,"triangle");sayLittle(`Let's color ${PICS[g.pic].name}!`);enterGame(g,idx,false)}
-  });
-  room.on("op",m=>{
-    if(m.sameTab||!game||!m.data||m.data.e!==game.e) return;
-    const o=m.data.o; if(!o||typeof o.i!=="string"||game.seen.has(o.i)) return;
-    if(!(o.s>=0&&o.s<game.seats.length)) return;
-    game.seen.add(o.i); game.ops[o.s].push(o); renderOp(o);
-  });
-  room.on("undo",m=>{
-    if(m.sameTab||!game||!m.data||m.data.e!==game.e) return;
-    const s=m.data.s; if(!(s>=0&&s<game.seats.length)) return;
-    game.ops[s]=game.ops[s].filter(o=>o.g!==m.data.g); redrawSeat(s);
-  });
-  room.on("hello",m=>{
-    if(m.sameTab||!game||!m.data||m.data.e!==game.e) return;
-    const gp=gamePeers().filter(p=>p.peer!==m.peer);
-    const held=new Set(gp.map(p=>p.presence.seat));
-    const amLowest=gp.every(p=>p.peer>=myPeer);
-    game.seats.forEach((_,s)=>{
-      if(s===game.seat || (amLowest && !held.has(s))) for(const o of game.ops[s]) replayQ.push({e:game.e,o,r:1});
-    });
   });
   room.on("react",m=>{
     if(!m.data||!KIDS[m.data.k]||typeof m.data.r!=="string") return;
@@ -958,6 +965,10 @@ function startColoring(pic){
   const pl=lobbyPlayers().slice(0,4);
   const seats=pl.map(p=>({k:p.presence.kid,p:p.peer}));
   const g={e:Date.now().toString(36)+uid,pic,seats};
+  if(room&&room.root){const TS=firebase.database.ServerValue.TIMESTAMP;
+    room.root.child("games/"+g.e+"/meta").set({pic,at:TS}).catch(()=>{});
+    room.root.child("gameIndex/"+g.e).set(TS).catch(()=>{});
+    pruneGames();}
   send("start",g);
   const idx=Math.max(0,seats.findIndex(s=>s.p===(myPeer||"me")));
   blip(880,.2,"triangle");
@@ -966,20 +977,21 @@ function startColoring(pic){
 
 /* ---------------- game ---------------- */
 function enterGame(g,seat,rejoin){
-  game={e:g.e,pic:g.pic,seats:g.seats.slice(0,4),seat,ops:g.seats.slice(0,4).map(()=>[]),seen:new Set(),done:false};
+  game={e:g.e,pic:g.pic,seats:g.seats.slice(0,4),seat,ops:g.seats.slice(0,4).map(()=>[]),seen:new Set(),done:false,refs:[],lastSeen:g.seats.slice(0,4).map(()=>Date.now())};
   const P=buildPic(g.pic);
   actxArt.putImageData(P.art,0,0);
   pctx.clearRect(0,0,W,H);
   setPresence({scr:"game",g:{e:g.e,pic:g.pic,seats:game.seats},seat,done:false,cx:null,cy:null});
   show("game"); $("#party").hidden=true;
   buildTray(); renderZones(); renderSeats(); fitBoard();
-  if(rejoin) setTimeout(()=>send("hello",{e:g.e}),400);
+  subscribeGame();
   setPresence({vr:null}); stopVideo(); setTimeout(videoTick,50);
-  try{navigator.wakeLock&&navigator.wakeLock.request("screen").catch(()=>{})}catch(e){}
+  keepAwake();
 }
 function leaveGame(){
   stopVideo();
-  game=null; replayQ.length=0; $("#party").hidden=true;
+  if(game&&game.refs) game.refs.forEach(r=>r.off());
+  game=null; $("#party").hidden=true;
   setPresence({scr:"lobby",g:null,seat:null,done:null,cx:null,cy:null,at:joinedAt});
   goLobby();
 }
@@ -1003,11 +1015,19 @@ function renderZones(){
 }
 function renderSeats(){
   if(!game) return;
-  const gp=gamePeers(); const present=new Set(gp.map(p=>p.presence.seat));
+  const gp=gamePeers(), now=Date.now(); const present=new Set(gp.map(p=>p.presence.seat));
   const doneSeats=new Set(gp.filter(p=>p.presence.done).map(p=>p.presence.seat));
-  present.add(game.seat); if(game.done) doneSeats.add(game.seat);
-  $("#seats").innerHTML=game.seats.map((s,i)=>{const k=kidOf(s.k);return`<span class="seat${present.has(i)?"":" away"}" style="--k:${k.hue}"><span class="face">${k.face}</span>${esc(k.name)}${doneSeats.has(i)?' <span class="chk">✅</span>':""}</span>`}).join("");
+  if(game.done) doneSeats.add(game.seat);
+  const meOnline=!room||room.connected();
+  $("#seats").innerHTML=game.seats.map((s,i)=>{const k=kidOf(s.k);
+    let st;
+    if(i===game.seat) st=meOnline?"on":"wait";
+    else if(present.has(i)){game.lastSeen[i]=now;st="on"}
+    else st=(now-(game.lastSeen[i]||0)<60000)?"wait":"off";
+    const note=st==="wait"?`<small>${i===game.seat?"reconnecting…":"reconnecting…"}</small>`:"";
+    return`<span class="seat st-${st}" style="--k:${k.hue}"><i class="dot"></i><span class="face">${k.face}</span>${esc(k.name)}${note}${doneSeats.has(i)?' <span class="chk">✅</span>':""}</span>`}).join("");
 }
+setInterval(()=>{if(screen==="game"&&game)renderSeats()},3000);
 function renderCursors(){
   const box=$("#cursors"); const gp=gamePeers().filter(p=>!p.sameTab&&typeof p.presence.cx==="number");
   const seen=new Set();
@@ -1059,8 +1079,38 @@ function syncTray(){
 const board=$("#board");
 let stroke=null, flushT=null, lastCursor=0;
 function toCanvas(e){const r=board.getBoundingClientRect();return[(e.clientX-r.left)/r.width*W,(e.clientY-r.top)/r.height*H]}
-function commit(o){o.s=game.seat;game.seen.add(o.i);game.ops[game.seat].push(o);send("op",{e:game.e,o})}
-function cursor(x,y,force){const t=performance.now();if(!force&&t-lastCursor<100)return;lastCursor=t;setPresence({cx:Math.round(x/W*1000)/1000,cy:Math.round(y/H*1000)/1000})}
+function commit(o){
+  o.s=game.seat; if(room&&room.root) o.i=room.key();
+  game.seen.add(o.i); game.ops[game.seat].push(o);
+  if(room&&room.root){const rec=clean(o);delete rec.i;delete rec.s;room.root.child(`games/${game.e}/ops/${game.seat}/${o.i}`).set(rec).catch(()=>{})}
+}
+const BRUSHES=["marker","crayonBig","eraser","rainbow","crayon","spray","glitter"];
+const isHex=c=>typeof c==="string"&&/^#[0-9A-Fa-f]{6}$/.test(c);
+function okOp(o){
+  if(!o||typeof o!=="object") return false;
+  if(o.k==="f") return Number.isFinite(o.x)&&Number.isFinite(o.y)&&isHex(o.c);
+  if(o.k==="t") return Number.isFinite(o.x)&&Number.isFinite(o.y)&&STAMPS.includes(o.n)&&Number.isFinite(o.w)&&o.w<=200&&isHex(o.c);
+  if(o.k==="l") return Array.isArray(o.p)&&o.p.length>=2&&o.p.length<=4000&&o.p.every(Number.isFinite)&&BRUSHES.includes(o.b)&&Number.isFinite(o.w)&&o.w<=80&&(o.c==null||isHex(o.c));
+  return false;
+}
+const redrawQ=new Set();
+function scheduleRedraw(s){if(!redrawQ.size)requestAnimationFrame(()=>{if(game)for(const x of redrawQ)redrawSeat(x);redrawQ.clear()});redrawQ.add(s)}
+function subscribeGame(){
+  game.refs=[]; if(!room||!room.root) return;
+  const base=room.root.child("games/"+game.e+"/ops"), e=game.e;
+  game.seats.forEach((_,s)=>{
+    const r=base.child(String(s));
+    r.on("child_added",snap=>{if(!game||game.e!==e)return;const o=snap.val();if(!okOp(o))return;o.i=snap.key;o.s=s;if(game.seen.has(o.i))return;game.seen.add(o.i);game.ops[s].push(o);renderOp(o)},()=>{});
+    r.on("child_removed",snap=>{if(!game||game.e!==e)return;const n=game.ops[s].length;game.ops[s]=game.ops[s].filter(o=>o.i!==snap.key);if(game.ops[s].length!==n)scheduleRedraw(s)},()=>{});
+    game.refs.push(r);
+  });
+}
+function pruneGames(){
+  if(!room||!room.root) return; const idx=room.root.child("gameIndex"), cutoff=Date.now()-3*86400000;
+  idx.once("value").then(snap=>{const up={};snap.forEach(c=>{if(typeof c.val()!=="number"||c.val()<cutoff){up["gameIndex/"+c.key]=null;up["games/"+c.key]=null}});
+    if(Object.keys(up).length) room.root.update(up).catch(()=>{})}).catch(()=>{});
+}
+function cursor(x,y,force){const t=performance.now();if(!force&&t-lastCursor<200)return;lastCursor=t;setPresence({cx:Math.round(x/W*1000)/1000,cy:Math.round(y/H*1000)/1000})}
 
 board.addEventListener("pointerdown",e=>{
   if(!game||stroke) return; e.preventDefault();
@@ -1110,8 +1160,10 @@ board.addEventListener("pointerup",endStroke); board.addEventListener("pointerca
 
 function undo(){
   if(!game) return; const ops=game.ops[game.seat]; if(!ops.length){blip(220,.1,"square",.05);return}
-  const g=ops[ops.length-1].g; game.ops[game.seat]=ops.filter(o=>o.g!==g); redrawSeat(game.seat);
-  send("undo",{e:game.e,s:game.seat,g}); blip(380,.12);
+  const g=ops[ops.length-1].g, gone=ops.filter(o=>o.g===g);
+  game.ops[game.seat]=ops.filter(o=>o.g!==g); redrawSeat(game.seat);
+  if(room&&room.root){const up={};for(const o of gone)up[o.i]=null;room.root.child(`games/${game.e}/ops/${game.seat}`).update(up).catch(()=>{})}
+  blip(380,.12);
 }
 
 /* reactions */
@@ -1194,8 +1246,8 @@ function connect(code){
   if(room){room.end();room=null}
   familyCode=code; store("kp.code",code);
   fbConnect(code);
-  if(!window.mqtt){toast("Offline: playing on this device only");return}
-  room=makeRoom(code); wireRoom();
+  room=makeRoom(code); if(!room){toast("Offline: playing on this device only");return}
+  wireRoom();
   if(me) setPresence({kid:me,at:joinedAt,scr:screen==="game"?"game":"lobby"});
 }
 $("#newCode").onclick=()=>{$("#codeIn").value=makeCode()};
@@ -1220,7 +1272,7 @@ async function ensureLocal(){
   if(vid.asking) throw new Error("busy");
   vid.asking=true;
   try{
-    vid.local=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true},video:{facingMode:"user",width:{ideal:480},height:{ideal:360}}});
+    vid.local=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true},video:{facingMode:"user",width:{ideal:320},height:{ideal:240},frameRate:{ideal:15,max:20}}});
     vid.denied=false;
     const v=$("#vMe"); v.srcObject=vid.local; v.play().catch(()=>{});
     vid.local.getAudioTracks().forEach(t=>t.enabled=vid.mic); vid.local.getVideoTracks().forEach(t=>t.enabled=vid.cam);
@@ -1258,7 +1310,8 @@ function videoTick(){
 }
 function newPc(peer){
   const pc=new RTCPeerConnection({iceServers:ICE});
-  vid.local.getTracks().forEach(t=>pc.addTrack(t,vid.local));
+  vid.local.getTracks().forEach(t=>{const snd=pc.addTrack(t,vid.local);
+    if(t.kind==="video"&&snd.getParameters){try{const prm=snd.getParameters();prm.encodings=prm.encodings&&prm.encodings.length?prm.encodings:[{}];prm.encodings[0].maxBitrate=300000;snd.setParameters(prm).catch(()=>{})}catch(e){}}});
   pc.onicecandidate=e=>{if(e.candidate&&game) room.signal(peer,{y:"ice",c:e.candidate.toJSON(),e:game.e})};
   pc.ontrack=e=>{const v=$("#vThem");const st=e.streams[0]||new MediaStream([e.track]);if(v.srcObject!==st)v.srcObject=st;
     v.play().then(()=>vMsg(""),()=>vMsg(`<span class="face">${otherKid().face}</span><button id="vPlay">Tap to see ${esc(otherKid().name)}</button>`));
@@ -1279,7 +1332,7 @@ async function call(peer){
 }
 async function onSignal(m){
   if(!game||m.e!==game.e||!videoWanted()) return;
-  const isSeated=gamePeers().some(p=>p.peer===m.f&&!p.sameTab); if(!isSeated) return;
+  if(m.f===myPeer) return;
   if(m.y==="offer"&&typeof m.sdp==="string"){
     if(!vid.local){try{await ensureLocal()}catch(e){videoTick();return}}
     closePc(false); const pc=newPc(m.f);
@@ -1571,7 +1624,7 @@ function openReader(g,o={}){
   if(screen!=="reader") rd.ret=screen; if(o.preview) rd.msg=null;
   rd.g=g; rd.page=0; rd.preview=!!o.preview; rd.auto=lvl()==="little";
   show("reader"); $("#rTitle").textContent=STORIES[g.story].title; $("#rEnd").hidden=true; syncAuto();
-  try{navigator.wakeLock&&navigator.wakeLock.request("screen").catch(()=>{})}catch(e){}
+  keepAwake();
   if(o.gift){$("#rUnwrapMsg").textContent=`A story from ${nameOf(g.from)}! Tap to open`;$("#rUnwrap").hidden=false;$("#rUnwrap").classList.remove("pop");say(`A story from ${nameOf(g.from)}! Tap to open.`)}
   else {$("#rUnwrap").hidden=true; renderPage()}
 }
@@ -1865,6 +1918,20 @@ $("#sendPicBtn").onclick=()=>{
   $("#party").hidden=true; const keep=game; if(keep) leaveGame();
   openInbox("to",{attach:{msg:{kind:"picture"},blob:{type:"picture",data}}});
 };
+
+/* ---------------- coming back to the app (iPhone/iPad) ---------------- */
+let wakeLock=null;
+function keepAwake(){try{if(navigator.wakeLock&&document.visibilityState==="visible")navigator.wakeLock.request("screen").then(l=>{wakeLock=l},()=>{})}catch(e){}}
+document.addEventListener("visibilitychange",()=>{
+  if(document.visibilityState!=="visible") return;
+  if(screen==="game"||screen==="reader") keepAwake();
+  if(screen==="game"&&game){
+    renderSeats();
+    if(vid.local&&vid.local.getTracks().some(t=>t.readyState==="ended")){stopVideo();setPresence({vr:null})}
+    if(vid.pc&&vid.pc.connectionState!=="connected"){closePc(false)}
+    setTimeout(videoTick,400);
+  }
+});
 
 /* ---------------- start ---------------- */
 const savedCode=cleanCode(load("kp.code"));

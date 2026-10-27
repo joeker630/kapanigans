@@ -7,4 +7,4 @@ A co-op game for the Kapusta and Lanigan kids on iPad and iPhone. Up to 4 player
 
 Play at https://joeker630.github.io/kapanigans/
 
-Each device needs the same **family code** (set on first launch; tap the code chip in the lobby to change it). Moves travel through the public HiveMQ relay, the same one the 31 game uses; video goes directly between the two devices.
+Each device needs the same **family code** (set on first launch; tap the code chip in the lobby to change it). Live play, the Inbox and saved strokes run on Firebase Realtime Database (project `kapanigans`); video goes directly between the two devices.
