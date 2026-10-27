@@ -504,7 +504,7 @@ The read-aloud voice talks too fast and sounds a bit robotic. Make it slower and
 
 ---
 
-## 8. 🛠️ Grown-up progress and usage dashboard (built; puzzle skills fill in when the Farmstand ships)
+## 8. ✅ Grown-up progress and usage dashboard (live, including Farmstand puzzle stats)
 
 Track how much each player uses Kapanigans and how they're doing on puzzles and tasks, so grown-ups can see where each kid is thriving or stuck.
 
@@ -536,7 +536,7 @@ Track how much each player uses Kapanigans and how they're doing on puzzles and 
 - Store small summary records, not recordings or drawings.
 
 **Acceptance criteria**
-- [~] Every puzzle attempt records the skill, level, solve time, wrong tries and hint use: `logAttempt()` is ready; the Farmstand will call it
+- [x] Every puzzle attempt records the skill, level, solve time, wrong tries and hint use: every Farmstand puzzle (solved, failed or walked away from) calls `logAttempt()`
 - [x] Play time is recorded per persona, per game and per day, and syncs across devices
 - [x] A dashboard behind a grown-up check (hold the 🔒 for 3 seconds), with a weekly summary, usage chart, time of day, skills view and struggle spots per kid
 - [x] Every grown-up persona can see every kid's dashboard
