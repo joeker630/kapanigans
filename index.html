@@ -454,6 +454,11 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
 .invite{position:fixed;left:50%;top:calc(12px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:55;background:var(--ink);color:#fff;border-radius:24px;padding:14px 18px;display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center;font-family:var(--display);font-size:20px;width:min(520px,calc(100% - 32px));box-shadow:0 10px 30px rgba(0,0,0,.3)}
 
 /* landscape (computer, iPad sideways, phone sideways): tools in a slim left column, picture gets everything else */
+/* one device per person */
+.taken{opacity:.45;filter:grayscale(.6)}
+.takenlbl{display:block;font-size:12px;font-weight:800;color:var(--ink-soft);margin-top:2px}
+.gubtn .takenlbl{display:inline;margin:0 0 0 4px}
+.tofaces{font-size:72px;line-height:1}
 @media (orientation:landscape){
   #game{grid-template-columns:clamp(170px,18vw,250px) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);grid-template-areas:"head stage" "tray stage";column-gap:14px;row-gap:8px}
   .ghead{flex-direction:column;align-items:stretch;gap:6px;flex-wrap:nowrap}
@@ -587,7 +592,7 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
 
 <div class="vid" id="vid" hidden>
   <div class="vtiles" id="vTiles"></div>
-  <div class="vbtns"><button id="vMin" aria-label="Shrink video">➖</button><button id="vMic" aria-label="Microphone on or off">🎤</button><button id="vCam" aria-label="Camera on or off">📷</button></div>
+  <div class="vbtns"><button id="vMin" aria-label="Shrink video">➖</button><button id="vMic" aria-label="Microphone on or off">🎤</button><button id="vCam" aria-label="Camera on or off">📷</button><button id="vFlip" aria-label="Flip camera" hidden>🔄</button></div>
 </div>
 <div class="invite" id="invite" hidden><span id="inviteMsg"></span><div class="rowbtns"><button class="bigbtn" id="inviteJoin">Join</button><button class="ghost" id="inviteNo">Not now</button></div></div>
 
@@ -601,6 +606,14 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
   <div class="gtabs" id="gTabs"><button data-tab="reports">📊 Reports</button><button data-tab="voice">🔊 Voice</button><button data-tab="code">🔑 Family code</button><button data-tab="inbox">💌 Inboxes</button></div>
   <div class="gbody" id="gBody"></div>
 </section>
+<div class="gate" id="takeover" hidden>
+  <div class="gatecard">
+    <div class="tofaces"><span id="toFace"></span></div>
+    <h2 id="toTitle"></h2>
+    <p id="toMsg"></p>
+    <div class="rowbtns"><button class="bigbtn" id="toYes">Play here instead</button><button class="ghost" id="toNo">Pick someone else</button></div>
+  </div>
+</div>
 <div class="gate" id="gate" hidden>
   <div class="gatecard">
     <h2>Grown-ups only</h2>
@@ -734,7 +747,7 @@ function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i)
 function rng(seed){let a=seed>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 function esc(s){return String(s).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]))}
 function kidOf(k){return KIDS[k] || (k==="kapanigans"?SYS:KIDS.bear)}
-function show(id){if(screen==="reader"&&id!=="reader")hush();if(screen==="inbox"&&id!=="inbox"&&typeof stopRec==="function")stopRec();for(const s of ["setup","pick","lobby","game","story","reader","inbox","grown","farm"]) $("#"+s).hidden = s!==id; screen=id; if(typeof renderVideoUI==="function") renderVideoUI(); if(id==="pick"&&typeof syncMailBadges==="function") syncMailBadges();
+function show(id){if(screen==="reader"&&id!=="reader")hush();if(screen==="inbox"&&id!=="inbox"&&typeof stopRec==="function")stopRec();for(const s of ["setup","pick","lobby","game","story","reader","inbox","grown","farm"]) $("#"+s).hidden = s!==id; screen=id; if(typeof renderVideoUI==="function") renderVideoUI(); if(id==="pick"&&typeof syncMailBadges==="function"){syncMailBadges();renderPickClaims()}
   if(me&&room&&id!=="game"&&id!=="setup") setPresence({scr:id});
   if(typeof tickStats==="function") tickStats()}
 /* ---------------- read-aloud helper ---------------- */
@@ -1099,8 +1112,8 @@ function wireRoom(){
 }
 
 /* ---------------- screens ---------------- */
-function chooseKid(k){
-  if(me!==k){tickStats();flushStats()} me=k; joinedAt=Date.now(); store("kp.kid",k); bump("sessions");
+function doChooseKid(k){
+  if(me!==k){tickStats();flushStats();releaseClaim(me)} writeClaim(k); me=k; joinedAt=Date.now(); store("kp.kid",k); bump("sessions");
   for(const m of unreadOf(k)) mail.seen.add(m.id);
   say(`Hi ${kidOf(k).name}!`);
   setPresence({kid:k,at:joinedAt,scr:"lobby",g:null,seat:null,done:null});
@@ -1489,12 +1502,38 @@ function startMedia(){
   navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true},
       video:{facingMode:"user",width:{ideal:320},height:{ideal:240},frameRate:{ideal:15,max:20}}})
     .then(s=>{
-      vid.local=s; vid.denied=false; applyTracks();
-      s.getTracks().forEach(t=>t.addEventListener("ended",()=>{if(vid.local===s){stopMedia();setTimeout(()=>{if(document.visibilityState==="visible")startMedia()},800)}}));
+      vid.local=s; vid.denied=false; vid.facing="user"; applyTracks(); countCams();
+      s.getTracks().forEach(camWatch);
       setPresence({vr:true,mic:vid.mic,cam:vid.cam}); videoSync();
     })
     .catch(()=>{vid.denied=true})
     .finally(()=>{vid.asking=false;renderVideoUI()});
+}
+async function countCams(){try{const ds=await navigator.mediaDevices.enumerateDevices();vid.cams=ds.filter(d=>d.kind==="videoinput");}catch(e){vid.cams=[]}renderVideoUI();if(typeof peopleSig!=="undefined"){peopleSig="";renderPeople()}}
+function camWatch(t){t.addEventListener("ended",()=>{if(vid.local&&vid.local.getTracks().includes(t)&&!vid.flipping){stopMedia();setTimeout(()=>{if(document.visibilityState==="visible")startMedia()},800)}})}
+/* flip between front and back cameras without dropping the call (iPad, iPhone, Fire tablet) */
+async function flipCamera(){
+  if(!vid.local||vid.flipping) return; vid.flipping=true;
+  let next=vid.facing==="user"?"environment":"user";
+  const base={width:{ideal:320},height:{ideal:240},frameRate:{ideal:15,max:20}};
+  const old=vid.local.getVideoTracks()[0]; const oldId=old&&old.getSettings?old.getSettings().deviceId:null;
+  if(old){old.stop();vid.local.removeTrack(old)} // tablets can only run one camera at a time
+  const grab=c=>navigator.mediaDevices.getUserMedia({video:Object.assign({},base,c)}).then(x=>x.getVideoTracks()[0]).catch(()=>null);
+  let track=await grab({facingMode:{exact:next}});
+  if(!track){ // some Android/Fire browsers ignore facingMode: pick by label, then just cycle
+    try{vid.cams=(await navigator.mediaDevices.enumerateDevices()).filter(d=>d.kind==="videoinput")}catch(e){}
+    const want=next==="environment"?/back|rear|environment/i:/front|user|facing front/i;
+    let d=(vid.cams||[]).find(c=>want.test(c.label));
+    if(!d&&(vid.cams||[]).length>1){const i=vid.cams.findIndex(c=>c.deviceId===oldId);d=vid.cams[(i+1)%vid.cams.length]}
+    if(d) track=await grab({deviceId:{exact:d.deviceId}});
+  }
+  if(!track){next="user";track=await grab({facingMode:"user"})}
+  if(track){
+    track.enabled=vid.cam; camWatch(track); vid.local.addTrack(track); vid.facing=(track.getSettings&&track.getSettings().facingMode)||next;
+    for(const c of vid.pcs.values()){const snd=c.pc.getSenders().find(x=>!x.track||x.track.kind==="video");if(snd)await snd.replaceTrack(track).catch(()=>{})}
+    const me2=vid.els.get("me"); if(me2){me2.srcObject=null;me2.srcObject=vid.local;me2.play().catch(()=>{})}
+  }
+  vid.flipping=false; peopleSig=""; renderVideoUI(); if(screen==="lobby") renderPeople();
 }
 function applyTracks(){if(!vid.local)return;vid.local.getAudioTracks().forEach(t=>t.enabled=vid.mic);vid.local.getVideoTracks().forEach(t=>t.enabled=vid.cam)}
 function stopMedia(){
@@ -1574,7 +1613,7 @@ function tileFor(p,mine){
   const K=kidOf(p.presence.kid), t=el("div","vtile"); t.style.setProperty("--k",K.hue);
   const st=mine?vid.local:vid.streams.get(p.peer);
   const camOn=mine?vid.cam:p.presence.cam!==false, micOn=mine?vid.mic:p.presence.mic!==false;
-  if(st&&camOn){const v=videoEl(mine?"me":p.peer,st,mine);t.append(v);v.play().catch(()=>{})}
+  if(st&&camOn){const v=videoEl(mine?"me":p.peer,st,mine);if(mine)v.classList.toggle("mirror",vid.facing!=="environment");t.append(v);v.play().catch(()=>{})}
   else{const f=el("div","vface");f.textContent=K.face;t.append(f);if(st&&!mine){const v=videoEl(p.peer,st,false);v.classList.add("audioonly");t.append(v);v.play().catch(()=>{})}}
   if(!micOn) t.append(el("span","vmute","🔇"));
   return t;
@@ -1594,12 +1633,14 @@ function renderVideoUI(){
   $("#vMic").textContent=vid.mic?"🎤":"🔇"; $("#vMic").classList.toggle("off",!vid.mic);
   $("#vCam").classList.toggle("off",!vid.cam);
   $("#vMin").textContent=vid.min?"📹":"➖";
+  $("#vFlip").hidden=!(vid.local&&(vid.cams||[]).length>1);
   if(screen==="game") requestAnimationFrame(fitBoard);
   requestAnimationFrame(()=>{const r=box.getBoundingClientRect();if(r.right>innerWidth+2||r.bottom>innerHeight+2||r.left<-2||r.top<-2){delete box.dataset.dragged;box.style.left="";box.style.top="";box.style.right="";box.style.bottom="";if(screen==="game")fitBoard()}});
 }
 $("#vMic").onclick=()=>setMic(!vid.mic);
 $("#vCam").onclick=()=>setCam(!vid.cam);
 $("#vMin").onclick=()=>{vid.min=!vid.min;renderVideoUI()};
+$("#vFlip").onclick=()=>flipCamera();
 // drag the bubble out of the way
 (()=>{const box=$("#vid");let d=null;
   box.addEventListener("pointerdown",e=>{if(e.target.closest("button"))return;const r=box.getBoundingClientRect();d={dx:e.clientX-r.left,dy:e.clientY-r.top,id:e.pointerId};box.setPointerCapture(e.pointerId)});
@@ -1636,9 +1677,10 @@ function renderPeople(){
     if(mine){
       if(!mediaOK()) act.append(el("span","note","No camera on this device"));
       else if(!vid.local){const b=el("button","bigbtn",vid.asking?"Starting…":"📷 Turn on camera");b.disabled=vid.asking;b.onclick=()=>{vid.denied=false;startMedia()};act.append(b);
-        if(vid.denied) act.append(el("span","note","If nothing happens, allow the camera and microphone in Settings › Safari."))}
+        if(vid.denied) act.append(el("span","note",/Android|Silk|Kindle/i.test(navigator.userAgent)?"If nothing happens, allow the camera and microphone in Settings › Apps › Silk Browser › Permissions.":"If nothing happens, allow the camera and microphone in Settings › Safari."))}
       else{const m=el("button","round"+(vid.mic?"":" off"),vid.mic?"🎤":"🔇");m.setAttribute("aria-label","Microphone");m.onclick=()=>setMic(!vid.mic);
-        const c=el("button","round"+(vid.cam?"":" off"),"📷");c.setAttribute("aria-label","Camera");c.onclick=()=>setCam(!vid.cam);act.append(m,c)}
+        const c=el("button","round"+(vid.cam?"":" off"),"📷");c.setAttribute("aria-label","Camera");c.onclick=()=>setCam(!vid.cam);act.append(m,c);
+        if((vid.cams||[]).length>1){const f=el("button","round","🔄");f.setAttribute("aria-label","Flip camera");f.disabled=!!vid.flipping;f.onclick=()=>flipCamera();act.append(f)}}
     } else if(["lobby","story","reader","inbox"].includes(pr.scr)){
       const b=el("button","bigbtn",`🎨 Color with ${esc(K.name)}`);b.onclick=()=>{sayLittle(`Color with ${K.name}!`);openPics([p.peer])};act.append(b);
       if(pr.scr!=="lobby"){const n=el("button","ghost","💌 Note");n.onclick=()=>{sayLittle(`Send ${K.name} a note`);openInbox("what",{to:pr.kid})};act.append(n)}
@@ -2016,6 +2058,58 @@ function fbConnect(code){
   mail.ref=mail.db.ref("families/"+code); mail.all={}; mail.ready=false; mail.seen=new Set();
   mail.ref.child("inbox").on("value",snap=>{mail.all=snap.val()||{};const first=!mail.ready;mail.ready=true;onMail(first)},()=>{});
   mail.db.ref(".info/connected").on("value",s=>{mail.online=!!s.val()});
+  claimsConnect();
+}
+/* ---------- one device per person: families/<CODE>/claims/<person> = {dev,label,at} ----------
+   Removed by the server when the device drops; a 30-second heartbeat keeps it fresh. Bear and Fox friend are shared guests. */
+const GUESTS=["bear","fox"];
+const claim={all:{},ref:null,offset:0,loaded:false,wired:false};
+function claimsConnect(){
+  if(!mail.ref) return; if(claim.ref) claim.ref.off();
+  claim.ref=mail.ref.child("claims"); claim.loaded=false; claim.all={};
+  claim.ref.on("value",s=>{claim.all=s.val()||{};onClaims()},()=>{});
+  if(!claim.wired){claim.wired=true;
+    mail.db.ref(".info/serverTimeOffset").on("value",s=>{claim.offset=s.val()||0});
+    mail.db.ref(".info/connected").on("value",s=>{if(s.val()&&claim.loaded&&me)reclaim()});}
+}
+function claimFresh(c){return !!(c&&typeof c.at==="number"&&Date.now()+claim.offset-c.at<75000)}
+function takenBy(k){const c=claim.all[k];return !GUESTS.includes(k)&&c&&c.dev!==DEV&&claimFresh(c)?c:null}
+function writeClaim(k){if(!claim.ref||!k||GUESTS.includes(k))return;const r=claim.ref.child(k);r.set({dev:DEV,label:DEV_LABEL,at:firebase.database.ServerValue.TIMESTAMP}).catch(()=>{});r.onDisconnect().remove()}
+function releaseClaim(k){if(!claim.ref||!k)return;const c=claim.all[k];if(c&&c.dev===DEV){const r=claim.ref.child(k);r.onDisconnect().cancel();r.remove().catch(()=>{})}}
+function reclaim(){if(!me||GUESTS.includes(me))return;if(takenBy(me))return kicked(false);writeClaim(me)}
+setInterval(()=>{if(me&&claim.ref&&!GUESTS.includes(me)&&!takenBy(me)&&document.visibilityState==="visible")claim.ref.child(me+"/at").set(firebase.database.ServerValue.TIMESTAMP).catch(()=>{})},30000);
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&claim.loaded)reclaim()});
+function onClaims(){
+  if(!claim.loaded){claim.loaded=true;if(me){if(takenBy(me))kicked(true);else writeClaim(me)}}
+  else if(me&&takenBy(me)) kicked(false);
+  if(screen==="pick") renderPickClaims();
+}
+function deviceWord(c){return c&&c.label&&c.label!=="Computer"?c.label:"device"}
+function renderPickClaims(){
+  document.querySelectorAll("#pick [data-kid]").forEach(b=>{const c=takenBy(b.dataset.kid);b.classList.toggle("taken",!!c);
+    let l=b.querySelector(".takenlbl");if(!c){if(l)l.remove();return}
+    if(!l){l=document.createElement("span");l.className="takenlbl";b.append(l)}l.textContent=`on another ${deviceWord(c)}`});
+}
+function kicked(atStart){
+  const k=me; if(!k) return; const K=kidOf(k);
+  try{tickStats();flushStats()}catch(e){}
+  if(game){if(game.refs)game.refs.forEach(r=>r.off());game=null}
+  if(typeof stopRec==="function") stopRec(); hush(); stopMedia();
+  me=null; store("kp.kid","");
+  setPresence({kid:null,scr:"pick",g:null,seat:null,done:null,vr:null});
+  $("#party").hidden=true; show("pick"); renderPickClaims();
+  const msg=atStart?`${K.name} is playing on another device. Who are you?`:`${K.name} moved to another device.`;
+  toast(msg); say(msg);
+}
+function chooseKid(k){
+  const c=takenBy(k);
+  if(!c) return doChooseKid(k);
+  const K=kidOf(k);
+  $("#toFace").textContent=K.face; $("#toTitle").textContent=`${K.name} is playing on another ${deviceWord(c)}`;
+  $("#toMsg").textContent=`Play as ${K.name} here instead? The other ${deviceWord(c)} will go back to "Who are you?".`;
+  $("#takeover").hidden=false; say(`${K.name} is playing on another ${deviceWord(c)}. Play here instead?`);
+  $("#toYes").onclick=()=>{$("#takeover").hidden=true;doChooseKid(k)};
+  $("#toNo").onclick=()=>{$("#takeover").hidden=true;hush()};
 }
 function validMsg(m){return !!(m&&typeof m==="object"&&(KIDS[m.from]||(m.from==="kapanigans"&&m.kind==="report"))&&typeof m.at==="number"&&MSG_KINDS.includes(m.kind))}
 function inboxOf(k){const box=(k&&mail.all[k])||{};return Object.entries(box).map(([id,m])=>Object.assign({},m,{id})).filter(validMsg).sort((a,b)=>b.at-a.at)}
