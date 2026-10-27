@@ -695,7 +695,7 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
 .sdc.near{background:#F1EEF8}.sdc.same{background:#DCE7FF}.sdc.sel{background:#FFE7A3}
 .sdc.err{background:#FFD2D2;color:var(--fox)}
 .sdkpad{display:grid;grid-template-columns:repeat(9,1fr);gap:6px;width:min(100%,560px)}
-.adwrap.land .sdkpad{grid-template-columns:repeat(3,64px);width:auto}
+.adwrap.land .sdkpad{grid-template-columns:repeat(2,64px)!important;width:auto}
 .sdk-k{background:var(--paper);border-radius:12px;font-family:var(--display);font-size:26px;height:54px;box-shadow:0 3px 0 var(--sky-deep)}
 .sdk-k.gone{visibility:hidden}
 /* word guess */
@@ -723,7 +723,7 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
 .bjbtns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
 .bj .ghost{color:var(--ink)}
 /* minesweeper */
-.mns{display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(9,1fr);gap:2px;background:#B9AFCF;border:3px solid var(--ink);border-radius:10px;overflow:hidden;touch-action:manipulation}
+.mns{display:grid;grid-template-columns:repeat(6,1fr);grid-template-rows:repeat(6,1fr);gap:2px;background:#B9AFCF;border:3px solid var(--ink);border-radius:10px;overflow:hidden;touch-action:manipulation}
 .mc{background:#E9E4F4;border-radius:0;padding:0;font-weight:900;line-height:1;display:grid;place-items:center;box-shadow:inset -3px -3px 0 rgba(0,0,0,.12),inset 3px 3px 0 #fff}
 .mc.open{background:#fff;box-shadow:none}
 .mc.mine{background:#FFE1E1}.mc.boom{background:#FF6B6B}
@@ -4576,7 +4576,7 @@ function moneyChange(api,sale){
 /* ============ GROWN-UP PUZZLES ============
    Grown-ups get real games on their farm chores, and these can be LOST. Losing means the chore doesn't happen:
    the lose screen offers "Try again" (a fresh game) or "Back to the farm".
-   sudoku (3 mistakes and you're out), wordle (6 guesses), blackjack (first to 2 hands), mines (hit one and it's over),
+   mini sudoku 6×6 (3 mistakes and you're out), wordle (6 guesses), blackjack (first to 2 hands), mines 6×6 with 5 (hit one and it's over),
    codebreaker (crack 4 colors in 8 tries). Each farm chore picks the one this grown-up played least recently. */
 const ADULT_TYPES=["sudoku","wordle","blackjack","mines","codebreaker"];
 Object.assign(SKILL,{sudoku:"logic",wordle:"words",blackjack:"cards",mines:"logic",codebreaker:"deduction"});
@@ -4586,47 +4586,48 @@ function adStatus(api,html){let s=api.area.querySelector(".adstat");if(!s){s=el(
 function adFit(api,box,fn){const go=()=>{const r=api.area.getBoundingClientRect();if(r.width)fn(r)};go();if(window.ResizeObserver){const ro=new ResizeObserver(go);ro.observe(api.area);api.after(()=>ro.disconnect())}}
 function adKeys(api,fn){const h=e=>{if(!api.live()||e.metaKey||e.ctrlKey||e.altKey)return;if(fn(e)!==false)e.preventDefault()};addEventListener("keydown",h);api.after(()=>removeEventListener("keydown",h))}
 
-/* ---- 1. Sudoku: fill the grid; 3 wrong numbers and you lose ---- */
+/* ---- 1. Mini sudoku (6×6, boxes of 2 rows × 3 columns, numbers 1–6): 3 wrong numbers and you lose ---- */
+const SN=6, SBR=2, SBC=3; // size, box rows, box columns
+const sdkOk=(g,i,v)=>{const r=Math.floor(i/SN),c=i%SN,br=r-r%SBR,bc=c-c%SBC;
+  for(let k=0;k<SN;k++)if(g[r*SN+k]===v||g[k*SN+c]===v||g[(br+Math.floor(k/SBC))*SN+bc+k%SBC]===v)return false;return true};
 function sdkSolve(g,limit=2){ // counts solutions up to limit
   let n=0; const rec=()=>{const i=g.indexOf(0);if(i<0){n++;return n>=limit}
-    const r=Math.floor(i/9),c=i%9,br=r-r%3,bc=c-c%3;
-    for(let v=1;v<=9;v++){let ok=true;for(let k=0;k<9&&ok;k++)if(g[r*9+k]===v||g[k*9+c]===v||g[(br+Math.floor(k/3))*9+bc+k%3]===v)ok=false;
-      if(ok){g[i]=v;if(rec()){g[i]=0;return true}g[i]=0}}return false};
+    for(let v=1;v<=SN;v++)if(sdkOk(g,i,v)){g[i]=v;if(rec()){g[i]=0;return true}g[i]=0}return false};
   rec(); return n;
 }
 function sdkMake(blanks){
-  const g=Array(81).fill(0);
-  const fill=i=>{if(i===81)return true;const r=Math.floor(i/9),c=i%9,br=r-r%3,bc=c-c%3;
-    for(const v of shuffle([1,2,3,4,5,6,7,8,9])){let ok=true;for(let k=0;k<9&&ok;k++)if(g[r*9+k]===v||g[k*9+c]===v||g[(br+Math.floor(k/3))*9+bc+k%3]===v)ok=false;
-      if(ok){g[i]=v;if(fill(i+1))return true;g[i]=0}}return false};
+  const g=Array(SN*SN).fill(0);
+  const fill=i=>{if(i===SN*SN)return true;for(const v of shuffle([...Array(SN)].map((_,k)=>k+1)))if(sdkOk(g,i,v)){g[i]=v;if(fill(i+1))return true;g[i]=0}return false};
   fill(0); const sol=g.slice(), puz=g.slice(); let removed=0;
-  for(const i of shuffle([...Array(81).keys()])){if(removed>=blanks)break;const v=puz[i];puz[i]=0;if(sdkSolve(puz.slice())===1)removed++;else puz[i]=v}
+  for(const i of shuffle([...Array(SN*SN).keys()])){if(removed>=blanks)break;const v=puz[i];puz[i]=0;if(sdkSolve(puz.slice())===1)removed++;else puz[i]=v}
   return {sol,puz};
 }
 TASKS.sudoku=api=>{
-  const {sol,puz}=sdkMake(40), cur=puz.slice(), MAX=3; let sel=-1, bad=0;
-  api.ask("Sudoku: fill every row, column and box with 1 to 9");
+  const T=SN*SN, {sol,puz}=sdkMake(18), cur=puz.slice(), MAX=3; let sel=-1, bad=0;
+  api.ask("Mini sudoku: fill every row, column and box with 1 to 6");
   const stat=()=>adStatus(api,`Mistakes: ${"❌".repeat(bad)}${"▫️".repeat(MAX-bad)} <span class="adsm">${MAX} and you lose</span>`);stat();
   const wrap=el("div","adwrap"), grid=el("div","sdk"), pad=el("div","sdkpad"); wrap.append(grid,pad); api.area.append(wrap);
-  const cells=cur.map((v,i)=>{const b=el("button","sdc"+(v?" giv":""),v||"");const r=Math.floor(i/9),c=i%9;
-    if(c%3===2&&c<8)b.classList.add("br");if(r%3===2&&r<8)b.classList.add("bb");b.onclick=()=>{sel=i;paint()};grid.append(b);return b});
-  const keys=[1,2,3,4,5,6,7,8,9].map(v=>{const b=el("button","sdk-k",String(v));b.onclick=()=>put(v);pad.append(b);return b});
+  grid.style.gridTemplateColumns=grid.style.gridTemplateRows=`repeat(${SN},1fr)`; pad.style.gridTemplateColumns=`repeat(${SN},1fr)`;
+  const box=i=>{const r=Math.floor(i/SN),c=i%SN;return Math.floor(r/SBR)*SBR+Math.floor(c/SBC)};
+  const cells=cur.map((v,i)=>{const b=el("button","sdc"+(v?" giv":""),v||"");const r=Math.floor(i/SN),c=i%SN;
+    if(c%SBC===SBC-1&&c<SN-1)b.classList.add("br");if(r%SBR===SBR-1&&r<SN-1)b.classList.add("bb");b.onclick=()=>{sel=i;paint()};grid.append(b);return b});
+  const keys=[...Array(SN)].map((_,k)=>{const b=el("button","sdk-k",String(k+1));b.onclick=()=>put(k+1);pad.append(b);return b});
   function paint(){
-    const sv=sel>=0?cur[sel]:0,sr=Math.floor(sel/9),sc=sel%9;
-    cells.forEach((b,i)=>{const r=Math.floor(i/9),c=i%9;b.textContent=cur[i]||"";
-      b.classList.toggle("sel",i===sel);b.classList.toggle("near",sel>=0&&i!==sel&&(r===sr||c===sc||(Math.floor(r/3)===Math.floor(sr/3)&&Math.floor(c/3)===Math.floor(sc/3))));
+    const sv=sel>=0?cur[sel]:0,sr=Math.floor(sel/SN),sc=sel%SN;
+    cells.forEach((b,i)=>{const r=Math.floor(i/SN),c=i%SN;b.textContent=cur[i]||"";
+      b.classList.toggle("sel",i===sel);b.classList.toggle("near",sel>=0&&i!==sel&&(r===sr||c===sc||box(i)===box(sel)));
       b.classList.toggle("same",!!sv&&cur[i]===sv&&i!==sel)});
-    keys.forEach((k,n)=>{k.classList.toggle("gone",cur.filter(x=>x===n+1).length>=9)});
+    keys.forEach((k,n)=>{k.classList.toggle("gone",cur.filter(x=>x===n+1).length>=SN)});
   }
   function put(v){
     if(!api.live()||sel<0||cur[sel])return;
     if(sol[sel]===v){cur[sel]=v;cells[sel].classList.add("ok");blip(660,.06);paint();if(cur.every((x,i)=>x===sol[i]))api.win(500)}
     else{bad++;stat();const b=cells[sel];b.textContent=v;b.classList.add("err");blip(180,.2,"sawtooth",.08);
-      setTimeout(()=>{b.classList.remove("err");paint()},700);if(bad>=MAX)api.lose("Three wrong numbers.",()=>{cur.splice(0,81,...sol);paint()})}
+      setTimeout(()=>{b.classList.remove("err");paint()},700);if(bad>=MAX)api.lose("Three wrong numbers.",()=>{cur.splice(0,T,...sol);paint()})}
   }
-  adKeys(api,e=>{if(/^[1-9]$/.test(e.key))put(+e.key);else if(e.key.startsWith("Arrow")&&sel>=0){const d={ArrowUp:-9,ArrowDown:9,ArrowLeft:-1,ArrowRight:1}[e.key];sel=clamp(sel+d,0,80);paint()}else return false});
+  adKeys(api,e=>{if(new RegExp(`^[1-${SN}]$`).test(e.key))put(+e.key);else if(e.key.startsWith("Arrow")&&sel>=0){const d={ArrowUp:-SN,ArrowDown:SN,ArrowLeft:-1,ArrowRight:1}[e.key];sel=clamp(sel+d,0,T-1);paint()}else return false});
   adFit(api,wrap,r=>{const land=r.width>r.height*1.15;wrap.classList.toggle("land",land);
-    const s=Math.floor(Math.min(land?r.width*.62:r.width,land?r.height-50:r.height-170,560));grid.style.width=grid.style.height=s+"px";grid.style.fontSize=(s/9*.55)+"px"});
+    const s=Math.floor(Math.min(land?r.width*.62:r.width,land?r.height-50:r.height-110,460));grid.style.width=grid.style.height=s+"px";grid.style.fontSize=(s/SN*.5)+"px"});
   paint();
 };
 
@@ -4706,8 +4707,8 @@ TASKS.blackjack=api=>{
 
 /* ---- 4. Minesweeper: 9×9 with 10 mines; tap a mine and you lose ---- */
 TASKS.mines=api=>{
-  const N=9, M=10; let mines=null, open=new Set(), flags=new Set(), flagMode=false;
-  api.ask("Minesweeper: open every safe square");
+  const N=6, M=5; let mines=null, open=new Set(), flags=new Set(), flagMode=false;
+  api.ask("Minesweeper: open every safe square (5 mines)");
   const stat=()=>adStatus(api,`💣 ${M-flags.size} left <span class="adsm">numbers count the mines touching that square</span>`);stat();
   const grid=el("div","mns"), tools=el("div","mnt"); api.area.append(grid,tools);
   const fb=el("button","ghost","🚩 Flag mode: off");fb.onclick=()=>{flagMode=!flagMode;fb.textContent=`🚩 Flag mode: ${flagMode?"on":"off"}`;fb.classList.toggle("on",flagMode)};
@@ -4727,7 +4728,7 @@ TASKS.mines=api=>{
     const q=[i];while(q.length){const j=q.pop();if(open.has(j)||flags.has(j))continue;open.add(j);const n=cnt(j),b=cells[j];b.classList.add("open");b.textContent=n||"";if(n)b.dataset.n=n;else q.push(...nb(j))}
     blip(700,.04);if(open.size===N*N-M){mines.forEach(j=>cells[j].textContent="🚩");api.win(500)}
   }
-  adFit(api,grid,r=>{const s=Math.floor(Math.min(r.width,r.height-110,520));grid.style.width=grid.style.height=s+"px";grid.style.fontSize=(s/N*.5)+"px"});
+  adFit(api,grid,r=>{const s=Math.floor(Math.min(r.width,r.height-110,400));grid.style.width=grid.style.height=s+"px";grid.style.fontSize=(s/N*.45)+"px"});
 };
 
 /* ---- 5. Codebreaker: find the 4-color code in 8 tries ---- */
