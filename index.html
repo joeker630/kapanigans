@@ -48,6 +48,110 @@ body{height:100%;margin:0}
 .drawing .padtools.little .sw{width:calc(64px*var(--ps,1));height:calc(64px*var(--ps,1))}
 .drawing .padtools.little .tool{min-width:calc(86px*var(--ps,1));height:calc(86px*var(--ps,1));font-size:calc(40px*var(--ps,1))}
 
+
+/* ---- my own story: scenes, characters, effects (shared by the editor and the reader) ---- */
+.cstage{position:relative;overflow:hidden;border-radius:18px;container-type:size;flex:none;box-shadow:0 6px 0 var(--sky-deep);touch-action:none;-webkit-user-select:none;user-select:none}
+.cstage.read{border-radius:0;box-shadow:none}
+.cdecos,.citems,.cfx{position:absolute;inset:0}
+.cdecos,.cfx{pointer-events:none}
+.cdeco{position:absolute;transform:translateX(-50%);font-size:calc(var(--s)*100cqh);line-height:1}
+.citem{position:absolute;aspect-ratio:1;transform:translateX(-50%);container-type:size}
+.cmove,.cfeel,.cflip{width:100%;height:100%;transform-origin:50% 100%}
+.cflip.f{transform:scaleX(-1)}
+.cem{font-size:82cqh;line-height:100cqh;height:100%;text-align:center;white-space:nowrap}
+.citem img{width:100%;height:100%;object-fit:contain;pointer-events:none;filter:drop-shadow(0 4px 6px rgba(0,0,0,.3))}
+.cstage.edit .citem{cursor:grab}
+.cstage.edit .citem.sel{outline:3px dashed var(--sun);outline-offset:2px;border-radius:14px;background:rgba(255,200,61,.12)}
+.cpath{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.citem.ctap{cursor:pointer}
+.citem.ctap::after{content:"👆";position:absolute;right:-6%;top:-6%;font-size:24cqh;animation:dbob 1s ease-in-out infinite}
+.citem.ctap .cmove{animation:tapglow 1.4s ease-in-out infinite;border-radius:50%}
+@keyframes tapglow{0%,100%{filter:drop-shadow(0 0 0 rgba(255,236,150,0))}50%{filter:drop-shadow(0 0 14px rgba(255,236,150,.95))}}
+.cfo{position:absolute;pointer-events:none;line-height:1;font-size:22cqh}
+.fo-tear{left:30%;top:28%;animation:fotear 1.4s ease-in infinite}
+@keyframes fotear{0%{transform:translateY(0);opacity:0}20%{opacity:1}100%{transform:translateY(40cqh);opacity:0}}
+.fo-bang{right:0;top:-12%;font-size:30cqh;animation:fobang 1.3s ease-in-out infinite}
+@keyframes fobang{0%,100%{transform:scale(.8)}50%{transform:scale(1.2)}}
+.fo-sweat{right:4%;top:6%;animation:fobang .7s ease-in-out infinite}
+.fo-heart,.fo-happy,.fo-spark{left:40%;top:10%;animation:foup 1.8s ease-out infinite}
+.fo-spark{left:auto;right:10%}
+@keyframes foup{0%{transform:translate(0,0) scale(.5);opacity:0}25%{opacity:1}100%{transform:translate(20cqh,-60cqh) scale(1.1);opacity:0}}
+.fo-zzz{right:-10%;top:-8%;font-family:var(--display);font-size:16cqh;color:#FFF3C4;animation:zz 2.4s ease-in-out infinite}
+/* scene effects */
+.cfx span{position:absolute;display:block;line-height:1}
+.fx-stars span{width:3px;height:3px;border-radius:50%;background:#fff;animation:twinkle 3s ease-in-out infinite}
+.fx-sparkles span{font-size:5cqh;animation:fxtw 2.4s ease-in-out infinite}
+@keyframes fxtw{0%,100%{opacity:0;transform:scale(.4)}50%{opacity:1;transform:scale(1)}}
+.fx-snow span{width:calc(7px*var(--z,1));height:calc(7px*var(--z,1));border-radius:50%;background:#fff;opacity:.9;top:-6%;animation:fxfall 6s linear infinite}
+.fx-rain span{width:2px;height:14px;background:rgba(200,225,255,.75);top:-6%;animation:fxfall 1.1s linear infinite}
+.fx-leaves span{font-size:6cqh;top:-8%;animation:fxfall 9s linear infinite,fxsway 2.6s ease-in-out infinite alternate}
+.fx-bubbles span{width:calc(14px*var(--z,1));height:calc(14px*var(--z,1));border-radius:50%;border:2px solid rgba(255,255,255,.8);background:rgba(255,255,255,.12);top:106%;animation:fxrise 7s linear infinite,fxsway 2s ease-in-out infinite alternate}
+.fx-hearts span{font-size:6cqh;top:106%;animation:fxrise 8s linear infinite,fxsway 2.4s ease-in-out infinite alternate}
+.fx-fireflies span{width:7px;height:7px;border-radius:50%;background:#FFF27A;box-shadow:0 0 10px 4px rgba(255,236,90,.75);animation:fxwander 7s ease-in-out infinite alternate,twinkle 1.6s ease-in-out infinite}
+.fx-shooting span{width:90px;height:2px;background:linear-gradient(90deg,rgba(255,255,255,0),#fff);border-radius:2px;transform:rotate(28deg);opacity:0;animation:fxshoot 9s linear infinite}
+@keyframes fxfall{from{top:-8%}to{top:106%}}
+@keyframes fxrise{from{top:106%}to{top:-10%}}
+@keyframes fxsway{from{margin-left:-14px}to{margin-left:14px}}
+@keyframes fxwander{0%{transform:translate(0,0)}33%{transform:translate(30px,-24px)}66%{transform:translate(-20px,-40px)}100%{transform:translate(16px,10px)}}
+@keyframes fxshoot{0%{transform:rotate(28deg) translateX(0);opacity:0}2%{opacity:1}12%{transform:rotate(28deg) translateX(420px);opacity:0}100%{opacity:0}}
+/* the editor: everything fits on one screen */
+#story.editing{overflow:hidden!important}
+#story.editing .sbody{min-height:0;gap:8px;padding-bottom:4px;align-items:stretch}
+#story.editing .sbody>*{flex:none}
+.cetop{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.cpchip{min-width:46px;height:46px;border-radius:14px;background:var(--paper);box-shadow:0 3px 0 var(--sky-deep);display:flex;align-items:center;justify-content:center;gap:2px;font-size:18px;padding:0 6px}
+.cpchip b{font-size:15px}.cpchip.on{background:var(--sun);box-shadow:0 3px 0 var(--sun-deep)}
+.cpchip.add{font-size:16px;flex-direction:column;gap:0}.cpchip.add small{font-size:10px}
+.cpg{margin-left:auto;display:flex;gap:6px}
+.round.sm{width:44px;height:44px;font-size:18px}
+.round.danger,.danger{background:#E5484D!important;color:#fff!important;width:auto;padding:0 10px;font-size:14px}
+#story.editing .sbody>.ced{flex:1 1 0;min-height:0;width:100%;display:grid;gap:10px;grid-template-columns:minmax(0,1fr) minmax(280px,36%);grid-template-rows:minmax(0,1fr)}
+@media (max-aspect-ratio:1/1){#story.editing .sbody>.ced{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr)}}
+.cestagecell{min-width:0;min-height:0;display:flex;align-items:center;justify-content:center}
+.cepanel{min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;background:var(--paper);border-radius:20px;padding:10px;display:flex;flex-direction:column;gap:8px;box-shadow:0 4px 0 var(--sky-deep)}
+.cepanel h4{margin:4px 0 0;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:#7a6f92}
+.cetabs{display:flex;gap:6px;flex-wrap:wrap}
+.ctab{background:var(--sky);border-radius:999px;padding:8px 12px;font-size:15px;font-weight:800}
+.ctab.on{background:var(--sun);box-shadow:inset 0 0 0 2px var(--ink)}
+.cetabs.sub .ctab{padding:6px 10px;font-size:14px}
+.cegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:6px}
+.cegrid button{background:var(--sky);border-radius:14px;padding:6px 4px;font-size:28px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;line-height:1;min-height:58px}
+.cegrid.emo button{min-height:52px;font-size:32px}
+.cegrid button small{font-size:11px;font-weight:800;color:#4b4063;line-height:1.1;text-align:center}
+.cegrid button.on{background:var(--sun);box-shadow:inset 0 0 0 3px var(--ink)}
+.cegrid .cthumb,.cegrid .facepic,.cegrid .avatarpic{width:52px;height:52px;object-fit:contain;border-radius:10px}
+.cegrid.fam{grid-template-columns:repeat(auto-fill,minmax(80px,1fr))}
+.ced.little .cegrid{grid-template-columns:repeat(auto-fill,minmax(80px,1fr))}
+.ced.little .cegrid button{font-size:40px;min-height:76px}
+.ced.little .ctab{font-size:18px;padding:10px 14px}
+.cerow{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.ctool{background:var(--sky);border-radius:14px;min-width:64px;min-height:58px;padding:6px 8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:24px;line-height:1}
+.ctool small{font-size:11px;font-weight:800;color:#4b4063}
+.ctool.on{background:var(--sun);box-shadow:inset 0 0 0 3px var(--ink)}
+.ctool.rec.on{background:#E5484D;color:#fff}.ctool.rec.on small{color:#fff}
+.ctool.wide{min-width:120px}
+.ced.little .ctool{min-width:84px;min-height:76px;font-size:36px}
+.covers .ctool{font-size:34px}
+.cihead{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:18px}
+.cetextarea{width:100%;font:inherit;font-size:18px;padding:10px 12px;border-radius:14px;border:3px solid var(--sky-deep);resize:none;min-height:96px;color:var(--ink);background:#fff}
+.cechips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:var(--sky);border-radius:999px;padding:6px 10px;font-size:14px;font-weight:800}
+.cetext{background:var(--sky);border-radius:14px;padding:10px 12px;font-size:20px;line-height:1.35}
+#sBody>.cerow .ctool,#sBody>.cechips .chip{background:var(--paper);box-shadow:0 3px 0 var(--sky-deep)}
+#sBody>.cerow .ctool.on{background:var(--sun)}
+.cebot{display:flex;gap:10px;justify-content:center;align-items:center}
+.cthumb{width:52px;height:52px;object-fit:contain}
+.cdrawsheet{position:fixed;inset:0;z-index:66;background:var(--sky);display:flex;flex-direction:column;padding:max(12px,env(safe-area-inset-top,0px)) 14px max(12px,env(safe-area-inset-bottom,0px));overflow:hidden}
+.cdrawsheet .sbody{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;gap:8px}
+/* the reader */
+.cread{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:3}
+#reader.custom .rmoon,#reader.custom .rprops,#reader.custom .rcast,#reader.custom .rscene::after{display:none}
+#reader:not(.custom) .cread{display:none}
+.draftlist{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;width:100%;max-width:900px}
+.draftcard{background:var(--paper);border-radius:18px;padding:10px 14px;display:flex;align-items:center;gap:10px;box-shadow:0 4px 0 var(--sky-deep);text-align:left;font-size:16px}
+.draftcard .em{font-size:34px}
+.draftcard small{display:block;font-weight:700;color:#6b6283}
+
 /* how-to + FAQ popup */
 .help{position:fixed;inset:0;z-index:70;background:rgba(43,33,64,.45);display:flex;align-items:center;justify-content:center;padding:max(12px,env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) max(12px,env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px))}
 .hcard{--hs:1;background:var(--paper);border-radius:28px;width:min(880px,100%);max-height:100%;overflow:hidden;display:flex;flex-direction:column;gap:calc(14px*var(--hs));padding:calc(20px*var(--hs)) calc(24px*var(--hs));box-shadow:0 8px 0 var(--sky-deep)}
@@ -1123,7 +1227,7 @@ const HELP={
   dress:{em:"👗",title:"Dressing room",steps:[["👆","Pick a tab: skin, face, hair, hat, clothes."],["🎨","Tap a style, then a color dot."],["🎲","Tap the dice for a surprise look."],["✔️","Tap All done to save."]],
     faq:[["Where does my look show?","Home, games, the Inbox and as your farmer on the farm."],["Other devices?","Your look is the same everywhere."]]},
   story:{em:"🌙",title:"Bedtime Story",steps:[["💌","Pick who the story is for."],["📚","Pick a story."],["🤪","Fill in the silly words."],["✏️","Draw the characters."],["🎤","Choose who reads it: the reading voice, you, or no audio."],["📨","Send it!"]],
-    faq:[["Where does it go?","Into their 💌 Inbox as a gift."],["Too big to send?","Use shorter recordings or simpler drawings."]]},
+    faq:[["Make my own?","Pick ✨ My own story: choose places, add characters, give them moves, and tell each page."],["Where does it go?","Into their 💌 Inbox as a gift."],["Too big to send?","Use shorter recordings or simpler drawings."]]},
   reader:{em:"📖",title:"Reading a story",steps:[["➡️","Tap ➡️ for the next page, ⬅️ to go back."],["▶️","Tap ▶️ to let it read by itself, ⏸️ to stop."],["💛","At the end, say thank you."],["✖️","Tap ✖️ to close."]],
     faq:[["No sound?","Check the volume and the silent switch, and 🔊 on Home."],["Says 'no audio'?","That one is for a grown-up to read out loud."]]},
   inbox:{em:"💌",title:"Inbox",steps:[["📬","Tap a message to open it."],["✏️","Send something new: a sticker, drawing, voice note or words."],["👤","Pick who gets it, then send."]],
@@ -2210,7 +2314,7 @@ function validGift(g){
   for(const c of g.chars){if(c!==null&&(typeof c!=="object"||!Array.isArray(c.s)||!ANIM_KEYS.includes(c.a)))return false}
   return true;
 }
-function myGifts(){return inboxOf(me).filter(m=>m.kind==="story"&&STORIES[m.story])}
+function myGifts(){return inboxOf(me).filter(m=>m.kind==="story"&&(STORIES[m.story]||m.story==="custom"))}
 function unopenedGifts(){return myGifts().filter(m=>!m.read)}
 
 /* ---- authoring wizard ---- */
@@ -2218,10 +2322,11 @@ let draft=null, sStep="home";
 function newDraft(){return {to:null,story:null,words:{},bi:0,chars:[],ci:0}}
 function openStory(step){draft=draft||newDraft();sStep=step||"home";show("story");renderStory()}
 function sGo(step){sStep=step;renderStory();$("#sBody").scrollTop=0;window.scrollTo(0,0)}
-$("#sHome").onclick=()=>{hush();draft=null;goLobby()};
+$("#sHome").onclick=()=>{hush();if(csIsCustom())csSaveNow();draft=null;goLobby()};
 $("#sBack").onclick=()=>{
   hush();
-  const back={home:null,shelf:"home",to:"home",pick:"to",blank:"pick",draw:"blank",wiggle:"draw",voice:"wiggle",record:"voice",ready:"voice",sent:null}[sStep];
+  if(csIsCustom()&&sStep==="cedit"){csSaveNow();if(draft.sel>=0){draft.sel=-1;draft.pathMode=false;return renderStory()}return draft.fromHome?sGo("home"):sGo("pick")}
+  const back={home:null,shelf:"home",to:"home",pick:"to",blank:"pick",draw:"blank",wiggle:"draw",voice:"wiggle",record:"voice",ready:csIsCustom()?"cfinish":"voice",cfinish:"cedit",sent:null}[sStep];
   if(sStep==="record"&&draft.vi>0){draft.vi--;return renderStory()}
   if(sStep==="blank"&&draft.bi>0){draft.bi--;return renderStory()}
   if(sStep==="draw"&&draft.ci>0){draft.ci--;return renderStory()}
@@ -2230,7 +2335,7 @@ $("#sBack").onclick=()=>{
 };
 function el(tag,cls,html){const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e}
 function renderStory(){
-  const B=$("#sBody"); B.innerHTML=""; B.classList.toggle("little-choices",lvl()==="little"); $("#story").classList.toggle("drawing",sStep==="draw"); $("#story").scrollTop=0;
+  const B=$("#sBody"); B.innerHTML=""; B.classList.toggle("little-choices",lvl()==="little"); $("#story").classList.toggle("drawing",sStep==="draw"); $("#story").classList.toggle("editing",sStep==="cedit"); $("#story").scrollTop=0;
   const S=draft.story&&STORIES[draft.story];
   if(sStep==="home"){
     B.append(el("h2",null,"What do you want to do?"));
@@ -2241,13 +2346,19 @@ function renderStory(){
     const sh=el("button","scard",`<span class="em">📚</span><h3>My stories</h3><p>${myGifts().length?`${myGifts().length} stor${myGifts().length>1?"ies":"y"} for you${n?` · ${n} new!`:""}`:"Stories people send you live here."}</p>`);
     sh.onclick=()=>{sGo("shelf");sayLittle("My stories")};
     row.append(mk,sh); B.append(row); sayLittle("Make a story, or read my stories?");
+    csDraftList().then(list=>{if(sStep!=="home"||screen!=="story"||!list.length||!B.isConnected)return;
+      B.append(el("h3",null,"📝 Keep working on a story"));const dl=el("div","draftlist");
+      for(const d of list){const b=el("button","draftcard",`<span class="em">${esc(d.cover)}</span><span><b>${esc(d.title||"My own story")}</b><small>${d.mine?"":`${esc(nameOf(d.owner))}'s draft · `}for ${esc(KIDS[d.to]?nameOf(d.to):"someone")} · ${d.pages} page${d.pages>1?"s":""}</small></span>`);
+        b.onclick=()=>csOpenDraft(d.owner,d.id);dl.append(b);
+        if(d.mine){const x=el("button","round sm","🗑️");x.setAttribute("aria-label","Delete draft");x.onclick=()=>{if(x.dataset.armed){csDeleteDraft(d.owner,d.id);b.remove();x.remove();return}x.dataset.armed=1;x.textContent="Sure?";x.classList.add("danger")};dl.append(x)}}
+      B.append(dl)});
   }
   else if(sStep==="shelf"){
     B.append(el("h2",null,"My stories"));
     const list=myGifts();
     if(!list.length){B.append(el("p","empty",`No stories yet. When someone makes you a bedtime story, it shows up here.`));return}
     const grid=el("div","shelf");
-    for(const g of list){const st=STORIES[g.story];
+    for(const g of list){const st=storyMeta(g);
       const b=el("button","scard",`${g.read?"":'<span class="new">New</span>'}<span class="em">${st.cover}</span><h3>${esc(st.title)}</h3><span class="from">from ${esc(nameOf(g.from))}</span>`);
       b.onclick=()=>openStoryMsg(g); grid.append(b)}
     B.append(grid);
@@ -2265,6 +2376,8 @@ function renderStory(){
   else if(sStep==="pick"){
     B.append(el("h2",null,"Pick a story"));
     const grid=el("div","storycards");
+    {const c=el("button","scard own",`<span class="em">✨</span><h3>My own story</h3><p>Make every page yourself: places, characters, moves and words.</p>`);
+      c.onclick=()=>{const to=draft.to;draft=csNewDraft(to);sayLittle("My own story!");sGo("cedit");setTimeout(()=>sayLittle("Pick a place for your first page"),900)};grid.append(c)}
     for(const [id,st] of Object.entries(STORIES)){
       const b=el("button","scard",`<span class="em">${st.cover}</span><h3>${esc(st.title)}</h3><p>${esc(st.blurb)}</p>`);
       b.onclick=()=>{if(draft.story!==id){draft.words={};draft.chars=[]}draft.story=id;draft.bi=0;draft.ci=0;sayLittle(st.title);sGo("blank");setTimeout(()=>say(BLANKS[STORIES[id].blanks[0]].ask),900)};
@@ -2290,11 +2403,13 @@ function renderStory(){
     if(lvl()!=="little"&&type!=="number"){
       const f=el("div","typeown");const inp=el("input");inp.id="ownWord";inp.maxLength=20;inp.placeholder="…or type your own";inp.autocomplete="off";
       const go=el("button","bigbtn","Next");
-      const sub=()=>{const v=inp.value.replace(/[^\p{L}\p{N} '\-!]/gu,"").trim().slice(0,20);if(!v){inp.focus();return}pick(v,"")};
+      const sub=()=>{const v=kidSafe(inp.value.replace(/[^\p{L}\p{N} '\-!]/gu,"").trim()).slice(0,20);if(!v){inp.focus();return}pick(v,"")};
       go.onclick=sub; inp.onkeydown=e=>{if(e.key==="Enter")sub()}; f.append(inp,go); B.append(f);
     }
   }
   else if(sStep==="draw") renderDraw(B,S);
+  else if(sStep==="cedit") csRenderEdit(B);
+  else if(sStep==="cfinish") csRenderFinish(B);
   else if(sStep==="wiggle"){
     B.append(el("h2",null,"How do they move?"));
     const wrap=el("div","wiggles");
@@ -2338,9 +2453,11 @@ function renderStory(){
   else if(sStep==="ready"){
     const K=kidOf(draft.to);
     B.append(el("h2",null,`Your story for ${esc(K.name)} is ready!`));
-    B.append(el("p","sub",`${S.cover} ${esc(S.title)}`));
+    const M=csIsCustom()?storyMeta(csGift()):S;
+    B.append(el("p","sub",`${M.cover} ${esc(M.title)}`));
     const row=el("div","rowbtns");
     const prev=el("button","ghost","👀 Read it first"); prev.onclick=()=>openReader(draftGift(),{preview:true});
+    if(csIsCustom()&&draft.owner&&draft.owner!==me){row.append(prev);B.append(row);B.append(el("p","note",`Saved! ${esc(nameOf(draft.owner))} can send it from their Bedtime Story screen.`));return}
     const send=el("button","bigbtn",`Send gift to ${esc(K.name)} 🎁`); send.onclick=sendStoryGift;
     row.append(prev,send); B.append(row);
   }
@@ -2371,7 +2488,7 @@ function renderDraw(B,S){
 }
 // size the drawing pad and its tools so the whole page fits on screen: pad beside the tools when wide, above them when tall
 function fitPad(){
-  const scr=$(".screen.drawing:not([hidden])"); if(!scr) return; const wrap=scr.querySelector(".padwrap"), cv=wrap&&wrap.querySelector(".pad"), tools=wrap&&wrap.querySelector(".padtools"); if(!cv) return;
+  const scr=$(".cdrawsheet:not([hidden])")||$(".screen.drawing:not([hidden])"); if(!scr) return; const wrap=scr.querySelector(".padwrap"), cv=wrap&&wrap.querySelector(".pad"), tools=wrap&&wrap.querySelector(".padtools"); if(!cv) return;
   const fits=()=>scr.scrollHeight<=scr.clientHeight+1&&wrap.scrollWidth<=wrap.clientWidth+1;
   cv.style.width="10px"; tools.style.setProperty("--ps",1);
   const side=wrap.clientWidth>wrap.clientHeight*1.25; wrap.classList.toggle("side",side);
@@ -2438,9 +2555,14 @@ function charFigure(g,i){
   }
   const d=el("div","emc");d.textContent=S.cast[i].from?((g.words[S.cast[i].from]||{}).e||"⭐"):S.cast[i].emoji;return d;
 }
-function draftGift(){const g={id:null,to:draft.to,from:me,story:draft.story,words:draft.words,chars:STORIES[draft.story].cast.map((_,i)=>draft.chars[i]||{s:[],a:"bob"}),at:Date.now()};if(draft.silent)g.silent=true;else if(draft.voice&&Object.keys(draft.voice).length)g.voice=draft.voice;return g}
+function draftGift(){if(csIsCustom())return csGift(true);const g={id:null,to:draft.to,from:me,story:draft.story,words:draft.words,chars:STORIES[draft.story].cast.map((_,i)=>draft.chars[i]||{s:[],a:"bob"}),at:Date.now()};if(draft.silent)g.silent=true;else if(draft.voice&&Object.keys(draft.voice).length)g.voice=draft.voice;return g}
 function sendStoryGift(){
   if(!mail.ref){toast("Can't send right now. Check the Wi-Fi.");say("Hmm, I can't send it right now.");return}
+  if(csIsCustom()){const g=csGift(); delete g.id;
+    for(const p of g.pages) for(const it of p.items) if(it.s) it.s=thin(it.s);
+    if(JSON.stringify(g).length>(g.voice?6000000:1500000)){toast("That story is too big to send. Try shorter recordings or simpler drawings.");return}
+    if(!sendMsg([g.to],{kind:"story",story:"custom",title:g.title,cover:g.cover},g)) return;
+    csDeleteDraft(draft.owner||me,draft.id); bump("storiesSent"); tada(); sGo("sent"); say(`Sent to ${nameOf(g.to)}!`); return}
   const g=draftGift(); delete g.id;
   for(const c of g.chars) c.s=thin(c.s);
   if(JSON.stringify(g).length>(g.voice?3000000:400000)){toast("That story is too big to send. Try shorter recordings or a simpler drawing.");return}
@@ -2453,8 +2575,8 @@ const rd={g:null,msg:null,ret:"lobby",page:0,auto:false,preview:false,wordSpans:
 (()=>{const s=$("#rStars");for(let i=0;i<60;i++){const st=document.createElement("i");st.style.left=Math.random()*100+"%";st.style.top=Math.random()*70+"%";st.style.animationDelay=(Math.random()*3)+"s";if(Math.random()<.2){st.style.width=st.style.height="4px"}s.append(st)}})();
 function openReader(g,o={}){
   if(screen!=="reader") rd.ret=o.ret||screen; if(o.preview) rd.msg=null; unlockAudio(); rd.vurls={};
-  rd.g=g; rd.page=0; rd.preview=!!o.preview; rd.auto=lvl()==="little"&&!g.silent;
-  show("reader"); $("#rTitle").textContent=STORIES[g.story].title+(g.voice?` · 🎤 read by ${nameOf(g.from)}`:g.silent?" · 🤫 no audio":""); $("#rEnd").hidden=true; syncAuto();
+  rd.g=g; rd.page=Math.min(o.page||0,storyPages(g).length-1); rd.preview=!!o.preview; rd.auto=lvl()==="little"&&!g.silent&&!o.page;
+  show("reader"); $("#rTitle").textContent=storyMeta(g).title+(g.voice?` · 🎤 read by ${nameOf(g.from)}`:g.silent?" · 🤫 no audio":""); $("#rEnd").hidden=true; syncAuto();
   keepAwake();
   if(o.gift){$("#rUnwrapMsg").textContent=`A story from ${nameOf(g.from)}! Tap to open`;$("#rUnwrap").hidden=false;$("#rUnwrap").classList.remove("pop");if(!g.silent)say(`A story from ${nameOf(g.from)}! Tap to open.`)}
   else {$("#rUnwrap").hidden=true; renderPage()}
@@ -2462,6 +2584,9 @@ function openReader(g,o={}){
 $("#rOpen").onclick=()=>{unlockAudio();const u=$("#rUnwrap");u.classList.add("pop");tada();setTimeout(()=>{u.hidden=true;markRead(rd.msg);renderPage()},600)};
 function renderPage(){
   clearTimeout(rd.timer);
+  const custom=rd.g.story==="custom"; $("#reader").classList.toggle("custom",custom); $("#rText").hidden=false;
+  if(custom) return csReadPage();
+  (rd.csTimers||[]).forEach(clearTimeout); {const c=document.querySelector("#reader .cread");if(c)c.innerHTML=""}
   const g=rd.g,S=STORIES[g.story],P=S.pages[rd.page];
   // cast
   const cast=$("#rCast");cast.innerHTML="";
@@ -2504,7 +2629,7 @@ function readPage(text){
   if(!speech.ok||!speech.on){if(rd.auto)rd.timer=setTimeout(nextPage,Math.max(4000,text.length*70));return}
   say(text,{pause:450,onWord:(ci)=>{const i=spans.findIndex(s=>ci>=s.start&&ci<s.end);if(i>=0)mark(i)},onEnd:after});
 }
-function nextPage(){clearTimeout(rd.timer);const S=STORIES[rd.g.story];if(rd.page<S.pages.length-1){rd.page++;renderPage()}else showEnd()}
+function nextPage(){clearTimeout(rd.timer);if(rd.page<storyPages(rd.g).length-1){rd.page++;renderPage()}else showEnd()}
 function showEnd(){
   hush();const g=rd.g;$("#rEnd").hidden=false;
   const fromOther=!rd.preview&&g.from!==me&&g.id; if(!rd.preview) bump("storiesRead");
@@ -2521,8 +2646,530 @@ const closeReader=()=>{clearTimeout(rd.timer);hush();if(rd.ret==="grown"){show("
 $("#rClose").onclick=closeReader; $("#rDone").onclick=closeReader;
 $("#rThanks").addEventListener("click",e=>{const b=e.target.closest("button");if(!b||!rd.g)return;const g=rd.g;
   floatReaction(b.dataset.r,me);
-  sendMsg([g.from],{kind:"react",r:b.dataset.r,about:"story",story:g.story});
+  sendMsg([g.from],{kind:"react",r:b.dataset.r,about:"story",story:g.story,title:storyMeta(g).title});
   toast(`Sent to ${nameOf(g.from)}!`);});
+/* ================= MY OWN STORY (backlog #13 B + C) =================
+   A story built page by page: a scene, characters and props (emoji, drawings, avatars, family cartoons),
+   each with a move, a feeling, a path and a start time, plus words (typed, spoken or recorded).
+   Scenes are drawn in code for now. Each scene id is the art slot for a generated background later
+   (art/story/bg/<id>.webp); characters will come from art/manifest.json the same way.
+   Gift:  {story:"custom", title, cover, pages:[{sc, fx, t, items:[item]}], voice:{p0..p11}, silent}
+   Item:  {k:"e"|"d"|"av"|"fam", e, nm, s, who, key, x, y, h, f, mv, fe, at, path}
+          x = center 0..1, y = bottom 0..1, h = height as a share of the stage height */
+const CS_ASPECT=1.6, CS_MAX_PAGES=12, CS_MAX_ITEMS=8;
+const CS_SCENES={
+  night:{n:"Starry night",e:"🌙",bg:"linear-gradient(#141B4D,#2A3A8C 74%,#1E2A5A 74%,#18224A)",deco:[["🌙",.86,.26,.16]],fx:"stars"},
+  bedroom:{n:"Bedroom",e:"🛏️",bg:"linear-gradient(#4A3A7A,#6C58A8 68%,#8A6A4A 68%,#6B4F33)",deco:[["🪟",.8,.42,.26],["🌙",.8,.32,.07],["🛏️",.17,.97,.32],["🧸",.38,.97,.1]],fx:"none"},
+  forest:{n:"Moonlit forest",e:"🌲",bg:"linear-gradient(#0E1A3A,#1F3B5C 62%,#1D4D32 62%,#123522)",deco:[["🌲",.07,.78,.42],["🌲",.24,.7,.3],["🌲",.92,.8,.44],["🌲",.74,.68,.27],["🍄",.6,.97,.08],["🌙",.16,.24,.11]],fx:"fireflies"},
+  castle:{n:"Castle",e:"🏰",bg:"linear-gradient(#3A2466,#8A4FA0 60%,#4E7A3A 60%,#355A27)",deco:[["🏰",.74,.68,.5],["⭐",.12,.16,.06],["⭐",.42,.1,.05]],fx:"sparkles"},
+  ocean:{n:"Under the sea",e:"🐠",bg:"linear-gradient(#5CC8F0,#1E6FB5 55%,#123F7A 86%,#E8C98A 86%,#D9B571)",deco:[["🌿",.07,.96,.22],["🪸",.9,.96,.18],["🐚",.52,.99,.07],["🌿",.7,.96,.16]],fx:"bubbles"},
+  space:{n:"Outer space",e:"🚀",bg:"radial-gradient(circle at 70% 30%,#2B2A6E,#0B0B26 70%)",deco:[["🪐",.84,.42,.22],["🌍",.14,.32,.14],["☄️",.5,.16,.08]],fx:"stars"},
+  clouds:{n:"Cloud kingdom",e:"☁️",bg:"linear-gradient(#FFD6E8,#C9E6FF 72%,#FFFFFF 72%,#EAF4FF)",deco:[["☁️",.14,.32,.16],["☁️",.6,.22,.12],["☁️",.88,.48,.18],["🌈",.5,.66,.3]],fx:"sparkles"},
+  farm:{n:"Farm at night",e:"🚜",bg:"linear-gradient(#1B2554,#3D4F8F 60%,#4C8A3A 60%,#356A28)",deco:[["🏡",.8,.7,.3],["🌾",.1,.98,.12],["🌾",.2,.98,.1],["🌻",.93,.99,.12],["🌙",.2,.22,.11]],fx:"fireflies"},
+  beach:{n:"Beach at sunset",e:"🏖️",bg:"linear-gradient(#FF9A5A,#FF6F91 45%,#3AA0D8 58%,#2179B8 72%,#F2D59A 72%,#E8C27A)",deco:[["🌴",.09,.94,.46],["☀️",.62,.6,.14],["🐚",.72,.99,.06]],fx:"none"},
+  snow:{n:"Snowy village",e:"⛄",bg:"linear-gradient(#5A6FB0,#9FB4E6 62%,#F4F8FF 62%,#DDE7F6)",deco:[["🏘️",.76,.68,.3],["🌲",.09,.72,.3],["⛄",.3,.97,.16]],fx:"snow"},
+  candy:{n:"Candy land",e:"🍭",bg:"linear-gradient(#FFC2E2,#FFE3F1 66%,#FF9EC9 66%,#F77FB6)",deco:[["🍭",.09,.94,.3],["🧁",.76,.98,.14],["🍬",.9,.99,.09],["🍩",.3,.99,.08]],fx:"hearts"},
+  jungle:{n:"Jungle",e:"🌴",bg:"linear-gradient(#9BE3A0,#3C9A5A 60%,#2F6E33 60%,#245527)",deco:[["🌴",.06,.74,.5],["🌴",.93,.72,.46],["🌺",.3,.99,.08],["🌿",.62,.99,.12]],fx:"leaves"},
+  meadow:{n:"Sunny meadow",e:"🌼",bg:"linear-gradient(#8FD3FF,#CFEFFF 62%,#8BD66B 62%,#6BBF4E)",deco:[["☀️",.86,.26,.16],["☁️",.3,.24,.12],["🌷",.1,.99,.08],["🌼",.24,.99,.07],["🌻",.9,.99,.12]],fx:"none"},
+};
+const CS_FX=[["none","🚫","None"],["stars","⭐","Stars"],["shooting","🌠","Shooting stars"],["snow","❄️","Snow"],["rain","🌧️","Rain"],["fireflies","💛","Fireflies"],["bubbles","🫧","Bubbles"],["leaves","🍂","Leaves"],["hearts","💕","Hearts"],["sparkles","✨","Sparkles"]];
+const CS_MOVES=[["none","🧍","Stay still"],["bob","🌊","Bob"],["hop","🐸","Hop"],["wiggle","💃","Wiggle"],["float","🎈","Float"],["spin","🌀","Spin"],["sleepy","😴","Sleepy"],["walk","🚶","Walk across"],["run","🏃","Run"],["fly","🕊️","Fly across"],["swim","🐟","Swim"],["bounce","🏀","Bounce"],["twirl","🩰","Twirl"],["wave","👋","Wave"],["jump","🤸","Jump for joy"],["shiver","🥶","Shiver"],["grow","🌱","Grow"],["shrink","🤏","Shrink"],["peek","🙈","Peek in"],["pop","🎉","Pop in"],["fade","👻","Fade away"],["sparkle","✨","Sparkle"],["tiptoe","🤫","Tiptoe"]];
+const CS_LITTLE_MOVES=["none","bob","hop","wiggle","spin","sleepy","walk","fly","swim","bounce","jump","sparkle"];
+const CS_FEELS=[["","😐","No feeling"],["happy","😊","Happy"],["sad","😢","Sad"],["surprised","😮","Surprised"],["scared","😨","Scared"],["love","🥰","Love"]];
+const CS_WHEN=[["now","▶️","Right away"],["late","⏳","A bit later"],["tap","👆","When tapped"]];
+const CS_LIB=(()=>{const L={
+  animals:"🐶 puppy|🐱 kitty|🐰 bunny|🐻 bear|🦊 fox|🐸 frog|🦉 owl|🐘 elephant|🦁 lion|🐯 tiger|🐵 monkey|🐼 panda|🐧 penguin|🐢 turtle|🐬 dolphin|🐳 whale|🐙 octopus|🐝 bee|🦋 butterfly|🐞 ladybug|🐔 hen|🐮 cow|🐷 pig|🐑 sheep|🦆 duck|🐟 fish|🐿️ squirrel|🦔 hedgehog",
+  magic:"🦄 unicorn|🐉 dragon|🦖 dinosaur|🧚 fairy|🧜‍♀️ mermaid|🧙 wizard|👸 princess|🤴 prince|🦸 superhero|🤖 robot|👻 friendly ghost|👽 alien|🧞 genie|🐲 baby dragon",
+  people:"🧒 kid|👧 girl|👦 boy|👶 baby|👩 mom|👨 dad|👵 grandma|👴 grandpa|🧑‍🚀 astronaut|🧑‍🚒 firefighter|👮 police officer|🧑‍⚕️ doctor|🧑‍🍳 chef|🧑‍🌾 farmer|🧑‍🏫 teacher|🧑‍🎨 artist",
+  things:"🌙 moon|⭐ star|☀️ sun|🌈 rainbow|☁️ cloud|🚀 rocket|🛸 flying saucer|⛵ boat|🚂 train|🚒 fire truck|🚓 police car|🎈 balloon|🧸 teddy|🎁 present|🍰 cake|🍪 cookie|🍕 pizza|🍦 ice cream|👑 crown|🪄 magic wand|💎 treasure|📚 book|🌳 tree|🌷 flower|🍄 mushroom|🏠 house|🏰 castle|🪁 kite|⚽ ball|🛏️ bed"};
+  const o={};for(const [k,v] of Object.entries(L))o[k]=v.split("|").map(s=>{const i=s.indexOf(" ");return[s.slice(0,i),s.slice(i+1)]});return o})();
+const CS_ADD_TABS=[["animals","🐶","Animals"],["magic","🦄","Magic"],["people","🧒","People"],["things","🎈","Things"],["family","👨‍👩‍👧","Family"],["draw","✏️","Draw"]];
+const CS_STARTERS=["Once upon a time,","One night,","Then suddenly,","But then,","So","They lived happily ever after.","The end."];
+const CS_DOES=[["🤗","hugged"],["🎈","played with"],["🔎","found"],["❤️","loves"],["👋","said hi to"],["🎶","sang to"],["🚶","walked to"],["🕊️","flew to"],["😴","fell asleep by"],["🍪","shared a cookie with"]];
+
+/* ---- kid-safe words: blocked words become "silly", no scolding ---- */
+const KS_RE=new RegExp("\\b(?:"+["fuck\\w*","shit\\w*","bitch\\w*","bastard\\w*","asshole\\w*","cunt\\w*","nigg\\w*","fagg\\w*","whore\\w*","slut\\w*","porn\\w*","retard\\w*","wank\\w*","twat\\w*","pussy","dick","dicks","cock","cocks","piss","pissed","ass","asses","damn","dammit","crap","fag","sex","sexy","kill","killed","kills","murder\\w*","gun","guns","blood","bloody","stupid","idiot","idiots","dumb","hell"].join("|")+")\\b","gi");
+function kidSafe(t){return String(t==null?"":t).replace(KS_RE,"silly")}
+
+/* ---- draft ---- */
+function csNewPage(sc){sc=CS_SCENES[sc]?sc:"night";return{sc,fx:CS_SCENES[sc].fx,t:"",items:[]}}
+function csNewDraft(to){return{kind:"custom",story:"custom",id:"d"+Date.now().toString(36)+Math.random().toString(36).slice(2,6),owner:me,to,title:"",cover:"",pages:[csNewPage("night")],pi:0,sel:-1,tab:"scene",addTab:"animals",readBy:"",silent:false}}
+function csPage(){return draft.pages[draft.pi]}
+function csItemName(it){if(it.k==="av"||it.k==="fam")return nameOf(it.who);return it.nm||(it.k==="d"?"friend":"friend")}
+function csItemCall(it){return(it.k==="av"||it.k==="fam")?nameOf(it.who):"the "+csItemName(it)}
+function csIsCustom(){return draft&&draft.story==="custom"}
+let csSaveT=null;
+function csSave(){clearTimeout(csSaveT);csSaveT=setTimeout(csSaveNow,1200)}
+function csSaveNow(){
+  clearTimeout(csSaveT); if(!csIsCustom()||!mail.ref||!draft.owner) return;
+  const d={id:draft.id,owner:draft.owner,to:draft.to,title:kidSafe(draft.title).slice(0,60),cover:draft.cover||"",readBy:draft.readBy||"",at:Date.now(),
+    pages:draft.pages.map(p=>Object.assign({sc:p.sc,fx:p.fx,t:p.t||"",items:p.items.map(csCleanItem)},p.v?{v:p.v}:{}))};
+  const clean=JSON.parse(JSON.stringify(d));
+  mail.ref.child(`drafts/${draft.owner}/${draft.id}`).set(clean).catch(()=>{});
+  mail.ref.child(`draftIndex/${draft.owner}/${draft.id}`).set({title:clean.title,to:clean.to||"",pages:clean.pages.length,cover:clean.cover||csGuessCover(),at:clean.at}).catch(()=>{});
+}
+function csDeleteDraft(owner,id){if(!mail.ref)return;mail.ref.child(`drafts/${owner}/${id}`).remove().catch(()=>{});mail.ref.child(`draftIndex/${owner}/${id}`).remove().catch(()=>{})}
+async function csDraftList(){
+  if(!mail.ref) return [];
+  try{const snap=await mail.ref.child("draftIndex").once("value");const all=snap.val()||{},out=[];
+    for(const [owner,ds] of Object.entries(all)){if(!KIDS[owner]||!ds)continue;
+      const mine=owner===me, help=!mine&&KIDS[me]&&KIDS[me].grown&&!KIDS[owner].grown;
+      if(!mine&&!help)continue;
+      for(const [id,x] of Object.entries(ds))if(x&&typeof x==="object")out.push({owner,id,title:String(x.title||""),to:x.to,pages:+x.pages||1,cover:String(x.cover||"📖").slice(0,16),at:+x.at||0,mine})}
+    return out.sort((a,b)=>(b.mine-a.mine)||(b.at-a.at)).slice(0,8)}catch(e){return[]}
+}
+async function csOpenDraft(owner,id){
+  if(!mail.ref) return; let v=null;
+  try{v=(await mail.ref.child(`drafts/${owner}/${id}`).once("value")).val()}catch(e){}
+  if(!v){toast("That draft couldn't open.");csDeleteDraft(owner,id);return}
+  const n=csNorm(Object.assign({},v,{story:"custom"}),true); if(!n){toast("That draft couldn't open.");return}
+  draft=Object.assign(csNewDraft(KIDS[v.to]?v.to:null),{id,owner,title:n.title==="A story"?"":n.title,cover:v.cover||"",readBy:v.readBy||"",pages:n.pages,fromHome:true});
+  (v.pages||[]).forEach((p,i)=>{if(p&&p.v&&typeof p.v.data==="string"&&draft.pages[i])draft.pages[i].v={mime:String(p.v.mime||"audio/mp4"),data:p.v.data}});
+  if(!draft.to){sGo("to");return} sGo("cedit");
+}
+
+/* ---- validating what arrives (gifts and drafts) ---- */
+const CS_MOVE_KEYS=CS_MOVES.map(m=>m[0]), CS_FEEL_KEYS=CS_FEELS.map(f=>f[0]), CS_FX_KEYS=CS_FX.map(f=>f[0]);
+const csNum=(v,lo,hi,d)=>{v=+v;return Number.isFinite(v)?Math.min(hi,Math.max(lo,v)):d};
+function csCleanItem(it){
+  if(!it||typeof it!=="object") return null;
+  const k=["e","d","av","fam"].includes(it.k)?it.k:null; if(!k) return null;
+  const o={k,x:csNum(it.x,0,1,.5),y:csNum(it.y,.05,1,.92),h:csNum(it.h,.06,.95,.32),f:!!it.f,mv:CS_MOVE_KEYS.includes(it.mv)?it.mv:"none",fe:CS_FEEL_KEYS.includes(it.fe)?it.fe:"",at:["now","late","tap"].includes(it.at)?it.at:"now"};
+  if(k==="e"){if(typeof it.e!=="string"||!it.e||it.e.length>16)return null;o.e=it.e;o.nm=kidSafe(String(it.nm||"friend")).slice(0,24)}
+  if(k==="d"){const s=Array.isArray(it.s)?it.s.filter(x=>x&&Array.isArray(x.p)&&x.p.length<=3000).slice(0,200):[];if(!s.length)return null;o.s=s;o.nm=kidSafe(String(it.nm||"friend")).slice(0,24)}
+  if(k==="av"||k==="fam"){if(!KIDS[it.who])return null;o.who=it.who}
+  if(k==="fam"){if(typeof it.key!=="string"||!/^[\w-]{1,40}$/.test(it.key))return null;o.key=it.key}
+  if(Array.isArray(it.path)&&it.path.length>=4){const p=it.path.slice(0,400).map(Number);if(p.every(Number.isFinite))o.path=p.map(v=>Math.round(Math.min(1.2,Math.max(-.2,v))*1000)/1000)}
+  return o;
+}
+function csNorm(raw,isDraft){
+  if(!raw||typeof raw!=="object"||raw.story!=="custom") return null;
+  const pages=(Array.isArray(raw.pages)?raw.pages:Object.values(raw.pages||{})).slice(0,CS_MAX_PAGES).map(p=>{
+    if(!p||typeof p!=="object") return null;
+    const sc=CS_SCENES[p.sc]?p.sc:"night";
+    const items=(Array.isArray(p.items)?p.items:Object.values(p.items||{})).map(csCleanItem).filter(Boolean).slice(0,CS_MAX_ITEMS);
+    return{sc,fx:CS_FX_KEYS.includes(p.fx)?p.fx:"none",t:kidSafe(String(p.t||"")).slice(0,400),items};
+  }).filter(Boolean);
+  if(!pages.length) return null;
+  const g={story:"custom",title:kidSafe(String(raw.title||"")).slice(0,60)||"A story",cover:String(raw.cover||"📖").slice(0,16),pages,at:+raw.at||Date.now()};
+  if(!isDraft){if(!KIDS[raw.to]||!KIDS[raw.from])return null;g.to=raw.to;g.from=raw.from}
+  return g;
+}
+function csGuessCover(){for(const p of draft.pages)for(const it of p.items)if(it.k==="e")return it.e;return CS_SCENES[draft.pages[0].sc].e}
+function csGift(preview){
+  const g={id:null,story:"custom",to:draft.to,from:draft.owner||me,at:Date.now(),title:kidSafe(draft.title).trim().slice(0,60)||`${nameOf(draft.to)}'s story`,cover:draft.cover||csGuessCover(),
+    pages:draft.pages.map(p=>({sc:p.sc,fx:p.fx,t:kidSafe(p.t||"").slice(0,400),items:p.items.map(csCleanItem).filter(Boolean)}))};
+  const rb=draft.readBy||(draft.pages.some(p=>p.v)?"rec":"voice");
+  if(rb==="none") g.silent=true;
+  else if(rb==="rec"||preview){const v={};draft.pages.forEach((p,i)=>{if(p.v)v["p"+i]=p.v});if(Object.keys(v).length)g.voice=v}
+  return g;
+}
+function storyMeta(x){if(x&&x.story==="custom")return{title:String(x.title||"A story").slice(0,60),cover:String(x.cover||"📖").slice(0,16)};const S=x&&STORIES[x.story];return S?{title:S.title,cover:S.cover}:{title:"A story",cover:"📖"}}
+function storyPages(g){return g.story==="custom"?g.pages:STORIES[g.story].pages}
+
+/* ---- drawing characters into pictures ---- */
+const csDrawCache=new WeakMap();
+function csDrawURL(s){let u=csDrawCache.get(s);if(u)return u;const cv=document.createElement("canvas");cv.width=PAD;cv.height=PAD;drawStrokes(cv.getContext("2d"),s,1);u=cv.toDataURL("image/png");csDrawCache.set(s,u);return u}
+/* family cartoon likenesses live privately in Firebase: families/<code>/art/family/<who>/<key> = {img} */
+const csFam={list:null,imgs:new Map(),loading:null};
+async function csFamList(){
+  if(csFam.list) return csFam.list; if(csFam.loading) return csFam.loading;
+  csFam.loading=(async()=>{const out=[];try{
+    const base=`${FIREBASE.databaseURL}/families/${encodeURIComponent(familyCode)}/art/family`;
+    const who=await (await fetch(base+".json?shallow=true")).json()||{};
+    for(const w of Object.keys(who)){if(!KIDS[w])continue;const keys=await (await fetch(`${base}/${w}.json?shallow=true`)).json()||{};
+      for(const k of Object.keys(keys).sort((a,b)=>(a==="master"?-1:b==="master"?1:a.localeCompare(b))))if(/^[\w-]{1,40}$/.test(k))out.push([w,k])}
+  }catch(e){} csFam.list=out; return out})();
+  return csFam.loading;
+}
+function csFamImg(who,key){
+  const id=who+"/"+key; if(csFam.imgs.has(id)) return csFam.imgs.get(id);
+  const p=mail.ref?mail.ref.child(`art/family/${who}/${key}`).once("value").then(s=>{const v=s.val();return v&&typeof v.img==="string"&&v.img.startsWith("data:image/")?v.img:null}).catch(()=>null):Promise.resolve(null);
+  csFam.imgs.set(id,p); return p;
+}
+function csFamLabel(key){return key==="master"?"":key.replace(/^(pose|outfit)_/,"").replace(/_/g," ")}
+
+/* ---- building a scene (shared by the editor and the reader) ---- */
+function csFxLayer(fx){
+  const L=el("div","cfx fx-"+fx); const R=Math.random;
+  const n={stars:40,shooting:4,snow:45,rain:60,fireflies:16,bubbles:18,leaves:12,hearts:12,sparkles:16}[fx]||0;
+  for(let i=0;i<n;i++){const s=el("span");s.style.left=(R()*100)+"%";s.style.animationDelay=(-R()*(fx==="shooting"?9:8)).toFixed(2)+"s";
+    if(fx==="stars"||fx==="sparkles"||fx==="fireflies")s.style.top=(R()*(fx==="stars"?62:90))+"%";
+    if(fx==="shooting")s.style.top=(R()*35)+"%";
+    if(fx==="snow"||fx==="rain"||fx==="leaves"||fx==="bubbles"||fx==="hearts")s.style.animationDuration=({snow:6,rain:1.1,leaves:9,bubbles:7,hearts:8}[fx]*(0.7+R()*.6)).toFixed(2)+"s";
+    if(fx==="leaves")s.textContent=R()<.5?"🍂":"🍁"; if(fx==="hearts")s.textContent=R()<.5?"💕":"💗"; if(fx==="sparkles")s.textContent="✨";
+    if(fx==="snow"||fx==="bubbles"){const z=(R()*.9+.5);s.style.setProperty("--z",z.toFixed(2))}
+    L.append(s)}
+  return L;
+}
+function csItemEl(it,i){
+  const d=el("div","citem"); d.dataset.i=i;
+  d.style.left=(it.x*100)+"%"; d.style.bottom=((1-it.y)*100)+"%"; d.style.height=(it.h*100)+"%";
+  const mv=el("div","cmove"), fe=el("div","cfeel"), fl=el("div","cflip"+(it.f?" f":""));
+  if(it.k==="e"){const c=el("div","cem");c.textContent=it.e;fl.append(c)}
+  else if(it.k==="d"){const im=new Image();im.src=csDrawURL(it.s);im.alt="";fl.append(im)}
+  else if(it.k==="av"){const K=KIDS[it.who];if(K&&K.look){const im=new Image();im.src=avatarURL(K.look,"full");im.alt="";fl.append(im)}else{const c=el("div","cem");c.textContent=K?K.face:"🙂";fl.append(c)}}
+  else if(it.k==="fam"){const im=new Image();im.alt="";fl.append(im);csFamImg(it.who,it.key).then(u=>{if(u)im.src=u;else{im.replaceWith(Object.assign(el("div","cem"),{textContent:KIDS[it.who].face}))}})}
+  fe.append(fl); mv.append(fe); d.append(mv);
+  if(it.path&&it.path.length>=4) d.dataset.path="1";
+  return d;
+}
+function csBuildStage(stage,page,o={}){
+  stage.innerHTML=""; const S=CS_SCENES[page.sc]||CS_SCENES.night;
+  stage.style.background=S.bg; stage.dataset.sc=page.sc;
+  const deco=el("div","cdecos");
+  for(const [e,x,y,s] of S.deco){const d=el("span","cdeco");d.textContent=e;d.style.left=(x*100)+"%";d.style.bottom=((1-y)*100)+"%";d.style.setProperty("--s",s);deco.append(d)}
+  stage.append(deco);
+  if(page.fx&&page.fx!=="none") stage.append(csFxLayer(page.fx));
+  const items=el("div","citems"); page.items.forEach((it,i)=>items.append(csItemEl(it,i))); stage.append(items);
+  return items;
+}
+/* ---- moves, feelings and paths (Web Animations, sized to the stage) ---- */
+function csMoveFrames(it,W,H){
+  const h=it.h*H, x=it.x*W, dir=it.f?-1:1, PI=Math.PI;
+  const across=(dur,yf,rf)=>{const from=dir>0?-x-h:W-x+h,to=dir>0?W-x+h:-x-h,fr=[];for(let i=0;i<=24;i++){const t=i/24;fr.push({transform:`translate(${(from+(to-from)*t).toFixed(1)}px,${yf(t).toFixed(1)}px) rotate(${rf?rf(t).toFixed(1):0}deg)`})}return[fr,{duration:dur,iterations:Infinity}]};
+  const loop=(fr,dur,ex)=>[fr,Object.assign({duration:dur,iterations:Infinity,easing:"ease-in-out"},ex||{})];
+  switch(it.mv){
+    case "bob": return loop([{transform:"translateY(0)"},{transform:`translateY(${-h*.08}px)`},{transform:"translateY(0)"}],2200);
+    case "hop": return loop([{transform:"translateY(0) scale(1.06,.94)"},{transform:"translateY(0) scale(1)",offset:.15},{transform:`translateY(${-h*.3}px) scale(.97,1.04)`,offset:.45},{transform:"translateY(0) scale(1.05,.95)",offset:.75},{transform:"translateY(0) scale(1.06,.94)"}],1300);
+    case "wiggle": return loop([{transform:"rotate(-8deg)"},{transform:"rotate(8deg)"}],500,{direction:"alternate"});
+    case "float": return loop([{transform:"translate(0,0) rotate(-3deg)"},{transform:`translate(${h*.08}px,${-h*.15}px) rotate(2deg)`},{transform:`translate(0,${-h*.24}px) rotate(4deg)`},{transform:`translate(${-h*.08}px,${-h*.12}px) rotate(-2deg)`},{transform:"translate(0,0) rotate(-3deg)"}],5000);
+    case "spin": return loop([{transform:"rotate(0)"},{transform:"rotate(360deg)"}],6000,{easing:"linear"});
+    case "sleepy": return loop([{transform:"scale(1) rotate(0)"},{transform:"scale(.95,.92) rotate(-3deg)"},{transform:"scale(1) rotate(0)"}],3200);
+    case "walk": return across(9000,t=>-Math.abs(Math.sin(t*PI*14))*h*.05);
+    case "run": return across(3600,t=>-Math.abs(Math.sin(t*PI*16))*h*.09,()=>dir*8);
+    case "fly": return across(7000,t=>-H*.25*Math.sin(t*PI)-Math.sin(t*PI*6)*h*.08);
+    case "swim": return across(8000,t=>Math.sin(t*PI*4)*h*.12,t=>Math.cos(t*PI*4)*8);
+    case "bounce": return [[{transform:"translateY(0) scale(1.15,.85)"},{transform:`translateY(${-h*.45}px) scale(.92,1.08)`,offset:.5,easing:"ease-in"},{transform:"translateY(0) scale(1.15,.85)"}],{duration:900,iterations:Infinity,easing:"ease-out"}];
+    case "twirl": return loop([{transform:"scaleX(1)"},{transform:"scaleX(-1)"},{transform:"scaleX(1)"}],1400);
+    case "wave": return loop([{transform:"rotate(-6deg)"},{transform:"rotate(10deg)"}],450,{direction:"alternate"});
+    case "jump": return [[{transform:"translateY(0) rotate(0)"},{transform:`translateY(${-h*.7}px) rotate(${dir*180}deg)`,offset:.3},{transform:`translateY(0) rotate(${dir*360}deg)`,offset:.6},{transform:`translateY(0) rotate(${dir*360}deg)`}],{duration:2200,iterations:Infinity}];
+    case "shiver": return [[{transform:"translateX(-3px)"},{transform:"translateX(3px)"}],{duration:90,iterations:Infinity,direction:"alternate"}];
+    case "grow": return loop([{transform:"scale(.7)"},{transform:"scale(1.25)"}],2500,{direction:"alternate"});
+    case "shrink": return loop([{transform:"scale(1)"},{transform:"scale(.45)"}],2500,{direction:"alternate"});
+    case "peek": {const off=it.x<.5?-(x+h):(W-x+h);return loop([{transform:`translateX(${off}px)`},{transform:"translateX(0)",offset:.3},{transform:"translateX(0)",offset:.7},{transform:`translateX(${off}px)`}],6000)}
+    case "pop": return [[{transform:"scale(0) rotate(-20deg)"},{transform:"scale(1.15) rotate(5deg)",offset:.7},{transform:"scale(1)"}],{duration:700,iterations:1,fill:"forwards",easing:"ease-out"}];
+    case "fade": return loop([{opacity:1},{opacity:.08}],2600,{direction:"alternate"});
+    case "sparkle": return loop([{transform:"scale(1)",filter:"brightness(1)"},{transform:"scale(1.08)",filter:"brightness(1.3) drop-shadow(0 0 12px #FFF6A8)"},{transform:"scale(1)",filter:"brightness(1)"}],1400);
+    case "tiptoe": return loop([{transform:"translate(0,0)"},{transform:`translate(${dir*h*.08}px,${-h*.04}px)`,offset:.25},{transform:`translate(${dir*h*.16}px,0)`,offset:.5},{transform:`translate(${dir*h*.24}px,${-h*.04}px)`,offset:.75},{transform:`translate(${dir*h*.32}px,0)`}],2400,{direction:"alternate"});
+  }
+  return null;
+}
+function csPathFrames(it,W,H){
+  const p=it.path, h=it.h*H, pts=[]; for(let i=0;i+1<p.length;i+=2) pts.push([(p[i]-it.x)*W,(p[i+1]-it.y)*H+h/2]);
+  let len=0; const d=[0]; for(let i=1;i<pts.length;i++){len+=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]);d.push(len)}
+  if(len<5) return null;
+  const fr=pts.map((q,i)=>({transform:`translate(${q[0].toFixed(1)}px,${q[1].toFixed(1)}px)`,offset:d[i]/len}));
+  return[fr,{duration:Math.max(2000,len/(W*.22)*1000),iterations:Infinity,direction:"alternate",easing:"ease-in-out"}];
+}
+function csFeelFrames(fe,h){
+  switch(fe){
+    case "happy": return[[{transform:"translateY(0)"},{transform:`translateY(${-h*.06}px)`}],{duration:500,iterations:Infinity,direction:"alternate",easing:"ease-in-out"}];
+    case "sad": return[[{transform:`rotate(-5deg) translateY(${h*.03}px)`},{transform:`rotate(-2deg) translateY(${h*.05}px)`}],{duration:2400,iterations:Infinity,direction:"alternate",easing:"ease-in-out"}];
+    case "surprised": return[[{transform:"scale(1)"},{transform:`scale(1.12) translateY(${-h*.1}px)`,offset:.08},{transform:"scale(1)",offset:.2},{transform:"scale(1)"}],{duration:2600,iterations:Infinity}];
+    case "scared": return[[{transform:"translateX(-4px) rotate(-2deg)"},{transform:"translateX(4px) rotate(2deg)"}],{duration:120,iterations:Infinity,direction:"alternate"}];
+    case "love": return[[{transform:"scale(1)"},{transform:"scale(1.06)"}],{duration:700,iterations:Infinity,direction:"alternate",easing:"ease-in-out"}];
+  }
+  return null;
+}
+function csOverlay(d,it){
+  const add=(cls,txt,n)=>{for(let i=0;i<(n||1);i++){const s=el("span","cfo "+cls);s.textContent=txt;s.style.animationDelay=(i*.6)+"s";d.append(s)}};
+  if(it.fe==="sad") add("fo-tear","💧",2); if(it.fe==="surprised") add("fo-bang","❗"); if(it.fe==="scared") add("fo-sweat","💦");
+  if(it.fe==="love") add("fo-heart","💕",3); if(it.fe==="happy") add("fo-happy","✨",2);
+  if(it.mv==="sleepy") add("fo-zzz","z z z"); if(it.mv==="sparkle") add("fo-spark","✨",3);
+}
+function csStart(d,it,W,H){
+  const mv=d.querySelector(".cmove"), fe=d.querySelector(".cfeel"); d._anims=d._anims||[];
+  const a=(it.path&&it.path.length>=4?csPathFrames(it,W,H):null)||csMoveFrames(it,W,H);
+  if(a&&mv.animate) d._anims.push(mv.animate(a[0],a[1]));
+  const f=csFeelFrames(it.fe,it.h*H); if(f&&fe.animate) d._anims.push(fe.animate(f[0],f[1]));
+  csOverlay(d,it);
+}
+function csStop(d){(d._anims||[]).forEach(a=>{try{a.cancel()}catch(e){}});d._anims=[];d.querySelectorAll(".cfo").forEach(x=>x.remove())}
+function csPlayStage(stage,page,o={}){
+  const W=stage.clientWidth,H=stage.clientHeight;
+  stage.querySelectorAll(".citem").forEach(d=>{const it=page.items[+d.dataset.i]; if(!it) return;
+    if(it.at==="late"){d.style.opacity=0;const t=setTimeout(()=>{if(!d.isConnected)return;d.style.opacity="";d.animate&&d.animate([{transform:"translate(-50%,0) scale(0)"},{transform:"translate(-50%,0) scale(1.15)",offset:.7},{transform:"translate(-50%,0) scale(1)"}],{duration:600,easing:"ease-out"});csStart(d,it,W,H)},2200);(o.timers||[]).push(t)}
+    else if(it.at==="tap"){d.classList.add("ctap");d.onclick=()=>{if(!d.classList.contains("ctap"))return;d.classList.remove("ctap");blip(880,.12,"triangle",.12);csStart(d,it,W,H);if(o.onTap)o.onTap(it)}}
+    else csStart(d,it,W,H);
+  });
+}
+
+/* ---- the editor ---- */
+function csRenderEdit(B){
+  const L=lvl(), page=csPage();
+  if(draft.sel>=page.items.length) draft.sel=-1;
+  // pages strip
+  const top=el("div","cetop");
+  draft.pages.forEach((p,i)=>{const c=el("button","cpchip"+(i===draft.pi?" on":""),`<span>${CS_SCENES[p.sc].e}</span><b>${i+1}</b>`);c.setAttribute("aria-label","Page "+(i+1));c.onclick=()=>{draft.pi=i;draft.sel=-1;renderStory();sayLittle("Page "+(i+1))};top.append(c)});
+  if(draft.pages.length<CS_MAX_PAGES){const a=el("button","cpchip add","➕<small>Page</small>");a.onclick=()=>{draft.pages.splice(draft.pi+1,0,csNewPage(page.sc));draft.pi++;draft.sel=-1;csSave();renderStory();sayLittle("New page!")};top.append(a)}
+  const tools=el("span","cpg");
+  if(draft.pages.length>1){
+    if(L!=="little"){const ml=el("button","round sm","⬅️");ml.setAttribute("aria-label","Move page earlier");ml.disabled=draft.pi===0;ml.onclick=()=>{const i=draft.pi;[draft.pages[i-1],draft.pages[i]]=[draft.pages[i],draft.pages[i-1]];draft.pi--;csSave();renderStory()};
+      const mr=el("button","round sm","➡️");mr.setAttribute("aria-label","Move page later");mr.disabled=draft.pi===draft.pages.length-1;mr.onclick=()=>{const i=draft.pi;[draft.pages[i+1],draft.pages[i]]=[draft.pages[i],draft.pages[i+1]];draft.pi++;csSave();renderStory()};tools.append(ml,mr)}
+    const del=el("button","round sm","🗑️");del.setAttribute("aria-label","Delete this page");
+    del.onclick=()=>{if(del.dataset.armed){draft.pages.splice(draft.pi,1);draft.pi=Math.max(0,draft.pi-1);draft.sel=-1;csSave();renderStory();return}del.dataset.armed=1;del.textContent="Sure?";del.classList.add("danger");setTimeout(()=>{if(del.isConnected){delete del.dataset.armed;del.textContent="🗑️";del.classList.remove("danger")}},3000)};tools.append(del)}
+  top.append(tools); B.append(top);
+  // stage + panel
+  const ced=el("div","ced"+(L==="little"?" little":"")); const cell=el("div","cestagecell"); const stage=el("div","cstage edit"); cell.append(stage); const panel=el("div","cepanel");
+  ced.append(cell,panel); B.append(ced);
+  const items=csBuildStage(stage,page,{edit:true});
+  if(draft.sel>=0){const s=items.children[draft.sel];if(s)s.classList.add("sel")}
+  csStageInput(stage,page);
+  csRenderPanel(panel,stage);
+  // bottom
+  const bot=el("div","cebot");
+  const play=el("button","ghost","👀 Play page"); play.onclick=()=>{csSaveNow();openReader(csGift(true),{preview:true,page:draft.pi})};
+  const fin=el("button","bigbtn","All done ✔️"); fin.onclick=()=>{if(!draft.pages.some(p=>p.items.length||p.t||p.v)){say("Add something to your story first!");toast("Add a character or some words first.");return}csSaveNow();sGo("cfinish");say(lvl()==="little"?"What should we call your story?":"Name your story")};
+  bot.append(play,fin); B.append(bot);
+  requestAnimationFrame(csFitStage);
+}
+function csFitStage(){
+  const cell=$(".cestagecell"), ced=$(".ced"); if(!cell||!ced) return; const st=cell.firstElementChild;
+  const portrait=getComputedStyle(ced).gridTemplateColumns.trim().split(/\s+/).length===1;
+  let w=portrait?Math.min(cell.clientWidth,ced.clientHeight*.56*CS_ASPECT):Math.min(cell.clientWidth,cell.clientHeight*CS_ASPECT);
+  w=Math.max(160,Math.floor(w)); st.style.width=w+"px"; st.style.height=Math.round(w/CS_ASPECT)+"px";
+}
+addEventListener("resize",()=>{if(screen==="story"&&sStep==="cedit")requestAnimationFrame(csFitStage);if(screen==="reader"&&rd.g&&rd.g.story==="custom"){clearTimeout(csReadPage._t);csReadPage._t=setTimeout(()=>csReadStage(),200)}});
+// drag to move, pinch to resize, or draw a path for the selected character
+function csStageInput(stage,page){
+  const pts=new Map(); let drag=null, pinch=null, pathRec=null;
+  const rel=e=>{const r=stage.getBoundingClientRect();return[(e.clientX-r.left)/r.width,(e.clientY-r.top)/r.height]};
+  const place=(d,it)=>{d.style.left=(it.x*100)+"%";d.style.bottom=((1-it.y)*100)+"%";d.style.height=(it.h*100)+"%"};
+  stage.onpointerdown=e=>{
+    e.preventDefault(); pts.set(e.pointerId,rel(e)); try{stage.setPointerCapture(e.pointerId)}catch(_){}
+    if(draft.pathMode&&draft.sel>=0){pathRec={id:e.pointerId,p:[...rel(e)]};csDrawPathLine(stage,pathRec.p);return}
+    if(pts.size===2&&drag){const it=page.items[drag.i];const [a,b]=[...pts.values()];pinch={i:drag.i,d0:Math.hypot(a[0]-b[0],(a[1]-b[1])/CS_ASPECT),h0:it.h};drag=null;return}
+    const hit=e.target.closest(".citem");
+    if(hit){const i=+hit.dataset.i, it=page.items[i]; if(draft.sel!==i){draft.sel=i;stage.querySelectorAll(".citem").forEach(x=>x.classList.toggle("sel",x===hit));csRenderPanel(stage.closest(".ced").querySelector(".cepanel"),stage);blip(600,.05)}
+      const [px,py]=rel(e); drag={i,dx:it.x-px,dy:it.y-py,moved:false,el:hit}}
+    else if(draft.sel>=0){draft.sel=-1;stage.querySelectorAll(".citem").forEach(x=>x.classList.remove("sel"));csRenderPanel(stage.closest(".ced").querySelector(".cepanel"),stage)}
+  };
+  stage.onpointermove=e=>{
+    if(!pts.has(e.pointerId)) return; pts.set(e.pointerId,rel(e));
+    if(pathRec&&e.pointerId===pathRec.id){const [x,y]=rel(e),p=pathRec.p;if(Math.hypot(x-p[p.length-2],(y-p[p.length-1])/CS_ASPECT)>.015&&p.length<398){p.push(x,y);csDrawPathLine(stage,p)}return}
+    if(pinch&&pts.size>=2){const [a,b]=[...pts.values()];const d=Math.hypot(a[0]-b[0],(a[1]-b[1])/CS_ASPECT);const it=page.items[pinch.i];it.h=csNum(pinch.h0*d/Math.max(.02,pinch.d0),.06,.95,it.h);const n=stage.querySelector(`.citem[data-i="${pinch.i}"]`);if(n)place(n,it);return}
+    if(drag){const [px,py]=rel(e),it=page.items[drag.i];it.x=csNum(px+drag.dx,0,1,it.x);it.y=csNum(py+drag.dy,.08,1,it.y);drag.moved=true;place(drag.el,it)}
+  };
+  const up=e=>{
+    pts.delete(e.pointerId);
+    if(pathRec&&e.pointerId===pathRec.id){const it=page.items[draft.sel];if(it&&pathRec.p.length>=6){it.path=pathRec.p.map(v=>Math.round(v*1000)/1000);const p0x=it.path[0],p0y=it.path[1];it.x=csNum(p0x,0,1,it.x);it.y=csNum(p0y+it.h/2,.08,1,it.y);sayLittle("Path made!")}
+      pathRec=null;draft.pathMode=false;csSave();renderStory();return}
+    if(pinch&&pts.size<2){pinch=null;csSave()}
+    if(drag&&e.pointerId!==undefined){if(drag.moved){const it=page.items[drag.i];if(it.path){delete it.path}csSave()}drag=null}
+  };
+  stage.onpointerup=up; stage.onpointercancel=up;
+}
+function csDrawPathLine(stage,p){
+  let svg=stage.querySelector("svg.cpath"); if(!svg){svg=document.createElementNS("http://www.w3.org/2000/svg","svg");svg.setAttribute("class","cpath");svg.setAttribute("viewBox","0 0 1000 625");svg.setAttribute("preserveAspectRatio","none");stage.append(svg)}
+  const pts=[];for(let i=0;i+1<p.length;i+=2)pts.push((p[i]*1000).toFixed(0)+","+(p[i+1]*625).toFixed(0));
+  svg.innerHTML=`<polyline points="${pts.join(" ")}" fill="none" stroke="#FFC83D" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="14 12"/>`;
+}
+function csPanelGrid(list,on,onPick,o={}){
+  const g=el("div","cegrid"+(o.cls?" "+o.cls:""));
+  for(const [k,e,l] of list){const b=el("button",k===on?"on":"",`<span>${e}</span>${l?`<small>${esc(l)}</small>`:""}`);b.setAttribute("aria-label",l||k);b.onclick=()=>onPick(k,b,l);g.append(b)}
+  return g;
+}
+function csRenderPanel(panel,stage){
+  panel.innerHTML=""; const page=csPage(), L=lvl();
+  if(draft.sel>=0&&page.items[draft.sel]) return csItemPanel(panel,stage,page.items[draft.sel]);
+  const tabs=el("div","cetabs");
+  for(const [k,e,l] of [["scene","🏞️","Scene"],["add","➕","Add"],["words","💬","Words"],["magic","🌠","Effects"]]){const b=el("button","ctab"+(draft.tab===k?" on":""),`${e} ${l}`);b.onclick=()=>{draft.tab=k;csRenderPanel(panel,stage);sayLittle(l)};tabs.append(b)}
+  panel.append(tabs);
+  const rebuild=()=>{csSave();renderStory()};
+  if(draft.tab==="scene"){
+    panel.append(el("h4",null,"Where is this page?"));
+    panel.append(csPanelGrid(Object.entries(CS_SCENES).map(([k,s])=>[k,s.e,s.n]),page.sc,(k,b,l)=>{const was=CS_SCENES[page.sc].fx;page.sc=k;if(!page.fx||page.fx===was)page.fx=CS_SCENES[k].fx;sayLittle(l);rebuild()}));
+  }
+  else if(draft.tab==="magic"){
+    panel.append(el("h4",null,"Add weather or magic"));
+    panel.append(csPanelGrid(CS_FX,page.fx||"none",(k,b,l)=>{page.fx=k;sayLittle(l);rebuild()}));
+  }
+  else if(draft.tab==="add"){
+    const sub=el("div","cetabs sub");
+    for(const [k,e,l] of CS_ADD_TABS){const b=el("button","ctab"+(draft.addTab===k?" on":""),`${e}${L==="little"?"":" "+l}`);b.setAttribute("aria-label",l);b.onclick=()=>{draft.addTab=k;csRenderPanel(panel,stage);sayLittle(l)};sub.append(b)}
+    panel.append(sub);
+    const full=page.items.length>=CS_MAX_ITEMS;
+    if(full) panel.append(el("p","note",`That's ${CS_MAX_ITEMS} on this page, the most that fit. Remove one to add another.`));
+    const add=it=>{if(full)return;page.items.push(Object.assign({x:.2+Math.random()*.6,y:.94,h:L==="little"?.4:.34,f:false,mv:"bob",fe:"",at:"now"},it));draft.sel=page.items.length-1;blip(760,.08);csSave();renderStory()};
+    if(draft.addTab==="draw"){
+      const b=el("button","bigbtn","✏️ Draw a new character");b.onclick=()=>csDrawSheet(s=>add({k:"d",s,nm:"friend"}));panel.append(b);
+      const mine=[];draft.pages.forEach(p=>p.items.forEach(it=>{if(it.k==="d"&&!mine.includes(it.s))mine.push(it.s)}));
+      if(mine.length){panel.append(el("h4",null,"Your drawings"));const g=el("div","cegrid");mine.slice(0,12).forEach(s=>{const b=el("button");const im=new Image();im.src=csDrawURL(s);im.className="cthumb";b.append(im);b.onclick=()=>add({k:"d",s,nm:"friend"});g.append(b)});panel.append(g)}
+    }
+    else if(draft.addTab==="family"){
+      const g=el("div","cegrid fam");
+      for(const k of Object.keys(KIDS)){const K=KIDS[k];if(!K.look)continue;const b=el("button",null,`${faceHTML(K,"cthumb")}<small>${esc(K.name)}</small>`);b.onclick=()=>{add({k:"av",who:k});sayLittle(K.name)};g.append(b)}
+      panel.append(el("h4",null,"Family avatars")); if(g.childElementCount) panel.append(g); else panel.append(el("p","note","Make avatars in 👗 Dress up and they show up here."));
+      const g2=el("div","cegrid fam"); panel.append(el("h4",null,"Family cartoons")); panel.append(g2); g2.append(el("p","note","Looking…"));
+      csFamList().then(list=>{if(!g2.isConnected)return;g2.innerHTML="";if(!list.length){g2.style.display="block";g2.append(el("p","note","No family cartoons yet."));return}
+        for(const [w,key] of list.slice(0,40)){const b=el("button");const im=new Image();im.className="cthumb";im.alt="";b.append(im,el("small",null,esc(nameOf(w)+(csFamLabel(key)?" · "+csFamLabel(key):""))));csFamImg(w,key).then(u=>{if(u)im.src=u});b.onclick=()=>{add({k:"fam",who:w,key,h:.55});sayLittle(nameOf(w))};g2.append(b)}});
+    }
+    else panel.append(csPanelGrid(CS_LIB[draft.addTab].map(([e,n])=>[e,e,L==="little"?"":n]),null,(e)=>{const nm=(CS_LIB[draft.addTab].find(x=>x[0]===e)||[])[1]||"friend";add({k:"e",e,nm});sayLittle(nm)},{cls:"emo"}));
+  }
+  else if(draft.tab==="words") csWordsPanel(panel);
+}
+function csItemPanel(panel,stage,it){
+  const page=csPage(), L=lvl(), i=draft.sel;
+  const head=el("div","cihead");
+  const pic=it.k==="e"?it.e:it.k==="av"||it.k==="fam"?KIDS[it.who].face:"✏️";
+  head.append(el("b",null,`${pic} ${esc(csItemName(it))}`));
+  const x=el("button","round sm","✔️");x.setAttribute("aria-label","Done");x.onclick=()=>{draft.sel=-1;renderStory()};head.append(x);
+  panel.append(head);
+  const re=()=>{csSave();const n=stage.querySelector(`.citem[data-i="${i}"]`);const nn=csItemEl(it,i);nn.classList.add("sel");if(n)n.replaceWith(nn)};
+  const row=el("div","cerow");
+  const btn=(e,l,fn)=>{const b=el("button","ctool",`${e}<small>${l}</small>`);b.onclick=fn;row.append(b);return b};
+  btn("➖","Smaller",()=>{it.h=csNum(it.h*.85,.06,.95,it.h);re()});
+  btn("➕","Bigger",()=>{it.h=csNum(it.h*1.18,.06,.95,it.h);re()});
+  btn("↔️","Flip",()=>{it.f=!it.f;re()});
+  if(L!=="little") btn("⬆️","To front",()=>{page.items.push(page.items.splice(i,1)[0]);draft.sel=page.items.length-1;csSave();renderStory()});
+  const del=btn("🗑️","Remove",()=>{page.items.splice(i,1);draft.sel=-1;csSave();renderStory();blip(300,.08)});
+  panel.append(row);
+  panel.append(el("h4",null,"How does it move?"));
+  const moves=L==="little"?CS_MOVES.filter(m=>CS_LITTLE_MOVES.includes(m[0])):CS_MOVES;
+  const mg=csPanelGrid(moves,it.mv,(k,b,l)=>{it.mv=k;if(it.path&&k!=="none"){}mg.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));csSave();sayLittle(l);csPreviewItem(stage,it,i)});
+  panel.append(mg);
+  panel.append(el("h4",null,"How does it feel?"));
+  const fg=csPanelGrid(CS_FEELS,it.fe,(k,b,l)=>{it.fe=k;fg.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));csSave();sayLittle(l);csPreviewItem(stage,it,i)});
+  panel.append(fg);
+  if(L!=="little"){
+    panel.append(el("h4",null,"When does it start?"));
+    const wg=csPanelGrid(CS_WHEN,it.at,(k,b)=>{it.at=k;wg.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));csSave()});panel.append(wg);
+    panel.append(el("h4",null,"Path"));
+    const pr=el("div","cerow");
+    const pb=el("button","ctool"+(draft.pathMode?" on":""),`✏️<small>${draft.pathMode?"Now draw on the page":"Draw a path"}</small>`);pb.onclick=()=>{draft.pathMode=!draft.pathMode;pb.classList.toggle("on",draft.pathMode);pb.querySelector("small").textContent=draft.pathMode?"Now draw on the page":"Draw a path";if(draft.pathMode)toast("Draw the path on the page")};pr.append(pb);
+    if(it.path){const cb=el("button","ctool","🧹<small>Clear path</small>");cb.onclick=()=>{delete it.path;csSave();renderStory()};pr.append(cb)}
+    panel.append(pr);
+    if(it.path) csDrawPathLine(stage,it.path);
+  }
+}
+function csPreviewItem(stage,it,i){
+  const d=stage.querySelector(`.citem[data-i="${i}"]`); if(!d) return; csStop(d);
+  csStart(d,it,stage.clientWidth,stage.clientHeight);
+  clearTimeout(d._pt); d._pt=setTimeout(()=>csStop(d),3200);
+}
+function csWordsPanel(panel){
+  const page=csPage(), L=lvl(), i=draft.pi;
+  const recRow=el("div","cerow");
+  const rec=el("button","ctool rec",`🎤<small>${page.v?"Record again":"Record my voice"}</small>`);
+  const lab=el("p","note",page.v?"Recorded!":L==="little"?"Tap the microphone and tell this page of the story.":"Optional: read this page in your own voice.");
+  rec.onclick=async()=>{
+    if(rec._r){rec._r.stop();return}
+    try{rec._r=await startRecorder(30,t=>{lab.textContent=`Recording… ${Math.max(0,30-Math.floor(t))}s left. Tap to stop`})}catch(e){lab.textContent="The microphone is blocked. Allow it in Settings.";return}
+    rec.classList.add("on");rec.querySelector("small").textContent="Stop";lab.textContent="Recording… tap to stop";
+    const res=await rec._r.done; rec._r=null;
+    if(res){page.v={mime:res.mime,data:res.data};csSave();sayLittle("Got it!")}else toast("That was too short. Try again.");
+    if(panel.isConnected) csRenderPanel(panel,panel.closest(".ced").querySelector(".cstage"));
+  };
+  recRow.append(rec);
+  if(page.v){const pl=el("button","ctool","▶️<small>Listen</small>");pl.onclick=()=>{unlockAudio();playUrl(clipToUrl(page.v))};const dl=el("button","ctool","🗑️<small>Delete</small>");dl.onclick=()=>{delete page.v;csSave();csRenderPanel(panel,panel.closest(".ced").querySelector(".cstage"))};recRow.append(pl,dl)}
+  if(L==="little"){
+    panel.append(el("h4",null,"Tell this page"),recRow,lab);
+    // picture sentences: who → does → to whom
+    panel.append(el("h4",null,"Or make a sentence"));
+    const who=page.items.map((it,j)=>[String(j),it.k==="e"?it.e:it.k==="d"?"✏️":KIDS[it.who].face,csItemName(it)]);
+    if(who.length<1){panel.append(el("p","note","Add characters first, then make sentences about them."))}
+    else{
+      const st=csWordsPanel.st=csWordsPanel.st&&csWordsPanel.st.pi===i?csWordsPanel.st:{pi:i,a:null,v:null};
+      const ga=csPanelGrid(who,st.a,(k)=>{st.a=k;st.v=null;csRenderPanel(panel,panel.closest(".ced").querySelector(".cstage"));say(csItemName(page.items[+k]))});
+      panel.append(ga);
+      if(st.a!=null){
+        const gv=csPanelGrid(CS_DOES.map(([e,w])=>[w,e,""]),st.v,(k)=>{st.v=k;csRenderPanel(panel,panel.closest(".ced").querySelector(".cstage"));say(k)});panel.append(gv);
+        if(st.v){const tg=csPanelGrid([...who.filter(w=>w[0]!==st.a),["moon","🌙",""],["stars","⭐",""]],null,(k)=>{
+          const A=page.items[+st.a], B=/^\d+$/.test(k)?csItemCall(page.items[+k]):"the "+k;
+          let s=`${csItemCall(A)} ${st.v} ${B}.`; s=s.charAt(0).toUpperCase()+s.slice(1);
+          page.t=((page.t||"")+" "+s).trim().slice(0,400); st.a=null;st.v=null; csSave(); say(s); csRenderPanel(panel,panel.closest(".ced").querySelector(".cstage"))});panel.append(tg)}
+      }
+    }
+    if(page.t){const tb=el("div","cetext",esc(page.t));const r=el("div","cerow");const sp=el("button","ctool","🔊<small>Hear it</small>");sp.onclick=()=>say(page.t);const cl=el("button","ctool","🧹<small>Clear</small>");cl.onclick=()=>{page.t="";csSave();csRenderPanel(panel,panel.closest(".ced").querySelector(".cstage"))};r.append(sp,cl);panel.append(tb,r)}
+    return;
+  }
+  panel.append(el("h4",null,"What happens on this page?"));
+  const ta=el("textarea","cetextarea");ta.maxLength=400;ta.rows=4;ta.placeholder="Once upon a time…";ta.value=page.t||"";
+  ta.oninput=()=>{page.t=ta.value;csSave()}; ta.onblur=()=>{const s=kidSafe(ta.value);if(s!==ta.value){ta.value=s;page.t=s;csSave()}};
+  panel.append(ta);
+  const chips=el("div","cechips");
+  for(const s of CS_STARTERS){const c=el("button","chip",esc(s));c.onclick=()=>{const v=ta.value.trim();ta.value=(v?v+" ":"")+s+(/[.!?]$/.test(s)?"":" ");page.t=ta.value;csSave();ta.focus()};chips.append(c)}
+  panel.append(chips);
+  const r=el("div","cerow");
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(SR){const d=el("button","ctool","🎙️<small>Say it</small>");d.onclick=()=>{try{const sr=new SR();sr.lang="en-US";sr.interimResults=false;sr.maxAlternatives=1;d.classList.add("on");d.querySelector("small").textContent="Listening…";
+    sr.onresult=e=>{const t=kidSafe(e.results[0][0].transcript||"");const v=ta.value.trim();let s=t.charAt(0).toUpperCase()+t.slice(1);if(!/[.!?]$/.test(s))s+=".";ta.value=((v?v+" ":"")+s).slice(0,400);page.t=ta.value;csSave()};
+    sr.onend=()=>{d.classList.remove("on");d.querySelector("small").textContent="Say it"};sr.onerror=sr.onend;sr.start()}catch(e){toast("Talking to type isn't available here.")}};r.append(d)}
+  const hear=el("button","ctool","🔊<small>Hear it</small>");hear.onclick=()=>say(kidSafe(ta.value));r.append(hear);
+  panel.append(r);
+  panel.append(el("h4",null,"Your voice (optional)"),recRow,lab);
+}
+// a full-screen drawing sheet for a new character (same pad as the template stories)
+function csDrawSheet(onDone){
+  let sh=$("#csDraw"); if(!sh){sh=el("div","cdrawsheet drawing");sh.id="csDraw";document.body.append(sh)}
+  sh.hidden=false; sh.innerHTML=""; const B=el("div","sbody"); sh.append(B);
+  B.append(el("h2",null,"Draw your character!"));
+  const strokes=[]; buildPad(B,strokes);
+  const row=el("div","rowbtns");
+  const no=el("button","ghost","Cancel");no.onclick=()=>{sh.hidden=true;sh.innerHTML=""};
+  const ok=el("button","bigbtn","Add it ✔️");ok.onclick=()=>{if(!strokes.length){say("Draw something first!");return}sh.hidden=true;sh.innerHTML="";onDone(thin(strokes))};
+  row.append(no,ok); B.append(row); requestAnimationFrame(fitPad); sayLittle("Draw your character!");
+}
+
+/* ---- finishing: title, cover, who reads ---- */
+function csTitleIdeas(){
+  const its=[];draft.pages.forEach(p=>p.items.forEach(it=>{if(!its.find(x=>csItemName(x)===csItemName(it)))its.push(it)}));
+  const small=new Set(["and","the","a","of","in","to"]);
+  const cap=s=>s.split(" ").map((w,i)=>i&&small.has(w.toLowerCase())?w.toLowerCase():w.charAt(0).toUpperCase()+w.slice(1)).join(" ");
+  const a=its[0], b=its[1], sc=CS_SCENES[draft.pages[0].sc].n;
+  const out=[];
+  if(a&&b) out.push(cap(`${a.k==="e"||a.k==="d"?"The ":""}${csItemName(a)} and ${b.k==="e"||b.k==="d"?"the ":""}${csItemName(b)}`));
+  if(a) out.push(cap(`${a.k==="e"||a.k==="d"?"The ":""}${csItemName(a)}'s Big Night`));
+  out.push(cap(`A Night in the ${sc.replace(/^(The )/,"")}`)); out.push(`${nameOf(draft.to)}'s Bedtime Story`);
+  return [...new Set(out)].slice(0,4);
+}
+function csRenderFinish(B){
+  const L=lvl();
+  B.append(el("h2",null,L==="little"?"What should we call it?":"Name your story"));
+  const ideas=csTitleIdeas();
+  if(L==="little"){const g=el("div","choices");for(const t of ideas){const b=el("button","choice"+(draft.title===t?" on":""),`<span class="em">📖</span>${esc(t)}`);if(draft.title===t)b.style.borderColor="var(--violet)";b.onclick=()=>{draft.title=t;say(t);csSave();renderStory()};g.append(b)}B.append(g)}
+  else{const f=el("div","typeown");const inp=el("input");inp.maxLength=60;inp.placeholder="My story's name";inp.value=draft.title||"";inp.autocomplete="off";
+    inp.oninput=()=>{draft.title=inp.value;csSave()};inp.onblur=()=>{draft.title=kidSafe(inp.value);inp.value=draft.title};f.append(inp);B.append(f);
+    const ch=el("div","cechips");for(const t of ideas){const c=el("button","chip",esc(t));c.onclick=()=>{draft.title=t;inp.value=t;csSave()};ch.append(c)}B.append(ch)}
+  B.append(el("h3",null,"Pick a cover"));
+  const covers=[];draft.pages.forEach(p=>{p.items.forEach(it=>{if(it.k==="e"&&!covers.includes(it.e))covers.push(it.e)});const e=CS_SCENES[p.sc].e;if(!covers.includes(e))covers.push(e)});
+  ["📖","🌙","⭐","💖"].forEach(e=>{if(!covers.includes(e))covers.push(e)});
+  if(!draft.cover) draft.cover=covers[0];
+  const cg=el("div","cerow covers");for(const e of covers.slice(0,12)){const b=el("button","ctool"+(draft.cover===e?" on":""),`<span>${e}</span>`);b.onclick=()=>{draft.cover=e;csSave();cg.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b))};cg.append(b)}
+  B.append(cg);
+  B.append(el("h3",null,"Who reads it?"));
+  const hasRec=draft.pages.some(p=>p.v); if(!draft.readBy) draft.readBy=hasRec?"rec":"voice";
+  const opts=[["voice","🔊","The reading voice"]]; if(hasRec) opts.push(["rec","🎤","My recordings"]); opts.push(["none","🤫","No audio"]);
+  const rg=el("div","cerow");for(const [k,e,l] of opts){const b=el("button","ctool wide"+(draft.readBy===k?" on":""),`${e}<small>${l}</small>`);b.onclick=()=>{draft.readBy=k;csSave();rg.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));sayLittle(l)};rg.append(b)}
+  B.append(rg);
+  const nx=el("button","bigbtn","Next ➡️");nx.onclick=()=>{draft.title=kidSafe(draft.title).trim();if(!draft.title)draft.title=ideas[0]||"My story";csSaveNow();sGo("ready");say("Your story is ready!")};
+  B.append(nx);
+}
+
+/* ---- reading a custom story ---- */
+function csReadStage(){
+  const g=rd.g, P=g.pages[rd.page]; if(!P) return;
+  const host=$("#reader .rscene"); let wrap=host.querySelector(".cread"); if(!wrap){wrap=el("div","cread");host.append(wrap)}
+  (rd.csTimers||[]).forEach(clearTimeout); rd.csTimers=[];
+  wrap.innerHTML=""; wrap.style.background=(CS_SCENES[P.sc]||CS_SCENES.night).bg;
+  const stage=el("div","cstage read"); wrap.append(stage);
+  stage.style.width=host.clientWidth+"px"; stage.style.height=host.clientHeight+"px"; // fill the page; places are shares of the width and height
+  csBuildStage(stage,P); csPlayStage(stage,P,{timers:rd.csTimers});
+}
+function csReadPage(){
+  const g=rd.g, P=g.pages[rd.page];
+  csReadStage();
+  const T=$("#rText"); T.innerHTML=""; rd.wordSpans=[]; let spoken="";
+  const text=P.t||""; T.hidden=!text;
+  for(const tk of text.split(/(\s+)/)){if(!tk)continue;if(/^\s+$/.test(tk)){T.append(document.createTextNode(" "));spoken+=tk;continue}
+    const sp=el("span","w");sp.textContent=tk;T.append(sp);rd.wordSpans.push({start:spoken.length,end:spoken.length+tk.length,el:sp});spoken+=tk}
+  $("#rPrev").disabled=rd.page===0;
+  const dots=$("#rDots");dots.innerHTML="";g.pages.forEach((_,i)=>dots.append(el("i",i===rd.page?"on":"")));
+  if(!text&&!(g.voice&&g.voice["p"+rd.page])){if(rd.auto)rd.timer=setTimeout(nextPage,5000);return}
+  readPage(spoken);
+}
+
 
 
 /* ================= FIREBASE: inbox + saved things =================
@@ -2635,7 +3282,7 @@ function getBlob(id){
 function markRead(m){if(m&&!m.read&&mail.ref&&me&&m.id) mail.ref.child(`inbox/${me}/${m.id}/read`).set(true).catch(()=>{})}
 function deleteMsg(m){if(mail.ref&&me&&m.id) mail.ref.child(`inbox/${me}/${m.id}`).remove().catch(()=>{})}
 function reactLine(m){
-  const what=m.about==="story"&&STORIES[m.story]?STORIES[m.story].title:"your message";
+  const what=m.about==="story"&&(STORIES[m.story]||m.title)?(m.title?String(m.title).slice(0,60):STORIES[m.story].title):"your message";
   const word={"❤️":"loved","😴":"got sleepy from","🤗":"sends a hug for"}[m.r]||"loved";
   return `${nameOf(m.from)} ${word} ${what}`;
 }
@@ -2644,6 +3291,9 @@ function ago(t){const s=(Date.now()-t)/1000;if(s<60)return"just now";if(s<3600)r
 /* story gifts live in the inbox now */
 function normGift(raw,m){
   if(!raw||typeof raw!=="object") return null;
+  if(raw.story==="custom"){const g=csNorm(Object.assign({},raw,{from:m.from,to:raw.to||me}));if(!g)return null;g.id=m.id;g.from=m.from;g.to=me;
+    if(raw.voice&&typeof raw.voice==="object"){const v={};for(const [k,x] of Object.entries(raw.voice))if(/^p\d{1,2}$/.test(k)&&x&&typeof x.data==="string")v[k]={mime:String(x.mime||"audio/mp4"),data:x.data};if(Object.keys(v).length)g.voice=v}
+    g.silent=raw.silent===true&&!g.voice; return /^[-_A-Za-z0-9]{4,40}$/.test(g.id)?g:null}
   const g=Object.assign({},raw,{id:m.id,from:m.from,to:me});
   g.words=g.words&&typeof g.words==="object"?g.words:{};
   g.chars=Array.isArray(g.chars)?g.chars.map(c=>c&&typeof c==="object"?{s:Array.isArray(c.s)?c.s.filter(s=>s&&Array.isArray(s.p)):[],a:c.a}:{s:[],a:"bob"}):[];
@@ -2668,7 +3318,7 @@ $("#iBack").onclick=()=>{hush();const back={list:null,read:"list",to:"list",what
   if(ib.view==="to"&&ib.attach){ib.attach=null;return ibGo("list")} back?ibGo(back):(stopRec(),goLobby())};
 function msgPreview(m){
   return {sticker:`${m.emoji||"⭐"} Sticker`,phrase:`${m.emoji||"💬"} ${m.text||""}`,text:`💬 ${m.text||""}`,draw:"🖍️ A drawing",voice:`🎤 Voice message${m.dur?` (${m.dur}s)`:""}`,
-    picture:"🎨 A colored picture",report:"📊 Weekly report",story:`🌙 Bedtime story: ${STORIES[m.story]?STORIES[m.story].title:""}`,react:`${m.r||"❤️"} ${reactLine(m)}`}[m.kind]||"Message";
+    picture:"🎨 A colored picture",report:"📊 Weekly report",story:`🌙 Bedtime story: ${storyMeta(m).title}`,react:`${m.r||"❤️"} ${reactLine(m)}`}[m.kind]||"Message";
 }
 function renderInbox(){
   const B=$("#iBody"); B.innerHTML=""; B.classList.toggle("little-choices",lvl()==="little"); $("#inbox").classList.toggle("drawing",ib.view==="draw"); $("#inbox").scrollTop=0;
@@ -2719,7 +3369,7 @@ function renderInbox(){
   else if(ib.view==="text"){
     B.append(el("h2",null,"Type your message"));
     const ta=el("textarea","msgtext");ta.id="msgText";ta.maxLength=200;ta.rows=4;ta.placeholder="Write something nice…";B.append(ta);
-    const go=el("button","bigbtn","Send 💌");go.onclick=()=>{const t=ta.value.replace(/[\u0000-\u0008\u000B-\u001F]/g,"").trim().slice(0,200);if(!t){ta.focus();return}deliverMsg({kind:"text",text:t})};B.append(go);
+    const go=el("button","bigbtn","Send 💌");go.onclick=()=>{const t=kidSafe(ta.value.replace(/[\u0000-\u0008\u000B-\u001F]/g,"").trim()).slice(0,200);if(!t){ta.focus();return}deliverMsg({kind:"text",text:t})};B.append(go);
     setTimeout(()=>ta.focus(),50);
   }
   else if(ib.view==="draw"){
