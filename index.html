@@ -3417,6 +3417,21 @@ function farmConnect(){
   clearTimeout(F.waitT);F.waitT=setTimeout(()=>{if(!F.st){F.st=fDefault();fChanged();toast("Can't reach the farm. Check the Wi-Fi.")}},5000);
 }
 const myGoods=()=>(F.st&&F.st.goods&&F.st.goods[me])||{};
+/* ---- Family Basket: shared goods anyone can sell or deliver. Each person chooses where new goods go (farm/gdest/<who>),
+   can share goods in or take them out, and every family-basket move goes in the basket log (farm/blog/<id> = {at, who, what}). */
+const famGoods=()=>(F.st&&F.st.fbasket)||{};
+const goodsSrc=()=>F.goodsSrc==="family"?"family":"mine";
+const srcGoods=src=>src==="family"?famGoods():myGoods();
+const srcPath=src=>src==="family"?"fbasket":"goods/"+me;
+const gDestFam=()=>!!(F.st&&F.st.gdest&&F.st.gdest[me]==="family");
+const gDest=()=>gDestFam()?"fbasket":"goods/"+me;
+const goodsCount=g=>Object.keys(GOODS).reduce((a,k)=>a+(+g[k]||0),0);
+function basketLog(what){const id=F.ref?F.ref.child("blog").push().key:"b"+Date.now()+Math.random().toString(36).slice(2,5);fUpd({["blog/"+id]:{at:Date.now(),who:me,what:String(what).slice(0,80)}})}
+// "Use goods from: 🧺 Mine / 👨‍👩‍👧 Family basket"
+function srcSwitch(body,label){const seg=el("div","seg paysrc"),src=goodsSrc();
+  for(const [k,l] of [["mine",`🧺 Mine (${goodsCount(myGoods())})`],["family",`👨‍👩‍👧 Family basket (${goodsCount(famGoods())})`]]){const b=el("button",src===k?"on":"",l);
+    b.onclick=()=>{F.goodsSrc=k;F.sheet.render();say(k==="family"?"Using the family basket.":"Using your basket.")};seg.append(b)}
+  body.append(el("p","fnote",label),seg)}
 const myJar=()=>+((F.st&&F.st.jars&&F.st.jars[me])||0);
 const unlocked=c=>!!(F.st&&F.st.unlock&&F.st.unlock[c]);
 const animalsOf=k=>Object.values((F.st&&F.st.animals)||{}).filter(a=>a&&a.k===k).length;
@@ -3519,7 +3534,7 @@ function fChanged(){
 }
 function farmHeader(){
   const g=myGoods(),parts=Object.keys(GOODS).filter(k=>g[k]>0).map(k=>`${GOODS[k].icon}${g[k]}`);
-  $("#farmGoods").innerHTML=parts.length?parts.slice(0,4).join(" ")+(parts.length>4?" …":""):"🧺";
+  $("#farmGoods").innerHTML=(gDestFam()?"👨‍👩‍👧 ":"")+(parts.length?parts.slice(0,4).join(" ")+(parts.length>4?" …":""):"🧺");
   $("#farmJar").innerHTML=`🪙 <b>${myJar()}</b>`;
 }
 
@@ -3612,7 +3627,7 @@ function tapAnimal(w){
       else say(little()?`Yum! The ${A.name} ate the ${A.food}.`:`The ${A.name} ate the ${A.food}. Come back soon to ${A.verb}!`)})});
   if(s==="ready")return farmDo(A.act,{animal:a.k,good:A.good,count:1}).then(ok=>{if(!ok)return;
     fTx("animals/"+w.id,x=>{if(!x||!(x.ready&&x.ready<=Date.now()))return;x.ready=0;if(x.k==="sheep")x.shorn=Date.now();return x}).then(ok=>{if(!ok)return;
-      fUpd({[`goods/${me}/${A.good}`]:INC(1)});fPop(w,GOODS[A.good].icon);blip(900,.15,"triangle");
+      fUpd({[`${gDest()}/${A.good}`]:INC(1)});if(gDestFam())basketLog(`put ${qty(A.good,1)} in`);fPop(w,GOODS[A.good].icon);blip(900,.15,"triangle");
       say(a.k==="hen"?"You got an egg!":a.k==="cow"?"You got a gallon of milk!":"You got a ball of wool!")})});
   if(s==="making"){fPop(w,"⏳");return say(a.k==="hen"?"The hen is making an egg. Come back soon!":a.k==="cow"?"The cow is making milk. Come back soon!":"The sheep's wool is growing back. Come back soon!")}
   fPop(w,"❤️");blip(620,.1,"sine");say(a.k==="pig"?"Oink! The pig is full and happy.":`The ${A.name} is full. Pat pat!`);
@@ -3624,7 +3639,7 @@ function tapPlot(n){
     fTx("plots/"+id,x=>{if(!x||!x.crop||x.watered)return;x.watered=Date.now();return x}).then(ok=>{if(!ok)return;fPopAt(c,"💧");blip(520,.15,"sine");say(`You watered the ${GOODS[p.crop].name}. Now it can grow!`)})});
   if(ps.st==="ripe"){const n2=p.fert?2:1;return farmDo("harvest",{crop:p.crop,count:n2}).then(ok=>{if(!ok)return;
     fTx("plots/"+id,x=>{if(!x||!x.crop||plotState(x,Date.now()).st!=="ripe")return;return {crop:null}}).then(ok=>{if(!ok)return;
-      fUpd({[`goods/${me}/${p.crop}`]:INC(n2)});fPopAt(c,GOODS[p.crop].icon);blip(900,.15,"triangle");say(`You picked ${qty(p.crop,n2)}!`)})})}
+      fUpd({[`${gDest()}/${p.crop}`]:INC(n2)});if(gDestFam())basketLog(`put ${qty(p.crop,n2)} in`);fPopAt(c,GOODS[p.crop].icon);blip(900,.15,"triangle");say(`You picked ${qty(p.crop,n2)}!${gDestFam()?" It is in the family basket.":""}`)})})}
   say(ps.st==="sprout"?`A little ${GOODS[p.crop].name} sprout. It needs time to grow.`:`The ${GOODS[p.crop].name} is growing. Almost ready!`);
 }
 function tapStruct(id){const s=STRUCT[id];blip(760,.1,"sine");
@@ -3664,9 +3679,10 @@ function plantIt(n,c,useF){closeSheet();
 
 function openSell(){
   fSheet("🧺 Farmstand",body=>{
-    const g=myGoods(),have=Object.keys(GOODS).filter(k=>g[k]>0);
+    srcSwitch(body,"Sell goods from:");
+    const g=srcGoods(goodsSrc()),have=Object.keys(GOODS).filter(k=>g[k]>0);
     body.append(el("p","fnote",little()?"Tap something to sell it for Moolah!":`Tap something to sell one. You have ${coins(myJar())} Moolah.`));
-    if(!have.length){body.append(el("p","fempty","Your basket is empty. Pick crops and collect eggs, milk and wool, then come back!"));return}
+    if(!have.length){body.append(el("p","fempty",goodsSrc()==="family"?"The family basket is empty.":"Your basket is empty. Pick crops and collect eggs, milk and wool, then come back!"));return}
     const grid=el("div","choices");
     for(const k of have){const G=GOODS[k];grid.append(fBtn("",G.icon,little()?`× ${g[k]}`:`${g[k]} ${g[k]===1?G.name:G.names}`,`${coins(G.price)} each`,()=>sellIt({[k]:1})))}
     body.append(grid);
@@ -3676,17 +3692,42 @@ function openSell(){
 }
 function sellIt(items){let price=0;for(const [k,n] of Object.entries(items))price+=n*GOODS[k].price;
   farmDo("sell",{items,price,count:Object.values(items).reduce((a,b)=>a+b,0)}).then(ok=>{if(!ok)return;
-    fTx("goods/"+me,x=>{x=x||{};for(const [k,n] of Object.entries(items)){if(!((x[k]||0)>=n))return;x[k]-=n;if(!x[k])delete x[k]}return x}).then(ok=>{if(!ok)return;
+    const src=goodsSrc();
+    fTx(srcPath(src),x=>{x=x||{};for(const [k,n] of Object.entries(items)){if(!((x[k]||0)>=n))return;x[k]-=n;if(!x[k])delete x[k]}return x}).then(ok=>{if(!ok)return;
+      if(src==="family")basketLog(`sold ${listText(items)} for ${price} 🪙`);
       fUpd({["jars/"+me]:INC(price)});blip(1200,.08,"triangle");setTimeout(()=>blip(1500,.1,"triangle"),90);
       say(`You sold ${listText(items)} for ${price} Moolah!`)})})}
 
 function openBasket(){
-  fSheet("🧺 My basket",body=>{const g=myGoods(),have=Object.keys(GOODS).filter(k=>g[k]>0);
-    if(!have.length)body.append(el("p","fempty","Nothing yet! Pick ripe crops and collect eggs, milk and wool."));
-    else{const grid=el("div","choices");for(const k of have)grid.append(fBtn("",GOODS[k].icon,`${g[k]} ${g[k]===1?GOODS[k].name:GOODS[k].names}`,`${coins(GOODS[k].price)} each`,()=>say(qty(k,g[k]))));body.append(grid)}
-    if(g.fert)body.append(el("p","fnote",`💩 Fertilizer: ${g.fert}. Use it when you plant a seed.`));
-    body.append(el("p","fnote","Sell your goods at the 🧺 farmstand, or bring them to someone on the 📋 order board."))});
+  fSheet("🧺 Baskets",body=>{
+    const tab=F.basketTab==="family"?"family":"mine",tabs=el("div","seg paysrc");
+    for(const [k,l] of [["mine",`🧺 My basket (${goodsCount(myGoods())})`],["family",`👨‍👩‍👧 Family basket (${goodsCount(famGoods())})`]]){const b=el("button",tab===k?"on":"",l);b.onclick=()=>{F.basketTab=k;F.sheet.render()};tabs.append(b)}
+    body.append(tabs);
+    // where newly collected goods go
+    const dest=el("div","seg paysrc");
+    for(const [k,l] of [["mine","🧺 My basket"],["family","👨‍👩‍👧 Family basket"]]){const b=el("button",(gDestFam()?"family":"mine")===k?"on":"",l);
+      b.onclick=()=>{fUpd({["gdest/"+me]:k==="family"?"family":null});say(k==="family"?"New goods go to the family basket.":"New goods go to your basket.")};dest.append(b)}
+    body.append(el("p","fnote","New things I collect go to:"),dest);
+    const g=tab==="family"?famGoods():myGoods(),have=Object.keys(GOODS).filter(k=>g[k]>0);
+    body.append(el("p","fnote",tab==="family"?(little()?"Tap something to take one for you.":"Everyone's goods. Tap one to take it into your basket."):(little()?"Tap something to share one with the family.":"Tap one to share it with the family basket.")));
+    if(!have.length)body.append(el("p","fempty",tab==="family"?"The family basket is empty. Share something!":"Nothing yet! Pick ripe crops and collect eggs, milk and wool."));
+    else{const grid=el("div","choices");
+      for(const k of have)grid.append(fBtn("",GOODS[k].icon,`${g[k]} ${g[k]===1?GOODS[k].name:GOODS[k].names}`,tab==="family"?"tap to take 1":"tap to share 1",()=>moveGoods(tab==="family"?"take":"share",{[k]:1})));
+      body.append(grid);
+      if(!little()){const all={};for(const k of have)all[k]=g[k];const b=el("button","ghost",tab==="family"?"Take everything":"Share everything");b.onclick=()=>moveGoods(tab==="family"?"take":"share",all);body.append(b)}}
+    if(tab==="mine"&&myGoods().fert)body.append(el("p","fnote",`💩 Fertilizer: ${myGoods().fert}. Use it when you plant a seed.`));
+    if(tab==="family"){const rows=Object.values(F.st.blog||{}).filter(r=>r&&KIDS[r.who]).sort((a,b)=>b.at-a.at);
+      body.append(el("h3","fsec","📒 Basket log"));
+      if(!rows.length)body.append(el("p","fnote","Nothing yet."));
+      else{const list=el("div","ledger");for(const r of rows.slice(0,40)){const K=kidOf(r.who);list.append(el("div","lrow",`<span class="lface">${K.face}</span><span class="lwhat"><b>${esc(K.name)}</b> ${esc(r.what)}<small>${ago(r.at)}</small></span>`))}body.append(list)}}
+    body.append(el("p","fnote","Sell goods at the 🧺 farmstand, or bring them to someone on the 📋 order board."))});
 }
+function moveGoods(dir,items){
+  const from=dir==="take"?"fbasket":"goods/"+me,to=dir==="take"?"goods/"+me:"fbasket";
+  fTx(from,x=>{x=x||{};for(const [k,n] of Object.entries(items)){if(!((x[k]||0)>=n))return;x[k]-=n;if(!x[k])delete x[k]}return x}).then(ok=>{if(!ok)return;
+    const up={};for(const [k,n] of Object.entries(items))up[`${to}/${k}`]=INC(n);fUpd(up);
+    basketLog(dir==="take"?`took ${listText(items)}`:`shared ${listText(items)}`);blip(dir==="take"?700:900,.1,"triangle");
+    say(dir==="take"?`You took ${listText(items)} from the family basket.`:`You shared ${listText(items)} with the family!`)})}
 
 function openJar(){
   fSheet("🪙 My Moolah",body=>{const n=myJar();
@@ -3802,7 +3843,7 @@ function ensureOrders(){
   up["onext/"+me]=0;fUpd(up);setTimeout(()=>F.making=false,1500);
 }
 function orderCard(id,o,who){
-  const K=kidOf(o.from),card=el("div","ordercard"),g=myGoods(),canDo=who===me&&Object.entries(o.items).every(([k,n])=>(g[k]||0)>=n);
+  const K=kidOf(o.from),card=el("div","ordercard"),g=srcGoods(goodsSrc()),canDo=who===me&&Object.entries(o.items).every(([k,n])=>(g[k]||0)>=n);
   const items=Object.entries(o.items).map(([k,n])=>little()?`<span class="oi">${GOODS[k].icon.repeat(Math.min(n,6))}</span>`:
     `<span class="oi ${(g[k]||0)>=n?"ok":""}">${GOODS[k].icon} ${esc(qty(k,n))} <small>(${g[k]||0})</small></span>`).join("");
   const late=o.by&&Date.now()>o.by;
@@ -3817,6 +3858,7 @@ function openOrders(){
   fSheet("📋 Order board",body=>{
     const mine=Object.entries(((F.st.orders||{})[me])||{}).sort((a,b)=>a[1].at-b[1].at);
     body.append(el("p","fnote",little()?"Bring your family what they want!":"Fill an order to earn more Moolah than selling, and get a thank-you in your Inbox."));
+    srcSwitch(body,"Use goods from:");
     if(!mine.length)body.append(el("p","fempty","No orders right now. New ones come soon!"));
     const wrap=el("div","orders");for(const [id,o] of mine)wrap.append(orderCard(id,o,me));body.append(wrap);
     if(kidOf(me).grown){const b=el("button","ghost","✏️ Write an order for a kid");b.onclick=writeOrder;body.append(b)}
@@ -3826,7 +3868,9 @@ function openOrders(){
 }
 function deliver(id,o){
   farmDo("deliver",{items:o.items,price:o.pay}).then(ok=>{if(!ok)return;
-    fTx("goods/"+me,x=>{x=x||{};for(const [k,n] of Object.entries(o.items)){if(!((x[k]||0)>=n))return;x[k]-=n;if(!x[k])delete x[k]}return x}).then(ok=>{if(!ok)return;
+    const src=goodsSrc();
+    fTx(srcPath(src),x=>{x=x||{};for(const [k,n] of Object.entries(o.items)){if(!((x[k]||0)>=n))return;x[k]-=n;if(!x[k])delete x[k]}return x}).then(ok=>{if(!ok)return;
+      if(src==="family")basketLog(`used ${listText(o.items)} for ${kidOf(o.from).name}'s order`);
       const bonus=o.by&&Date.now()<=o.by?(o.bonus||0):0,pay=o.pay+bonus;
       fUpd({[`orders/${me}/${id}`]:null,["jars/"+me]:INC(pay),["onext/"+me]:Date.now()+4*60e3});
       farmMail(me,o.from,`Thank you for the ${listText(o.items)}! Here's ${pay} Moolah.${bonus?" You were super fast!":""}`,"💛");
@@ -5177,7 +5221,7 @@ function openFarm(){if(!me){goLobby();return}if(!fm.cv)farmInit();farmConnect();
 $("#fHome").onclick=()=>{closeSheet();hush();goLobby()};
 $("#fBack").onclick=()=>{closeSheet();hush();goLobby()};
 $("#playFarm").onclick=()=>{sayLittle("Kapanigan Farmstand");openFarm()};
-if(/[?&]farmlocal\b/.test(location.search))window.__farm={farmClamp,fCands,fInfo,fGo,openTask,TASK_TYPES,F,fm,FW,openBank,bankPut,farmZoomTo,fwWalk,farmTapAt:(i,j)=>{const p=fIso(i,j),r=fm.cv.getBoundingClientRect(),d=fm.cv.width/r.width;farmTap({clientX:r.left+p.x/d,clientY:r.top+p.y/d})},CO,coopUpd,coopTick,startTeam,joinTeam,tk:()=>tk,tapPlot,tapAnimal,tapStruct,openStore,openOrders,openJar,openSell,buyIt,storeItems,deliver,sendGift,win:finishTask,quit:()=>closeTask(true)}; // testing only
+if(/[?&]farmlocal\b/.test(location.search))window.__farm={moveGoods,openBasket,farmClamp,fCands,fInfo,fGo,openTask,TASK_TYPES,F,fm,FW,openBank,bankPut,farmZoomTo,fwWalk,farmTapAt:(i,j)=>{const p=fIso(i,j),r=fm.cv.getBoundingClientRect(),d=fm.cv.width/r.width;farmTap({clientX:r.left+p.x/d,clientY:r.top+p.y/d})},CO,coopUpd,coopTick,startTeam,joinTeam,tk:()=>tk,tapPlot,tapAnimal,tapStruct,openStore,openOrders,openJar,openSell,buyIt,storeItems,deliver,sendGift,win:finishTask,quit:()=>closeTask(true)}; // testing only
 })();
 </script>
 </body>

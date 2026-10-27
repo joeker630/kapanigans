@@ -135,6 +135,12 @@ A **live co-op farm** the kids share. Every farm action is done by solving a sho
   - If two or more things are under the finger, a **"Which one?"** picker shows big buttons with each one's state, read aloud.
   - Animal tap areas hug the body.
   - Animals gently keep about a tile apart, so they stack up less.
+- **Family Basket (Oct 27):** shared goods next to everyone's own basket. The 🧺 button opens two tabs, "My basket" and "Family basket".
+  - Each person picks where **new things they collect** go (`farm/gdest/<who>`).
+  - Tap a good to **share** one into the family basket, or **take** one out. Big also gets "share/take everything".
+  - The farmstand and the order board have a **"Sell / Use goods from: Mine / Family basket"** switch. Moolah from selling family goods goes to the seller's jar.
+  - Every family-basket move goes in the **Basket log** (`farm/blog/<id>` = `{at, who, what}`): put in, shared, took, sold and used for orders.
+  - The family basket itself is `farm/fbasket`.
 - **Ready to use:** `farmPuzzle()` to put a puzzle in front of any farm action, `logAttempt()` for the grown-up dashboard (#8), `say()` / `sayLittle()` read-aloud, Firebase under `families/<code>/`, and `tools/genart.py` for isometric art.
 
 ### 🧩 Every action is a puzzle
