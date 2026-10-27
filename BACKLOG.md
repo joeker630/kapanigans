@@ -36,7 +36,7 @@ A fill-in-the-blanks (mad-libs style) bedtime story that one child makes as a **
 
 **🔍 Decisions needed**
 - ~~Where gifts are stored~~ → decided: Firebase (see Shared groundwork). Gifts land in the recipient's **Inbox** (#4).
-- Can grown-ups send stories too, for example Gramma Mia sending one to Violet?
+- ~~Can grown-ups send stories too?~~ → yes, already works: every persona can make and send stories.
 - Should the author be able to record their own voice instead of the built-in reader?
 
 ---
@@ -157,7 +157,7 @@ Every person (kids, friends and grown-ups) gets an **Inbox** for messages the fa
 - A happy chime and a bouncing envelope when something new arrives while the app is open
 - Opening a message reads it aloud for Little readers
 - Reply with one tap (heart, hug, or "send one back")
-- Messages stay until you delete them; grown-ups can clear any inbox
+- Messages stay until you delete them; grown-ups can clear any inbox (Grown-ups › Inboxes) ✅
 
 **Acceptance criteria**
 - [x] A message sent to a device that's asleep or closed is waiting in the inbox when it's next opened
@@ -210,7 +210,7 @@ Kids design outfits for a "model," then watch the model walk an animated runway,
 
 ---
 
-## 6. 🆕 Shorter family code: 4 random letters and numbers
+## 6. ✅ Shorter family code: 4 random letters and numbers
 
 Today the family code is a word plus 4 digits (for example `CABBAGE4821`), at least 6 characters. Make it **4 random letters and numbers** instead (for example `K7QM`), so it's quick to type on every iPad.
 
@@ -222,20 +222,21 @@ Today the family code is a word plus 4 digits (for example `CABBAGE4821`), at le
 - **Firebase rules:** the planned rule `$code.length >= 6` changes to allow 4-character codes.
 
 **Acceptance criteria**
-- [ ] New codes are exactly 4 characters, random, uppercase, with no look-alike characters
-- [ ] Typing is not case-sensitive; any lowercase letters typed are treated as uppercase
-- [ ] Devices with the same 4-character code find each other in the lobby
-- [ ] The Inbox and saved data (Firebase) work with 4-character codes
+- [x] New codes are exactly 4 characters, random, uppercase, with no look-alike characters
+- [x] Typing is not case-sensitive; any lowercase letters typed are treated as uppercase
+- [x] Devices with the same 4-character code find each other in the lobby
+- [x] The Inbox and saved data (Firebase) work with 4-character codes
 
 **🔍 Decisions needed**
-- **Privacy trade-off:** the family code is the only key to your games, the video chat and (later) the Inbox. A 4-character code is much easier for a stranger to guess than the current one. Options:
+- ~~Privacy trade-off~~ → decided: **accept it**. The 4-character code is the only key; change it anytime from Grown-ups › Family code.
+- (Original note) **Privacy trade-off:** the family code is the only key to your games, the video chat and (later) the Inbox. A 4-character code is much easier for a stranger to guess than the current one. Options:
   - Accept it: the risk is low for a family app, and the code can be changed anytime.
   - Add a lock so only devices a grown-up approves can join, or ask a grown-up to approve the first time a new device joins.
   - Keep video chat and the Inbox behind a separate, longer grown-up code.
 
 ---
 
-## 7. 🆕 Friendlier, slower read-aloud voice
+## 7. ✅ Friendlier, slower read-aloud voice
 
 The read-aloud voice talks too fast and sounds a bit robotic. Make it slower and warmer, better suited to young kids.
 
@@ -252,10 +253,10 @@ The read-aloud voice talks too fast and sounds a bit robotic. Make it slower and
 - For fixed phrases (button names, chore instructions, "Great job!"), use recorded audio clips instead of the built-in voice. These could even be family recordings, such as Gramma Mia reading the bedtime stories. Fill-in words in stories would still use the built-in voice.
 
 **Acceptance criteria**
-- [ ] Little-level speech is noticeably slower, with pauses between sentences
-- [ ] A higher-quality voice is chosen automatically when the iPad has one installed
-- [ ] Grown-ups can change the voice and speed and hear a test line
-- [ ] Story read-aloud word highlighting still lines up with the slower speech
+- [x] Little-level speech is noticeably slower, with pauses between sentences
+- [x] A higher-quality voice is chosen automatically when the iPad has one installed
+- [x] Grown-ups can change the voice and speed and hear a test line (Grown-ups › Voice)
+- [x] Story read-aloud word highlighting still lines up with the slower speech
 
 **🔍 Decisions needed**
 - ~~Preferred voice style~~ → decided: **female voice** by default (Ava, Zoe, Samantha, Allison). Male voices are left out of the automatic pick; grown-ups can still choose another voice in settings.
@@ -263,7 +264,7 @@ The read-aloud voice talks too fast and sounds a bit robotic. Make it slower and
 
 ---
 
-## 8. 🆕 Grown-up progress and usage dashboard
+## 8. 🛠️ Grown-up progress and usage dashboard (built; puzzle skills fill in when the Farmstand ships)
 
 Track how much each player uses Kapanigans and how they're doing on puzzles and tasks, so grown-ups can see where each kid is thriving or stuck.
 
@@ -295,14 +296,14 @@ Track how much each player uses Kapanigans and how they're doing on puzzles and 
 - Store small summary records, not recordings or drawings.
 
 **Acceptance criteria**
-- [ ] Every puzzle attempt records the skill, level, solve time, wrong tries and hint use
-- [ ] Play time is recorded per persona, per game and per day, and syncs across devices
-- [ ] A dashboard behind a grown-up check, with a weekly summary, skills view and struggle spots per kid
-- [ ] Every grown-up persona can see every kid's dashboard
-- [ ] A weekly summary arrives in each grown-up's Inbox
-- [ ] Detailed records older than 90 days roll up into weekly summaries
-- [ ] Kids see no scores or stats anywhere
-- [ ] Grown-ups can clear a kid's data
+- [~] Every puzzle attempt records the skill, level, solve time, wrong tries and hint use: `logAttempt()` is ready; the Farmstand will call it
+- [x] Play time is recorded per persona, per game and per day, and syncs across devices
+- [x] A dashboard behind a grown-up check (hold the 🔒 for 3 seconds), with a weekly summary, usage chart, time of day, skills view and struggle spots per kid
+- [x] Every grown-up persona can see every kid's dashboard
+- [x] A weekly summary arrives in each grown-up's Inbox (sent once per week, for the week before)
+- [x] Detailed records older than 90 days roll up into weekly summaries
+- [x] Kids see no scores or stats anywhere
+- [x] Grown-ups can clear a kid's data, and export it as CSV
 
 **🔍 Decisions needed**
 - ~~Record retention~~ → decided: keep detailed records for **90 days**, then roll them up into **weekly summaries**.
@@ -399,13 +400,15 @@ Build the **simple parts for the avatar builder** (#3 farmer avatars, used as ev
 
 - ✅ **Saved data: decided on Firebase Realtime Database (free Spark plan).** No credit card, live updates to every device, works from GitHub Pages. Everything lives under `families/<family code>/`, so the family code is the key (no passwords).
   - Why not the others: Supabase's free plan pauses projects after a week without use, and Firebase *Storage* (for files) now needs a paid plan, so voice clips and drawings are saved as small compressed data inside the database instead.
-  - ✅ Firebase project `kapanigans` is connected. Rules only allow reading and writing under `families/<code>` (codes of 6+ characters); everything else is denied.
+  - ✅ Firebase project `kapanigans` is connected. Rules only allow reading and writing under `families/<code>` (codes of 4+ characters); everything else is denied.
   - ✅ Live game sync moved from the public HiveMQ relay to Firebase, so everything uses one service.
 - ✅ **Read-aloud helper:** `say()` / `sayLittle()` use the device's built-in voice. Little players already hear their tool, color, picture and reaction names; there's a 🔊 on/off button in the lobby. Ready for stories, chore instructions and inbox messages.
 - ✅ **Game menu:** the placeholder cards are replaced with Bedtime Story, Kapanigan Farmstand and Inbox (marked Soon; tapping one says "Coming soon!").
 
 ## Done
 
+- ✅ Release 1 (Grown-ups corner): hold-to-open grown-ups area, voice settings (#7), 4-character family codes (#6), clear any inbox
+- ✅ Release 2: usage tracking, grown-up reports dashboard and weekly Inbox report (#8)
 - ✅ Watch mode: anyone not in a game can tap 👀 Watch on an in-progress game to see it live (view only, can send cheers; doesn't join the video call)
 - ✅ Connection reliability: live play on Firebase (no public relay), every stroke saved so dropped or reloaded devices catch up, quick recovery when an iPhone comes back to the app, 60-second "reconnecting…" grace period, lighter traffic (fewer finger updates, smaller video), and a connection light for each player
 
