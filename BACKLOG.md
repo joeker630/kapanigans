@@ -876,6 +876,44 @@ Every art asset (storybook, farm, avatar and Fashion Show) gets **clear descript
 
 ---
 
+## 16. 🆕 Family likeness art: cartoon versions of real family members
+
+Turn photos of family members into **high-resolution cartoon characters** (in the storybook film style from #14, and optionally the chunky avatar style from #10), so the family can star in their own stories.
+
+**Can the current setup do it?** Yes. **FLUX.2 dev** on Cloudflare Workers AI (the #14 upgrade) accepts **reference images**, so one or more photos of a person can guide the cartoon. Cloudflare says it doesn't use what's sent to Workers AI to train models, and doesn't keep the inputs or outputs after the request is done.
+
+**How it works**
+1. Joe adds **2–4 clear photos** per person into this chat (face forward, good light, one person per photo, no busy background). Photos are used only during generation and never saved in the repo.
+2. `genart.py` gets a `likeness` mode: photos plus the approved style reference, with a prompt that keeps the person's recognizable features (hair, skin tone, face shape, glasses, freckles) in the cartoon style.
+3. Generate 3–4 versions per person, and Joe picks the best on the audit page (#14). Approved likenesses then become that person's reference for more poses and outfits (waving, sleeping, as an astronaut, as a firefighter).
+4. Each approved likeness can be used as a story character, and can set the starting look for their avatar builder (#10).
+
+**🔒 Privacy (a must)**
+- **The kapanigans repo is public** (GitHub Pages), so anything in `art/` can be seen by anyone on the internet. Family likeness art must **not** go in the repo.
+- Instead, store it **privately under the family code in Firebase** (`families/<code>/art/family/`), like the play-made art today. Only devices with the family code can load it.
+- Original photos are never uploaded to the repo or Firebase; they're deleted from the working space after generating.
+- Names in tags use the persona names already in the game (Quinn, Violet, Joe…), with no last names, locations or other personal details.
+- Only make likenesses of people who agree (or, for the kids, with a parent's OK). Grown-ups can delete anyone's likeness art.
+- With the 4-character family code (#6) this art is only as private as the code, so this is another reason to settle the privacy option there.
+
+**What to expect**
+- Likeness quality varies: models are good at hair, skin tone, glasses and overall feel, but an exact face match isn't guaranteed. The more varied the photos, the better. Expect a few rounds of redo.
+- High resolution: 1024–1536 px, compressed to WebP.
+
+**Acceptance criteria**
+- [ ] A likeness mode in `genart.py` that takes 2–4 photos plus the style reference
+- [ ] At least one approved likeness per family member who opts in, in the storybook style
+- [ ] Likeness art stored only in Firebase under the family code, never in the public repo
+- [ ] Original photos aren't kept after generating
+- [ ] Approved likenesses appear as characters in the story builder (with #15 tags) and as an avatar starting point
+- [ ] A grown-up can delete any person's likeness art
+
+**🔍 Decisions needed**
+- Which family members to start with? Kids only, or grown-ups too?
+- Storybook film style only, or also the chunky avatar style for the farm and lobby?
+
+---
+
 ## Shared groundwork (needed by #1, #3, #4, #5, #8, #13 and #14)
 
 - ⚠️ **One shared script:** Farmstand and the rest of the game live in the same `<script>`, so two `function` declarations with the same name silently replace each other (this broke story and inbox sending once: `sendGift`, `deliver`). Use unique names; a quick check is to list duplicate `function` names before pushing.
