@@ -10,6 +10,7 @@ Usage:
   python3 tools/genart.py batch tools/batches/farm1.json
   python3 tools/genart.py poses farm/hen "a plump red hen with a cream belly"   # stand/eat/sleep/back
   python3 tools/genart.py poses farm/carrot "a carrot plant" --crop           # sprout/growing/ripe
+  python3 tools/genart.py isobatch tools/batches/farmA.json     # skips anything already made
   python3 tools/genart.py sheet farm            # contact sheet of art/farm
   python3 tools/genart.py usage                 # rough free-tier budget left today
 
@@ -91,7 +92,11 @@ def generate(prompt, model="klein", ref=None, seed=None, style=None):
         files = {}
         if ref:
             from PIL import Image
-            im = Image.open(ref).convert("RGB")
+            src = Image.open(ref)
+            if src.mode in ("RGBA", "LA", "P"):
+                src = src.convert("RGBA"); bgim = Image.new("RGBA", src.size, (220, 221, 223, 255))
+                bgim.alpha_composite(src); src = bgim
+            im = src.convert("RGB")
             im.thumbnail((1024, 1024))
             buf = io.BytesIO(); im.save(buf, "PNG")
             files["input_image_0"] = ("ref.png", buf.getvalue(), "image/png")
@@ -188,6 +193,29 @@ def make_one(name, prompt, a):
     print(f"✓ {p.relative_to(ROOT)}  {dims[0]}x{dims[1]}  {len(webp)//1024}KB  {time.time()-t:.0f}s")
 
 
+def isobatch(path, a):
+    """Batch of isometric sprites. Items: {"crop": "desc"} -> ripe + growing stages;
+    {"prompt": "...", "ref": "art/iso/...webp"} -> one sprite. Skips files that already exist."""
+    spec = json.loads(Path(path).read_text())
+    done = fails = 0
+    for name, it in spec["items"].items():
+        if it.get("crop"):
+            if all((ART / f"iso/{name}/{st}.webp").exists() for st in ("ripe", "growing")): continue
+            a.crop, a.only = True, "ripe,growing"
+            poses(name, it["crop"], a); done += 2; continue
+        if (ART / f"iso/{name}.webp").exists(): continue
+        t = time.time()
+        ref = str(ROOT / it["ref"]) if it.get("ref") else None
+        prompt = it["prompt"] + (SAME if ref else "")
+        raw = generate(prompt, "klein", ref, it.get("seed", a.seed), ISO)
+        rd = CFG / "raw" / Path(name).parent; rd.mkdir(parents=True, exist_ok=True)
+        (CFG / "raw" / f"{name}.jpg").write_bytes(raw)
+        webp, dims = cutout(raw, False, 256)
+        save(f"iso/{name}", prompt, "klein", webp, dims, False); done += 1
+        print(f"✓ art/iso/{name}.webp  {dims[0]}x{dims[1]}  {len(webp)//1024}KB  {time.time()-t:.0f}s")
+    print(f"batch done: {done} made")
+
+
 def poses(name, desc, a):
     """art/iso/<name>/<pose>.webp: base pose first, the rest drawn from it as a reference."""
     kind = "crop" if a.crop else "animal"
@@ -227,7 +255,7 @@ def sheet(folder, out=None):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("cmd", choices=["one", "batch", "poses", "sheet", "usage"])
+    ap.add_argument("cmd", choices=["one", "batch", "isobatch", "poses", "sheet", "usage"])
     ap.add_argument("args", nargs="*")
     ap.add_argument("--model", default="klein", choices=MODELS)
     ap.add_argument("--ref"); ap.add_argument("--seed", type=int)
@@ -246,6 +274,8 @@ def main():
         a.keepbg = a.keepbg or spec.get("options", {}).get("keepbg", False)
         for name, prompt in spec["items"].items():
             make_one(name, prompt, a)
+    elif a.cmd == "isobatch":
+        isobatch(a.args[0], a)
     elif a.cmd == "poses":
         poses(a.args[0], a.args[1], a)
     elif a.cmd == "sheet":

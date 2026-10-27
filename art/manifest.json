@@ -233,6 +233,15 @@
   "cutout": true,
   "made": "2026-10-27"
  },
+ "iso/farm/sheep/sheared": {
+  "file": "art/iso/farm/sheep/sheared.webp",
+  "w": 256,
+  "h": 243,
+  "prompt": "Edit the reference image: the same sheep after its wool has been sheared off, slim body with short smooth pale fuzz, same face, legs and colors, keep the exact same character, colors, proportions and style as the reference image",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-27"
+ },
  "iso/farm/sheep/sleep": {
   "file": "art/iso/farm/sheep/sleep.webp",
   "w": 256,

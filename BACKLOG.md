@@ -162,12 +162,13 @@ Building happens on empty **build lots** around the map. Paying starts a **Build
 About **45 images** left including retries, which is roughly one day of the free allowance if nothing else is using it. Make them in this order:
 
 *Batch A — needed for the chore puzzles (about 25)*
+- Ready to run: `python3 tools/genart.py isobatch tools/batches/farmA.json` (skips anything already made). Scheduled to run automatically at 7:05 PM Central on Oct 27.
 - [ ] Crops, growing + ripe (the carrot sprout is reused for every crop): tomato, corn, strawberry — 6
 - [ ] Seed packets, one per crop (Plant puzzle: match seed to picture): carrot, tomato, corn, pumpkin, strawberry — 5
 - [ ] Animal goods to collect: white egg, brown egg (sizes and colors done in code for the sorting puzzle), milk pail, ball of wool — 4
 - [ ] Animal food (Feed puzzle: match the animal to its food; Big reads HAY / CORN / SLOP): hay bale, corn pile, slop bucket, chicken feed scoop — 4
 - [ ] Tools: watering can in **white** so the game can tint it (Little's "tap the matching color" puzzle), empty bucket (co-op milking), harvest basket — 3
-- [ ] Sheared sheep (shown after wool is collected) — 1
+- [x] Sheared sheep (shown after wool is collected) — 1
 - [ ] Hiding spots for egg hunt: hay pile, bush — 2
 
 *Batch B — the farm itself (about 11)*
