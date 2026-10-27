@@ -157,7 +157,45 @@ Every person (kids, friends and grown-ups) gets an **Inbox** for messages the fa
 
 ---
 
-## Shared groundwork (needed by #1, #3 and #4)
+## 5. 🆕 New game: Fashion Show
+
+Kids design outfits for a "model," then watch the model walk an animated runway, take photos and call out poses.
+
+**Designing the outfit (by level)**
+- **Little (Violet):** drag and drop ready-made pieces onto the model: tops, bottoms, dresses, shoes, hats, bags and accessories (crowns, sunglasses, capes). Tap a piece to change its color from a few big color dots. Every piece and color name is read aloud.
+- **Big (Quinn):** pick from more advanced templates (for example a ball gown, a superhero suit, a rock star outfit or a sports uniform) and customize each part: sleeves, length, collar and pattern (stripes, polka dots, stars, hearts). Choose from named color schemes (Ocean, Sunset, Candy, Forest, Galaxy) or pick each color separately. Can also draw a design onto the fabric with the Color Together tools.
+- **Models:** a handful of friendly characters to dress (kid, animal and robot models), plus each player's own persona avatar.
+
+**The runway**
+- The model walks down an animated runway with lights, music and a cheering crowd, then stops at the end and holds a pose before walking back.
+- Walk styles to choose: strut, twirl, skip, hop and silly walk.
+- Each player's model gets a turn, with their name announced ("Here comes Quinn's Galaxy Rock Star!").
+
+**Interactive: photos and poses**
+- A **camera button** takes a photo with a flash and shutter sound. Photos go into a **Lookbook** and can be sent to someone's Inbox (#4).
+- **Pose buttons** make the model strike a pose: hands on hips, wave, peace sign, twirl, superhero, and blow a kiss. Little players get big picture buttons; Big players can chain poses into a short routine.
+- The crowd reacts with applause, hearts and confetti, and other players can tap reactions live.
+
+**Co-op**
+- Up to 4 players, each dressing their own model, then a shared show where everyone's models walk in turn.
+- Optional "design together": two players dress the same model, one picks the top while the other picks the bottom.
+
+**Acceptance criteria**
+- [ ] Little players can dress a model and change colors without reading anything
+- [ ] Big players get at least 4 templates, piece customization, patterns and at least 5 color schemes
+- [ ] An animated runway walk with at least 3 walk styles and a pose at the end
+- [ ] At least 5 poses triggered by buttons during the show
+- [ ] Photos can be taken during the show and saved to a Lookbook
+- [ ] Shows sync live for everyone in the game, like Color Together
+
+**🔍 Decisions needed**
+- Models: generic characters only, each player's own avatar, or both?
+- Should Lookbook photos save to the iPad's Photos app, or stay inside Kapanigans (and the Inbox)?
+- Should there be any judging or scoring, or keep it all cheering with no winners (kinder for little ones)?
+
+---
+
+## Shared groundwork (needed by #1, #3, #4 and #5)
 
 - ✅ **Saved data: decided on Firebase Realtime Database (free Spark plan).** No credit card, live updates to every device, works from GitHub Pages. Everything lives under `families/<family code>/`, so the family code is the key (no passwords).
   - Why not the others: Supabase's free plan pauses projects after a week without use, and Firebase *Storage* (for files) now needs a paid plan, so voice clips and drawings are saved as small compressed data inside the database instead.
