@@ -35,6 +35,8 @@ body{
   -webkit-user-select:none; user-select:none; -webkit-touch-callout:none;
   overflow:hidden; overscroll-behavior:none;
 }
+/* no page zoom: pinch and double-tap never zoom the whole page (the farm and the coloring board handle their own pinch) */
+html,body{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%;text-size-adjust:100%}
 button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 button:focus-visible{outline:4px solid var(--ink);outline-offset:3px}
 .screen{height:100%;display:flex;flex-direction:column;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));box-sizing:border-box}
@@ -1739,6 +1741,11 @@ syncVoiceBtn();
 $("#closeSheet").onclick=()=>$("#picSheet").hidden=true;
 $("#picSheet").addEventListener("click",e=>{if(e.target.id==="picSheet")e.target.hidden=true});
 document.addEventListener("gesturestart",e=>e.preventDefault());
+// iPad Safari ignores user-scalable=no, so also stop two-finger page zoom here and undo any zoom that slips through
+document.addEventListener("touchmove",e=>{if(e.touches&&e.touches.length>1)e.preventDefault()},{passive:false});
+(()=>{const vp=document.querySelector('meta[name="viewport"]'),vv=window.visualViewport;if(!vp||!vv)return;const base=vp.content;let t=0;
+  const unzoom=()=>{if(vv.scale>1.01){vp.content=base.replace("maximum-scale=1","maximum-scale=1.01");setTimeout(()=>{vp.content=base;window.scrollTo(0,0)},80)}};
+  vv.addEventListener("resize",()=>{clearTimeout(t);t=setTimeout(unzoom,500)})})();
 
 const saved=load("kp.kid");
 if(saved&&KIDS[saved]) me=saved;
