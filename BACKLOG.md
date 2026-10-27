@@ -909,8 +909,8 @@ Turn photos of family members into **high-resolution cartoon characters** (in th
 - [ ] A grown-up can delete any person's likeness art
 
 **🔍 Decisions needed**
-- Which family members to start with? Kids only, or grown-ups too?
-- Storybook film style only, or also the chunky avatar style for the farm and lobby?
+- ~~Who to start with~~ → decided: **Joe decides each image.** No likeness art is made unless Joe asks for that specific person and image.
+- ~~Which style~~ → decided: **ask Joe which style to render every time** (storybook film style, chunky avatar style, or something else). Never assume a style.
 
 ---
 
