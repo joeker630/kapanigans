@@ -185,7 +185,7 @@ Puzzle types come from the **Age-appropriate tasks** chat. That chat is building
 | Counting | Tap each one to count 2–5 (counts out loud); put 1–5 in the basket | How many? (6–20, tap to mark); add or take away within 10 with pictures; which side has more? |
 | Letters & words | Find the letter (mostly V-I-O-L-E-T); find the same letter | Big letter to small letter (with b/d/p/q tricks); what letter does 🐮 start with?; spell a 3-letter word with tiles |
 | Colors & shapes | Tap the red balloon; find the circle; drag balloons into the same color basket | Tap the small blue triangle (two clues); find the hexagon, octagon, trapezoid…; how many sides? |
-| Jigsaw | 4 big pieces over a faint picture | 12 pieces, no picture, pieces start turned (tap to turn) |
+| Jigsaw | 9 pieces (3×3) over a faint picture | 12 pieces, no picture, pieces start turned (tap to turn) |
 | Building shapes | 2–3 shapes into dotted outlines (house, ice cream, snowman, sailboat, tree, square from two triangles) | 5 shapes into a solid silhouette (rocket, house, tree, sailboat, cat, fish), shapes start turned |
 | Tracing | Thick letter path, follow the star ⭐ | Lowercase letters and numbers 0–20 with numbered start dots and arrows, then again with a faint line |
 | Patterns | AB: 🍎🍌🍎🍌🍎 ? | ABC, AABB, ABB, AAB; growing (1, 2, 3 → 4); counting by 2s, 5s and 10s |
