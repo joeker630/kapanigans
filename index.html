@@ -31,6 +31,23 @@ body{position:fixed;inset:0;width:100%;max-width:100vw;overflow:hidden;padding-t
 video{max-width:100%}
 body{height:100%;margin:0}
 [hidden]{display:none!important}
+/* drawing pages (bedtime story characters, inbox drawings): everything fits on one screen, no scrolling */
+.screen.drawing{overflow:hidden!important}
+.drawing .sbody{min-height:0;gap:8px;padding-bottom:4px}
+.drawing .sbody>*{flex:none}
+.drawing .sbody>h2{margin:0}
+.drawing .sbody>.padwrap{flex:1 1 0;min-height:0;flex-wrap:nowrap;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+.drawing .padwrap.side{flex-direction:row}
+.drawing .padwrap .pad{width:auto;max-width:none;flex:none}
+.drawing .padtools{gap:6px;max-width:100%;align-items:center}
+.drawing .padwrap.side .padtools{max-width:min(440px,45%);align-items:flex-start}
+.drawing .padtools .trow{gap:calc(6px*var(--ps,1));justify-content:center}
+.drawing .padwrap.side .padtools .trow{justify-content:flex-start}
+.drawing .padtools .sw{width:calc(46px*var(--ps,1));height:calc(46px*var(--ps,1))}
+.drawing .padtools .tool{min-width:calc(66px*var(--ps,1));height:calc(66px*var(--ps,1));font-size:calc(28px*var(--ps,1));border-radius:calc(18px*var(--ps,1))}
+.drawing .padtools.little .sw{width:calc(64px*var(--ps,1));height:calc(64px*var(--ps,1))}
+.drawing .padtools.little .tool{min-width:calc(86px*var(--ps,1));height:calc(86px*var(--ps,1));font-size:calc(40px*var(--ps,1))}
+
 /* how-to + FAQ popup */
 .help{position:fixed;inset:0;z-index:70;background:rgba(43,33,64,.45);display:flex;align-items:center;justify-content:center;padding:max(12px,env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) max(12px,env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px))}
 .hcard{--hs:1;background:var(--paper);border-radius:28px;width:min(880px,100%);max-height:100%;overflow:hidden;display:flex;flex-direction:column;gap:calc(14px*var(--hs));padding:calc(20px*var(--hs)) calc(24px*var(--hs));box-shadow:0 8px 0 var(--sky-deep)}
@@ -2200,7 +2217,7 @@ $("#sBack").onclick=()=>{
 };
 function el(tag,cls,html){const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e}
 function renderStory(){
-  const B=$("#sBody"); B.innerHTML=""; B.classList.toggle("little-choices",lvl()==="little");
+  const B=$("#sBody"); B.innerHTML=""; B.classList.toggle("little-choices",lvl()==="little"); $("#story").classList.toggle("drawing",sStep==="draw"); $("#story").scrollTop=0;
   const S=draft.story&&STORIES[draft.story];
   if(sStep==="home"){
     B.append(el("h2",null,"What do you want to do?"));
@@ -2339,6 +2356,20 @@ function renderDraw(B,S){
   skip.onclick=()=>{ch.s=[];pad.strokes=ch.s;next()}; done.onclick=()=>{if(!ch.s.length){say("Draw something first, or tap skip");return}next()};
   row.append(skip,done); B.append(row);
 }
+// size the drawing pad and its tools so the whole page fits on screen: pad beside the tools when wide, above them when tall
+function fitPad(){
+  const scr=$(".screen.drawing:not([hidden])"); if(!scr) return; const wrap=scr.querySelector(".padwrap"), cv=wrap&&wrap.querySelector(".pad"), tools=wrap&&wrap.querySelector(".padtools"); if(!cv) return;
+  const fits=()=>scr.scrollHeight<=scr.clientHeight+1&&wrap.scrollWidth<=wrap.clientWidth+1;
+  cv.style.width="10px"; tools.style.setProperty("--ps",1);
+  const side=wrap.clientWidth>wrap.clientHeight*1.25; wrap.classList.toggle("side",side);
+  for(let ps=1;ps>=.55;ps-=.09){
+    tools.style.setProperty("--ps",ps.toFixed(2)); cv.style.width="10px";
+    const max=side?Math.min(wrap.clientHeight,wrap.clientWidth-tools.offsetWidth-12):Math.min(wrap.clientWidth,wrap.clientHeight-tools.offsetHeight-10,660);
+    for(let sz=Math.floor(Math.min(max,660));sz>=150;sz-=8){cv.style.width=sz+"px";if(fits())return}
+  }
+  cv.style.width="150px";
+}
+addEventListener("resize",()=>requestAnimationFrame(fitPad));
 function buildPad(B,strokes){
   pad.strokes=strokes; const L=lvl();
   if(!pad.c||!(L==="little"?LITTLE_COLORS:BIG_COLORS).includes(pad.c)) pad.c=L==="little"?LITTLE_COLORS[5]:BIG_COLORS[16];
@@ -2355,7 +2386,7 @@ function buildPad(B,strokes){
   if(L!=="little"){const r2=el("div","trow");[6,14,26].forEach((w,j)=>{const b=el("button","sz",`<i style="width:${6+j*8}px;height:${6+j*8}px"></i>`);b.dataset.sz=j;b.onclick=()=>{pad.size=j;sync()};r2.append(b)});tools.append(r2)}
   const r3=el("div","trow");
   for(const col of (L==="little"?LITTLE_COLORS:BIG_COLORS)){const s=el("button","sw");s.style.setProperty("--c",col);s.dataset.c=col;s.setAttribute("aria-label","color");s.onclick=()=>{pad.c=col;pad.tool="pen";blip(600,.06);sync()};r3.append(s)}
-  tools.append(r3); wrap.append(tools); B.append(wrap);
+  tools.append(r3); wrap.append(tools); B.append(wrap); requestAnimationFrame(fitPad);
   const ctx=cv.getContext("2d");
   function redraw(){ctx.clearRect(0,0,PAD,PAD);drawStrokes(ctx,pad.strokes,1)}
   function sync(){tools.querySelectorAll(".tool[data-t]").forEach(b=>b.classList.toggle("on",b.dataset.t===pad.tool));
@@ -2627,7 +2658,7 @@ function msgPreview(m){
     picture:"🎨 A colored picture",report:"📊 Weekly report",story:`🌙 Bedtime story: ${STORIES[m.story]?STORIES[m.story].title:""}`,react:`${m.r||"❤️"} ${reactLine(m)}`}[m.kind]||"Message";
 }
 function renderInbox(){
-  const B=$("#iBody"); B.innerHTML=""; B.classList.toggle("little-choices",lvl()==="little");
+  const B=$("#iBody"); B.innerHTML=""; B.classList.toggle("little-choices",lvl()==="little"); $("#inbox").classList.toggle("drawing",ib.view==="draw"); $("#inbox").scrollTop=0;
   const K=kidOf(me); $("#iTitle").textContent=`💌 ${K.name}'s Inbox`;
   if(ib.view==="list"){
     const top=el("div","rowbtns");const nw=el("button","bigbtn","✏️ Send a message");nw.onclick=()=>{sayLittle("Who is it for?");ibGo("to")};top.append(nw);B.append(top);
