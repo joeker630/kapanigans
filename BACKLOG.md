@@ -129,6 +129,12 @@ A **live co-op farm** the kids share. Every farm action is done by solving a sho
     - Big: memory +1, tracing +1, jigsaw +2, building shapes +2.
     - Little: memory, tracing, jigsaw and building shapes +1 each.
     - Quick ones (counting, letters, colors, patterns, money) +0.
+- **Clearer tapping (Oct 27):**
+  - Bubbles (💧 🌱 🥚 🥛 🧶 and the food an animal wants) are their own tap targets and always win.
+  - Touching shows a glowing ring and a name tag with its state ("🐔 Hen · 🥚 ready"). Lifting does it, and dragging cancels.
+  - If two or more things are under the finger, a **"Which one?"** picker shows big buttons with each one's state, read aloud.
+  - Animal tap areas hug the body.
+  - Animals gently keep about a tile apart, so they stack up less.
 - **Ready to use:** `farmPuzzle()` to put a puzzle in front of any farm action, `logAttempt()` for the grown-up dashboard (#8), `say()` / `sayLittle()` read-aloud, Firebase under `families/<code>/`, and `tools/genart.py` for isometric art.
 
 ### 🧩 Every action is a puzzle
