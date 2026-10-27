@@ -541,7 +541,7 @@ Make sure the same person (for example Quinn) can't be signed in on two devices 
 
 ---
 
-## 12. 🆕 Switch camera: front or back
+## 12. 🆕 Switch camera: front or back (iPad and Fire tablet)
 
 Add a button to the video chat bubble to **flip between the iPad's front and back cameras**, so a kid can show the other person something (a drawing on paper, a toy, the dog) and then flip back to their face.
 
@@ -555,14 +555,23 @@ Add a button to the video chat bubble to **flip between the iPad's front and bac
 - The choice resets to the front camera at the start of each new call.
 - On a device with only one camera, the button is hidden.
 
+**📱 Amazon Fire tablet (a must)**
+- The Fire tablet runs the game in Amazon's **Silk** browser (or Chrome, if installed), which handles the camera differently from Safari on iPad.
+- Don't rely only on asking for "front" or "back": some Android and Fire browsers ignore that. Fallback: list the cameras the tablet reports (`enumerateDevices`), pick the front and back ones by their labels ("front", "back", "facing"), and switch by camera ID. If labels aren't available, cycle through every camera the tablet has.
+- Ask for a modest video size (for example 640×480) so the Fire's smaller cameras and slower processor keep up, and so the switch is quick.
+- Handle the camera permission prompt in Silk, and show a clear grown-up tip if the camera is blocked (Settings → Apps → Silk Browser → Permissions → Camera).
+- Test on the family's actual Fire tablet model, both cameras, in both portrait and landscape, during a call with an iPad.
+
 **Acceptance criteria**
-- [ ] The flip button switches between front and back cameras on iPad and iPhone
+- [ ] The flip button switches between front and back cameras on iPad, iPhone **and the Fire tablet (Silk browser)**
 - [ ] The call stays connected and the other person sees the new view within about a second
 - [ ] Mute and camera-off still work after flipping
 - [ ] The self-view is mirrored only for the front camera
 - [ ] The button is hidden on devices with one camera
+- [ ] A call between a Fire tablet and an iPad works both ways, before and after flipping on either side
 
 **🔍 Decisions needed**
+- Which Fire tablet model is it (for example Fire HD 8 or Fire HD 10)? Is it running Silk, or is Chrome installed?
 - Should there also be a quick "Show it!" button for Little players that flips to the back camera, then flips back automatically after about 20 seconds?
 
 ---
