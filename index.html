@@ -226,7 +226,34 @@ h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance;l
 @media (max-width:520px){#farm .shead h1{font-size:0}#farm .shead h1::first-letter{font-size:30px}}
 #farmBody{flex:1;min-height:0;position:relative;width:100%}
 #farmCv{position:absolute;inset:0;touch-action:none}
-.basket{background:var(--paper);border-radius:999px;padding:6px 16px;font-size:20px;box-shadow:0 3px 0 var(--sky-deep);white-space:nowrap}
+.basket{background:var(--paper);border-radius:999px;padding:6px 14px;font-size:19px;box-shadow:0 3px 0 var(--sky-deep);white-space:nowrap}
+.basket:active{transform:translateY(2px)}
+.jarchip{background:var(--sun);box-shadow:0 3px 0 var(--sun-deep)}
+@media (max-width:520px){#farmGoods{max-width:34vw;overflow:hidden;text-overflow:ellipsis;font-size:16px;padding:6px 10px}}
+.fsheet .inner{max-height:86%}
+.fbody{display:flex;flex-direction:column;gap:12px}
+.fbody .choice small{font-size:13px;color:var(--ink-soft);font-weight:700}
+.fbody .choice.off{opacity:.55}
+.fbody .choice.owned{border-color:#2ECC40;opacity:.8}
+.fnote{margin:0;color:var(--ink-soft);font-weight:700}
+.fempty{margin:8px 0;font-size:18px;text-align:center}
+.fsec{font-size:20px;margin-top:6px}
+.ftoggle{align-self:flex-start}.ftoggle.on{background:var(--sun);box-shadow:0 3px 0 var(--sun-deep)}
+.jarbig{display:flex;align-items:center;justify-content:center;gap:12px;font-family:var(--display)}
+.jarbig .jar{font-size:64px}.jarbig b{font-size:64px}
+.coinpile{font-size:28px;text-align:center;line-height:1.3;word-break:break-all}
+.orders{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.ordercard{background:var(--paper);border-radius:22px;padding:14px;display:flex;flex-direction:column;gap:10px;box-shadow:0 5px 0 var(--sky-deep)}
+.ofrom{display:flex;align-items:center;gap:8px;font-size:18px;cursor:pointer}.oface{font-size:34px}
+.oitems{display:flex;flex-wrap:wrap;gap:6px 10px}
+.oi{font-size:17px}.oi small{color:var(--ink-soft)}.oi.ok{color:#15803D}
+.oitems .oi:only-child{font-size:inherit}
+.ordercard .oi:not(.ok):not(:has(small)){font-size:34px;letter-spacing:2px}
+.opay{font-family:var(--display);font-size:22px}.obonus{font-size:14px;background:#FFF3C4;border-radius:999px;padding:2px 8px}
+.ordercard .bigbtn.off{background:var(--sky);box-shadow:0 5px 0 var(--sky-deep)}
+.ostep{display:flex;flex-direction:column;gap:8px}
+.orow{display:flex;align-items:center;gap:10px;background:var(--paper);border-radius:16px;padding:6px 10px}
+.orow .em{font-size:28px}.orow .nm{flex:1}.orow b{min-width:28px;text-align:center;font-size:20px}
 .sbody .sub{color:var(--ink-soft);font-weight:600;text-align:center;margin:-8px 0 0}
 .choices{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;width:100%;max-width:900px}
 .choice{background:var(--paper);border-radius:24px;padding:14px 8px;display:flex;flex-direction:column;align-items:center;gap:4px;box-shadow:0 5px 0 var(--sky-deep);border:4px solid transparent;font-size:16px;font-weight:800}
@@ -730,7 +757,8 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
   <div class="shead">
     <button class="round" id="fBack" aria-label="Back">⬅️</button>
     <h1>🥕 Farmstand</h1>
-    <span class="basket" id="farmBasket"></span>
+    <button class="basket" id="farmGoods" aria-label="My basket"></button>
+    <button class="basket jarchip" id="farmJar" aria-label="My Moolah"></button>
     <button class="round" id="fHome" aria-label="Home">🏠</button>
   </div>
   <div id="farmBody"><canvas id="farmCv"></canvas></div>
@@ -2742,110 +2770,499 @@ if(savedCode.length>=4){
   if(me) bump("sessions");
   if(me) goLobby(); else show("pick");
 } else { show("setup"); }
-/* ============ FARMSTAND (v1: animated field, local only) ============ */
+/* ============ FARMSTAND (v2: one family farm in Firebase, goods, Moolah, Farm Store, family orders) ============
+   families/<CODE>/farm = {
+     v, unlock:{carrot:true,...}, field:<0-4>, fence:<0-1>,
+     plots:{p<spot>:{crop,planted,watered,fert}},  animals:{<id>:{k,fed,ready,shorn}},
+     builds:{coop:true,...}, decor:{d<spot>:"tree"},
+     jars:{<who>:n}, goods:{<who>:{egg:n,fert:n,...}},
+     orders:{<who>:{<id>:{from,items:{milk:1},at,pay,by?,bonus?,custom?}}}, onext:{<who>:ts} }
+   Shared: plots, animals, builds, decor. Per person: jars (Moolah), goods, orders.
+   Nothing ever dies or is lost: thirsty plants and hungry animals just droop until someone helps. */
 const FARM_ART="art/iso/farm/";
-const FARM_ANIMALS=[{k:"hen",name:"hen",h:.9,food:"corn"},{k:"cow",name:"cow",h:1.25,food:"grass"},{k:"pig",name:"pig",h:1.05,food:"corn"},{k:"sheep",name:"sheep",h:1.05,food:"grass"}];
-const FARM_CROPS={carrot:{name:"carrot",icon:"🥕"},pumpkin:{name:"pumpkin",icon:"🎃"}};
-const FARM_GROW=[0,18000,36000]; // ms to reach sprout, growing, ripe
-const FARM_VIEW=9; // tiles across the screen; the world is bigger and pans by dragging
-const FIELD={i0:2,j0:10,ni:3,nj:2}; // crop plots
-const PASTURE={i0:7,j0:2,i1:15,j1:13}; // where animals roam
-const fm={cv:null,g:null,img:{},N:16,tw:0,th:0,ox:0,oy:0,camX:0,camY:0,drag:null,animals:[],plots:[],basket:{carrot:0,pumpkin:0},pops:[],raf:0,last:0};
-function farmImg(p){if(!fm.img[p]){const i=new Image();i.src=FARM_ART+p+".webp";fm.img[p]=i}return fm.img[p]}
+const FARM_VIEW=9; // tiles across an iPad screen; the world is bigger and pans by dragging
+const GOODS={
+  carrot:{name:"carrot",names:"carrots",icon:"🥕",price:1,art:"carrot/ripe"},
+  tomato:{name:"tomato",names:"tomatoes",icon:"🍅",price:2,art:"tomato/ripe"},
+  strawberry:{name:"strawberry",names:"strawberries",icon:"🍓",price:2,art:"strawberry/ripe"},
+  corn:{name:"ear of corn",names:"ears of corn",icon:"🌽",price:2,art:"corn/ripe"},
+  pumpkin:{name:"pumpkin",names:"pumpkins",icon:"🎃",price:5,art:"pumpkin/ripe"},
+  egg:{name:"egg",names:"eggs",icon:"🥚",price:1,art:"goods/egg_white"},
+  milk:{name:"gallon of milk",names:"gallons of milk",icon:"🥛",price:3,art:"goods/milk"},
+  wool:{name:"ball of wool",names:"balls of wool",icon:"🧶",price:3,art:"goods/wool"},
+};
+const CROPS={carrot:{grow:120e3},tomato:{grow:180e3},strawberry:{grow:180e3},corn:{grow:240e3},pumpkin:{grow:360e3}};
+const ANIMALS={
+  hen:{name:"hen",names:"hens",h:.9,food:"corn",foodIcon:"🌽",good:"egg",make:60e3,verb:"collect the egg",act:"eggs"},
+  cow:{name:"cow",names:"cows",h:1.25,food:"hay",foodIcon:"🌾",good:"milk",make:120e3,verb:"milk the cow",act:"milk"},
+  sheep:{name:"sheep",names:"sheep",h:1.05,food:"grass",foodIcon:"🌿",good:"wool",make:180e3,verb:"shear the sheep",act:"shear"},
+  pig:{name:"pig",names:"pigs",h:1.05,food:"slop",foodIcon:"🍎",good:null,make:0},
+};
+const HUNGRY=20*60e3, THIRSTY=2*60e3, OLD_RIPE=30*60e3;
+// Field spots: 3 across, one more row per field upgrade (6, 9, 12, 15, 18 plots)
+const FIELD_SPOTS=[];for(let j=9;j<15;j++)for(let i=1;i<4;i++)FIELD_SPOTS.push([i,j]);
+const plotCount=()=>6+3*Math.min(4,(F.st&&F.st.field)||0);
+const PASTURES=[{i0:7,j0:1,i1:14,j1:8},{i0:7,j0:0,i1:16,j1:9.6}];
+const pasture=()=>PASTURES[Math.min(1,(F.st&&F.st.fence)||0)];
+// Buildings: fixed spots. Animal homes only appear once built.
+const STRUCT={
+  stand:{i:1,j:1,wi:2,wj:1,h:.45,top:"#E9C99A",l:"#E5484D",r:"#C23B3B",label:"🧺",name:"Farmstand",say:"The farmstand. Sell your goods here!"},
+  board:{i:4.3,j:1.3,wi:.5,wj:.5,h:.55,top:"#B07A45",l:"#9A6A3A",r:"#86592E",label:"📋",name:"Order board",say:"The order board. See what your family wants!"},
+  barn:{i:1,j:4,wi:2,wj:2,h:.9,top:"#D64545",l:"#C23B3B",r:"#A83232",roof:"#7A2E2E",label:"🔨",name:"Farm Store",say:"The Farm Store. Build your farm here!"},
+  coop:{i:7,j:11,wi:1,wj:1,h:.6,top:"#F2D27A",l:"#E0BC5E",r:"#C9A44A",roof:"#C2410C",label:"🐔",name:"Chicken coop",home:"hen",room:3},
+  pen:{i:9,j:11,wi:1,wj:1,h:.35,top:"#C9A27A",l:"#B08A62",r:"#987552",label:"🐷",name:"Pig pen",home:"pig",room:2},
+  shed:{i:11,j:11,wi:2,wj:1,h:.6,top:"#E8E3D8",l:"#D2CBBE",r:"#BDB5A6",roof:"#475569",label:"🐑",name:"Sheep shed",home:"sheep",room:2},
+  stable:{i:13,j:11,wi:2,wj:2,h:.85,top:"#B45309",l:"#9A4708",r:"#7F3B07",roof:"#3F2A1A",label:"🐄",name:"Stable",home:"cow",room:2},
+};
+const DECOR={flowers:{icon:"🌷",name:"flowers",price:3},sunflower:{icon:"🌻",name:"sunflowers",price:4},lantern:{icon:"🏮",name:"lantern",price:5},
+  bench:{icon:"🪑",name:"bench",price:6},mailbox:{icon:"📫",name:"mailbox",price:6},tree:{icon:"🌳",name:"tree",price:8},
+  beehive:{icon:"🐝",name:"beehive",price:10},pond:{icon:"🦆",name:"duck pond",price:20}};
+const DECOR_SPOTS=[[5,3],[0,8],[5,9],[0,12],[5,13],[6,0],[15,15],[9,14],[12,14],[15,13],[0,0],[3,15],[6,6],[0,3]];
+const PRICES={seed:{tomato:10,corn:15,strawberry:20},field:[15,25,40,60],fence:20,fert:3,animal:{hen:5,pig:12,sheep:15,cow:25}};
+const ORDERERS=()=>Object.keys(KIDS).filter(k=>k!==me&&k!=="bear"&&k!=="fox");
+
+const F={st:null,ref:null,code:null,local:false,anim:new Map(),sheet:null,waitT:0};
+const fm={cv:null,g:null,img:{},N:16,tw:0,th:0,ox:0,oy:0,camX:0,camY:0,drag:null,pops:[],hits:[],raf:0,last:0};
+
+/* ---- state helpers (Firebase, or in-memory with ?farmlocal for testing) ---- */
+function getPath(o,p){for(const k of p.split("/")){if(o==null)return undefined;o=o[k]}return o}
+function setPath(o,p,v){const ks=p.split("/");let x=o;for(let n=0;n<ks.length-1;n++){if(x[ks[n]]==null||typeof x[ks[n]]!=="object")x[ks[n]]={};x=x[ks[n]]}if(v==null)delete x[ks[ks.length-1]];else x[ks[ks.length-1]]=v}
+const INC=n=>({__inc:n});
+function fUpd(ch){
+  if(F.ref){const up={};for(const [k,v] of Object.entries(ch))up[k]=v&&v.__inc!=null?firebase.database.ServerValue.increment(v.__inc):v;
+    F.ref.update(up).catch(()=>toast("The farm didn't save. Check the Wi-Fi."))}
+  else{for(const [k,v] of Object.entries(ch))setPath(F.st,k,v&&v.__inc!=null?(+getPath(F.st,k)||0)+v.__inc:v);fChanged()}
+}
+function fTx(path,fn){ // resolves true when the change went through
+  if(F.ref)return F.ref.child(path).transaction(fn).then(r=>r.committed,()=>false);
+  const v=fn(JSON.parse(JSON.stringify(getPath(F.st,path)??null)));if(v===undefined)return Promise.resolve(false);setPath(F.st,path,v);fChanged();return Promise.resolve(true)
+}
+function fDefault(){const now=Date.now();
+  const plots={};for(let n=0;n<6;n++)plots["p"+n]={crop:n%3===2?"pumpkin":"carrot",planted:now-180e3,watered:n===4?0:now-170e3};
+  return {v:2,made:now,unlock:{carrot:true,pumpkin:true},field:0,fence:0,plots,
+    animals:{a1:{k:"hen",fed:now-120e3,ready:now-60e3},a2:{k:"cow",fed:now-60e3,ready:now+60e3},a3:{k:"sheep",fed:0,ready:0},a4:{k:"pig",fed:0,ready:0}},
+    builds:{},decor:{},jars:{},goods:{},orders:{},onext:{}}}
+function farmConnect(){
+  const local=/[?&]farmlocal\b/.test(location.search)||!window.firebase||!firebase.database||!familyCode;
+  if(F.code===familyCode&&(F.ref||F.local))return;
+  if(F.ref)F.ref.off();F.ref=null;F.st=null;F.code=familyCode;F.anim.clear();
+  if(local){F.local=true;F.st=fDefault();fChanged();return}
+  try{if(!firebase.apps.length)firebase.initializeApp(FIREBASE)}catch(e){}
+  F.local=false;F.ref=firebase.database().ref("families/"+familyCode+"/farm");
+  F.ref.on("value",s=>{const v=s.val();if(!v||!v.v){F.ref.transaction(x=>x&&x.v?x:fDefault());return}F.st=v;fChanged()},()=>{});
+  clearTimeout(F.waitT);F.waitT=setTimeout(()=>{if(!F.st){F.st=fDefault();fChanged();toast("Can't reach the farm. Check the Wi-Fi.")}},5000);
+}
+const myGoods=()=>(F.st&&F.st.goods&&F.st.goods[me])||{};
+const myJar=()=>+((F.st&&F.st.jars&&F.st.jars[me])||0);
+const unlocked=c=>!!(F.st&&F.st.unlock&&F.st.unlock[c]);
+const animalsOf=k=>Object.values((F.st&&F.st.animals)||{}).filter(a=>a&&a.k===k).length;
+const roomFor=k=>1+Object.entries(STRUCT).filter(([id,s])=>s.home===k&&F.st&&F.st.builds&&F.st.builds[id]).reduce((n,[,s])=>n+s.room,0);
+function qty(g,n){const G=GOODS[g];return `${n} ${n===1?G.name:G.names}`}
+function listText(items){const p=Object.entries(items).filter(([,n])=>n>0).map(([g,n])=>qty(g,n));return p.length>1?p.slice(0,-1).join(", ")+" and "+p[p.length-1]:p[0]||""}
+const little=()=>lvl()==="little";
+
+/* ---- every action runs through a learning puzzle (FARM PUZZLES engine below) ----
+   farmDo(action, info) -> Promise<boolean>, true once the puzzle is solved (false if backed out).
+   action: "plant" | "water" | "harvest" | "feed" | "eggs" | "milk" | "shear" | "sell" | "build" | "deliver" | "buy" */
+const FOOD={corn:{em:"🌽",one:"ear of corn",many:"ears of corn"},hay:{em:"🌾",one:"bale of hay",many:"bales of hay"},grass:{em:"🌿",one:"bunch of grass",many:"bunches of grass"},slop:{em:"🍎",one:"apple",many:"apples"}};
+const gItem=g=>({em:GOODS[g].icon,one:GOODS[g].name,many:GOODS[g].names});
+const cropPic=c=>["carrot","pumpkin"].includes(c)?c+"/ripe":undefined;
+function farmDo(action,info){
+  if(action==="buy")return Promise.resolve(true); // seeds, animals, fertilizer, decorations: no puzzle
+  const A=info.animal&&ANIMALS[info.animal];let o;
+  if(action==="feed"){const f=FOOD[A.food];o={title:`${f.em} Feed the ${A.name}`,item:f,pic:info.animal+"/stand",reward:`${f.em} Yum! Thank you!`}}
+  else if(action==="eggs")o={title:"🥚 Collect the egg",item:gItem("egg"),pic:"hen/stand",reward:"+1 🥚"};
+  else if(action==="milk")o={title:"🥛 Milk the cow",item:gItem("milk"),pic:"cow/stand",reward:"+1 🥛"};
+  else if(action==="shear")o={title:"🧶 Shear the sheep",item:gItem("wool"),pic:"sheep/stand",reward:"+1 🧶"};
+  else if(action==="plant")o={title:`🌱 Plant ${GOODS[info.crop].names}`,item:gItem(info.crop),pic:cropPic(info.crop),reward:"🌱 Planted!"};
+  else if(action==="water")o={title:`💧 Water the ${GOODS[info.crop].names}`,item:{em:"💧",one:"drop of water",many:"drops of water"},pic:cropPic(info.crop),reward:"💧 Ahh, thank you!"};
+  else if(action==="harvest")o={title:`🧺 Pick the ${GOODS[info.crop].names}`,item:gItem(info.crop),pic:cropPic(info.crop),reward:`+${info.count||1} ${GOODS[info.crop].icon}`};
+  else if(action==="sell"){const g=Object.keys(info.items)[0];o={title:"🧺 Sell at the farmstand",item:{em:"🪙",one:"Moolah coin",many:"Moolah coins"},pic:cropPic(g),reward:`+${info.price} 🪙`}}
+  else if(action==="build")o={title:`🔨 Build: ${info.item}`,item:{em:"🪵",one:"board",many:"boards"},reward:"🎉 Built!"};
+  else if(action==="deliver"){const g=Object.keys(info.items)[0];o={title:"📋 Pack the order",item:gItem(g),pic:cropPic(g),reward:`+${info.price} 🪙`};action="sell"}
+  else return Promise.resolve(true);
+  const sh=F.sheet&&F.sheet.el;if(sh)sh.hidden=true; // the puzzle goes on top; the sheet comes back after
+  return new Promise(res=>{o.onQuit=()=>res(false);if(farmPuzzle(action==="eggs"?"collect":action,o,()=>res(true))===false)res(false)}).then(ok=>{if(sh)sh.hidden=false;return ok});
+}
+/* ---- art ---- */
+function farmImg(p){if(!fm.img[p]){const i=new Image();i.onerror=()=>{i.bad=true};i.src=FARM_ART+p+".webp";fm.img[p]=i}return fm.img[p]}
+const imgOk=im=>im&&im.complete&&im.naturalWidth&&!im.bad;
+
 function farmInit(){
   fm.cv=$("#farmCv");fm.g=fm.cv.getContext("2d");
-  for(const a of FARM_ANIMALS)for(const p of ["stand","eat","sleep","back"])farmImg(a.k+"/"+p);
-  for(const c in FARM_CROPS)for(const p of ["sprout","growing","ripe"])farmImg(c+"/"+p);
-  const now=performance.now();
-  fm.animals=FARM_ANIMALS.map((a,n)=>({...a,i:PASTURE.i0+2+n%2*3+.5,j:PASTURE.j0+3+Math.floor(n/2)*3+.5,ti:0,tj:0,state:"idle",until:now+500+n*700,dir:n%2?1:-1,front:true,t:Math.random()*9,hop:0}));
-  fm.plots=[];for(let i=0;i<FIELD.ni;i++)for(let j=0;j<FIELD.nj;j++)fm.plots.push({i:FIELD.i0+i,j:FIELD.j0+j,crop:j?"pumpkin":"carrot",born:now-Math.random()*20000});
+  for(const k in ANIMALS)for(const p of ["stand","eat","sleep","back"])farmImg(k+"/"+p);farmImg("sheep/sheared");
+  for(const c in CROPS)for(const p of ["growing","ripe"])farmImg(c+"/"+p);farmImg("carrot/sprout");
   new ResizeObserver(farmFit).observe($("#farmBody"));
-  // drag to look around the farm; a short touch without moving is a tap
   fm.cv.addEventListener("pointerdown",e=>{fm.drag={x:e.clientX,y:e.clientY,cx:fm.camX,cy:fm.camY,moved:false,id:e.pointerId};try{fm.cv.setPointerCapture(e.pointerId)}catch(_){}});
   fm.cv.addEventListener("pointermove",e=>{const d=fm.drag;if(!d||d.id!==e.pointerId)return;const dx=e.clientX-d.x,dy=e.clientY-d.y;
     if(!d.moved&&Math.hypot(dx,dy)<12)return;d.moved=true;const k=devicePixelRatio||1;fm.camX=d.cx-dx*k;fm.camY=d.cy-dy*k;farmClamp()});
   const up=e=>{const d=fm.drag;fm.drag=null;if(d&&!d.moved&&e.type==="pointerup")farmTap(e)};
   fm.cv.addEventListener("pointerup",up);fm.cv.addEventListener("pointercancel",up);
-  fm.camX=0;fm.camY=0;fm.camSet=false;
+  $("#farmJar").onclick=openJar;$("#farmGoods").onclick=openBasket;
 }
 function farmFit(){const b=$("#farmBody").getBoundingClientRect(),d=devicePixelRatio||1;
   fm.cv.width=b.width*d;fm.cv.height=b.height*d;fm.cv.style.width=b.width+"px";fm.cv.style.height=b.height+"px";
-  const W=fm.cv.width,H=fm.cv.height;const portrait=H>W*1.15;fm.tw=portrait?Math.max(W/5.5,2*H/(fm.N+2)):Math.min(W/FARM_VIEW,H/(FARM_VIEW/2+1.2));fm.th=fm.tw/2;
-  if(!fm.camSet){fm.camSet=true;fm.camX=0;fm.camY=0}farmClamp()}
+  const W=fm.cv.width,H=fm.cv.height;const portrait=H>W*1.15;fm.tw=portrait?Math.max(W/5.5,2*H/(fm.N+2)):Math.min(W/FARM_VIEW,H/(FARM_VIEW/2+1.2));fm.th=fm.tw/2;if(!fm.camSet){fm.camSet=true;fm.camX=fm.tw*.5;fm.camY=-fm.th*3}farmClamp()}
 // camera: (camX,camY) is the screen-pixel offset of the world's middle from the canvas middle
 function farmClamp(){const W=fm.cv.width,H=fm.cv.height,N=fm.N,hw=N*fm.tw/2,hh=N*fm.th/2,mx=Math.max(0,hw-W/2+fm.tw),my=Math.max(0,hh-H/2+fm.th*2.5);
   fm.camX=Math.max(-mx,Math.min(mx,fm.camX));fm.camY=Math.max(-my,Math.min(my,fm.camY));
   fm.ox=W/2-fm.camX;fm.oy=H/2-hh-fm.camY}
 const fIso=(i,j)=>({x:fm.ox+(i-j)*fm.tw/2,y:fm.oy+(i+j)*fm.th/2});
-const fInPlots=(i,j)=>i>FIELD.i0-.3&&i<FIELD.i0+FIELD.ni+.3&&j>FIELD.j0-.3&&j<FIELD.j0+FIELD.nj+.3;
-function fStage(p,now){const t=now-p.born;return t>=FARM_GROW[2]?"ripe":t>=FARM_GROW[1]?"growing":"sprout"}
-function fPick(a,now){const r=Math.random();
-  // short, unhurried strolls inside the pasture; lots of grazing and napping
-  if(r<.45){let i,j,n=0;do{i=a.i+(Math.random()-.5)*5;j=a.j+(Math.random()-.5)*5}while((i<PASTURE.i0+.5||i>PASTURE.i1-.5||j<PASTURE.j0+.5||j>PASTURE.j1-.5)&&++n<20);
-    if(n<20){a.ti=i;a.tj=j;a.state="walk"}else{a.state="idle";a.until=now+2000}}
-  else if(r<.8){a.state="eat";a.until=now+6000+Math.random()*4000}else{a.state="sleep";a.until=now+12000+Math.random()*8000}}
-function farmTap(e){
-  const r=fm.cv.getBoundingClientRect(),d=fm.cv.width/r.width,x=(e.clientX-r.left)*d,y=(e.clientY-r.top)*d,now=performance.now();
-  // animals first (front-most wins)
-  const hit=[...fm.animals].sort((a,b)=>(b.i+b.j)-(a.i+a.j)).find(a=>{const p=fIso(a.i,a.j),H=fm.th*2.2*a.h;return Math.abs(x-p.x)<H*.5&&y<p.y+fm.th*.3&&y>p.y-H});
-  if(hit){
-    if(hit.state==="sleep"){hit.state="idle";hit.until=now+1500;hit.hop=1;say(`The ${hit.name} woke up!`);fPop(hit,"❗")}
-    else farmChore("feed",{animal:hit},()=>{const t=performance.now();hit.state="eat";hit.until=t+4000;hit.hop=1;say(`The ${hit.name} is eating ${hit.food}. Yum!`);fPop(hit,hit.food==="corn"?"🌽":"🌿")});
-    blip(700,.12,"sine");return}
-  const sx=x-fm.ox,sy=y-fm.oy,i=(sy/(fm.th/2)+sx/(fm.tw/2))/2,j=(sy/(fm.th/2)-sx/(fm.tw/2))/2;
-  const plot=fm.plots.find(p=>i>=p.i&&i<p.i+1&&j>=p.j&&j<p.j+1);
-  if(plot){const st=fStage(plot,now),c=FARM_CROPS[plot.crop];
-    if(st==="ripe") farmChore("harvest",{plot},()=>{fm.basket[plot.crop]++;plot.born=performance.now();say(`You picked a ${c.name}!`);fPopAt(fIso(plot.i+.5,plot.j+.5),c.icon);blip(900,.15,"triangle");farmBasket()});
-    else say(st==="sprout"?`A little ${c.name} sprout. It needs time to grow.`:`The ${c.name} is growing. Almost ready!`);return}
-  if(i>0&&j>0&&i<fm.N&&j<fm.N){ // call the nearest awake animal over
-    const a=fm.animals.filter(a=>a.state!=="sleep").sort((p,q)=>Math.hypot(p.i-i,p.j-j)-Math.hypot(q.i-i,q.j-j))[0];
-    if(a&&!fInPlots(i,j)){a.ti=Math.max(PASTURE.i0+.5,Math.min(PASTURE.i1-.5,i));a.tj=Math.max(PASTURE.j0+.5,Math.min(PASTURE.j1-.5,j));a.state="walk";sayLittle(`Here, ${a.name}!`)}}
+const inPasture=(i,j,m=.5)=>{const P=pasture();return i>P.i0+m&&i<P.i1-m&&j>P.j0+m&&j<P.j1-m};
+
+/* ---- derived state ---- */
+function plotState(p,now){
+  if(!p||!p.crop)return {st:"empty"};
+  const grow=CROPS[p.crop].grow/(p.fert?2:1);
+  if(!p.watered)return {st:"thirsty",droop:now-p.planted>THIRSTY};
+  const t=now-p.watered;
+  return t>=grow?{st:"ripe",droop:t-grow>OLD_RIPE}:{st:t>=grow/2?"growing":"sprout"};
 }
-function fPop(a,txt){fPopAt(fIso(a.i,a.j),txt,fm.th*2.2*a.h)}
+function animalState(a,now){const A=ANIMALS[a.k];
+  if(a.ready&&now>=a.ready)return "ready";
+  if(!a.fed||now-a.fed>HUNGRY)return "hungry";
+  if(a.ready&&now<a.ready)return "making";
+  return "full";
+}
+
+/* ---- sync local animal wanderers with the shared animal list ---- */
+function fChanged(){
+  if(!F.st)return;
+  const ids=Object.keys(F.st.animals||{}),now=performance.now();
+  for(const id of ids)if(!F.anim.has(id)){const P=pasture(),n=F.anim.size;
+    F.anim.set(id,{id,i:P.i0+1+Math.random()*(P.i1-P.i0-2),j:P.j0+1+Math.random()*(P.j1-P.j0-2),ti:0,tj:0,state:"idle",until:now+500+n*600,dir:n%2?1:-1,front:true,t:Math.random()*9,hop:0})}
+  for(const id of [...F.anim.keys()])if(!ids.includes(id))F.anim.delete(id);
+  for(const a of F.anim.values())if(!inPasture(a.i,a.j,.3)){const P=pasture();a.i=Math.max(P.i0+.6,Math.min(P.i1-.6,a.i));a.j=Math.max(P.j0+.6,Math.min(P.j1-.6,a.j))}
+  farmHeader();ensureOrders();
+  if(F.sheet&&F.sheet.render)F.sheet.render();
+}
+function farmHeader(){
+  const g=myGoods(),parts=Object.keys(GOODS).filter(k=>g[k]>0).map(k=>`${GOODS[k].icon}${g[k]}`);
+  $("#farmGoods").innerHTML=parts.length?parts.slice(0,4).join(" ")+(parts.length>4?" …":""):"🧺";
+  $("#farmJar").innerHTML=`🪙 <b>${myJar()}</b>`;
+}
+
+/* ---- wandering ---- */
+function fPick(a,now,hungry){const r=Math.random();
+  if(r<(hungry?.2:.45)){const P=pasture();let i,j,n=0;do{i=a.i+(Math.random()-.5)*5;j=a.j+(Math.random()-.5)*5}while(!inPasture(i,j)&&++n<20);
+    if(n<20){a.ti=i;a.tj=j;a.state="walk"}else{a.state="idle";a.until=now+2000}}
+  else if(r<.8&&!hungry){a.state="eat";a.until=now+6000+Math.random()*4000}
+  else if(r<.8){a.state="idle";a.until=now+4000+Math.random()*3000}
+  else{a.state="sleep";a.until=now+12000+Math.random()*8000}}
+
+/* ---- tapping ---- */
+function farmTap(e){
+  if(!F.st)return;
+  const r=fm.cv.getBoundingClientRect(),d=fm.cv.width/r.width,x=(e.clientX-r.left)*d,y=(e.clientY-r.top)*d;
+  const hit=fm.hits.filter(h=>x>=h.x0&&x<=h.x1&&y>=h.y0&&y<=h.y1).sort((a,b)=>b.d-a.d)[0];
+  const sx=x-fm.ox,sy=y-fm.oy,i=(sy/(fm.th/2)+sx/(fm.tw/2))/2,j=(sy/(fm.th/2)-sx/(fm.tw/2))/2;
+  const spot=FIELD_SPOTS.findIndex(([pi,pj],n)=>n<plotCount()&&i>=pi&&i<pi+1&&j>=pj&&j<pj+1);
+  if(hit&&hit.kind==="animal")return tapAnimal(hit.ref);
+  if(spot>=0&&(!hit||hit.kind!=="struct"))return tapPlot(spot);
+  if(hit&&hit.kind==="struct")return tapStruct(hit.ref);
+  if(hit&&hit.kind==="decor"){blip(880,.12,"sine");fPopAt(hit.p,"✨");return}
+  if(inPasture(i,j,.2)){const a=[...F.anim.values()].filter(a=>a.state!=="sleep").sort((p,q)=>Math.hypot(p.i-i,p.j-j)-Math.hypot(q.i-i,q.j-j))[0];
+    if(a){a.ti=i;a.tj=j;a.state="walk";const k=(F.st.animals[a.id]||{}).k;if(k)sayLittle(`Here, ${ANIMALS[k].name}!`)}}
+}
+function tapAnimal(w){
+  const a=F.st.animals[w.id];if(!a)return;const A=ANIMALS[a.k],now=Date.now(),s=animalState(a,now);w.hop=1;
+  if(w.state==="sleep"){w.state="idle";w.until=performance.now()+1500}
+  if(s==="hungry")return farmDo("feed",{animal:a.k,item:A.food}).then(ok=>{if(!ok)return;
+    fTx("animals/"+w.id,x=>{if(!x)return;x.fed=Date.now();if(A.good&&!(x.ready>Date.now()))x.ready=Date.now()+A.make;return x}).then(ok=>{if(!ok)return;
+      w.state="eat";w.until=performance.now()+5000;fPop(w,A.foodIcon);blip(700,.12,"sine");
+      if(a.k==="pig"){fUpd({["jars/"+me]:INC(1)});fPop(w,"❤️");setTimeout(()=>fPop(w,"🪙"),400);say("The pig is so happy! It gave you 1 Moolah.")}
+      else say(little()?`Yum! The ${A.name} ate the ${A.food}.`:`The ${A.name} ate the ${A.food}. Come back soon to ${A.verb}!`)})});
+  if(s==="ready")return farmDo(A.act,{animal:a.k,good:A.good,count:1}).then(ok=>{if(!ok)return;
+    fTx("animals/"+w.id,x=>{if(!x||!(x.ready&&x.ready<=Date.now()))return;x.ready=0;if(x.k==="sheep")x.shorn=Date.now();return x}).then(ok=>{if(!ok)return;
+      fUpd({[`goods/${me}/${A.good}`]:INC(1)});fPop(w,GOODS[A.good].icon);blip(900,.15,"triangle");
+      say(a.k==="hen"?"You got an egg!":a.k==="cow"?"You got a gallon of milk!":"You got a ball of wool!")})});
+  if(s==="making"){fPop(w,"⏳");return say(a.k==="hen"?"The hen is making an egg. Come back soon!":a.k==="cow"?"The cow is making milk. Come back soon!":"The sheep's wool is growing back. Come back soon!")}
+  fPop(w,"❤️");blip(620,.1,"sine");say(a.k==="pig"?"Oink! The pig is full and happy.":`The ${A.name} is full. Pat pat!`);
+}
+function tapPlot(n){
+  const id="p"+n,p=(F.st.plots||{})[id],ps=plotState(p,Date.now()),[pi,pj]=FIELD_SPOTS[n],c=fIso(pi+.5,pj+.5);
+  if(ps.st==="empty")return openSeeds(n);
+  if(ps.st==="thirsty")return farmDo("water",{crop:p.crop}).then(ok=>{if(!ok)return;
+    fTx("plots/"+id,x=>{if(!x||!x.crop||x.watered)return;x.watered=Date.now();return x}).then(ok=>{if(!ok)return;fPopAt(c,"💧");blip(520,.15,"sine");say(`You watered the ${GOODS[p.crop].name}. Now it can grow!`)})});
+  if(ps.st==="ripe"){const n2=p.fert?2:1;return farmDo("harvest",{crop:p.crop,count:n2}).then(ok=>{if(!ok)return;
+    fTx("plots/"+id,x=>{if(!x||!x.crop||plotState(x,Date.now()).st!=="ripe")return;return {crop:null}}).then(ok=>{if(!ok)return;
+      fUpd({[`goods/${me}/${p.crop}`]:INC(n2)});fPopAt(c,GOODS[p.crop].icon);blip(900,.15,"triangle");say(`You picked ${qty(p.crop,n2)}!`)})})}
+  say(ps.st==="sprout"?`A little ${GOODS[p.crop].name} sprout. It needs time to grow.`:`The ${GOODS[p.crop].name} is growing. Almost ready!`);
+}
+function tapStruct(id){const s=STRUCT[id];blip(760,.1,"sine");
+  if(id==="stand")return openSell();if(id==="board")return openOrders();if(id==="barn")return openStore();
+  const k=s.home;say(`The ${s.name.toLowerCase()}. It has room for ${roomFor(k)} ${roomFor(k)===1?ANIMALS[k].name:ANIMALS[k].names}.`)}
+
+/* ---- sheets ---- */
+function fSheet(title,render){
+  closeSheet();const sh=el("div","sheet fsheet"),inner=el("div","inner"),head=el("div","row"),h=el("h2",null,title),x=el("button","round","✖️"),body=el("div","fbody");
+  x.setAttribute("aria-label","Close");x.onclick=closeSheet;head.append(h,x);inner.append(head,body);sh.append(inner);
+  sh.addEventListener("pointerdown",e=>{if(e.target===sh)closeSheet()});document.body.append(sh);
+  F.sheet={el:sh,body,render:()=>{const top=body.scrollTop;body.innerHTML="";render(body);body.scrollTop=top}};F.sheet.render();
+}
+function closeSheet(){if(F.sheet){F.sheet.el.remove();F.sheet=null}}
+function fBtn(cls,em,label,sub,onClick,disabled){const b=el("button","choice "+(cls||""),`<span class="em">${em}</span><span>${esc(label)}</span>${sub?`<small>${sub}</small>`:""}`);
+  if(disabled)b.classList.add("off");b.onclick=()=>{if(disabled){blip(220,.12,"square");if(typeof disabled==="string")say(disabled);return}onClick()};return b}
+const coins=n=>`🪙 ${n}`;
+function needMoolah(price){return `You need ${price} Moolah. You have ${myJar()}. Sell goods at the farmstand, or ask your family for a Moolah gift!`}
+
+function openSeeds(n){
+  fSheet(little()?"🌱 Plant a seed":"🌱 Plant a seed",body=>{
+    const fert=(myGoods().fert||0)>0;let useF=false;
+    const grid=el("div","choices");
+    for(const c of Object.keys(CROPS)){const G=GOODS[c];
+      if(unlocked(c))grid.append(fBtn("",G.icon,G.names,little()?"":`ready in ${Math.round(CROPS[c].grow/60e3)} min`,()=>plantIt(n,c,useF)));
+      else grid.append(fBtn("lock",G.icon,G.names,"🔒 Farm Store",null,`Buy ${G.names} seeds at the Farm Store.`))}
+    body.append(grid);
+    if(fert){const t=el("button","ghost ftoggle",`💩 Use fertilizer (${myGoods().fert} left): grows twice as fast, gives 2`);
+      t.onclick=()=>{useF=!useF;t.classList.toggle("on",useF);if(useF)say("Fertilizer on!")};body.prepend(t)}
+  });say(little()?"Pick a seed to plant!":"Pick a seed to plant.");
+}
+function plantIt(n,c,useF){closeSheet();
+  farmDo("plant",{crop:c}).then(ok=>{if(!ok)return;
+    const go=()=>fTx("plots/p"+n,x=>{if(x&&x.crop)return;return {crop:c,planted:Date.now(),watered:0,fert:!!useF}}).then(ok=>{if(!ok)return;
+      const [pi,pj]=FIELD_SPOTS[n];fPopAt(fIso(pi+.5,pj+.5),"🌱");blip(800,.12,"triangle");say(`You planted ${GOODS[c].names}! Now give them some water.`)});
+    if(useF)fTx(`goods/${me}/fert`,v=>{if(!(v>0))return;return v-1}).then(ok=>{if(!ok)useF=false;go()});else go()})}
+
+function openSell(){
+  fSheet("🧺 Farmstand",body=>{
+    const g=myGoods(),have=Object.keys(GOODS).filter(k=>g[k]>0);
+    body.append(el("p","fnote",little()?"Tap something to sell it for Moolah!":`Tap something to sell one. You have ${coins(myJar())} Moolah.`));
+    if(!have.length){body.append(el("p","fempty","Your basket is empty. Pick crops and collect eggs, milk and wool, then come back!"));return}
+    const grid=el("div","choices");
+    for(const k of have){const G=GOODS[k];grid.append(fBtn("",G.icon,little()?`× ${g[k]}`:`${g[k]} ${g[k]===1?G.name:G.names}`,`${coins(G.price)} each`,()=>sellIt({[k]:1})))}
+    body.append(grid);
+    if(!little()&&have.length){const all={};let tot=0;for(const k of have){all[k]=g[k];tot+=g[k]*GOODS[k].price}
+      const b=el("button","bigbtn",`Sell everything for ${coins(tot)}`);b.onclick=()=>sellIt(all);body.append(b)}
+  });say(little()?"The farmstand! Tap something to sell it.":"Welcome to the farmstand!");
+}
+function sellIt(items){let price=0;for(const [k,n] of Object.entries(items))price+=n*GOODS[k].price;
+  farmDo("sell",{items,price,count:Object.values(items).reduce((a,b)=>a+b,0)}).then(ok=>{if(!ok)return;
+    fTx("goods/"+me,x=>{x=x||{};for(const [k,n] of Object.entries(items)){if(!((x[k]||0)>=n))return;x[k]-=n;if(!x[k])delete x[k]}return x}).then(ok=>{if(!ok)return;
+      fUpd({["jars/"+me]:INC(price)});blip(1200,.08,"triangle");setTimeout(()=>blip(1500,.1,"triangle"),90);
+      say(`You sold ${listText(items)} for ${price} Moolah!`)})})}
+
+function openBasket(){
+  fSheet("🧺 My basket",body=>{const g=myGoods(),have=Object.keys(GOODS).filter(k=>g[k]>0);
+    if(!have.length)body.append(el("p","fempty","Nothing yet! Pick ripe crops and collect eggs, milk and wool."));
+    else{const grid=el("div","choices");for(const k of have)grid.append(fBtn("",GOODS[k].icon,`${g[k]} ${g[k]===1?GOODS[k].name:GOODS[k].names}`,`${coins(GOODS[k].price)} each`,()=>say(qty(k,g[k]))));body.append(grid)}
+    if(g.fert)body.append(el("p","fnote",`💩 Fertilizer: ${g.fert}. Use it when you plant a seed.`));
+    body.append(el("p","fnote","Sell your goods at the 🧺 farmstand, or bring them to someone on the 📋 order board."))});
+}
+
+function openJar(){
+  fSheet("🪙 My Moolah",body=>{const n=myJar();
+    const big=el("div","jarbig");big.innerHTML=`<span class="jar">🫙</span><b>${n}</b>`;body.append(big);
+    if(little()&&n){body.append(el("div","coinpile","🪙".repeat(Math.min(n,30))+(n>30?" …":"")))}
+    body.append(el("p","fnote",n?"Spend Moolah at the 🔨 Farm Store, or give some as a gift:":"Sell goods at the 🧺 farmstand to earn Moolah!"));
+    if(!n)return;
+    const grid=el("div","choices");
+    for(const k of Object.keys(KIDS).filter(k=>k!==me&&k!=="bear"&&k!=="fox")){const K=KIDS[k];grid.append(fBtn("",K.face,K.name,"",()=>giftTo(k)))}
+    body.append(grid)});
+  say(little()?`You have ${myJar()} Moolah!`:"");
+}
+function giftTo(k){const K=KIDS[k];
+  fSheet(`🎁 Gift Moolah to ${K.name}`,body=>{const n=myJar();const grid=el("div","choices");
+    for(const amt of [1,5,10,25])grid.append(fBtn("","🪙",`${amt}`,"",()=>sendGift(k,amt),amt>n?`You have ${n} Moolah.`:false));
+    body.append(grid)});say(`How much Moolah for ${K.name}?`)}
+function sendGift(k,amt){
+  fTx("jars/"+me,v=>{v=+v||0;if(v<amt)return;return v-amt}).then(ok=>{if(!ok)return;
+    fUpd({["jars/"+k]:INC(amt)});farmMail(k,me,`I gave you ${amt} Moolah for the farm!`,"🪙");
+    blip(1200,.1,"triangle");say(`You gave ${KIDS[k].name} ${amt} Moolah!`);openJar()})}
+// Inbox note from someone (a gift, or a thank-you for an order). Doesn't count as a message the player sent.
+function farmMail(to,from,text,emoji){if(!mail.ref||!KIDS[to]||!KIDS[from])return;const id=mail.ref.child("inbox").push().key;
+  mail.ref.child(`inbox/${to}/${id}`).set({from,at:Date.now(),kind:"text",text:String(text).slice(0,200),emoji}).catch(()=>{})}
+
+/* ---- Farm Store ---- */
+function storeItems(){
+  const S=F.st,out=[];
+  const crops=[];for(const c of ["tomato","corn","strawberry"])crops.push({sec:"Seeds",em:GOODS[c].icon,name:`${GOODS[c].names} seeds`,price:PRICES.seed[c],own:unlocked(c),
+    buy:()=>fUpd({["unlock/"+c]:true}),done:`You can plant ${GOODS[c].names} now!`});
+  out.push(...crops);
+  const f=S.field||0;out.push({sec:"Farm",em:"🟫",name:f>=4?"Field (full size)":"Bigger field (+3 plots)",price:PRICES.field[f]||0,own:f>=4,puzzle:true,buy:()=>fUpd({field:f+1}),done:"Your field is bigger! Plant more seeds."});
+  out.push({sec:"Farm",em:"🪵",name:(S.fence||0)>=1?"Wooden fence (built)":"Wooden fence + bigger pasture",price:PRICES.fence,own:(S.fence||0)>=1,puzzle:true,buy:()=>fUpd({fence:1}),done:"A new fence! The animals have more room to play."});
+  out.push({sec:"Farm",em:"💩",name:"Fertilizer",price:PRICES.fert,buy:()=>fUpd({[`goods/${me}/fert`]:INC(1)}),done:"You got fertilizer! Use it when you plant."});
+  for(const [id,s] of Object.entries(STRUCT))if(s.home)out.push({sec:"Animal homes",em:s.label,name:s.name+(S.builds&&S.builds[id]?" (built)":` (+${s.room} ${ANIMALS[s.home].names})`),
+    price:{coop:15,pen:20,shed:30,stable:40}[id],own:!!(S.builds&&S.builds[id]),puzzle:true,buy:()=>fUpd({["builds/"+id]:true}),done:`You built a ${s.name.toLowerCase()}!`});
+  for(const k of ["hen","pig","sheep","cow"]){const full=animalsOf(k)>=roomFor(k),home=Object.values(STRUCT).find(s=>s.home===k);
+    out.push({sec:"Animals",em:{hen:"🐔",pig:"🐷",sheep:"🐑",cow:"🐄"}[k],name:`A new ${ANIMALS[k].name}`,price:PRICES.animal[k],
+      blocked:full?`There's no room. Build a ${home.name.toLowerCase()} first!`:false,sub:`${animalsOf(k)} of ${roomFor(k)}`,
+      buy:()=>{const id=F.ref?F.ref.child("animals").push().key:"a"+Date.now();fUpd({["animals/"+id]:{k,fed:0,ready:0}})},done:`A new ${ANIMALS[k].name} joined the farm! It's hungry.`})}
+  const used=Object.keys(S.decor||{}).length,full=used>=DECOR_SPOTS.length;
+  for(const [k,d] of Object.entries(DECOR))out.push({sec:"Decorations",em:d.icon,name:d.name,price:d.price,blocked:full?"There's no more room for decorations.":false,
+    buy:()=>{const free=DECOR_SPOTS.findIndex((_,n)=>!(F.st.decor||{})["d"+n]);if(free>=0)fUpd({["decor/d"+free]:k})},done:`You put a ${d.name} on the farm!`});
+  return out;
+}
+function openStore(){
+  fSheet("🔨 Farm Store",body=>{
+    body.append(el("p","fnote",`You have ${coins(myJar())} Moolah. Not enough? Family can gift you some!`));
+    let sec=null,grid=null;
+    for(const it of storeItems()){if(it.sec!==sec){sec=it.sec;body.append(el("h3","fsec",sec));grid=el("div","choices");body.append(grid)}
+      const poor=myJar()<it.price;
+      grid.append(fBtn(it.own?"owned":"",it.em,it.name,it.own?"✓ yours":`${coins(it.price)}${it.sub?" · "+it.sub:""}`,()=>buyIt(it),
+        it.own?"You already have that.":it.blocked||(poor?needMoolah(it.price):false)))}
+  });say(little()?"The Farm Store! What do you want to build?":"Welcome to the Farm Store!");
+}
+function buyIt(it){
+  farmDo(it.puzzle?"build":"buy",{item:it.name,price:it.price}).then(ok=>{if(!ok)return;
+    fTx("jars/"+me,v=>{v=+v||0;if(v<it.price)return;return v-it.price}).then(ok=>{if(!ok){say(needMoolah(it.price));return}
+      it.buy();blip(880,.12,"triangle");setTimeout(()=>blip(1320,.15,"triangle"),120);toast("🎉 "+it.done);say(it.done)})})}
+
+/* ---- family orders ---- */
+function availGoods(){const g=Object.keys(CROPS).filter(unlocked);for(const k of ["hen","cow","sheep"])if(animalsOf(k))g.push(ANIMALS[k].good);return g}
+function makeOrder(who){
+  const L=(KIDS[who]||{}).level==="little",avail=availGoods().sort(()=>Math.random()-.5),items={};
+  const kinds=L?1:Math.min(avail.length,2+(Math.random()<.4?1:0));
+  for(const g of avail.slice(0,kinds)){const bulk=g==="milk"||g==="wool"||g==="pumpkin";items[g]=L?1+Math.floor(Math.random()*(bulk?1:3)):1+Math.floor(Math.random()*(bulk?2:g==="egg"?6:5))}
+  let worth=0;for(const [g,n] of Object.entries(items))worth+=n*GOODS[g].price;
+  const from=ORDERERS().filter(k=>k!==who)[Math.floor(Math.random()*ORDERERS().filter(k=>k!==who).length)]||"joe";
+  const o={from,items,at:Date.now(),pay:Math.max(3,Math.ceil(worth*1.5)+1)};
+  if(!L&&Math.random()<.35){o.by=Date.now()+20*60e3;o.bonus=3}
+  return o;
+}
+function ensureOrders(){
+  if(!F.st||!me)return;const mine=(F.st.orders||{})[me]||{},open=Object.keys(mine).length,next=+((F.st.onext||{})[me]||0);
+  if(open>=3||Date.now()<next||F.making)return;
+  F.making=true;const up={};for(let n=open;n<3;n++){const id=F.ref?F.ref.child("orders").push().key:"o"+Date.now()+n;up[`orders/${me}/${id}`]=makeOrder(me)}
+  up["onext/"+me]=0;fUpd(up);setTimeout(()=>F.making=false,1500);
+}
+function orderCard(id,o,who){
+  const K=kidOf(o.from),card=el("div","ordercard"),g=myGoods(),canDo=who===me&&Object.entries(o.items).every(([k,n])=>(g[k]||0)>=n);
+  const items=Object.entries(o.items).map(([k,n])=>little()?`<span class="oi">${GOODS[k].icon.repeat(Math.min(n,6))}</span>`:
+    `<span class="oi ${(g[k]||0)>=n?"ok":""}">${GOODS[k].icon} ${esc(qty(k,n))} <small>(${g[k]||0})</small></span>`).join("");
+  const late=o.by&&Date.now()>o.by;
+  card.innerHTML=`<div class="ofrom"><span class="oface">${K.face}</span><b>${esc(K.name)}</b>${o.custom?" ✏️":""}</div><div class="oitems">${items}</div>
+    <div class="opay">${coins(o.pay)}${o.by&&!late?` <span class="obonus">+${o.bonus} by ${new Date(o.by).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}</span>`:""}</div>`;
+  if(who===me){const b=el("button","bigbtn"+(canDo?"":" off"),canDo?"Deliver!":little()?"🧺 Need more":"Not enough yet");
+    b.onclick=()=>canDo?deliver(id,o):say(`${K.name} wants ${listText(o.items)}.`);card.append(b)}
+  card.querySelector(".ofrom").onclick=()=>say(`${K.name} wants ${listText(o.items)}.`);
+  return card;
+}
+function openOrders(){
+  fSheet("📋 Order board",body=>{
+    const mine=Object.entries(((F.st.orders||{})[me])||{}).sort((a,b)=>a[1].at-b[1].at);
+    body.append(el("p","fnote",little()?"Bring your family what they want!":"Fill an order to earn more Moolah than selling, and get a thank-you in your Inbox."));
+    if(!mine.length)body.append(el("p","fempty","No orders right now. New ones come soon!"));
+    const wrap=el("div","orders");for(const [id,o] of mine)wrap.append(orderCard(id,o,me));body.append(wrap);
+    if(kidOf(me).grown){const b=el("button","ghost","✏️ Write an order for a kid");b.onclick=writeOrder;body.append(b)}
+  });
+  const mine=Object.values(((F.st.orders||{})[me])||{});
+  if(mine.length&&little()){const o=mine[0];say(`${kidOf(o.from).name} wants ${listText(o.items)}.`)}else say(little()?"The order board!":"");
+}
+function deliver(id,o){
+  farmDo("deliver",{items:o.items,price:o.pay}).then(ok=>{if(!ok)return;
+    fTx("goods/"+me,x=>{x=x||{};for(const [k,n] of Object.entries(o.items)){if(!((x[k]||0)>=n))return;x[k]-=n;if(!x[k])delete x[k]}return x}).then(ok=>{if(!ok)return;
+      const bonus=o.by&&Date.now()<=o.by?(o.bonus||0):0,pay=o.pay+bonus;
+      fUpd({[`orders/${me}/${id}`]:null,["jars/"+me]:INC(pay),["onext/"+me]:Date.now()+4*60e3});
+      farmMail(me,o.from,`Thank you for the ${listText(o.items)}! Here's ${pay} Moolah.${bonus?" You were super fast!":""}`,"💛");
+      if(typeof confetti==="function")confetti();blip(988,.15,"triangle");setTimeout(()=>blip(1319,.2,"triangle"),150);
+      say(`${kidOf(o.from).name} says thank you! You earned ${pay} Moolah.`);toast(`💛 ${kidOf(o.from).name} paid you ${coins(pay)}`)})})}
+function writeOrder(){
+  const kids=["violet","quinn"],sel={kid:"violet",items:{}};
+  fSheet("✏️ Write an order",body=>{
+    const pick=el("div","seg");for(const k of kids){const b=el("button",sel.kid===k?"on":"",`${KIDS[k].face} ${KIDS[k].name}`);b.onclick=()=>{sel.kid=k;F.sheet.render()};pick.append(b)}
+    body.append(el("p","fnote","Who is it for?"),pick,el("p","fnote","What do you want?"));
+    const grid=el("div","ostep");
+    for(const g of availGoods()){const row=el("div","orow"),n=sel.items[g]||0;
+      row.innerHTML=`<span class="em">${GOODS[g].icon}</span><span class="nm">${esc(GOODS[g].names)}</span>`;
+      const m=el("button","round","➖"),c=el("b",null,String(n)),p=el("button","round","➕");
+      m.onclick=()=>{sel.items[g]=Math.max(0,n-1);F.sheet.render()};p.onclick=()=>{sel.items[g]=Math.min(10,n+1);F.sheet.render()};
+      row.append(m,c,p);grid.append(row)}
+    body.append(grid);
+    const items=Object.fromEntries(Object.entries(sel.items).filter(([,n])=>n>0));let worth=0;for(const [g,n] of Object.entries(items))worth+=n*GOODS[g].price;
+    const pay=Math.max(3,Math.ceil(worth*1.5)+1),b=el("button","bigbtn",Object.keys(items).length?`Send order (pays ${coins(pay)})`:"Pick something first");
+    b.onclick=()=>{if(!Object.keys(items).length)return;const id=F.ref?F.ref.child("orders").push().key:"o"+Date.now();
+      fUpd({[`orders/${sel.kid}/${id}`]:{from:me,items,at:Date.now(),pay,custom:true}});toast(`📋 Order sent to ${KIDS[sel.kid].name}`);openOrders()};
+    body.append(b)});
+}
+
+/* ---- drawing ---- */
+function fPop(w,txt){fPopAt(fIso(w.i,w.j),txt,fm.th*2.2*((ANIMALS[(F.st.animals[w.id]||{}).k]||{}).h||1))}
 function fPopAt(p,txt,up=fm.th*1.6){fm.pops.push({x:p.x,y:p.y-up,txt,t:0})}
-function farmBasket(){$("#farmBasket").textContent=Object.entries(fm.basket).map(([k,v])=>FARM_CROPS[k].icon+" "+v).join("   ")}
-function farmTile(i,j,fill){const g=fm.g,a=fIso(i,j),b=fIso(i+1,j),c=fIso(i+1,j+1),d=fIso(i,j+1);g.beginPath();g.moveTo(a.x,a.y);g.lineTo(b.x,b.y);g.lineTo(c.x,c.y);g.lineTo(d.x,d.y);g.closePath();g.fillStyle=fill;g.fill()}
-function farmFrame(now){
+function farmTile(i,j,fill,wi=1,wj=1){const g=fm.g,a=fIso(i,j),b=fIso(i+wi,j),c=fIso(i+wi,j+wj),d=fIso(i,j+wj);g.beginPath();g.moveTo(a.x,a.y);g.lineTo(b.x,b.y);g.lineTo(c.x,c.y);g.lineTo(d.x,d.y);g.closePath();g.fillStyle=fill;g.fill()}
+function bubble(x,y,txt,now,k=0){const g=fm.g,th=fm.th,r=th*.36,bob=Math.sin(now/300+k)*th*.06;
+  g.fillStyle="rgba(255,255,255,.95)";g.strokeStyle="rgba(43,33,64,.25)";g.lineWidth=Math.max(1,th*.03);
+  g.beginPath();g.arc(x,y-r+bob,r,0,7);g.fill();g.stroke();g.beginPath();g.moveTo(x-r*.3,y-r*.2+bob);g.lineTo(x,y+r*.45+bob);g.lineTo(x+r*.3,y-r*.2+bob);g.fill();
+  g.font=`${r*1.15}px system-ui`;g.textAlign="center";g.textBaseline="middle";g.fillText(txt,x,y-r+bob+r*.05);g.textBaseline="alphabetic"}
+function drawStruct(id,s,now){
+  const g=fm.g,th=fm.th,H=s.h*th*2,a=fIso(s.i,s.j),b=fIso(s.i+s.wi,s.j),c=fIso(s.i+s.wi,s.j+s.wj),d=fIso(s.i,s.j+s.wj),U=p=>({x:p.x,y:p.y-H});
+  const poly=(pts,f)=>{g.beginPath();g.moveTo(pts[0].x,pts[0].y);for(const p of pts.slice(1))g.lineTo(p.x,p.y);g.closePath();g.fillStyle=f;g.fill()};
+  g.fillStyle="rgba(0,0,0,.15)";farmTile(s.i-.1,s.j-.1,"rgba(0,0,0,.12)",s.wi+.2,s.wj+.2);
+  poly([d,c,U(c),U(d)],s.l);poly([c,b,U(b),U(c)],s.r);poly([U(a),U(b),U(c),U(d)],s.top);
+  let topY=U(a).y;
+  if(s.roof){const ap={x:(a.x+c.x)/2,y:(a.y+c.y)/2-H-th*Math.max(s.wi,s.wj)*.7};poly([U(d),U(c),ap],s.roof);g.globalAlpha=.75;poly([U(c),U(b),ap],s.roof);g.globalAlpha=1;topY=ap.y}
+  if(id==="stand"){g.font=`${th*.5}px system-ui`;g.textAlign="center";for(const [n,em] of [[.3,"🥕"],[.6,"🎃"],[.85,"🥚"]]){const p=fIso(s.i+s.wi*n,s.j+s.wj*.5);g.fillText(em,p.x,p.y-H+th*.1)}}
+  const lx=(a.x+c.x)/2,ly=topY-th*.25;bubble(lx,ly,s.label,now,s.i);
+  fm.hits.push({kind:"struct",ref:id,d:s.i+s.j+s.wi+s.wj,x0:d.x,x1:b.x,y0:ly-th*.8,y1:c.y});
+}
+function farmFrame(t){
   if(screen!=="farm"){fm.raf=0;return}
-  const dt=Math.min(.05,(now-fm.last)/1000);fm.last=now;const g=fm.g,W=fm.cv.width,H=fm.cv.height,N=fm.N,th=fm.th;
-  g.clearRect(0,0,W,H);
+  const dt=Math.min(.05,(t-fm.last)/1000);fm.last=t;const g=fm.g,W=fm.cv.width,H=fm.cv.height,N=fm.N,th=fm.th,now=Date.now();
+  g.clearRect(0,0,W,H);fm.hits=[];
+  if(!F.st){g.fillStyle="#5E5577";g.font=`${th*.5}px system-ui`;g.textAlign="center";g.fillText("Opening the farm…",W/2,H/2);fm.raf=requestAnimationFrame(farmFrame);return}
   const l=fIso(0,N),m=fIso(N,N),r=fIso(N,0),dep=th*.45;
   g.fillStyle="#B98A5A";g.beginPath();g.moveTo(l.x,l.y);g.lineTo(m.x,m.y);g.lineTo(m.x,m.y+dep);g.lineTo(l.x,l.y+dep);g.fill();
   g.fillStyle="#A07447";g.beginPath();g.moveTo(m.x,m.y);g.lineTo(r.x,r.y);g.lineTo(r.x,r.y+dep);g.lineTo(m.x,m.y+dep);g.fill();
-  for(let i=0;i<N;i++)for(let j=0;j<N;j++)farmTile(i,j,fInPlots(i+.5,j+.5)?((i+j)%2?"#9C6B43":"#A8774D"):((i+j)%2?"#8FD16A":"#9BDB76"));
-  {const P=PASTURE,c=[fIso(P.i0,P.j0),fIso(P.i1,P.j0),fIso(P.i1,P.j1),fIso(P.i0,P.j1)];g.strokeStyle="#8A5A32";g.lineWidth=Math.max(2,th*.06);g.setLineDash([th*.25,th*.15]);
-   g.beginPath();g.moveTo(c[0].x,c[0].y);for(const q of [c[1],c[2],c[3],c[0]])g.lineTo(q.x,q.y);g.stroke();g.setLineDash([])}
-  // things to draw, back to front
+  for(let i=0;i<N;i++)for(let j=0;j<N;j++)farmTile(i,j,(i+j)%2?"#8FD16A":"#9BDB76");
+  // dirt path from the farmstand to the field
+  for(const [i,j] of [[3,2],[3,3],[3,4],[3,5],[3,6],[3,7],[3,8],[4,2],[5,2],[6,2]])farmTile(i,j,"#E3C89A");
+  const nPlots=plotCount();
+  for(let n=0;n<FIELD_SPOTS.length;n++){const [i,j]=FIELD_SPOTS[n];
+    if(n<nPlots){const p=(F.st.plots||{})["p"+n];farmTile(i,j,p&&p.watered?((i+j)%2?"#7A5233":"#835A39"):((i+j)%2?"#9C6B43":"#A8774D"))}
+    else if(n<nPlots+3){g.globalAlpha=.25;farmTile(i+.08,j+.08,"#6B4A2E",.84,.84);g.globalAlpha=1}}
+  // pasture: dashed edge, or a wooden fence once built
+  {const P=pasture(),c=[fIso(P.i0,P.j0),fIso(P.i1,P.j0),fIso(P.i1,P.j1),fIso(P.i0,P.j1)];
+    if((F.st.fence||0)>=1){g.strokeStyle="#8A5A32";g.lineCap="round";for(const [lw,off] of [[th*.09,th*.18],[th*.09,th*.36]]){g.lineWidth=lw;g.beginPath();g.moveTo(c[0].x,c[0].y-off);for(const q of [c[1],c[2],c[3],c[0]])g.lineTo(q.x,q.y-off);g.stroke()}
+      g.lineWidth=th*.1;for(let k=0;k<4;k++){const A=c[k],B=c[(k+1)%4],n=Math.round(Math.hypot(B.x-A.x,B.y-A.y)/fm.tw*1.4);for(let s=0;s<=n;s++){const x=A.x+(B.x-A.x)*s/n,y=A.y+(B.y-A.y)*s/n;g.beginPath();g.moveTo(x,y);g.lineTo(x,y-th*.48);g.stroke()}}}
+    else{g.strokeStyle="#8A5A32";g.lineWidth=Math.max(2,th*.06);g.setLineDash([th*.25,th*.15]);g.beginPath();g.moveTo(c[0].x,c[0].y);for(const q of [c[1],c[2],c[3],c[0]])g.lineTo(q.x,q.y);g.stroke();g.setLineDash([])}}
   const items=[];
-  for(const p of fm.plots)items.push({d:p.i+p.j+1,draw:()=>{const st=fStage(p,now),im=fm.img[p.crop+"/"+st];if(!im.complete||!im.naturalWidth)return;
-    const c=fIso(p.i+.5,p.j+.5),w=fm.tw*.8,h=w*im.naturalHeight/im.naturalWidth,sw=st==="ripe"?Math.sin(now/400+p.i)*.03:Math.sin(now/600+p.i+p.j)*.05;
-    g.save();g.translate(c.x,c.y+th*.42);g.rotate(sw);g.drawImage(im,-w/2,-h,w,h);g.restore();
-    if(st==="ripe"){g.globalAlpha=.5+.5*Math.sin(now/250);g.font=`${th*.5}px system-ui`;g.textAlign="center";g.fillText("✨",c.x+w*.35,c.y-h*.6);g.globalAlpha=1}}});
-  for(const a of fm.animals){
-    a.t+=dt;a.hop=Math.max(0,a.hop-dt*3);
-    if(a.state==="walk"){const di=a.ti-a.i,dj=a.tj-a.j,d=Math.hypot(di,dj);
-      if(d<.05){a.state="idle";a.until=now+2500+Math.random()*3500}
-      else{const s=Math.min(d,.45*dt);a.i+=di/d*s;a.j+=dj/d*s;const sx=di-dj,sy=di+dj;a.front=sy>=-.02;if(Math.abs(sx)>.01)a.dir=sx>0?1:-1}}
-    else if(now>a.until){if(a.state==="idle")fPick(a,now);else{a.state="idle";a.until=now+800}}
-    items.push({d:a.i+a.j,draw:()=>{
-      const pose=a.state==="walk"?(a.front?"stand":"back"):a.state==="eat"?"eat":a.state==="sleep"?"sleep":"stand";
-      const im=fm.img[a.k+"/"+pose];if(!im.complete||!im.naturalWidth)return;
-      const p=fIso(a.i,a.j),H=th*2.2*a.h*(pose==="sleep"?.8:1),w=H*im.naturalWidth/im.naturalHeight;
-      let bob=-a.hop*th*.6,rot=0,sc=1;
-      if(a.state==="walk"){bob-=Math.abs(Math.sin(a.t*5.5))*th*.1;rot=Math.sin(a.t*5.5)*.07}
-      if(a.state==="eat")bob+=Math.max(0,Math.sin(a.t*8))*th*.06;
-      if(a.state==="sleep")sc=1+Math.sin(a.t*2.2)*.03;
-      if(a.state==="idle")sc=1+Math.sin(a.t*3)*.012;
-      g.fillStyle="rgba(0,0,0,.18)";g.beginPath();g.ellipse(p.x,p.y,w*.32,th*.22,0,0,7);g.fill();
-      g.save();g.translate(p.x,p.y+th*.1+bob);g.rotate(rot);const flip=pose==="back"?(a.dir<0?-1:1):(a.dir>0?-1:1);g.scale(flip*sc,sc);
-      g.drawImage(im,-w/2,-H,w,H);g.restore();
-      if(a.state==="sleep"){g.fillStyle="#3A4A5A";g.textAlign="left";for(let k=0;k<3;k++){const q=(a.t*.5+k/3)%1;g.globalAlpha=1-q;g.font=`900 ${th*(.28+k*.08)}px system-ui`;g.fillText("z",p.x+w*.3+q*th*.4,p.y-H*.8-q*th*.8)}g.globalAlpha=1}}});
-  }
+  for(const [id,s] of Object.entries(STRUCT))if(!s.home||(F.st.builds||{})[id])items.push({d:s.i+s.j+s.wi+s.wj-1,draw:()=>drawStruct(id,s,t)});
+  for(const [key,k] of Object.entries(F.st.decor||{})){const sp=DECOR_SPOTS[+key.slice(1)],D=DECOR[k];if(!sp||!D)continue;
+    items.push({d:sp[0]+sp[1]+1,draw:()=>{const c=fIso(sp[0]+.5,sp[1]+.5);
+      if(k==="pond"){g.fillStyle="#7FC8F8";g.beginPath();g.ellipse(c.x,c.y,fm.tw*.45,th*.42,0,0,7);g.fill();g.fillStyle="#5BB0E8";g.beginPath();g.ellipse(c.x,c.y+th*.05,fm.tw*.32,th*.26,0,0,7);g.fill()}
+      g.font=`${th*(k==="tree"?1.5:k==="pond"?.6:1)}px system-ui`;g.textAlign="center";g.fillText(D.icon,c.x,c.y+th*(k==="pond"?.1:.3));
+      fm.hits.push({kind:"decor",ref:k,p:c,d:sp[0]+sp[1]+1,x0:c.x-th*.6,x1:c.x+th*.6,y0:c.y-th*1.4,y1:c.y+th*.4})}})}
+  for(let n=0;n<nPlots;n++){const p=(F.st.plots||{})["p"+n];const [pi,pj]=FIELD_SPOTS[n];
+    items.push({d:pi+pj+1,draw:()=>{const ps=plotState(p,now),c=fIso(pi+.5,pj+.5);
+      if(ps.st==="empty"){bubble(c.x,c.y-th*.1,"🌱",t,n);return}
+      const stage=ps.st==="thirsty"?"sprout":ps.st,im=stage==="sprout"?fm.img["carrot/sprout"]:fm.img[p.crop+"/"+stage];
+      const sw=ps.droop?.35:stage==="ripe"?Math.sin(t/400+pi)*.03:Math.sin(t/600+pi+pj)*.05,sq=ps.droop?.8:1;
+      g.save();g.translate(c.x,c.y+th*.42);g.rotate(sw);g.scale(1,sq);
+      if(imgOk(im)){const w=fm.tw*.8,h=w*im.naturalHeight/im.naturalWidth;if(ps.droop)g.filter="saturate(.5)";g.drawImage(im,-w/2,-h,w,h);g.filter="none";
+        if(stage==="ripe"&&p.fert){g.drawImage(im,-w*.15,-h*.85,w*.7,h*.7)}}
+      else{const gr=fm.img["carrot/growing"];if(imgOk(gr)){const w=fm.tw*.7,h=w*gr.naturalHeight/gr.naturalWidth;g.drawImage(gr,-w/2,-h,w,h)}
+        if(stage==="ripe"){g.font=`${th*.75}px system-ui`;g.textAlign="center";g.fillText(GOODS[p.crop].icon,0,-th*.5)}}
+      g.restore();
+      if(ps.st==="thirsty")bubble(c.x,c.y-th*1.2,"💧",t,n);
+      else if(stage==="ripe"){g.globalAlpha=.5+.5*Math.sin(t/250);g.font=`${th*.5}px system-ui`;g.textAlign="center";g.fillText("✨",c.x+fm.tw*.3,c.y-th);g.globalAlpha=1}
+      if(p.fert&&stage!=="ripe"){g.font=`${th*.32}px system-ui`;g.textAlign="center";g.fillText("💩",c.x-fm.tw*.32,c.y+th*.3)}}})}
+  for(const w of F.anim.values()){const a=(F.st.animals||{})[w.id];if(!a||!ANIMALS[a.k])continue;const A=ANIMALS[a.k],as=animalState(a,now),hungry=as==="hungry";
+    w.t+=dt;w.hop=Math.max(0,w.hop-dt*3);
+    if(w.state==="walk"){const di=w.ti-w.i,dj=w.tj-w.j,d=Math.hypot(di,dj);
+      if(d<.05){w.state="idle";w.until=t+2500+Math.random()*3500}
+      else{const s=Math.min(d,(hungry?.25:.45)*dt);w.i+=di/d*s;w.j+=dj/d*s;const sx=di-dj,sy=di+dj;w.front=sy>=-.02;if(Math.abs(sx)>.01)w.dir=sx>0?1:-1}}
+    else if(t>w.until){if(w.state==="idle")fPick(w,t,hungry);else{w.state="idle";w.until=t+800}}
+    items.push({d:w.i+w.j,draw:()=>{
+      let pose=w.state==="walk"?(w.front?"stand":"back"):w.state==="eat"?"eat":w.state==="sleep"?"sleep":"stand";
+      const sheared=a.k==="sheep"&&a.shorn&&!(a.ready&&now>=a.ready);if(sheared&&pose!=="sleep")pose="sheared";
+      let im=fm.img[a.k+"/"+pose];if(!imgOk(im))im=fm.img[a.k+"/stand"];if(!imgOk(im))return;
+      const p=fIso(w.i,w.j),Hh=th*2.2*A.h*(pose==="sleep"?.8:1)*(hungry?.94:1),wd=Hh*im.naturalWidth/im.naturalHeight;
+      let bob=-w.hop*th*.6,rot=0,sc=1;
+      if(w.state==="walk"){bob-=Math.abs(Math.sin(w.t*5.5))*th*.1;rot=Math.sin(w.t*5.5)*.07}
+      if(w.state==="eat")bob+=Math.max(0,Math.sin(w.t*8))*th*.06;
+      if(w.state==="sleep")sc=1+Math.sin(w.t*2.2)*.03;
+      if(w.state==="idle")sc=1+Math.sin(w.t*3)*.012;
+      g.fillStyle="rgba(0,0,0,.18)";g.beginPath();g.ellipse(p.x,p.y,wd*.32,th*.22,0,0,7);g.fill();
+      g.save();g.translate(p.x,p.y+th*.1+bob);g.rotate(rot);const flip=pose==="back"?(w.dir<0?-1:1):(w.dir>0?-1:1);g.scale(flip*sc,sc*(hungry?.92:1));
+      if(hungry)g.filter="saturate(.55)";g.drawImage(im,-wd/2,-Hh,wd,Hh);g.filter="none";g.restore();
+      if(w.state==="sleep"){g.fillStyle="#3A4A5A";g.textAlign="left";for(let k=0;k<3;k++){const q=(w.t*.5+k/3)%1;g.globalAlpha=1-q;g.font=`900 ${th*(.28+k*.08)}px system-ui`;g.fillText("z",p.x+wd*.3+q*th*.4,p.y-Hh*.8-q*th*.8)}g.globalAlpha=1}
+      if(hungry)bubble(p.x,p.y-Hh-th*.05,A.foodIcon,t,w.i);else if(as==="ready")bubble(p.x,p.y-Hh-th*.05,GOODS[A.good].icon,t,w.i);
+      fm.hits.push({kind:"animal",ref:w,d:w.i+w.j+.5,x0:p.x-wd*.5,x1:p.x+wd*.5,y0:p.y-Hh-th*.8,y1:p.y+th*.3})}})}
   items.sort((a,b)=>a.d-b.d).forEach(it=>it.draw());
   g.textAlign="center";fm.pops=fm.pops.filter(p=>(p.t+=dt)<1.2);for(const p of fm.pops){g.globalAlpha=1-p.t/1.2;g.font=`${th*.7}px system-ui`;g.fillText(p.txt,p.x,p.y-p.t*th*1.2)}g.globalAlpha=1;
+  if(t-(fm.oChk||0)>5000){fm.oChk=t;ensureOrders()}
   fm.raf=requestAnimationFrame(farmFrame);
 }
-
 /* ============ FARM PUZZLES ============
    Every farm action is done by solving a quick learning puzzle, with a Little version (Violet, age 3-4) and a Big
    version (Quinn, age 5-7). The action only happens once the puzzle is solved.
@@ -2863,12 +3280,6 @@ function farmPuzzle(action,o,done){
   if(tk) return false;
   openTask({type:puzzleFor(action),lvl:lvl(),chore:action,title:o.title,ctx:{item:o.item,pic:o.pic},reward:o.reward,onWin:done,onQuit:o.onQuit});
   return true;
-}
-function farmChore(ch,o,done){
-  if(ch==="feed"){const a=o.animal, food=a.food==="corn"?{em:"🌽",one:"corn",many:"corn"}:{em:"🌿",one:"bunch of grass",many:"bunches of grass"};
-    return farmPuzzle("feed",{title:`${food.em} Feed the ${a.name}`,item:food,pic:a.k+"/stand",reward:`${food.em} Yum! Thank you!`},done)}
-  const c=FARM_CROPS[o.plot.crop];
-  return farmPuzzle("harvest",{title:`🧺 Pick the ${c.name}`,item:{em:c.icon,one:c.name,many:c.name+"s"},pic:o.plot.crop+"/ripe",reward:`+1 ${c.icon}`},done);
 }
 
 /* ---- tasks ---- */
@@ -3499,11 +3910,10 @@ TASKS.memory=api=>{
 };
 
 
-function openFarm(){if(!fm.cv)farmInit();show("farm");farmBasket();farmFit();fm.last=performance.now();if(!fm.raf)fm.raf=requestAnimationFrame(farmFrame);
-  sayLittle("Drag to look around the farm. Tap an animal to feed it. Tap a sparkly crop to pick it!")}
+function openFarm(){if(!me){goLobby();return}if(!fm.cv)farmInit();farmConnect();show("farm");farmHeader();farmFit();fm.last=performance.now();if(!fm.raf)fm.raf=requestAnimationFrame(farmFrame);
+  sayLittle("Drag to look around the farm. Tap the bubbles to help the animals and plants!")}
 $("#playFarm").onclick=()=>{sayLittle("Kapanigan Farmstand");openFarm()};
-$("#fHome").onclick=()=>{hush();goLobby()};
-$("#fBack").onclick=()=>{hush();goLobby()};
+if(/[?&]farmlocal\b/.test(location.search))window.__farm={F,fm,tapPlot,tapAnimal,tapStruct,openStore,openOrders,openJar,openSell,buyIt,storeItems,deliver,sendGift,win:finishTask,quit:()=>closeTask(true)}; // testing only
 })();
 </script>
 </body>

@@ -78,6 +78,38 @@ A **live co-op farm** the kids share. Every farm action is done by solving a sho
   - Animals stay inside a fenced **pasture** (a dashed line until fence art exists). Crops are in their own **field**.
   - Animals walk at about a third of the old speed, take short strolls, and spend most of their time grazing (6–10 s) and napping (12–20 s).
 - **Puzzle engine (Oct 27):** all 8 puzzle types below are built, each with a Little and a Big version. Feeding an animal and picking a ripe crop now open a puzzle; the action happens when it's solved. See **✅ Puzzle engine** below.
+- **v2: one family farm (Oct 27):**
+  - **Saved in Firebase** at `families/<code>/farm` and the same on every device. Plots, animals, buildings and decorations are shared; Moolah, goods and orders are per person.
+  - **Every action is a puzzle** through `farmDo()`, which wraps the engine's `farmPuzzle()`:
+    - plant, water and harvest crops
+    - feed animals, then collect eggs, milk the cow and shear the sheep
+    - sell at the farmstand, build at the Farm Store, and pack an order
+    - backing out of a puzzle changes nothing; seeds, animals, fertilizer and decorations are plain purchases with no puzzle
+  - **Crops:** plant (pick a seed, optionally with fertilizer) → water → sprout → growing → ripe → pick.
+    - Grow times: carrot 2 min, tomato and strawberry 3, corn 4, pumpkin 6. Fertilizer halves the time and gives 2.
+  - **Animals:** feed, then the hen lays an egg (1 min), the cow makes milk (2 min) or the sheep's wool grows (3 min); tap to collect.
+    - The sheep shows sheared until its wool grows back. Feeding the pig gives hearts and a 1 Moolah tip.
+  - **Gentle droop, never loss:**
+    - A crop not watered within 2 minutes droops, and a ripe crop left 30+ minutes droops a little.
+    - An animal not fed for 20 minutes gets hungry, looks faded and walks slowly.
+    - Nothing dies and nothing is lost. Bubbles show what's needed (💧, the animal's food, a ready 🥚 🥛 🧶, 🌱 on empty plots).
+  - **Farmstand** (counter by the path): tap a good to sell one; Big also gets "Sell everything".
+    - Prices: carrot and egg 1; tomato, strawberry and corn 2; milk and wool 3; pumpkin 5.
+  - **Moolah jar per person** (🪙 button). **Gift** 1, 5, 10 or 25 Moolah to anyone in the family; they get a 🪙 note in their Inbox.
+  - **Farm Store** (red barn):
+    - seeds for tomatoes 10, corn 15 and strawberries 20
+    - a bigger field (+3 plots, up to 18): 15, 25, 40 and 60
+    - a wooden fence and bigger pasture 20, and fertilizer 3
+    - chicken coop 15 (+3 hens), pig pen 20, sheep shed 30 and stable 40 (+2 each)
+    - new animals: hen 5, pig 12, sheep 15, cow 25, only if there's room
+    - 8 decorations, 3–20
+  - **Order board** (📋): each person always has up to 3 orders from family members. A new one comes 4 minutes after one is delivered.
+    - Little: 1 kind of good, 1–3 of it, pictures only, read aloud.
+    - Big: 2–3 kinds, up to 6 each, written out with how many you have. Some have a "+3 by <time>" bonus.
+    - Orders pay about 1.5× the farmstand price, and the family member sends a 💛 thank-you to the Inbox.
+    - Grown-ups can **write an order** for Violet or Quinn.
+  - Buildings, the farmstand, the board and decorations are drawn in code (boxes and emoji) until the Batch B art exists. Crops without art yet (tomato, corn, strawberry) show their emoji.
+  - Testing: `?farmlocal` runs the farm in memory, without Firebase.
 - **Ready to use:** `farmPuzzle()` to put a puzzle in front of any farm action, `logAttempt()` for the grown-up dashboard (#8), `say()` / `sayLittle()` read-aloud, Firebase under `families/<code>/`, and `tools/genart.py` for isometric art.
 
 ### 🧩 Every action is a puzzle
@@ -239,16 +271,16 @@ About **48 images** left including retries, which is roughly one day of the free
 
 **Acceptance criteria**
 - [x] A bigger farm (16 × 16) to explore by dragging, with calmer, slower animals
-- [ ] Every farm action (plant, water, harvest, feed, collect eggs, milk, shear, build, sell) opens a puzzle, with a Little and a Big version
+- [x] Every farm action (plant, water, harvest, feed, collect eggs, milk, shear, build, sell) opens a puzzle, with a Little and a Big version
 - [ ] Puzzle types and rules match the Age-appropriate tasks puzzle engine
-- [ ] Gentle failure only: wrong answers get a "try again" with a hint, never a penalty or a dead plant
-- [ ] Goods can be sold at the farmstand for Moolah
-- [ ] Moolah buys fences, buildings, animals, plots, seeds, fertilizer and decorations, and each shows up on the farm
+- [x] Gentle failure only: wrong answers get a "try again" with a hint, never a penalty or a dead plant
+- [x] Goods can be sold at the farmstand for Moolah
+- [x] Moolah buys fences, buildings, animals, plots, seeds, fertilizer and decorations, and each shows up on the farm
 - [ ] Moolah buys clothes in the Closet Store, and they appear in Fashion Show and the farmer dressing room
-- [ ] An order board with family-member orders sized for Little and Big, paying Moolah and sending a thank-you to the Inbox
-- [ ] Grown-ups can write a custom order
+- [x] An order board with family-member orders sized for Little and Big, paying Moolah and sending a thank-you to the Inbox
+- [x] Grown-ups can write a custom order
 - [ ] A shared farm view that stays in sync across devices
-- [ ] Farm, Moolah, goods and orders are saved in Firebase and still there the next day
+- [x] Farm, Moolah, goods and orders are saved in Firebase and still there the next day
 - [ ] Each player can customize a farmer avatar that everyone sees on the farm, and it's remembered across devices
 - [ ] Each player's farm time stops at 30 minutes and reopens 24 hours later, on any device
 - [ ] Puzzle cooldowns are tuned so finishing all available chores takes about 30 minutes
@@ -256,14 +288,14 @@ About **48 images** left including retries, which is roughly one day of the free
 
 **🔍 Decisions needed**
 - ~~Saving the farm~~ → decided: Firebase (see Shared groundwork).
-- Should crops be able to wilt if nobody visits, or stay safe forever (kinder for little ones)?
+- ~~Wilting~~ → decided: **gentle droop, no loss**. Thirsty plants and hungry animals droop until someone helps; nothing dies.
 - ~~Daily play limit~~ → decided: 30 minutes per player, then a 24-hour rest (see above).
 - Do grown-ups follow the same 30-minute limit, or are they exempt?
 - ~~Avatar everywhere?~~ → decided: **yes**. The custom avatar replaces the emoji avatar in the lobby, the "Who are you!? :)" screen, seat chips and all games (including as a model option in Fashion Show).
 - ~~Dressing room and farm time~~ → decided: **no**. Time in the dressing room doesn't count toward the 30 minutes.
 - Can a grown-up grant extra time or reset a player's cooldown (for a sick day or a road trip)?
 - Should the 24 hours run from when the time ran out (as written), or should the farm reopen every morning at a set time (for example 7 AM), which is easier for little ones to understand?
-- **Moolah: one family wallet or one per kid?** Suggestion: each kid has their own jar (orders and clothes are personal), and builds can take Moolah from several kids at once.
+- ~~Moolah wallet~~ → decided: **one jar per person**, and anyone can **gift** Moolah to anyone (that's how a big build gets pooled).
 - Should Little players spend Moolah on their own, or does a grown-up approve big purchases?
 - Can grown-ups give Moolah as a reward (for example from the grown-ups corner)?
 - Can family members other than the 8 grown-ups place orders (Bear friend, Fox friend)?
