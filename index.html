@@ -3371,6 +3371,7 @@ const pasture=()=>PASTURES[Math.min(1,(F.st&&F.st.fence)||0)];
 const STRUCT={
   stand:{i:1,j:1,wi:2,wj:1,h:.45,top:"#E9C99A",l:"#E5484D",r:"#C23B3B",label:"🧺",name:"Farmstand",say:"The farmstand. Sell your goods here!"},
   board:{i:4.3,j:1.3,wi:.5,wj:.5,h:.55,top:"#B07A45",l:"#9A6A3A",r:"#86592E",label:"📋",name:"Order board",say:"The order board. See what your family wants!"},
+  fbasket:{i:5.7,j:1.1,wi:1,wj:1,h:.5,top:"#D9A35B",l:"#C68B42",r:"#AD7533",label:"👨‍👩‍👧",name:"Family Basket",say:"The Family Basket. Put goods in for everyone!"},
   bank:{i:4.4,j:4.3,wi:1.1,wj:1,h:.75,top:"#E8E0C8",l:"#CFC4A4",r:"#B8AC8A",roof:"#2F6F4E",label:"🏦",name:"Family Bank",say:"The Farm Family Bank. Put Moolah in for the whole family!"},
   barn:{i:1,j:4,wi:2,wj:2,h:.9,top:"#D64545",l:"#C23B3B",r:"#A83232",roof:"#7A2E2E",label:"🔨",name:"Farm Store",say:"The Farm Store. Build your farm here!"},
   coop:{i:7,j:11,wi:1,wj:1,h:.6,top:"#F2D27A",l:"#E0BC5E",r:"#C9A44A",roof:"#C2410C",label:"🐔",name:"Chicken coop",home:"hen",room:3},
@@ -3643,7 +3644,7 @@ function tapPlot(n){
   say(ps.st==="sprout"?`A little ${GOODS[p.crop].name} sprout. It needs time to grow.`:`The ${GOODS[p.crop].name} is growing. Almost ready!`);
 }
 function tapStruct(id){const s=STRUCT[id];blip(760,.1,"sine");
-  if(id==="stand")return openSell();if(id==="board")return openOrders();if(id==="barn")return openStore();if(id==="bank")return openBank();
+  if(id==="stand")return openSell();if(id==="board")return openOrders();if(id==="barn")return openStore();if(id==="bank")return openBank();if(id==="fbasket")return openFamBasket();
   const k=s.home;say(`The ${s.name.toLowerCase()}. It has room for ${roomFor(k)} ${roomFor(k)===1?ANIMALS[k].name:ANIMALS[k].names}.`)}
 
 /* ---- sheets ---- */
@@ -3691,7 +3692,7 @@ function openSell(){
   });say(little()?"The farmstand! Tap something to sell it.":"Welcome to the farmstand!");
 }
 function sellIt(items){let price=0;for(const [k,n] of Object.entries(items))price+=n*GOODS[k].price;
-  farmDo("sell",{items,price,count:Object.values(items).reduce((a,b)=>a+b,0)}).then(ok=>{if(!ok)return;
+  Promise.resolve(true).then(ok=>{ // selling is a plain tap: no puzzle
     const src=goodsSrc();
     fTx(srcPath(src),x=>{x=x||{};for(const [k,n] of Object.entries(items)){if(!((x[k]||0)>=n))return;x[k]-=n;if(!x[k])delete x[k]}return x}).then(ok=>{if(!ok)return;
       if(src==="family")basketLog(`sold ${listText(items)} for ${price} 🪙`);
@@ -3720,7 +3721,31 @@ function openBasket(){
       body.append(el("h3","fsec","📒 Basket log"));
       if(!rows.length)body.append(el("p","fnote","Nothing yet."));
       else{const list=el("div","ledger");for(const r of rows.slice(0,40)){const K=kidOf(r.who);list.append(el("div","lrow",`<span class="lface">${K.face}</span><span class="lwhat"><b>${esc(K.name)}</b> ${esc(r.what)}<small>${ago(r.at)}</small></span>`))}body.append(list)}}
+    const fb=el("button","bigbtn","👨‍👩‍👧 Go to the Family Basket");fb.onclick=()=>{closeSheet();const S=STRUCT.fbasket;fwWalk(S.i+S.wi/2+.3,S.j+S.wj+.45,openFamBasket)};body.append(fb);
     body.append(el("p","fnote","Sell goods at the 🧺 farmstand, or bring them to someone on the 📋 order board."))});
+}
+// the Family Basket building: put things in (big and easy), take things out, choose where new goods go, see the log
+function openFamBasket(){
+  fSheet("👨‍👩‍👧 Family Basket",body=>{
+    const fg=famGoods(),mg=myGoods(),fam=Object.keys(GOODS).filter(k=>fg[k]>0),mine=Object.keys(GOODS).filter(k=>mg[k]>0);
+    const big=el("div","jarbig");big.innerHTML=`<span class="jar">🧺</span><b>${goodsCount(fg)}</b>`;body.append(big);
+    body.append(el("p","fnote",little()?"Goods for the whole family! Tap something of yours to put it in.":"Goods for the whole family. Anyone can sell them or use them for orders."));
+    body.append(el("h3","fsec",`⬇️ Put in from my basket (${goodsCount(mg)})`));
+    if(!mine.length)body.append(el("p","fnote","Your basket is empty. Pick crops and collect eggs, milk and wool!"));
+    else{const grid=el("div","choices");for(const k of mine)grid.append(fBtn("",GOODS[k].icon,little()?`× ${mg[k]}`:`${mg[k]} ${mg[k]===1?GOODS[k].name:GOODS[k].names}`,"tap to put 1 in",()=>moveGoods("share",{[k]:1})));body.append(grid);
+      const all={};for(const k of mine)all[k]=mg[k];const b=el("button","bigbtn",`⬇️ Put it all in (${goodsCount(mg)})`);b.onclick=()=>moveGoods("share",all);body.append(b)}
+    body.append(el("h3","fsec","⬆️ Take out for me"));
+    if(!fam.length)body.append(el("p","fnote","The family basket is empty."));
+    else{const grid=el("div","choices");for(const k of fam)grid.append(fBtn("",GOODS[k].icon,little()?`× ${fg[k]}`:`${fg[k]} ${fg[k]===1?GOODS[k].name:GOODS[k].names}`,"tap to take 1",()=>moveGoods("take",{[k]:1})));body.append(grid)}
+    const dest=el("div","seg paysrc");
+    for(const [k,l] of [["mine","🧺 My basket"],["family","👨‍👩‍👧 Family Basket"]]){const b=el("button",(gDestFam()?"family":"mine")===k?"on":"",l);
+      b.onclick=()=>{fUpd({["gdest/"+me]:k==="family"?"family":null});say(k==="family"?"New goods go to the family basket.":"New goods go to your basket.")};dest.append(b)}
+    body.append(el("p","fnote","New things I collect go to:"),dest);
+    const rows=Object.values(F.st.blog||{}).filter(r=>r&&KIDS[r.who]).sort((a,b)=>b.at-a.at);
+    body.append(el("h3","fsec","📒 Basket log"));
+    if(!rows.length)body.append(el("p","fnote","Nothing yet. Put something in!"));
+    else{const list=el("div","ledger");for(const r of rows.slice(0,40)){const K=kidOf(r.who);list.append(el("div","lrow",`<span class="lface">${K.face}</span><span class="lwhat"><b>${esc(K.name)}</b> ${esc(r.what)}<small>${ago(r.at)}</small></span>`))}body.append(list)}
+  });say(little()?"The family basket! Tap something to put it in.":"");
 }
 function moveGoods(dir,items){
   const from=dir==="take"?"fbasket":"goods/"+me,to=dir==="take"?"goods/"+me:"fbasket";
@@ -4106,6 +4131,9 @@ function drawStruct(id,s,now){
   poly([d,c,U(c),U(d)],s.l);poly([c,b,U(b),U(c)],s.r);poly([U(a),U(b),U(c),U(d)],s.top);
   let topY=U(a).y;
   if(s.roof){const ap={x:(a.x+c.x)/2,y:(a.y+c.y)/2-H-th*Math.max(s.wi,s.wj)*.7};poly([U(d),U(c),ap],s.roof);g.globalAlpha=.75;poly([U(c),U(b),ap],s.roof);g.globalAlpha=1;topY=ap.y}
+  if(id==="fbasket"){const fg=famGoods(),ems=Object.keys(GOODS).filter(k=>fg[k]>0).slice(0,3).map(k=>GOODS[k].icon);
+    g.strokeStyle="rgba(120,72,24,.45)";g.lineWidth=Math.max(1,th*.04);for(let k=1;k<4;k++){const y0=d.y-H*k/4,y1=c.y-H*k/4,y2=b.y-H*k/4;g.beginPath();g.moveTo(d.x,y0);g.lineTo(c.x,y1);g.lineTo(b.x,y2);g.stroke()}
+    g.font=`${th*.45}px system-ui`;g.textAlign="center";ems.forEach((em,n)=>{const p=fIso(s.i+s.wi*(.3+n*.22),s.j+s.wj*.5);g.fillText(em,p.x,p.y-H+th*.12)})}
   if(id==="stand"){g.font=`${th*.5}px system-ui`;g.textAlign="center";for(const [n,em] of [[.3,"🥕"],[.6,"🎃"],[.85,"🥚"]]){const p=fIso(s.i+s.wi*n,s.j+s.wj*.5);g.fillText(em,p.x,p.y-H+th*.1)}}
   const lx=(a.x+c.x)/2,ly=topY-th*.25;bubble(lx,ly,s.label,now,s.i);
   fm.hits.push({kind:"struct",ref:id,d:s.i+s.j+s.wi+s.wj,x0:d.x,x1:b.x,y0:ly-th*.8,y1:c.y});
@@ -5221,7 +5249,7 @@ function openFarm(){if(!me){goLobby();return}if(!fm.cv)farmInit();farmConnect();
 $("#fHome").onclick=()=>{closeSheet();hush();goLobby()};
 $("#fBack").onclick=()=>{closeSheet();hush();goLobby()};
 $("#playFarm").onclick=()=>{sayLittle("Kapanigan Farmstand");openFarm()};
-if(/[?&]farmlocal\b/.test(location.search))window.__farm={moveGoods,openBasket,farmClamp,fCands,fInfo,fGo,openTask,TASK_TYPES,F,fm,FW,openBank,bankPut,farmZoomTo,fwWalk,farmTapAt:(i,j)=>{const p=fIso(i,j),r=fm.cv.getBoundingClientRect(),d=fm.cv.width/r.width;farmTap({clientX:r.left+p.x/d,clientY:r.top+p.y/d})},CO,coopUpd,coopTick,startTeam,joinTeam,tk:()=>tk,tapPlot,tapAnimal,tapStruct,openStore,openOrders,openJar,openSell,buyIt,storeItems,deliver,sendGift,win:finishTask,quit:()=>closeTask(true)}; // testing only
+if(/[?&]farmlocal\b/.test(location.search))window.__farm={openFamBasket,sellIt,moveGoods,openBasket,farmClamp,fCands,fInfo,fGo,openTask,TASK_TYPES,F,fm,FW,openBank,bankPut,farmZoomTo,fwWalk,farmTapAt:(i,j)=>{const p=fIso(i,j),r=fm.cv.getBoundingClientRect(),d=fm.cv.width/r.width;farmTap({clientX:r.left+p.x/d,clientY:r.top+p.y/d})},CO,coopUpd,coopTick,startTeam,joinTeam,tk:()=>tk,tapPlot,tapAnimal,tapStruct,openStore,openOrders,openJar,openSell,buyIt,storeItems,deliver,sendGift,win:finishTask,quit:()=>closeTask(true)}; // testing only
 })();
 </script>
 </body>

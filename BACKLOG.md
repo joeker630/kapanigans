@@ -135,6 +135,13 @@ A **live co-op farm** the kids share. Every farm action is done by solving a sho
   - If two or more things are under the finger, a **"Which one?"** picker shows big buttons with each one's state, read aloud.
   - Animal tap areas hug the body.
   - Animals gently keep about a tile apart, so they stack up less.
+- **Selling has no puzzle (Oct 27):** tap a good at the farmstand and it's sold. The money puzzle still comes up when other chores borrow it.
+- **Family Basket building (Oct 27):** a wicker crate on the farm next to the order board, with what's inside showing on top. Its menu has:
+  - big **⬇️ Put in** buttons and a **Put it all in** button
+  - **⬆️ Take out for me**
+  - the "new things I collect go to" switch
+  - the Basket log
+  - The 🧺 top-bar button also has a "Go to the Family Basket" button that walks you there.
 - **Family Basket (Oct 27):** shared goods next to everyone's own basket. The 🧺 button opens two tabs, "My basket" and "Family basket".
   - Each person picks where **new things they collect** go (`farm/gdest/<who>`).
   - Tap a good to **share** one into the family basket, or **take** one out. Big also gets "share/take everything".
