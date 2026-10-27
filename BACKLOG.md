@@ -221,6 +221,34 @@ Today the family code is a word plus 4 digits (for example `CABBAGE4821`), at le
 
 ---
 
+## 7. 🆕 Friendlier, slower read-aloud voice
+
+The read-aloud voice talks too fast and sounds a bit robotic. Make it slower and warmer, better suited to young kids.
+
+**Today:** `say()` uses the device's built-in voice, picking the first one found from Samantha, Ava, Allison, Karen and others. Speed is 0.85 for Little and 0.95 for Big, with pitch at 1.1. On iPad the basic "compact" voices are the robotic-sounding ones.
+
+**Changes**
+- **Slow it down:** about 0.7 for Little and 0.8 for Big, with a slightly higher pitch (about 1.15) for a warmer sound.
+- **Natural pauses:** read one sentence at a time, with a short pause between sentences (longer between story pages), instead of one long run.
+- **Better voices first:** prefer the iPad's higher-quality **Enhanced** and **Premium** voices when they're installed (for example Ava, Zoe or Evan), and skip the novelty and robotic voices.
+- **Grown-up voice settings:** a small settings panel to pick the voice, choose a speed (Slow, Normal or Faster) and tap **Test** to hear "Hi Violet! Let's play!" Saved per device.
+- **Setup tip in the app:** if only basic voices are found, show grown-ups how to download a better one on the iPad: **Settings → Accessibility → Spoken Content → Voices → English**, then download an Enhanced or Premium voice. It's free and works offline.
+
+**Later option: recorded voices**
+- For fixed phrases (button names, chore instructions, "Great job!"), use recorded audio clips instead of the built-in voice. These could even be family recordings, such as Gramma Mia reading the bedtime stories. Fill-in words in stories would still use the built-in voice.
+
+**Acceptance criteria**
+- [ ] Little-level speech is noticeably slower, with pauses between sentences
+- [ ] A higher-quality voice is chosen automatically when the iPad has one installed
+- [ ] Grown-ups can change the voice and speed and hear a test line
+- [ ] Story read-aloud word highlighting still lines up with the slower speech
+
+**🔍 Decisions needed**
+- Preferred voice style: female, male, or let each grown-up choose per device?
+- Should we do the recorded-voice option for the most common phrases now, or later?
+
+---
+
 ## Shared groundwork (needed by #1, #3, #4 and #5)
 
 - ✅ **Saved data: decided on Firebase Realtime Database (free Spark plan).** No credit card, live updates to every device, works from GitHub Pages. Everything lives under `families/<family code>/`, so the family code is the key (no passwords).
