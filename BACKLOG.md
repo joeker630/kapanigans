@@ -778,7 +778,57 @@ Bedtime Story (#1) works, but the pictures are plain, kids can only fill in blan
 
 ---
 
-## Shared groundwork (needed by #1, #3, #4, #5, #8 and #13)
+## 14. 🆕 Storybook art library: feature-film quality
+
+The art for the storybooks (#13) should look like a **feature-film animated movie**: rich lighting, depth, detailed textures and expressive faces. Not basic or flat cartoon clip art. And it needs a **large library** to choose from.
+
+**Quality bar**
+- The look of a big-studio animated film still: cinematic soft lighting with a warm glow, depth and atmosphere (mist, light rays, bokeh), detailed fur, feathers, fabric and scales, and expressive, appealing faces with big eyes.
+- **Original designs only.** Art is "in the spirit of" film animation, never copying any studio's actual characters, logos or signature designs. Prompts never name a studio or film.
+- Consistent across the library: the same lighting style, color grading and proportions, so any character looks right on any background.
+- Characters and props are clean cutouts so they can be placed and animated on any scene. Backgrounds are full scenes with room left for characters.
+- Bedtime-friendly: nothing scary. Even dragons and wolves are friendly and soft.
+
+**How to get there (art kit upgrade)**
+- Move story art from FLUX.2 klein 4B (fast, lighter quality) to **FLUX.2 dev** on Cloudflare Workers AI: a much larger model with better detail and **multi-reference support**, so a few approved "hero" images can be passed in to keep the whole library consistent.
+- FLUX.2 dev costs more of the free daily allowance per image, so expect **fewer images per day** (roughly 15–30 instead of about 85). A large library will be built over a few weeks, or with a small paid top-up if Joe wants it faster (decision below).
+- Higher resolution: backgrounds at 1536×1024 (landscape iPad), characters at 1024, then compressed to WebP (backgrounds about 150 KB, characters about 50 KB).
+- A **new story style prompt** and a separate set of approved reference images in `art/story/ref/`, separate from the chunky farm style.
+- An upscale and cleanup pass: edge cleanup on cutouts, and a quality check that flags blurry or broken images (extra limbs, melted faces) for a redo.
+
+**The library (target about 300 assets)**
+| Group | Examples |
+|---|---|
+| Backgrounds (about 50) | Bedroom at night, moonlit forest, enchanted castle, under the sea, outer space, cloud kingdom, snowy village, beach at sunset, jungle, desert oasis, a city street at night, fire station, police station, hospital, school, farm, bakery, library, park, a train station, airport, mountains, a camping site |
+| Animals (about 60) | Pets (puppy, kitten, bunny, hamster, goldfish), farm animals, forest animals (fox, owl, deer, bear, hedgehog, raccoon), jungle and safari (lion, elephant, giraffe, monkey, tiger), ocean (whale, dolphin, turtle, octopus, seahorse), polar (penguin, polar bear) |
+| Magical creatures (about 40) | Friendly dragon, unicorn, fairy, mermaid, pegasus, phoenix, gentle giant, wizard, a talking tree, a star sprite, a moon spirit, a little gnome, a friendly troll, a baby griffin, a cloud creature |
+| People and real-world jobs (about 80) | Police officer, firefighter, doctor, nurse, teacher, chef, baker, farmer, astronaut, pilot, train conductor, mail carrier, construction worker, scientist, veterinarian, dentist, librarian, lifeguard, zookeeper, musician, artist, judge, park ranger. A **mix of ages, skin tones, genders and abilities** (for example a firefighter using a wheelchair). Real-world uniforms, but no real department badges, names or logos. |
+| Vehicles and props (about 70) | Police car, fire truck, ambulance, school bus, rocket, hot air balloon, pirate ship, train, tractor; a teddy, magic wand, treasure chest, crown, lantern, books, cake, blanket, toys |
+
+**Audit before mass-producing (a must)**
+1. **Style test batch first:** generate about 12 test images. 2 backgrounds, 2 animals, 2 magical creatures, 2 people in jobs (for example a police officer and a firefighter), 2 vehicles and props, and 2 "full page" examples combining a character on a background. Make 2–3 versions of each so Joe can compare.
+2. **Audit page:** a private review page showing each test image large, with **Approve / Redo / Notes** buttons, side by side with the current farm art for comparison.
+3. Joe reviews. Approved images become the **style references** for everything else; notes adjust the style prompt.
+4. **Small second check:** one group of about 20 images produced with the approved style, audited again before the rest.
+5. **Then batch production**, group by group, each with a contact sheet. Joe can spot-check anytime, and anything flagged gets redone.
+- No large batch runs until Joe approves the style test.
+
+**Acceptance criteria**
+- [ ] A style test batch of about 12 subjects (2–3 versions each) on a review page with approve, redo and notes
+- [ ] Joe signs off on the style before any large batch
+- [ ] About 300 assets across the 5 groups, all matching the approved style
+- [ ] Real-world jobs show a diverse mix of people, with no real badges, names or logos
+- [ ] Characters and props are clean cutouts; backgrounds are full scenes
+- [ ] Every asset is listed in `art/manifest.json` with group and tags, so the story builder can search it ("police", "night", "dragon")
+- [ ] Files stay small enough for the Fire tablet to load quickly
+
+**🔍 Decisions needed**
+- If the free daily allowance makes the library slow to build (weeks), is a small paid top-up on Cloudflare OK to finish faster? Roughly a few dollars for the whole library; confirm the price before spending.
+- Should the farm, avatar and Fashion Show art move to this higher-quality look later too, or keep the chunky style for games and use the film look only in storybooks?
+
+---
+
+## Shared groundwork (needed by #1, #3, #4, #5, #8, #13 and #14)
 
 - ⚠️ **One shared script:** Farmstand and the rest of the game live in the same `<script>`, so two `function` declarations with the same name silently replace each other (this broke story and inbox sending once: `sendGift`, `deliver`). Use unique names; a quick check is to list duplicate `function` names before pushing.
 
