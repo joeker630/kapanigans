@@ -274,6 +274,7 @@ The read-aloud voice talks too fast and sounds a bit robotic. Make it slower and
 
 ## Done
 
+- ✅ Watch mode: anyone not in a game can tap 👀 Watch on an in-progress game to see it live (view only, can send cheers; doesn't join the video call)
 - ✅ Connection reliability: live play on Firebase (no public relay), every stroke saved so dropped or reloaded devices catch up, quick recovery when an iPhone comes back to the app, 60-second "reconnecting…" grace period, lighter traffic (fewer finger updates, smaller video), and a connection light for each player
 
 - ✅ Color Together: co-op coloring for 1–4 players with Little and Big tools, 3 pictures, undo, and saving the finished picture
