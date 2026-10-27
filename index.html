@@ -481,6 +481,19 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
 .invite{position:fixed;left:50%;top:calc(12px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:55;background:var(--ink);color:#fff;border-radius:24px;padding:14px 18px;display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center;font-family:var(--display);font-size:20px;width:min(520px,calc(100% - 32px));box-shadow:0 10px 30px rgba(0,0,0,.3)}
 
 /* landscape (computer, iPad sideways, phone sideways): tools in a slim left column, picture gets everything else */
+/* photos, clips, own-voice stories, show it */
+.facepic{width:1.2em;height:1.2em;border-radius:50%;object-fit:cover;display:inline-block;vertical-align:middle;background:#fff}
+.bigface{font-size:44px}
+.vphoto{width:62%;height:auto;aspect-ratio:1;border-radius:50%;object-fit:cover;border:4px solid #fff}
+.cliprow{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--sky);flex-wrap:wrap}
+.cliprow .ctext{flex:1 1 220px;font-weight:800}.cliprow .cby{color:var(--ink-soft);font-size:13px;font-weight:700;min-width:110px}
+.photorow .nm{flex:1}
+.filebtn{display:inline-flex;align-items:center;cursor:pointer}
+.recbtn.small{width:120px;height:120px;font-size:56px}
+.readtext{font-family:var(--display);font-size:clamp(22px,4vw,34px);text-align:center;max-width:760px;background:var(--paper);border-radius:22px;padding:18px 22px;box-shadow:0 5px 0 var(--sky-deep);text-wrap:balance}
+.showit{font-size:18px}
+.showit.on{background:var(--fox);color:#fff}
+.vbtns .showit{width:auto;border-radius:999px;padding:0 12px;font-weight:900;font-size:15px;background:var(--sun)}
 /* one device per person */
 .taken{opacity:.45;filter:grayscale(.6)}
 .takenlbl{display:block;font-size:12px;font-weight:800;color:var(--ink-soft);margin-top:2px}
@@ -741,7 +754,7 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
 
 <div class="vid" id="vid" hidden>
   <div class="vtiles" id="vTiles"></div>
-  <div class="vbtns"><button id="vMin" aria-label="Shrink video">➖</button><button id="vMic" aria-label="Microphone on or off">🎤</button><button id="vCam" aria-label="Camera on or off">📷</button><button id="vFlip" aria-label="Flip camera" hidden>🔄</button></div>
+  <div class="vbtns"><button id="vMin" aria-label="Shrink video">➖</button><button id="vMic" aria-label="Microphone on or off">🎤</button><button id="vCam" aria-label="Camera on or off">📷</button><button id="vFlip" aria-label="Flip camera" hidden>🔄</button><button id="vShow" class="showit" hidden>👀 Show it!</button></div>
 </div>
 <div class="invite" id="invite" hidden><span id="inviteMsg"></span><div class="rowbtns"><button class="bigbtn" id="inviteJoin">Join</button><button class="ghost" id="inviteNo">Not now</button></div></div>
 
@@ -752,7 +765,7 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
     <button class="round" id="gHome" aria-label="Back to games">🏠</button>
     <h1>🔒 Grown-ups</h1>
   </div>
-  <div class="gtabs" id="gTabs"><button data-tab="reports">📊 Reports</button><button data-tab="voice">🔊 Voice</button><button data-tab="code">🔑 Family code</button><button data-tab="inbox">💌 Inboxes</button></div>
+  <div class="gtabs" id="gTabs"><button data-tab="reports">📊 Reports</button><button data-tab="voice">🔊 Voice</button><button data-tab="code">🔑 Family code</button><button data-tab="inbox">💌 Inboxes</button><button data-tab="photos">👤 Photos</button></div>
   <div class="gbody" id="gBody"></div>
 </section>
 <div class="gate" id="takeover" hidden>
@@ -956,7 +969,9 @@ function say(text,o={}){
   if(speechSynthesis.speaking||speechSynthesis.pending){speechSynthesis.cancel();sayT=setTimeout(next,80)} else next();
 }
 function sayLittle(text,o){if(me&&lvl()==="little")say(text,o)}
-function hush(){sayTok++;clearTimeout(sayT);if(speech.ok)speechSynthesis.cancel()}
+const sharedAudio=new Audio(); sharedAudio.playsInline=true;
+const SILENT="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=";
+function hush(){sayTok++;clearTimeout(sayT);if(speech.ok)speechSynthesis.cancel();try{if(!sharedAudio.paused){sharedAudio.onended=null;sharedAudio.pause()}}catch(e){}}
 const COLOR_NAMES={"#FF3B3B":"Red","#FF8A00":"Orange","#FFD600":"Yellow","#2ECC40":"Green","#2D8CFF":"Blue","#8B5CF6":"Purple","#FF5FA2":"Pink","#8B5A2B":"Brown"};
 const REACT_WORDS={"👋":"waves hi","❤️":"sends a heart","😂":"is laughing","⭐":"sends a star"};
 
@@ -1256,7 +1271,7 @@ function wireRoom(){
     if(m.sameTab||!m.data) return;
     const g=m.data; if(!Array.isArray(g.seats)||!PICS[g.pic]) return;
     const idx=g.seats.findIndex(s=>s.p===myPeer); if(idx<0) return;
-    if(screen==="lobby"){blip(880,.2,"triangle");sayLittle(`Let's color ${PICS[g.pic].name}!`);enterGame(g,idx,false)}
+    if(screen==="lobby"){blip(880,.2,"triangle");sayClipLittle("lets_color",`Let's color ${PICS[g.pic].name}!`);enterGame(g,idx,false)}
     else if(me&&!["setup","pick"].includes(screen)) showInvite(g,idx,m.peer);
   });
   room.on("react",m=>{
@@ -1272,7 +1287,7 @@ function wireRoom(){
 function doChooseKid(k){
   if(me!==k){tickStats();flushStats();releaseClaim(me)} writeClaim(k); me=k; joinedAt=Date.now(); store("kp.kid",k); bump("sessions");
   for(const m of unreadOf(k)) mail.seen.add(m.id);
-  say(`Hi ${kidOf(k).name}!`);
+  sayClip("hi_"+k,`Hi ${kidOf(k).name}!`);
   setPresence({kid:k,at:joinedAt,scr:"lobby",g:null,seat:null,done:null});
   blip(700); goLobby();
 }
@@ -1289,7 +1304,7 @@ function renderLobby(){
   if(others){const b=document.createElement("button");b.className="giftnew";b.innerHTML=`<span class="box">💌</span><span><b>${others} new message${others>1?"s":""}</b> in your inbox<br><small>Tap to read</small></span>`;b.onclick=()=>openInbox("list");gb.append(b)}
   syncMailBadges();
   const mc=$("#meChip"); mc.style.setProperty("--k",K.hue);
-  mc.innerHTML=`<span class="face">${K.face}</span><span>${esc(K.name)}<small>Tap to switch</small></span>`;
+  mc.innerHTML=`${faceHTML(K)}<span>${esc(K.name)}<small>Tap to switch</small></span>`;
   renderPeople();
   if(!$("#picSheet").hidden) renderWho();
 }
@@ -1310,7 +1325,7 @@ function openPics(invite){
       const P=buildPic(id); const tmp=document.createElement("canvas");tmp.width=W;tmp.height=H;tmp.getContext("2d").putImageData(P.art,0,0);
       const t=cv.getContext("2d");t.fillStyle="#fff";t.fillRect(0,0,320,240);t.drawImage(tmp,0,0,320,240);
       b.append(cv);const lab=document.createElement("b");lab.textContent=PICS[id].name;b.append(lab);
-      b.onclick=()=>{sayLittle(`Let's color ${PICS[id].name}!`);startColoring(id)};box.append(b);
+      b.onclick=()=>{sayClipLittle("lets_color",`Let's color ${PICS[id].name}!`);startColoring(id)};box.append(b);
     }
   }
   renderWho(); $("#picSheet").hidden=false;
@@ -1376,7 +1391,7 @@ function renderZones(){
     const k=kidOf(s.k),[x,y,w,h]=rects[i];
     const d=document.createElement("div");d.className="zone "+(i===game.seat?"mine":game.watch?"":"other");
     d.style.cssText=`left:${x/W*100}%;top:${y/H*100}%;width:${w/W*100}%;height:${h/H*100}%;--k:${k.hue}`;
-    if(game.seats.length>1) d.innerHTML=`<span class="ztag" style="--k:${k.hue}"><span class="face">${k.face}</span>${i===game.seat?"Your part":esc(k.name)}</span>`;
+    if(game.seats.length>1) d.innerHTML=`<span class="ztag" style="--k:${k.hue}">${faceHTML(k)}${i===game.seat?"Your part":esc(k.name)}</span>`;
     z.append(d);
   });
 }
@@ -1392,8 +1407,8 @@ function renderSeats(){
     else if(present.has(i)){game.lastSeen[i]=now;st="on"}
     else st=(now-(game.lastSeen[i]||0)<60000)?"wait":"off";
     const note=st==="wait"?`<small>${i===game.seat?"reconnecting…":"reconnecting…"}</small>`:"";
-    return`<span class="seat st-${st}" style="--k:${k.hue}"><i class="dot"></i><span class="face">${k.face}</span>${esc(k.name)}${note}${doneSeats.has(i)?' <span class="chk">✅</span>':""}</span>`}).join("")
-  + watchers().map(p=>{const k=kidOf(p.presence.kid);return`<span class="seat watcher" style="--k:${k.hue}">👀 <span class="face">${k.face}</span>${esc(k.name)}${p.sameTab?" <small>(you)</small>":""}</span>`}).join("");
+    return`<span class="seat st-${st}" style="--k:${k.hue}"><i class="dot"></i>${faceHTML(k)}${esc(k.name)}${note}${doneSeats.has(i)?' <span class="chk">✅</span>':""}</span>`}).join("")
+  + watchers().map(p=>{const k=kidOf(p.presence.kid);return`<span class="seat watcher" style="--k:${k.hue}">👀 ${faceHTML(k)}${esc(k.name)}${p.sameTab?" <small>(you)</small>":""}</span>`}).join("");
 }
 function watchers(){if(!game)return[];return peers().filter(p=>p.presence&&p.presence.scr==="watch"&&p.presence.g&&p.presence.g.e===game.e&&KIDS[p.presence.kid])}
 setInterval(()=>{if(screen==="game"&&game)renderSeats()},3000);
@@ -1403,7 +1418,7 @@ function renderCursors(){
   for(const p of gp){
     seen.add(p.peer); let el=box.querySelector(`[data-p="${CSS.escape(p.peer)}"]`);
     const k=kidOf((game.seats[p.presence.seat]||{}).k);
-    if(!el){el=document.createElement("div");el.className="cur";el.dataset.p=p.peer;el.innerHTML=`<span>${k.face}</span>`;box.append(el)}
+    if(!el){el=document.createElement("div");el.className="cur";el.dataset.p=p.peer;el.innerHTML=faceHTML(k,"");box.append(el)}
     el.style.setProperty("--k",k.hue);
     el.style.left=Math.max(0,Math.min(1,p.presence.cx))*100+"%"; el.style.top=Math.max(0,Math.min(1,p.presence.cy))*100+"%";
   }
@@ -1490,7 +1505,7 @@ board.addEventListener("pointerdown",e=>{
   const [x,y]=toCanvas(e);
   if(!inZone(game.seat,x,y)){
     const z=$("#zones .mine"); if(z){z.classList.remove("nudge");void z.offsetWidth;z.classList.add("nudge")}
-    toast(game.seats.length>1?"Color on your part! 👉":"Color inside the picture"); sayLittle(game.seats.length>1?"Color on your part!":"Color inside the picture"); blip(220,.15,"square",.06); return;
+    toast(game.seats.length>1?"Color on your part! 👉":"Color inside the picture"); game.seats.length>1?sayClipLittle("your_part","Color on your part!"):sayLittle("Color inside the picture"); blip(220,.15,"square",.06); return;
   }
   const L=lvl(),st=tool[L]; const g=newId();
   if(st.t==="fill"){const o={i:g,g,k:"f",c:st.c,x:Math.round(x),y:Math.round(y),s:game.seat};renderOp(o);commit(o);blip(500,.18,"triangle");return}
@@ -1563,7 +1578,7 @@ function updatePartyWait(){
   const gp=gamePeers().filter(p=>!p.sameTab); const waiting=gp.filter(p=>!p.presence.done).map(p=>kidOf((game.seats[p.presence.seat]||{}).k).name);
   const w=$("#partyWait"); w.hidden=!waiting.length; w.textContent=waiting.length?`${waiting.join(" & ")} ${waiting.length>1?"are":"is"} still coloring…`:"";
   const title = game.seats.length>1 ? (waiting.length?"Your part is done!":"You did it together!") : "Beautiful picture!";
-  if($("#partyTitle").textContent!==title||$("#party").dataset.said!==title){$("#party").dataset.said=title;say(title)}
+  if($("#partyTitle").textContent!==title||$("#party").dataset.said!==title){$("#party").dataset.said=title;sayClip(title==="You did it together!"?"together":title==="Beautiful picture!"?"beautiful":"none",title)}
   $("#partyTitle").textContent = title;
   if(!waiting.length && gp.length) $("#partyImg").src=snapshot().toDataURL("image/png");
 }
@@ -1590,7 +1605,7 @@ function confetti(){
 }
 
 /* ---------------- wiring ---------------- */
-$("#grownups").innerHTML=Object.entries(KIDS).filter(([,v])=>v.grown).map(([k,v])=>`<button class="gubtn" data-kid="${k}" style="--k:${v.hue}"><span class="face">${v.face}</span>${esc(v.name)}</button>`).join("");
+$("#grownups").innerHTML=Object.entries(KIDS).filter(([,v])=>v.grown).map(([k,v])=>`<button class="gubtn" data-kid="${k}" style="--k:${v.hue}">${faceHTML(v)}${esc(v.name)}</button>`).join("");
 document.querySelectorAll(".kid,.gubtn").forEach(b=>b.onclick=()=>chooseKid(b.dataset.kid));
 $("#meChip").onclick=()=>show("pick");
 $("#playColor").onclick=()=>{sayLittle("Color Together");openPics(null)};
@@ -1771,7 +1786,7 @@ function tileFor(p,mine){
   const st=mine?vid.local:vid.streams.get(p.peer);
   const camOn=mine?vid.cam:p.presence.cam!==false, micOn=mine?vid.mic:p.presence.mic!==false;
   if(st&&camOn){const v=videoEl(mine?"me":p.peer,st,mine);if(mine)v.classList.toggle("mirror",vid.facing!=="environment");t.append(v);v.play().catch(()=>{})}
-  else{const f=el("div","vface");f.textContent=K.face;t.append(f);if(st&&!mine){const v=videoEl(p.peer,st,false);v.classList.add("audioonly");t.append(v);v.play().catch(()=>{})}}
+  else{const f=el("div","vface");f.innerHTML=K.photo?faceHTML(K,"vphoto"):"";if(!K.photo)f.textContent=K.face;t.append(f);if(st&&!mine){const v=videoEl(p.peer,st,false);v.classList.add("audioonly");t.append(v);v.play().catch(()=>{})}}
   if(!micOn) t.append(el("span","vmute","🔇"));
   return t;
 }
@@ -1790,7 +1805,7 @@ function renderVideoUI(){
   $("#vMic").textContent=vid.mic?"🎤":"🔇"; $("#vMic").classList.toggle("off",!vid.mic);
   $("#vCam").classList.toggle("off",!vid.cam);
   $("#vMin").textContent=vid.min?"📹":"➖";
-  $("#vFlip").hidden=!(vid.local&&(vid.cams||[]).length>1);
+  $("#vFlip").hidden=!(vid.local&&(vid.cams||[]).length>1); syncShowIt();
   if(screen==="game") requestAnimationFrame(fitBoard);
   requestAnimationFrame(()=>{const r=box.getBoundingClientRect();if(r.right>innerWidth+2||r.bottom>innerHeight+2||r.left<-2||r.top<-2){delete box.dataset.dragged;box.style.left="";box.style.top="";box.style.right="";box.style.bottom="";if(screen==="game")fitBoard()}});
 }
@@ -1798,6 +1813,7 @@ $("#vMic").onclick=()=>setMic(!vid.mic);
 $("#vCam").onclick=()=>setCam(!vid.cam);
 $("#vMin").onclick=()=>{vid.min=!vid.min;renderVideoUI()};
 $("#vFlip").onclick=()=>flipCamera();
+$("#vShow").onclick=()=>startShowIt();
 // drag the bubble out of the way
 (()=>{const box=$("#vid");let d=null;
   box.addEventListener("pointerdown",e=>{if(e.target.closest("button"))return;const r=box.getBoundingClientRect();d={dx:e.clientX-r.left,dy:e.clientY-r.top,id:e.pointerId};box.setPointerCapture(e.pointerId)});
@@ -1837,6 +1853,7 @@ function renderPeople(){
         if(vid.denied) act.append(el("span","note",/Android|Silk|Kindle/i.test(navigator.userAgent)?"If nothing happens, allow the camera and microphone in Settings › Apps › Silk Browser › Permissions.":"If nothing happens, allow the camera and microphone in Settings › Safari."))}
       else{const m=el("button","round"+(vid.mic?"":" off"),vid.mic?"🎤":"🔇");m.setAttribute("aria-label","Microphone");m.onclick=()=>setMic(!vid.mic);
         const c=el("button","round"+(vid.cam?"":" off"),"📷");c.setAttribute("aria-label","Camera");c.onclick=()=>setCam(!vid.cam);act.append(m,c);
+        if(canShowIt()){const sh=el("button","bigbtn showit","👀 Show it!");sh.onclick=()=>startShowIt();act.append(sh)}
         if((vid.cams||[]).length>1){const f=el("button","round","🔄");f.setAttribute("aria-label","Flip camera");f.disabled=!!vid.flipping;f.onclick=()=>flipCamera();act.append(f)}}
     } else if(["lobby","story","reader","inbox"].includes(pr.scr)){
       const b=el("button","bigbtn",`🎨 Color with ${esc(K.name)}`);b.onclick=()=>{sayLittle(`Color with ${K.name}!`);openPics([p.peer])};act.append(b);
@@ -1860,7 +1877,7 @@ function showInvite(g,idx,fromPeer){
   const starter=peers().find(p=>p.peer===fromPeer); const who=starter&&starter.presence?kidOf(starter.presence.kid).name:"Someone";
   $("#inviteMsg").textContent=`🎨 ${who} wants to color ${PICS[g.pic].name} with you!`;
   $("#invite").hidden=false; blip(660,.15,"triangle",.12); setTimeout(()=>blip(880,.2,"triangle",.12),150);
-  say(`${who} wants to color with you!`);
+  sayClip("invite",`${who} wants to color with you!`);
   $("#inviteJoin").onclick=()=>{$("#invite").hidden=true;if(game&&game.refs)game.refs.forEach(r=>r.off());game=null;hush();enterGame(g,idx,false)};
   $("#inviteNo").onclick=()=>{$("#invite").hidden=true};
   clearTimeout(inviteT); inviteT=setTimeout(()=>{$("#invite").hidden=true},60000);
@@ -1943,7 +1960,8 @@ function sGo(step){sStep=step;renderStory();$("#sBody").scrollTop=0;window.scrol
 $("#sHome").onclick=()=>{hush();draft=null;goLobby()};
 $("#sBack").onclick=()=>{
   hush();
-  const back={home:null,shelf:"home",to:"home",pick:"to",blank:"pick",draw:"blank",wiggle:"draw",ready:"wiggle",sent:null}[sStep];
+  const back={home:null,shelf:"home",to:"home",pick:"to",blank:"pick",draw:"blank",wiggle:"draw",voice:"wiggle",record:"voice",ready:"voice",sent:null}[sStep];
+  if(sStep==="record"&&draft.vi>0){draft.vi--;return renderStory()}
   if(sStep==="blank"&&draft.bi>0){draft.bi--;return renderStory()}
   if(sStep==="draw"&&draft.ci>0){draft.ci--;return renderStory()}
   if(sStep==="draw"){draft.bi=STORIES[draft.story].blanks.length-1}
@@ -1979,7 +1997,7 @@ function renderStory(){
     const grid=el("div","choices");
     const keys=Object.keys(KIDS).filter(k=>k!==me).sort((a,b)=>(here.has(b)-here.has(a))||(!!KIDS[a].grown-!!KIDS[b].grown));
     for(const k of keys){const K=KIDS[k];
-      const b=el("button","choice person",`<span class="em">${K.face}</span>${esc(K.name)}${here.has(k)?"<small>🟢 here now</small>":""}`);
+      const b=el("button","choice person",`${faceHTML(K,"em")}${esc(K.name)}${here.has(k)?"<small>🟢 here now</small>":""}`);
       b.style.setProperty("--k",K.hue); b.onclick=()=>{draft.to=k;sayLittle(`For ${K.name}!`);sGo("pick")}; grid.append(b)}
     B.append(grid);
   }
@@ -2027,7 +2045,33 @@ function renderStory(){
       card.append(box,ab); wrap.append(card);
     });
     B.append(wrap);
-    const nx=el("button","bigbtn","Next ➡️"); nx.onclick=()=>{sGo("ready");say("Your story is ready!")}; B.append(nx);
+    const nx=el("button","bigbtn","Next ➡️"); nx.onclick=()=>{sGo("voice");say("Who reads the story?")}; B.append(nx);
+  }
+  else if(sStep==="voice"){
+    B.append(el("h2",null,"Who reads the story?"));
+    const row=el("div","bigchoices");
+    const a=el("button","scard",`<span class="em">🔊</span><h3>The reading voice</h3><p>Kapanigans reads it out loud.</p>`);a.onclick=()=>{draft.voice=null;sGo("ready");say("Your story is ready!")};
+    const b=el("button","scard",`<span class="em">🎤</span><h3>I'll read it!</h3><p>Record yourself reading each page.</p>`);b.onclick=()=>{draft.voice=draft.voice||{};draft.vi=0;sGo("record")};
+    row.append(a,b);B.append(row);
+  }
+  else if(sStep==="record"){
+    const i=draft.vi||0, P=S.pages[i], key="p"+i;
+    const prog=el("div","progress");S.pages.forEach((_,j)=>prog.append(el("i",j<=i?"on":"")));B.append(prog);
+    B.append(el("h2",null,`Page ${i+1} of ${S.pages.length}`));
+    const txt=el("div","readtext");txt.textContent=fillTokens(P.t,{to:draft.to,from:me,words:draft.words});B.append(txt);
+    const rec=recButton("Record this page"), lab=el("p","sub",draft.voice[key]?"Recorded! Listen, or tap the microphone to try again.":"Tap the microphone and read this page."), out=el("div","rowbtns");
+    B.append(rec,lab,out);
+    const showOut=()=>{out.innerHTML="";if(draft.voice[key]){const pl=voicePlayer(draft.voice[key]);out.append(pl.el)}
+      const nx=el("button","bigbtn",i<S.pages.length-1?"Next page ➡️":"Done ✔️");nx.onclick=()=>{if(rec._r)return;if(i<S.pages.length-1){draft.vi=i+1;renderStory()}else{sGo("ready");say("Your story is ready!")}};
+      out.append(nx);if(!draft.voice[key])out.append(el("span","note","Skipping a page? The reading voice reads that one."))};
+    rec.onclick=async()=>{
+      if(rec._r){rec._r.stop();return}
+      try{rec._r=await startRecorder(30,t=>{lab.textContent=`Recording… ${Math.max(0,30-Math.floor(t))}s left. Tap to stop`})}catch(e){lab.textContent="The microphone is blocked. Allow it in Settings.";return}
+      rec.classList.add("on");rec.textContent="⏹️";lab.textContent="Recording… tap to stop";
+      const res=await rec._r.done; rec._r=null; rec.classList.remove("on"); rec.textContent="🎤";
+      if(res){draft.voice[key]={mime:res.mime,data:res.data};lab.textContent="Recorded! Listen, or tap the microphone to try again."}else lab.textContent="That was too short. Try again.";
+      showOut()};
+    showOut();
   }
   else if(sStep==="ready"){
     const K=kidOf(draft.to);
@@ -2035,7 +2079,7 @@ function renderStory(){
     B.append(el("p","sub",`${S.cover} ${esc(S.title)}`));
     const row=el("div","rowbtns");
     const prev=el("button","ghost","👀 Read it first"); prev.onclick=()=>openReader(draftGift(),{preview:true});
-    const send=el("button","bigbtn",`Send gift to ${esc(K.name)} 🎁`); send.onclick=sendGift;
+    const send=el("button","bigbtn",`Send gift to ${esc(K.name)} 🎁`); send.onclick=sendStoryGift;
     row.append(prev,send); B.append(row);
   }
   else if(sStep==="sent"){
@@ -2118,12 +2162,12 @@ function charFigure(g,i){
   }
   const d=el("div","emc");d.textContent=S.cast[i].from?((g.words[S.cast[i].from]||{}).e||"⭐"):S.cast[i].emoji;return d;
 }
-function draftGift(){return {id:null,to:draft.to,from:me,story:draft.story,words:draft.words,chars:STORIES[draft.story].cast.map((_,i)=>draft.chars[i]||{s:[],a:"bob"}),at:Date.now()}}
-function sendGift(){
+function draftGift(){const g={id:null,to:draft.to,from:me,story:draft.story,words:draft.words,chars:STORIES[draft.story].cast.map((_,i)=>draft.chars[i]||{s:[],a:"bob"}),at:Date.now()};if(draft.voice&&Object.keys(draft.voice).length)g.voice=draft.voice;return g}
+function sendStoryGift(){
   if(!mail.ref){toast("Can't send right now. Check the Wi-Fi.");say("Hmm, I can't send it right now.");return}
   const g=draftGift(); delete g.id;
   for(const c of g.chars) c.s=thin(c.s);
-  if(JSON.stringify(g).length>400000){toast("That drawing is too big to send. Try a simpler one.");return}
+  if(JSON.stringify(g).length>(g.voice?3000000:400000)){toast("That story is too big to send. Try shorter recordings or a simpler drawing.");return}
   if(!sendMsg([g.to],{kind:"story",story:g.story},g)) return;
   bump("storiesSent"); tada(); sGo("sent"); say(`Sent to ${nameOf(g.to)}!`);
 }
@@ -2132,14 +2176,14 @@ function sendGift(){
 const rd={g:null,msg:null,ret:"lobby",page:0,auto:false,preview:false,wordSpans:[],timer:null};
 (()=>{const s=$("#rStars");for(let i=0;i<60;i++){const st=document.createElement("i");st.style.left=Math.random()*100+"%";st.style.top=Math.random()*70+"%";st.style.animationDelay=(Math.random()*3)+"s";if(Math.random()<.2){st.style.width=st.style.height="4px"}s.append(st)}})();
 function openReader(g,o={}){
-  if(screen!=="reader") rd.ret=screen; if(o.preview) rd.msg=null;
+  if(screen!=="reader") rd.ret=o.ret||screen; if(o.preview) rd.msg=null; unlockAudio(); rd.vurls={};
   rd.g=g; rd.page=0; rd.preview=!!o.preview; rd.auto=lvl()==="little";
-  show("reader"); $("#rTitle").textContent=STORIES[g.story].title; $("#rEnd").hidden=true; syncAuto();
+  show("reader"); $("#rTitle").textContent=STORIES[g.story].title+(g.voice?` · 🎤 read by ${nameOf(g.from)}`:""); $("#rEnd").hidden=true; syncAuto();
   keepAwake();
   if(o.gift){$("#rUnwrapMsg").textContent=`A story from ${nameOf(g.from)}! Tap to open`;$("#rUnwrap").hidden=false;$("#rUnwrap").classList.remove("pop");say(`A story from ${nameOf(g.from)}! Tap to open.`)}
   else {$("#rUnwrap").hidden=true; renderPage()}
 }
-$("#rOpen").onclick=()=>{const u=$("#rUnwrap");u.classList.add("pop");tada();setTimeout(()=>{u.hidden=true;markRead(rd.msg);renderPage()},600)};
+$("#rOpen").onclick=()=>{unlockAudio();const u=$("#rUnwrap");u.classList.add("pop");tada();setTimeout(()=>{u.hidden=true;markRead(rd.msg);renderPage()},600)};
 function renderPage(){
   clearTimeout(rd.timer);
   const g=rd.g,S=STORIES[g.story],P=S.pages[rd.page];
@@ -2172,7 +2216,12 @@ function renderPage(){
   readPage(spoken);
 }
 function readPage(text){
-  const spans=rd.wordSpans;
+  const spans=rd.wordSpans, rec=rd.g.voice&&rd.g.voice["p"+rd.page];
+  if(rec){ // the author's own voice
+    const go=()=>{if(rd.auto&&screen==="reader")rd.timer=setTimeout(nextPage,1500)};
+    rd.vurls=rd.vurls||{}; const k=rd.g.id+":"+rd.page; if(!rd.vurls[k])rd.vurls[k]=clipToUrl(rec);
+    playUrl(rd.vurls[k],go); return;
+  }
   const mark=i=>spans.forEach((s,j)=>s.el.classList.toggle("now",j===i));
   const after=()=>{mark(-1);if(rd.auto&&screen==="reader")rd.timer=setTimeout(nextPage,2200)};
   if(!speech.ok||!speech.on){if(rd.auto)rd.timer=setTimeout(nextPage,Math.max(4000,text.length*70));return}
@@ -2184,14 +2233,14 @@ function showEnd(){
   const fromOther=!rd.preview&&g.from!==me&&g.id; if(!rd.preview) bump("storiesRead");
   $("#rThanks").hidden=!fromOther;
   $("#rEndMsg").textContent=fromOther?`Tap to say thank you to ${nameOf(g.from)}`:"Sweet dreams!";
-  say(fromOther?`The end. Say thank you to ${nameOf(g.from)}!`:"The end. Sweet dreams!");
+  if(fromOther) say(`The end. Say thank you to ${nameOf(g.from)}!`); else sayClip("the_end","The end. Sweet dreams!");
 }
 $("#rNext").onclick=()=>{blip(520,.06);nextPage()};
 $("#rPrev").onclick=()=>{clearTimeout(rd.timer);if(rd.page>0){rd.page--;renderPage()}};
 function syncAuto(){$("#rAuto").textContent=rd.auto?"⏸️":"▶️"}
 $("#rAuto").onclick=()=>{rd.auto=!rd.auto;syncAuto();if(rd.auto&&!(speech.ok&&speechSynthesis.speaking))nextPage();else if(!rd.auto)clearTimeout(rd.timer)};
 $("#rAgain").onclick=()=>{$("#rEnd").hidden=true;rd.page=0;renderPage()};
-const closeReader=()=>{clearTimeout(rd.timer);hush();if(rd.preview||rd.ret==="story"){show("story");renderStory()}else if(rd.ret==="inbox"){show("inbox");ib.view="list";renderInbox()}else goLobby()};
+const closeReader=()=>{clearTimeout(rd.timer);hush();if(rd.ret==="grown"){show("grown");renderGrown()}else if(rd.preview||rd.ret==="story"){show("story");renderStory()}else if(rd.ret==="inbox"){show("inbox");ib.view="list";renderInbox()}else goLobby()};
 $("#rClose").onclick=closeReader; $("#rDone").onclick=closeReader;
 $("#rThanks").addEventListener("click",e=>{const b=e.target.closest("button");if(!b||!rd.g)return;const g=rd.g;
   floatReaction(b.dataset.r,me);
@@ -2215,7 +2264,7 @@ function fbConnect(code){
   mail.ref=mail.db.ref("families/"+code); mail.all={}; mail.ready=false; mail.seen=new Set();
   mail.ref.child("inbox").on("value",snap=>{mail.all=snap.val()||{};const first=!mail.ready;mail.ready=true;onMail(first)},()=>{});
   mail.db.ref(".info/connected").on("value",s=>{mail.online=!!s.val()});
-  claimsConnect();
+  claimsConnect(); clipsConnect(); photosConnect();
 }
 /* ---------- one device per person: families/<CODE>/claims/<person> = {dev,label,at} ----------
    Removed by the server when the device drops; a 30-second heartbeat keeps it fresh. Bear and Fox friend are shared guests. */
@@ -2262,7 +2311,7 @@ function chooseKid(k){
   const c=takenBy(k);
   if(!c) return doChooseKid(k);
   const K=kidOf(k);
-  $("#toFace").textContent=K.face; $("#toTitle").textContent=`${K.name} is playing on another ${deviceWord(c)}`;
+  $("#toFace").innerHTML=faceHTML(K,""); $("#toTitle").textContent=`${K.name} is playing on another ${deviceWord(c)}`;
   $("#toMsg").textContent=`Play as ${K.name} here instead? The other ${deviceWord(c)} will go back to "Who are you?".`;
   $("#takeover").hidden=false; say(`${K.name} is playing on another ${deviceWord(c)}. Play here instead?`);
   $("#toYes").onclick=()=>{$("#takeover").hidden=true;doChooseKid(k)};
@@ -2277,9 +2326,9 @@ function onMail(first){
     if(first||m.at<appStart-10000) continue;
     blip(660,.2,"triangle",.12);setTimeout(()=>blip(990,.25,"triangle",.12),160);
     const mb=$("#mailBtn"); if(mb){mb.classList.remove("bounce");void mb.offsetWidth;mb.classList.add("bounce")}
-    if(m.kind==="story"){toast(`🎁 A bedtime story from ${nameOf(m.from)}!`);say(`You got a bedtime story from ${nameOf(m.from)}!`)}
+    if(m.kind==="story"){toast(`🎁 A bedtime story from ${nameOf(m.from)}!`);sayClip("story",`You got a bedtime story from ${nameOf(m.from)}!`)}
     else if(m.kind==="react"){floatReaction(m.r||"❤️",m.from);toast(reactLine(m));say(reactLine(m))}
-    else {toast(`💌 New message from ${nameOf(m.from)}!`);say(`You got a message from ${nameOf(m.from)}!`)}
+    else {toast(`💌 New message from ${nameOf(m.from)}!`);sayClip("message",`You got a message from ${nameOf(m.from)}!`)}
   }
   syncMailBadges();
   if(screen==="lobby") renderLobby();
@@ -2321,6 +2370,7 @@ function normGift(raw,m){
   const g=Object.assign({},raw,{id:m.id,from:m.from,to:me});
   g.words=g.words&&typeof g.words==="object"?g.words:{};
   g.chars=Array.isArray(g.chars)?g.chars.map(c=>c&&typeof c==="object"?{s:Array.isArray(c.s)?c.s.filter(s=>s&&Array.isArray(s.p)):[],a:c.a}:{s:[],a:"bob"}):[];
+  if(raw.voice&&typeof raw.voice==="object"){const v={};for(const [k,x] of Object.entries(raw.voice))if(/^p\d$/.test(k)&&x&&typeof x.data==="string")v[k]={mime:String(x.mime||"audio/mp4"),data:x.data};g.voice=Object.keys(v).length?v:null}else g.voice=null;
   return validGift(g)?g:null;
 }
 async function openStoryMsg(m){
@@ -2353,7 +2403,7 @@ function renderInbox(){
     const ul=el("div","mlist");
     for(const m of list){const F=kidOf(m.from);
       const b=el("button","mrow"+(m.read?"":" unread"));b.style.setProperty("--k",F.hue);
-      b.innerHTML=`<span class="face">${F.face}</span><span class="mmain"><b>${esc(F.name)}</b><span>${esc(msgPreview(m))}</span></span><span class="mtime">${esc(ago(m.at))}</span>`;
+      b.innerHTML=`${faceHTML(F)}<span class="mmain"><b>${esc(F.name)}</b><span>${esc(msgPreview(m))}</span></span><span class="mtime">${esc(ago(m.at))}</span>`;
       b.onclick=()=>{if(m.kind==="story"){openStoryMsg(m);return}ib.msg=m;ibGo("read")};ul.append(b)}
     B.append(ul);
   }
@@ -2364,7 +2414,7 @@ function renderInbox(){
     const all=el("button","choice person","<span class=\"em\">👨‍👩‍👧‍👦</span>Everyone");all.style.setProperty("--k","var(--sun-deep)");
     all.onclick=()=>{ib.to="all";sayLittle("Everyone!");ib.attach?sendAttach():ibGo("what")};grid.append(all);
     for(const k of Object.keys(KIDS).filter(k=>k!==me)){const P=KIDS[k];
-      const b=el("button","choice person",`<span class="em">${P.face}</span>${esc(P.name)}${here(k)?"<small>🟢 here now</small>":""}`);
+      const b=el("button","choice person",`${faceHTML(P,"em")}${esc(P.name)}${here(k)?"<small>🟢 here now</small>":""}`);
       b.style.setProperty("--k",P.hue);b.onclick=()=>{ib.to=k;sayLittle(`For ${P.name}!`);ib.attach?sendAttach():(ibGo("what"),sayLittle("What do you want to send?"))};grid.append(b)}
     B.append(grid);
   }
@@ -2379,25 +2429,25 @@ function renderInbox(){
   else if(ib.view==="sticker"){
     B.append(el("h2",null,"Pick a sticker"));
     const grid=el("div","choices");
-    for(const [e,n] of STICKERS){const b=el("button","choice",`<span class="em">${e}</span>`);b.onclick=()=>{say(n);deliver({kind:"sticker",emoji:e,name:n})};grid.append(b)}
+    for(const [e,n] of STICKERS){const b=el("button","choice",`<span class="em">${e}</span>`);b.onclick=()=>{say(n);deliverMsg({kind:"sticker",emoji:e,name:n})};grid.append(b)}
     B.append(grid);
   }
   else if(ib.view==="phrase"){
     B.append(el("h2",null,"What do you want to say?"));
     const grid=el("div","choices");
-    for(const [e,t] of PHRASES){const b=el("button","choice",`<span class="em">${e}</span>${esc(t)}`);b.onclick=()=>{say(t);deliver({kind:"phrase",emoji:e,text:t})};grid.append(b)}
+    for(const [e,t] of PHRASES){const b=el("button","choice",`<span class="em">${e}</span>${esc(t)}`);b.onclick=()=>{say(t);deliverMsg({kind:"phrase",emoji:e,text:t})};grid.append(b)}
     B.append(grid);
   }
   else if(ib.view==="text"){
     B.append(el("h2",null,"Type your message"));
     const ta=el("textarea","msgtext");ta.id="msgText";ta.maxLength=200;ta.rows=4;ta.placeholder="Write something nice…";B.append(ta);
-    const go=el("button","bigbtn","Send 💌");go.onclick=()=>{const t=ta.value.replace(/[\u0000-\u0008\u000B-\u001F]/g,"").trim().slice(0,200);if(!t){ta.focus();return}deliver({kind:"text",text:t})};B.append(go);
+    const go=el("button","bigbtn","Send 💌");go.onclick=()=>{const t=ta.value.replace(/[\u0000-\u0008\u000B-\u001F]/g,"").trim().slice(0,200);if(!t){ta.focus();return}deliverMsg({kind:"text",text:t})};B.append(go);
     setTimeout(()=>ta.focus(),50);
   }
   else if(ib.view==="draw"){
     B.append(el("h2",null,"Draw something!"));
     pad.strokes=[]; buildPad(B,pad.strokes);
-    const go=el("button","bigbtn","Send 💌");go.onclick=()=>{if(!pad.strokes.length){say("Draw something first!");return}deliver({kind:"draw"},{type:"draw",s:thin(pad.strokes)})};
+    const go=el("button","bigbtn","Send 💌");go.onclick=()=>{if(!pad.strokes.length){say("Draw something first!");return}deliverMsg({kind:"draw"},{type:"draw",s:thin(pad.strokes)})};
     const row=el("div","rowbtns");row.append(go);B.append(row);
   }
   else if(ib.view==="voice") renderVoice(B);
@@ -2409,12 +2459,12 @@ function renderInbox(){
   }
 }
 function recipients(){return ib.to==="all"?Object.keys(KIDS).filter(k=>k!==me&&k!=="bear"&&k!=="fox"):[ib.to]}
-function deliver(msg,blob){if(!ib.to)return ibGo("to");const id=sendMsg(recipients(),msg,blob);if(!id)return;tada();ibGo("sent");say(`Sent to ${ib.to==="all"?"everyone":nameOf(ib.to)}!`)}
-function sendAttach(){const a=ib.attach;ib.attach=null;deliver(a.msg,a.blob)}
+function deliverMsg(msg,blob){if(!ib.to)return ibGo("to");const id=sendMsg(recipients(),msg,blob);if(!id)return;tada();ibGo("sent");say(`Sent to ${ib.to==="all"?"everyone":nameOf(ib.to)}!`)}
+function sendAttach(){const a=ib.attach;ib.attach=null;deliverMsg(a.msg,a.blob)}
 function thin(strokes){return strokes.map(s=>{if(s.p.length<=600)return s;const q=[];for(let i=0;i<s.p.length;i+=4)q.push(s.p[i],s.p[i+1]);return Object.assign({},s,{p:q})})}
 function renderMsg(B,m){
   const F=kidOf(m.from); markRead(m);
-  const head=el("div","mhead",`<span class="face">${F.face}</span><span><b>${esc(F.name)}</b><small>${esc(ago(m.at))}</small></span>`);head.style.setProperty("--k",F.hue);B.append(head);
+  const head=el("div","mhead",`${faceHTML(F)}<span><b>${esc(F.name)}</b><small>${esc(ago(m.at))}</small></span>`);head.style.setProperty("--k",F.hue);B.append(head);
   const card=el("div","mcard");B.append(card);
   if(m.kind==="sticker"){const s=el("div","bigsticker");s.textContent=m.emoji||"⭐";card.append(s);say(`${F.name} sent you ${m.name||"a sticker"}!`)}
   else if(m.kind==="phrase"||m.kind==="text"){const t=el("div","mtextbig");if(m.emoji){const e=el("div","bigsticker small");e.textContent=m.emoji;card.append(e)}t.textContent=String(m.text||"").slice(0,200);card.append(t);
@@ -2472,7 +2522,7 @@ function renderVoice(B){
       if(blob.size>700000){lab.textContent="That one is too long to send. Try a shorter one.";return}
       const fr=new FileReader();fr.onload=()=>{const data=String(fr.result).split(",")[1];result={mime:(mr.mimeType||type||"audio/mp4").split(";")[0],data,dur};
         lab.textContent="Listen, then send it!";const pl=voicePlayer(result);const re=el("button","ghost","🔁 Again");re.onclick=()=>{out.innerHTML="";lab.textContent="Tap the microphone to start"};
-        const send=el("button","bigbtn","Send 💌");send.onclick=()=>deliver({kind:"voice",dur},{type:"voice",mime:result.mime,data:result.data});
+        const send=el("button","bigbtn","Send 💌");send.onclick=()=>deliverMsg({kind:"voice",dur},{type:"voice",mime:result.mime,data:result.data});
         out.innerHTML="";out.append(pl.el,re,send)};fr.readAsDataURL(blob)};
     mr.start(1000);
   };
@@ -2648,12 +2698,12 @@ function askGrownUp(tab){
 $("#grownBtn").onclick=()=>askGrownUp("reports");
 $("#codeChip").onclick=()=>askGrownUp("code");
 $("#gHome").onclick=()=>{hush();me?goLobby():show("pick")};
-$("#gTabs").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;gTab=b.dataset.tab;renderGrown()});
+$("#gTabs").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;gTab=b.dataset.tab;gInboxOpen=null;gInboxMsg=null;renderGrown()});
 function openGrown(tab){gTab=tab||"reports";gArmed=null;show("grown");renderGrown()}
 function renderGrown(){
   document.querySelectorAll("#gTabs button").forEach(b=>b.classList.toggle("on",b.dataset.tab===gTab));
   const B=$("#gBody"); B.innerHTML="";
-  ({reports:gReports,voice:gVoice,code:gCode,inbox:gInboxes})[gTab](B);
+  ({reports:gReports,voice:gVoice,code:gCode,inbox:gInboxes,photos:gPhotos})[gTab](B);
 }
 function armed(key,btn,label,action){ // two taps to confirm
   if(gArmed===key){gArmed=null;action();return}
@@ -2664,7 +2714,7 @@ function armed(key,btn,label,action){ // two taps to confirm
 function gReports(B){
   const kids=KID_KEYS();
   const pick=el("div","kidpick");
-  for(const k of kids){const K=KIDS[k];const b=el("button","pal"+(k===gKid?" on":""),`<span class="face">${K.face}</span>${esc(K.name)}`);b.style.setProperty("--k",K.hue);b.onclick=()=>{gKid=k;renderGrown()};pick.append(b)}
+  for(const k of kids){const K=KIDS[k];const b=el("button","pal"+(k===gKid?" on":""),`${faceHTML(K)}${esc(K.name)}`);b.style.setProperty("--k",K.hue);b.onclick=()=>{gKid=k;renderGrown()};pick.append(b)}
   B.append(pick);
   if(!mail.ref){B.append(el("p","empty","Reports need the internet. Check the Wi-Fi."));return}
   const box=el("div","rep");box.append(el("p","empty","Loading…"));B.append(box);
@@ -2679,7 +2729,7 @@ function drawReport(box,who,d){
   // summary card
   const diff=w.total-prev.total;
   const card=el("div","rcard summary");card.style.setProperty("--k",K.hue);
-  card.innerHTML=`<div class="rtitle"><span class="face">${K.face}</span><div><h3>${esc(K.name)}, last 7 days</h3><small>Compared with ${esc(K.name)}'s week before, never with other kids</small></div></div>
+  card.innerHTML=`<div class="rtitle">${faceHTML(K)}<div><h3>${esc(K.name)}, last 7 days</h3><small>Compared with ${esc(K.name)}'s week before, never with other kids</small></div></div>
     <div class="kpis">
       <div><b>${fmtDur(w.total)}</b><span>played${prev.total?` · <em class="${diff>=0?"up":"down"}">${diff>=0?"▲":"▼"} ${fmtDur(Math.abs(diff))}</em>`:""}</span></div>
       <div><b>${w.counts.sessions||0}</b><span>times played</span></div>
@@ -2764,6 +2814,7 @@ function gVoice(B){
   c.append(el("p","note","Violet's level reads a bit slower than Quinn's. Sentences get a short pause between them."));
   B.append(c);
   if(!speech.good){const tip=el("div","rcard tip");tip.innerHTML=`<h4>Get a better voice (free)</h4><p>This device only has the basic voices, which can sound robotic. On each iPad or iPhone:</p><p><b>Settings › Accessibility › Spoken Content › Voices › English</b>, then download an <b>Enhanced</b> or <b>Premium</b> voice such as Ava, Zoe or Samantha. It works offline. Reopen Kapanigans afterwards and it's picked automatically.</p>`;B.append(tip)}
+  gClips(B);
 }
 
 /* ---- Family code ---- */
@@ -2777,12 +2828,14 @@ function gCode(B){
 
 /* ---- Inboxes ---- */
 function gInboxes(B){
+  if(gInboxOpen&&KIDS[gInboxOpen]) return gInboxRead(B,gInboxOpen);
   const c=el("div","rcard");c.append(el("h4",null,"Everyone's inboxes"));
   if(!mail.ref){c.append(el("p","empty","Inboxes need the internet."));B.append(c);return}
   for(const k of Object.keys(KIDS)){const K=KIDS[k],all=inboxOf(k),un=all.filter(m=>!m.read).length;
     const row=el("div","inrow");row.style.setProperty("--k",K.hue);
-    row.innerHTML=`<span class="face">${K.face}</span><span class="nm">${esc(K.name)}</span><span class="ct">${all.length} message${all.length===1?"":"s"}${un?` · ${un} new`:""}</span>`;
-    const b=el("button","ghost","Clear");b.disabled=!all.length;b.onclick=()=>armed("in"+k,b,"Tap again",()=>clearInbox(k));row.append(b);c.append(row)}
+    row.innerHTML=`${faceHTML(K)}<span class="nm">${esc(K.name)}</span><span class="ct">${all.length} message${all.length===1?"":"s"}${un?` · ${un} new`:""}</span>`;
+    const o=el("button","ghost","👀 Open");o.disabled=!all.length;o.onclick=()=>{gInboxOpen=k;gInboxMsg=null;renderGrown()};
+    const b=el("button","ghost","Clear");b.disabled=!all.length;b.onclick=()=>armed("in"+k,b,"Tap again",()=>clearInbox(k));row.append(o,b);c.append(row)}
   c.append(el("p","note","Clearing deletes that person's messages, including stories and voice messages, on every device."));
   B.append(c);
 }
@@ -2792,6 +2845,142 @@ function clearInbox(k){
   const up={["inbox/"+k]:null};
   for(const m of mine){const b=m.blob||(m.kind==="story"?m.id:null);if(b&&!keep.has(b))up["blobs/"+b]=null}
   mail.ref.update(up).then(()=>{toast("Cleared");renderGrown()}).catch(()=>toast("Couldn't clear. Try again."));
+}
+
+
+/* ================= shared recorder (uses the live mic when the camera is on) ================= */
+async function startRecorder(max,onTick){
+  let stream,own=false; const live=vid.local&&vid.local.getAudioTracks().find(t=>t.readyState==="live");
+  if(live){live.enabled=true;stream=new MediaStream([live])}
+  else{stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}});own=true}
+  const type=["audio/mp4","audio/webm;codecs=opus","audio/webm"].find(t=>window.MediaRecorder&&MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(t))||"";
+  let mr;try{mr=new MediaRecorder(stream,type?{mimeType:type,audioBitsPerSecond:32000}:{audioBitsPerSecond:32000})}catch(e){mr=new MediaRecorder(stream)}
+  const chunks=[],t0=Date.now(); let resolveDone; const done=new Promise(r=>resolveDone=r);
+  const stop=()=>{if(mr.state==="recording")mr.stop()};
+  const tick=setInterval(()=>{const s=(Date.now()-t0)/1000;onTick&&onTick(s);if(s>=max)stop()},250);
+  mr.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
+  mr.onstop=()=>{clearInterval(tick);if(own)stream.getTracks().forEach(t=>t.stop());applyTracks();
+    const blob=new Blob(chunks,{type:mr.mimeType||type||"audio/mp4"}),dur=Math.max(1,Math.round((Date.now()-t0)/1000));
+    if(blob.size<400){resolveDone(null);return}
+    const fr=new FileReader();fr.onload=()=>resolveDone({mime:(mr.mimeType||type||"audio/mp4").split(";")[0],data:String(fr.result).split(",")[1],dur,size:blob.size});fr.readAsDataURL(blob)};
+  mr.start(1000); hush();
+  return {stop,done};
+}
+function clipToUrl(c){try{const bin=atob(c.data);const u8=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u8[i]=bin.charCodeAt(i);return URL.createObjectURL(new Blob([u8],{type:/^audio\/[\w.+-]+$/.test(c.mime||"")?c.mime:"audio/mp4"}))}catch(e){return ""}}
+/* one shared audio element: once a tap has started it, iPad lets it keep playing later pages and clips */
+function unlockAudio(){try{if(!sharedAudio.src||sharedAudio.paused){sharedAudio.src=SILENT;sharedAudio.play().catch(()=>{})}}catch(e){}}
+function playUrl(url,onEnd){hush();sharedAudio.onended=()=>{sharedAudio.onended=null;onEnd&&onEnd()};sharedAudio.onerror=sharedAudio.onended;sharedAudio.src=url;const p=sharedAudio.play();if(p)p.catch(()=>{sharedAudio.onended&&sharedAudio.onended()})}
+function recButton(label){const b=el("button","recbtn small","🎤");b.setAttribute("aria-label",label||"Record");return b}
+
+/* ================= #7 family voice clips ================= */
+const CLIPS=[["hi_violet","Hi Violet!"],["hi_quinn","Hi Quinn!"],["lets_color","Let's color!"],["your_part","Color on your part!"],["together","You did it together!"],["beautiful","Beautiful picture!"],["story","You got a bedtime story!"],["message","You got a message!"],["invite","Someone wants to color with you!"],["the_end","The end. Sweet dreams!"]];
+const clips={data:{},urls:new Map(),ref:null};
+function clipsConnect(){if(!mail.ref)return;if(clips.ref)clips.ref.off();clips.ref=mail.ref.child("clips");clips.data={};clips.ref.on("value",s=>{clips.data=s.val()||{};if(screen==="grown"&&gTab==="voice")renderGrown()},()=>{})}
+function clipUrl(key){const c=clips.data[key];if(!c||typeof c.data!=="string")return "";const k=key+":"+c.at;if(!clips.urls.has(k))clips.urls.set(k,clipToUrl(c));return clips.urls.get(k)}
+function sayClip(key,text,o){if(!speech.on)return;const u=clipUrl(key);if(u){playUrl(u,o&&o.onEnd);return}say(text,o)}
+function sayClipLittle(key,text){if(me&&lvl()==="little")sayClip(key,text)}
+function gClips(B){
+  const c=el("div","rcard");c.append(el("h4",null,"Family voice clips"));
+  c.append(el("p","note","Record a grown-up saying these, and the game plays your voice instead of the reading voice. Up to 6 seconds each."));
+  if(!mail.ref){c.append(el("p","empty","Needs the internet."));B.append(c);return}
+  for(const [key,text] of CLIPS){
+    const row=el("div","cliprow"), d=clips.data[key];
+    row.innerHTML=`<span class="ctext">“${esc(text)}”</span><span class="cby">${d&&KIDS[d.by]?`${faceHTML(KIDS[d.by])} ${esc(KIDS[d.by].name)}`:"Reading voice"}</span>`;
+    const play=el("button","round","▶️");play.setAttribute("aria-label","Play");play.onclick=()=>{unlockAudio();sayClip(key,text)};
+    const rec=el("button","round","🎤");rec.setAttribute("aria-label","Record");
+    rec.onclick=async()=>{
+      if(rec._r){rec._r.stop();return}
+      try{rec._r=await startRecorder(6,s=>{rec.textContent=`⏹️`;rec.classList.add("off")})}catch(e){toast("The microphone is blocked.");return}
+      rec.textContent="⏹️";rec.classList.add("off");
+      const res=await rec._r.done; rec._r=null; rec.textContent="🎤"; rec.classList.remove("off");
+      if(!res){toast("That was too short. Try again.");return}
+      clips.ref.child(key).set({mime:res.mime,data:res.data,by:me||"",at:Date.now()}).then(()=>toast("Saved!")).catch(()=>toast("Couldn't save. Try again."));
+    };
+    row.append(play,rec);
+    if(d){const del=el("button","round","🗑️");del.setAttribute("aria-label","Use the reading voice");del.onclick=()=>armed("clip"+key,del,"Sure?",()=>clips.ref.child(key).remove());row.append(del)}
+    c.append(row);
+  }
+  B.append(c);
+}
+
+/* ================= #2 photo avatars ================= */
+const photos={ref:null};
+function faceHTML(K,cls="face"){return K&&K.photo?`<img class="${cls} facepic" src="${K.photo}" alt="">`:`<span class="${cls}">${K?K.face:""}</span>`}
+function photosConnect(){
+  if(!mail.ref)return;if(photos.ref)photos.ref.off();photos.ref=mail.ref.child("avatars");
+  photos.ref.on("value",s=>{const v=s.val()||{};
+    for(const k of Object.keys(KIDS)){const p=v[k];KIDS[k].photo=typeof p==="string"&&/^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(p)&&p.length<120000?p:null}
+    refreshFaces()},()=>{});
+}
+function refreshFaces(){
+  document.querySelectorAll("#pick [data-kid]").forEach(b=>{const K=KIDS[b.dataset.kid];const f=b.querySelector(".face");if(K&&f)f.outerHTML=faceHTML(K)});
+  if(typeof peopleSig!=="undefined")peopleSig="";
+  if(screen==="lobby")renderLobby(); if(screen==="game"&&game){renderSeats();renderZones()} if(screen==="grown")renderGrown(); if(screen==="inbox")renderInbox();
+  if(typeof renderVideoUI==="function")renderVideoUI();
+}
+function photoFromFile(file){return new Promise((res,rej)=>{const img=new Image();img.onload=()=>{const sz=Math.min(img.width,img.height),cv=document.createElement("canvas");cv.width=cv.height=192;
+  cv.getContext("2d").drawImage(img,(img.width-sz)/2,(img.height-sz)/2,sz,sz,0,0,192,192);URL.revokeObjectURL(img.src);res(cv.toDataURL("image/jpeg",.82))};img.onerror=rej;img.src=URL.createObjectURL(file)})}
+function photoFromCamera(){ // a still from the live camera, if it's on
+  const v=vid.els.get("me"); if(!v||!v.videoWidth) return null;
+  const sz=Math.min(v.videoWidth,v.videoHeight),cv=document.createElement("canvas");cv.width=cv.height=192;const t=cv.getContext("2d");
+  if(vid.facing!=="environment"){t.translate(192,0);t.scale(-1,1)}
+  t.drawImage(v,(v.videoWidth-sz)/2,(v.videoHeight-sz)/2,sz,sz,0,0,192,192);return cv.toDataURL("image/jpeg",.82);
+}
+function gPhotos(B){
+  const c=el("div","rcard");c.append(el("h4",null,"Photos"));
+  c.append(el("p","note","Give each person a photo. It shows instead of their emoji on every device. Photos stay in your family's own Firebase."));
+  if(!mail.ref){c.append(el("p","empty","Needs the internet."));B.append(c);return}
+  for(const k of Object.keys(KIDS)){const K=KIDS[k];
+    const row=el("div","inrow photorow");row.style.setProperty("--k",K.hue);
+    row.innerHTML=`${faceHTML(K,"face bigface")}<span class="nm">${esc(K.name)}</span>`;
+    const pick=el("label","ghost filebtn","📁 Choose");const inp=document.createElement("input");inp.type="file";inp.accept="image/*";inp.hidden=true;pick.append(inp);
+    inp.onchange=async()=>{const f=inp.files&&inp.files[0];if(!f)return;try{const d=await photoFromFile(f);await photos.ref.child(k).set(d);toast("Photo saved")}catch(e){toast("Couldn't use that photo")}};
+    const snap=el("button","ghost","📸 Use camera");snap.disabled=!vid.local;snap.onclick=()=>{const d=photoFromCamera();if(!d){toast("Turn the camera on first");return}photos.ref.child(k).set(d).then(()=>toast("Photo saved"))};
+    row.append(pick,snap);
+    if(K.photo){const del=el("button","ghost","Remove");del.onclick=()=>armed("ph"+k,del,"Tap again",()=>photos.ref.child(k).remove());row.append(del)}
+    c.append(row)}
+  B.append(c);
+}
+
+/* ================= #4 grown-ups can read any inbox ================= */
+let gInboxOpen=null, gInboxMsg=null;
+function gInboxRead(B,k){
+  const K=KIDS[k], back=el("button","ghost","⬅️ All inboxes");back.onclick=()=>{gInboxOpen=null;gInboxMsg=null;renderGrown()};B.append(back);
+  const c=el("div","rcard");B.append(c);
+  if(gInboxMsg){const m=gInboxMsg,F=kidOf(m.from);
+    c.innerHTML=`<div class="mhead" style="--k:${F.hue}">${faceHTML(F)}<span><b>From ${esc(F.name)}</b><small>to ${esc(K.name)} · ${esc(ago(m.at))}${m.read?" · read":" · not read yet"}</small></span></div>`;
+    const body=el("div","mcard");c.append(body);
+    if(m.kind==="sticker"){const s=el("div","bigsticker small");s.textContent=m.emoji||"⭐";body.append(s)}
+    else if(m.kind==="phrase"||m.kind==="text"||m.kind==="report"){const t=el("div","mtextbig"+(m.kind==="report"?" report":""));t.textContent=String(m.text||"").slice(0,1800);body.append(t)}
+    else if(m.kind==="react"){const t=el("div","mtextbig");t.textContent=`${m.r||"❤️"} ${reactLine(m)}`;body.append(t)}
+    else{const w=el("p","empty","Opening…");body.append(w);getBlob(m.blob||m.id).then(b=>{w.remove();if(!b){body.append(el("p","empty","Couldn't open."));return}
+      if(m.kind==="draw"&&Array.isArray(b.s)){const cv=document.createElement("canvas");cv.width=PAD;cv.height=PAD;cv.className="mdraw";drawStrokes(cv.getContext("2d"),b.s.filter(s=>s&&Array.isArray(s.p)),1);body.append(cv)}
+      else if(m.kind==="picture"&&typeof b.data==="string"&&b.data.startsWith("data:image/")){const i=new Image();i.src=b.data;i.className="mpic";body.append(i)}
+      else if(m.kind==="voice"&&typeof b.data==="string"){const a=voicePlayer(b);body.append(a.el)}
+      else if(m.kind==="story"){const g=normGift(b,Object.assign({},m,{id:m.id}));if(g){g.to=k;const r=el("button","bigbtn","📖 Read the story");r.onclick=()=>openReader(g,{preview:true,ret:"grown"});body.append(r)}}
+    })}
+    return;
+  }
+  c.append(el("h4",null,`${K.name}'s inbox`));
+  const list=inboxOf(k); if(!list.length){c.append(el("p","empty","No messages."));return}
+  const ul=el("div","mlist");
+  for(const m of list){const F=kidOf(m.from);const b=el("button","mrow"+(m.read?"":" unread"));b.style.setProperty("--k",F.hue);
+    b.innerHTML=`${faceHTML(F)}<span class="mmain"><b>${esc(F.name)}</b><span>${esc(msgPreview(m))}</span></span><span class="mtime">${esc(ago(m.at))}</span>`;
+    b.onclick=()=>{gInboxMsg=m;renderGrown()};ul.append(b)}
+  c.append(ul); c.append(el("p","note","Reading here doesn't mark anything as read for them."));
+}
+
+/* ================= #12 "Show it!" for Little players ================= */
+const showIt={t:null,left:0};
+function canShowIt(){return !!(vid.local&&(vid.cams||[]).length>1&&me&&lvl()==="little")}
+async function startShowIt(){
+  if(showIt.t||vid.flipping) return;
+  if(vid.facing!=="environment") await flipCamera();
+  showIt.left=20; syncShowIt();
+  showIt.t=setInterval(async()=>{showIt.left--;syncShowIt();if(showIt.left<=0){clearInterval(showIt.t);showIt.t=null;if(vid.facing==="environment")await flipCamera();syncShowIt()}},1000);
+}
+function syncShowIt(){
+  document.querySelectorAll(".showit").forEach(b=>{b.hidden=!canShowIt();b.textContent=showIt.t?`👀 ${showIt.left}`:"👀 Show it!";b.classList.toggle("on",!!showIt.t)});
 }
 
 /* ---------------- start ---------------- */
