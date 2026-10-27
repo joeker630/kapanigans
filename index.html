@@ -195,7 +195,7 @@ h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance;l
 .codechip b{font-family:var(--display);letter-spacing:.08em;color:var(--ink)}
 
 /* video bubble */
-.vid{position:fixed;z-index:35;right:max(16px,env(safe-area-inset-right,0px));top:calc(70px + env(safe-area-inset-top,0px));width:clamp(120px,22vw,220px);display:flex;flex-direction:column;gap:6px;touch-action:none}
+.vid{position:fixed;z-index:59;right:max(16px,env(safe-area-inset-right,0px));top:calc(70px + env(safe-area-inset-top,0px));width:clamp(120px,22vw,220px);display:flex;flex-direction:column;gap:6px;touch-action:none}
 .vframe{position:relative;aspect-ratio:4/3;border-radius:22px;overflow:hidden;background:var(--ink);border:5px solid var(--k,#fff);box-shadow:0 6px 18px rgba(43,33,64,.3);max-width:100%}
 .vframe video{width:100%;height:100%;object-fit:cover;display:block}
 .vme{position:absolute;right:6px;bottom:6px;width:34%;aspect-ratio:4/3;border-radius:10px;overflow:hidden;border:3px solid #fff;background:#000}
@@ -1875,7 +1875,8 @@ function tileFor(p,mine){
 function renderVideoUI(){
   if(screen==="lobby"&&typeof renderPeople==="function") renderPeople();
   const box=$("#vid"); if(!box) return;
-  const show=me&&["game","story","reader","inbox","farm"].includes(screen)&&(vid.local||vid.streams.size);
+  // always visible: everywhere except the home screen, which shows everyone's video on the people cards
+  const show=screen!=="lobby"&&!!(vid.local||vid.streams.size);
   box.hidden=!show; if(!show){if(screen==="game")requestAnimationFrame(fitBoard);return}
   box.classList.toggle("min",vid.min); box.classList.toggle("ingame",screen==="game");
   const tiles=$("#vTiles"); tiles.innerHTML="";
