@@ -731,7 +731,19 @@ Add a button to the video chat bubble to **flip between the iPad's front and bac
 
 ---
 
-## 13. 🆕 Bedtime Story 2.0: better art, write your own story, more animations
+## 13. 🛠️ Bedtime Story 2.0: better art, write your own story, more animations (B and C built Oct 27 with code-drawn scenes; A waits on art)
+
+**✅ Built Oct 27 (no image credits used)**
+- **✨ My own story** (Make a story → who it's for → ✨ My own story): a page editor that fits one screen. Up to 12 pages; add, delete and reorder pages.
+  - **13 scenes** drawn in code (starry night, bedroom, moonlit forest, castle, under the sea, outer space, cloud kingdom, farm at night, beach at sunset, snowy village, candy land, jungle, sunny meadow). Each scene id is the art slot for a generated background (`art/story/bg/<id>.webp`) from #14.
+  - **Characters and props:** 88 emoji in 4 groups, **family avatars** from the dressing room, **family cartoons** (#16 likeness art, read on demand from `families/<code>/art/family`), and **draw your own**. Drag to place, pinch or ➖➕ to resize, flip, bring to front, up to 8 per page.
+  - **22 moves** (bob, hop, wiggle, float, spin, sleepy, walk across, run, fly across, swim, bounce, twirl, wave, jump for joy, shiver, grow, shrink, peek in, pop in, fade away, sparkle, tiptoe), **path drawing** (the character follows a finger-drawn line), **5 feelings** (happy, sad, surprised, scared, love, each with an effect), and **start time** (right away, a bit later, or when tapped: "tap the dragon to wake it up"). Violet gets 12 moves as big picture buttons.
+  - **9 effects:** stars, shooting stars, snow, rain, fireflies, bubbles, leaves, hearts, sparkles.
+  - **Words:** Quinn and grown-ups type (story starter chips, 🎙️ talk-to-type where the browser supports it, 🔊 hear it). Violet **records her voice** per page or builds **picture sentences** (🦊 → 🤗 hugged → 🐶 = "The fox hugged the puppy."). Anyone can record a page.
+  - **Finish:** title (typed, or 4 suggestions for Violet), cover emoji, who reads it (reading voice, my recordings, no audio), preview, send. Arrives in the Inbox and plays in the reader like the template stories.
+  - **Drafts** save as you go to `families/<code>/drafts/<owner>/<id>` (+ `draftIndex`), listed on the Bedtime Story home ("Keep working on a story"). Grown-ups see the kids' drafts and can help; only the owner sends.
+  - **Kid-safe word filter** (`kidSafe()`): blocked words become "silly" in story words, titles, talk-to-type, typed blanks and typed Inbox notes.
+- Not yet: generated art (A, #14, #15), a smoothed line option and glow outline for drawings, page-turn animation and sound effects.
 
 Bedtime Story (#1) works, but the pictures are plain, kids can only fill in blanks in 3 templates, and there are only 6 simple moves. This upgrade makes it look like a real picture book, lets kids **write a whole story from scratch**, and adds many more animations.
 
@@ -950,6 +962,9 @@ Turn photos of family members into **high-resolution cartoon characters** (in th
 - ✅ **Game menu:** the placeholder cards are replaced with Bedtime Story, Kapanigan Farmstand and Inbox (marked Soon; tapping one says "Coming soon!").
 
 ## Done
+
+- **Inbox flow (Oct 27):** labeled back button (⬅️ Home / Inbox / Who / Back), Who → What → Send steps with a "To:" chip, ❤️ 🤗 😂 replies swap to "Sent to …!" with My inbox / Home, ➡️ Next message, and the sent screen offers My inbox / Send another / Home.
+- **iPad zoom (Oct 27):** no double-tap zoom on anything (fast taps still all count), text boxes 16px+ so focusing never zooms, and any zoom that slips through is undone after typing.
 
 - **How-to + FAQ popup on every screen (Oct 27):** `HELP` in index.html. Pops up every time a screen opens, one tap (Got it) to close, 🔊 reads the steps aloud, text shrinks to always fit one screen. Little level shows only the steps.
 

@@ -31,6 +31,9 @@ body{position:fixed;inset:0;width:100%;max-width:100vw;overflow:hidden;padding-t
 video{max-width:100%}
 body{height:100%;margin:0}
 [hidden]{display:none!important}
+/* iPad: no double-tap zoom anywhere (drawing surfaces keep their own touch-action:none); text boxes 16px+ so focusing never zooms */
+*{touch-action:manipulation}
+select,input,textarea{font-size:max(16px,1em)}
 /* drawing pages (bedtime story characters, inbox drawings): everything fits on one screen, no scrolling */
 .screen.drawing{overflow:hidden!important}
 .drawing .sbody{min-height:0;gap:8px;padding-bottom:4px}
@@ -470,6 +473,17 @@ h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance;l
 .animbtns button{background:var(--sky);border-radius:14px;padding:6px 4px;font-size:22px;line-height:1.1;border:3px solid transparent;min-width:58px}
 .animbtns button small{display:block;font-size:11px;font-weight:900;color:var(--ink-soft)}
 .animbtns button.on{background:var(--sun);border-color:var(--ink)}
+.backpill{width:auto!important;padding:0 16px 0 12px;gap:6px;display:flex;align-items:center;border-radius:999px!important;font-size:22px}
+.backpill span{font-size:17px;font-weight:800;font-family:var(--display)}
+.ibsteps{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center}
+.ibsteps span{background:var(--paper);border-radius:999px;padding:6px 14px;font-weight:800;font-size:15px;color:#8a809f}
+.ibsteps span.on{background:var(--sun);color:var(--ink)}.ibsteps span.done{color:var(--ink)}
+.tochip{background:var(--paper);border-radius:999px;padding:4px 14px 4px 6px;display:flex;align-items:center;gap:6px;font-weight:800;font-size:15px;box-shadow:0 3px 0 var(--sky-deep)}
+.tochip .em,.tochip .facepic,.tochip .avatarpic{width:30px;height:30px;font-size:22px}.tochip small{color:#7a6f92;font-size:12px}
+.nextsteps{flex-wrap:wrap;justify-content:center}
+.replylab{font-weight:800;font-size:16px;color:#5b5175}
+.reacted{width:100%;text-align:center;font-family:var(--display);font-size:28px;animation:popin .4s ease-out}
+.badge{background:#E5484D;color:#fff;border-radius:999px;padding:1px 8px;font-size:13px;margin-left:4px;vertical-align:middle}
 .sentbox{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
 .sentbox .gift{font-size:110px;animation:fly 1.6s ease-in forwards}
 @keyframes fly{0%{transform:scale(.6)}30%{transform:scale(1.15) rotate(-6deg)}60%{transform:scale(1) rotate(4deg)}100%{transform:translateY(-30vh) scale(.4);opacity:0}}
@@ -1971,7 +1985,18 @@ document.addEventListener("gesturestart",e=>e.preventDefault());
 document.addEventListener("touchmove",e=>{if(e.touches&&e.touches.length>1)e.preventDefault()},{passive:false});
 (()=>{const vp=document.querySelector('meta[name="viewport"]'),vv=window.visualViewport;if(!vp||!vv)return;const base=vp.content;let t=0;
   const unzoom=()=>{if(vv.scale>1.01){vp.content=base.replace("maximum-scale=1","maximum-scale=1.01");setTimeout(()=>{vp.content=base;window.scrollTo(0,0)},80)}};
-  vv.addEventListener("resize",()=>{clearTimeout(t);t=setTimeout(unzoom,500)})})();
+  vv.addEventListener("resize",()=>{clearTimeout(t);t=setTimeout(unzoom,500)});
+  document.addEventListener("focusout",()=>{clearTimeout(t);t=setTimeout(unzoom,300)});})();
+// fast tapping: Safari treats two quick taps as "double-tap to zoom". Swallow the second tap's zoom and still deliver its click,
+// so kids can tap buttons as fast as they like. Drawing surfaces, text boxes and the farm handle touches themselves.
+(()=>{let last=0,lastX=0,lastY=0;
+  document.addEventListener("touchend",e=>{
+    const now=Date.now(),t=e.changedTouches&&e.changedTouches[0]; if(!t||(e.touches&&e.touches.length)) {last=0;return}
+    const quick=now-last<350&&Math.hypot(t.clientX-lastX,t.clientY-lastY)<40; last=now;lastX=t.clientX;lastY=t.clientY;
+    if(!quick) return; const tg=e.target;
+    if(!(tg instanceof Element)||tg.closest("input,textarea,select,canvas,.cstage,.pad,#board,#farm .fwrap,[contenteditable]")) return;
+    e.preventDefault(); if(typeof tg.click==="function") tg.click(); else tg.dispatchEvent(new MouseEvent("click",{bubbles:true}));
+  },{passive:false});})();
 // lock sideways: iPad Safari can still pan the page left/right (rubber band, rotation, keyboard), so snap it back
 (()=>{const fix=()=>{if(window.scrollX||document.documentElement.scrollLeft||document.body.scrollLeft){window.scrollTo(0,window.scrollY);document.documentElement.scrollLeft=0;document.body.scrollLeft=0}};addEventListener("scroll",fix,{passive:true});addEventListener("resize",()=>setTimeout(fix,50));addEventListener("orientationchange",()=>setTimeout(fix,300));document.addEventListener("focusout",()=>setTimeout(fix,100))})();
 
@@ -3314,7 +3339,8 @@ const ib={view:"list",msg:null,to:null,kind:null,attach:null,rec:null};
 function openInbox(view,opts={}){ib.view=view||"list";ib.to=opts.to||null;ib.kind=opts.kind||null;ib.attach=opts.attach||null;ib.msg=null;show("inbox");renderInbox()}
 function ibGo(v){stopRec();ib.view=v;renderInbox();window.scrollTo(0,0)}
 $("#iHome").onclick=()=>{stopRec();hush();goLobby()};
-$("#iBack").onclick=()=>{hush();const back={list:null,read:"list",to:"list",what:"to",sticker:"what",phrase:"what",text:"what",draw:"what",voice:"what",sent:"list"}[ib.view];
+$("#iBack").onclick=()=>{hush();const back={list:null,read:"list",to:"list",what:ib.replyTo?"read":"to",sticker:"what",phrase:"what",text:"what",draw:"what",voice:"what",sent:"list"}[ib.view];
+  if(ib.view==="what"&&ib.replyTo){ib.msg=ib.replyTo;ib.replyTo=null;return ibGo("read")}
   if(ib.view==="to"&&ib.attach){ib.attach=null;return ibGo("list")} back?ibGo(back):(stopRec(),goLobby())};
 function msgPreview(m){
   return {sticker:`${m.emoji||"⭐"} Sticker`,phrase:`${m.emoji||"💬"} ${m.text||""}`,text:`💬 ${m.text||""}`,draw:"🖍️ A drawing",voice:`🎤 Voice message${m.dur?` (${m.dur}s)`:""}`,
@@ -3323,6 +3349,14 @@ function msgPreview(m){
 function renderInbox(){
   const B=$("#iBody"); B.innerHTML=""; B.classList.toggle("little-choices",lvl()==="little"); $("#inbox").classList.toggle("drawing",ib.view==="draw"); $("#inbox").scrollTop=0;
   const K=kidOf(me); $("#iTitle").textContent=`💌 ${K.name}'s Inbox`;
+  {const lab={list:"Home",read:"Inbox",to:"Inbox",what:"Who",sent:"Inbox"}[ib.view]||"Back";const b=$("#iBack");b.classList.add("backpill");b.innerHTML=`⬅️<span>${lab}</span>`;b.setAttribute("aria-label","Back to "+lab);$("#iHome").hidden=ib.view==="list"}
+  // sending is three steps: who, what, send. Show where you are and who it's for.
+  if(["to","what","sticker","phrase","text","draw","voice"].includes(ib.view)){
+    const n=ib.view==="to"?1:ib.view==="what"?2:3;
+    const bar=el("div","ibsteps");[["1","Who"],["2","What"],["3","Send"]].forEach(([i,l],j)=>bar.append(el("span",j+1===n?"on":j+1<n?"done":"",`${j+1<n?"✔️":i} ${l}`)));
+    if(ib.to&&n>1){const c=el("button","tochip",`To: ${ib.to==="all"?"👨‍👩‍👧‍👦 Everyone":`${faceHTML(KIDS[ib.to],"em")} ${esc(nameOf(ib.to))}`} <small>change</small>`);c.onclick=()=>ibGo("to");bar.append(c)}
+    B.append(bar);
+  }
   if(ib.view==="list"){
     const top=el("div","rowbtns");const nw=el("button","bigbtn","✏️ Send a message");nw.onclick=()=>{sayLittle("Who is it for?");ibGo("to")};top.append(nw);B.append(top);
     if(!mail.ref){B.append(el("p","empty","Messages need the internet. Check the Wi-Fi."));return}
@@ -3382,8 +3416,12 @@ function renderInbox(){
   else if(ib.view==="sent"){
     const who=ib.to==="all"?"everyone":nameOf(ib.to);
     B.append(el("div","sentbox",`<span class="gift">💌</span><h2>Sent to ${esc(who)}!</h2>`));
-    const row=el("div","rowbtns");const again=el("button","ghost","Send another");again.onclick=()=>ibGo("to");
-    const back=el("button","bigbtn","Back to my inbox");back.onclick=()=>ibGo("list");row.append(again,back);B.append(row);
+    ib.replyTo=null; const unread=unreadOf(me).filter(m=>m.kind!=="story").length;
+    const row=el("div","rowbtns nextsteps");
+    const back=el("button","bigbtn",unread?`📬 My inbox <span class="badge">${unread} new</span>`:"📬 My inbox");back.onclick=()=>{sayLittle("My inbox");ibGo("list")};
+    const again=el("button","ghost","✏️ Send another");again.onclick=()=>{sayLittle("Who is it for?");ibGo("to")};
+    const home=el("button","ghost","🏠 Home");home.onclick=()=>{hush();goLobby()};
+    row.append(back,again,home);B.append(row);
   }
 }
 function recipients(){return ib.to==="all"?Object.keys(KIDS).filter(k=>k!==me&&k!=="bear"&&k!=="fox"):[ib.to]}
@@ -3409,10 +3447,20 @@ function renderMsg(B,m){
       else card.append(el("p","empty","This message couldn't be opened."));});
   }
   const row=el("div","rowbtns replies");
-  if(m.kind!=="react") for(const r of ["❤️","🤗"]){const b=el("button","round big",r);b.onclick=()=>{sendMsg([m.from],{kind:"react",r,about:"message"});floatReaction(r,me);toast(`Sent to ${F.name}!`)};row.append(b)}
-  const back=el("button","bigbtn","↩️ Send one back");back.onclick=()=>{ib.to=m.from;ibGo("what");sayLittle("What do you want to send?")};row.append(back);
+  if(m.kind!=="react"){const rl=el("span","replylab",`Tell ${esc(F.name)}:`);row.append(rl);
+    for(const [r,w] of [["❤️","Love it"],["🤗","Hug"],["😂","Funny"]]){const b=el("button","round big",r);b.setAttribute("aria-label",w);b.onclick=()=>{sendMsg([m.from],{kind:"react",r,about:"message"});floatReaction(r,me);blip(880,.1,"triangle",.12);
+      // swap the buttons for a clear "sent" and where to go next
+      row.innerHTML="";row.className="rowbtns nextsteps";row.append(el("div","reacted",`${r} Sent to ${esc(F.name)}!`));nav.remove();addNext(row);say(`Sent to ${F.name}!`)};row.append(b)}}
+  const back=el("button","bigbtn","↩️ Send one back");back.onclick=()=>{ib.to=m.from;ib.replyTo=m;ibGo("what");sayLittle("What do you want to send?")};row.append(back);
   const del=el("button","round","🗑️");del.setAttribute("aria-label","Delete");del.onclick=()=>{deleteMsg(m);toast("Deleted");ibGo("list")};row.append(del);
   B.append(row);
+  const nav=el("div","rowbtns nextsteps");addNext(nav,true);B.append(nav);
+  function addNext(r,quiet){
+    const next=inboxOf(me).find(x=>!x.read&&x.id!==m.id&&x.kind!=="story");
+    if(next){const n=el("button",quiet?"ghost":"bigbtn",`➡️ Next message <span class="badge">${unreadOf(me).filter(x=>x.kind!=="story"&&x.id!==m.id).length}</span>`);n.onclick=()=>{ib.msg=next;ibGo("read")};r.append(n)}
+    const ib2=el("button",!quiet&&!next?"bigbtn":"ghost","📬 My inbox");ib2.onclick=()=>ibGo("list");r.append(ib2);
+    if(!quiet){const h=el("button","ghost","🏠 Home");h.onclick=()=>{hush();goLobby()};r.append(h)}
+  }
 }
 function voicePlayer(b){
   let url;try{const bin=atob(b.data);const u8=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u8[i]=bin.charCodeAt(i);url=URL.createObjectURL(new Blob([u8],{type:/^audio\/[\w.+-]+/.test(b.mime)?b.mime.split(";")[0]:"audio/mp4"}))}catch(e){url=""}
