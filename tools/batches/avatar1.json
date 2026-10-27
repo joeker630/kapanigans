@@ -5,55 +5,55 @@
  "items": {
   "hair/pigtails": {
    "prompt": "give the character two pigtails of pure white hair with bangs",
-   "zone": "head",
+   "zone": "hair",
    "white": true
   },
   "hair/short": {
    "prompt": "give the character short neat pure white hair",
-   "zone": "head",
+   "zone": "hair",
    "white": true
   },
   "hair/curly": {
    "prompt": "give the character a big round puff of curly pure white hair",
-   "zone": "head",
+   "zone": "hair",
    "white": true
   },
   "hair/ponytail": {
    "prompt": "give the character pure white hair with bangs on the forehead and one ponytail sticking out behind the head; the face stays fully visible",
-   "zone": "head",
+   "zone": "hair",
    "white": true,
    "seed": 57
   },
   "hair/bun": {
    "prompt": "give the character pure white hair covering the top of the head, pulled up into one big round bun on top",
-   "zone": "head",
+   "zone": "hair",
    "white": true,
    "seed": 57
   },
   "hair/braids": {
    "prompt": "give the character pure white hair covering the whole top of the head with a center part, and two long braids hanging down at the sides",
-   "zone": "head",
+   "zone": "hair",
    "white": true,
    "seed": 57
   },
   "hair/long": {
    "prompt": "give the character long straight pure white hair down past the shoulders",
-   "zone": "head",
+   "zone": "hair",
    "white": true
   },
   "hair/spiky": {
    "prompt": "give the character short spiky pure white hair",
-   "zone": "head",
+   "zone": "hair",
    "white": true
   },
   "hair/bob": {
    "prompt": "give the character a chin-length pure white bob haircut with bangs",
-   "zone": "head",
+   "zone": "hair",
    "white": true
   },
   "hair/buzz": {
    "prompt": "give the character a very short pure white buzz cut",
-   "zone": "head",
+   "zone": "hair",
    "white": true
   },
   "hat/straw": {
@@ -132,6 +132,34 @@
    "prompt": "add a big pure white hair bow on top of the character's head",
    "zone": "head",
    "white": true
+  },
+  "facehair/mustache": {
+   "prompt": "add a big bushy pure white mustache under the character's nose",
+   "zone": "hair",
+   "white": true
+  },
+  "facehair/beard": {
+   "prompt": "add a full rounded pure white beard covering the character's chin and cheeks, mouth still visible",
+   "zone": "hair",
+   "white": true
+  },
+  "facehair/goatee": {
+   "prompt": "add a small pure white goatee beard on the character's chin",
+   "zone": "hair",
+   "white": true
+  },
+  "facehair/stubble": {
+   "prompt": "add short pure white stubble on the character's jaw and chin",
+   "zone": "hair",
+   "white": true
+  },
+  "extra/sunglasses": {
+   "prompt": "add black sunglasses on the character's face",
+   "zone": "head"
+  },
+  "extra/squareglasses": {
+   "prompt": "add square black-rimmed glasses on the character's face",
+   "zone": "head"
   }
  }
 }

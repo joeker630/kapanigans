@@ -3114,7 +3114,7 @@ function syncShowIt(){
 
 /* ================= #10 AVATAR BUILDER =================
    Parts are drawn in code for now (same simple style as the farm farmer); generated art can replace them slot by slot later.
-   families/<CODE>/looks/<person> = {skin,face,hair,hairC,hat,hatC,outfit,clothC,glasses,freckles,cheeks,bow} */
+   families/<CODE>/looks/<person> = {skin,face,hair,hairC,hat,hatC,outfit,clothC,specs,beard,freckles,cheeks,bow,...} */
 const AV={
   skins:["#FBE0CC","#F5C9A5","#E3A97B","#C68642","#8D5524","#5A3A24"],
   hairCs:["#2B2140","#5A3A22","#8B5A2B","#B5651D","#E8C35A","#D9692B","#B8B8C0","#FF7EB6","#4DA3FF","#9B6BFF"],
@@ -3123,17 +3123,20 @@ const AV={
   hairs:[["short","Short"],["curly","Curly"],["pigtails","Pigtails"],["ponytail","Ponytail"],["bun","Bun"],["braids","Braids"],["long","Long"],["spiky","Spiky"],["bob","Bob"],["buzz","Buzz"]],
   hats:[["none","No hat"],["straw","Straw hat"],["cap","Cap"],["bonnet","Bonnet"],["flowers","Flower crown"],["beanie","Beanie"],["cowboy","Cowboy hat"],["crown","Crown"]],
   outfits:[["overalls","Overalls"],["dress","Farm dress"],["plaid","Plaid shirt"],["apron","Apron"],["tee","T-shirt"],["raincoat","Raincoat"]],
-  extras:[["glasses","Glasses","👓"],["freckles","Freckles","✨"],["cheeks","Rosy cheeks","🌸"],["bow","Bow","🎀"],["bandana","Bandana","🧣"],["boots","Rain boots","🥾"]],
+  specs:[["none","No glasses"],["round","Round glasses"],["square","Square glasses"],["sun","Sunglasses"]],
+  beards:[["none","No beard"],["mustache","Mustache"],["beard","Beard"],["goatee","Goatee"],["stubble","Stubble"]],
+  extras:[["freckles","Freckles","✨"],["cheeks","Rosy cheeks","🌸"],["bow","Bow","🎀"],["bandana","Bandana","🧣"],["boots","Rain boots","🥾"]],
 };
 const INKC="#2B2140";
 function shade(hex,a){const n=parseInt(hex.slice(1),16);let r=n>>16&255,g=n>>8&255,b=n&255;const f=a<0?0:255,t=Math.abs(a);r=Math.round(r+(f-r)*t);g=Math.round(g+(f-g)*t);b=Math.round(b+(f-b)*t);return`rgb(${r},${g},${b})`}
 function defaultLook(k){const K=KIDS[k]||{},h=[...String(k)].reduce((a,c)=>a*31+c.charCodeAt(0)>>>0,7);
-  return {skin:h%6,face:"happy",hair:AV.hairs[h%10][0],hairC:(h>>3)%6,hat:k==="violet"?"flowers":"none",hatC:6,outfit:"overalls",clothC:Math.max(0,AV.clothCs.indexOf(K.hue)),glasses:false,freckles:false,cheeks:true,bow:false}}
+  return {skin:h%6,face:"happy",hair:AV.hairs[h%10][0],hairC:(h>>3)%6,hat:k==="violet"?"flowers":"none",hatC:6,outfit:"overalls",clothC:Math.max(0,AV.clothCs.indexOf(K.hue)),specs:"none",beard:"none",freckles:false,cheeks:true,bow:false}}
 function cleanLook(v){
   if(!v||typeof v!=="object") return null; if(v.outfit==="hoodie") v=Object.assign({},v,{outfit:"tee"}); const has=(list,x)=>list.some(o=>o[0]===x), idx=(n,max)=>Number.isInteger(n)&&n>=0&&n<max;
   const L={skin:idx(v.skin,6)?v.skin:1,face:has(AV.faces,v.face)?v.face:"happy",hair:has(AV.hairs,v.hair)?v.hair:"short",hairC:idx(v.hairC,AV.hairCs.length)?v.hairC:1,
     hat:has(AV.hats,v.hat)?v.hat:"none",hatC:idx(v.hatC,AV.clothCs.length)?v.hatC:0,outfit:has(AV.outfits,v.outfit)?v.outfit:"overalls",clothC:idx(v.clothC,AV.clothCs.length)?v.clothC:4};
   for(const [x] of AV.extras) L[x]=!!v[x];
+  L.specs=has(AV.specs,v.specs)?v.specs:(v.glasses?"round":"none"); L.beard=has(AV.beards,v.beard)?v.beard:"none"; L.glasses=L.specs!=="none";
   return L;
 }
 let avSeq=0;
@@ -3226,7 +3229,7 @@ function setLook(patch){Object.assign(dr.look,patch);blip(600,.05);saveLook();re
 function renderDress(){
   const L=dr.look, little=lvl()==="little", K=kidOf(me);
   $("#dPreview").innerHTML=`<img src="${avatarURL(cleanLook(L),"full")}" alt="">`; $("#dName").textContent=K.name;
-  const tabs=[["skin","✋","Skin"],["face","😊","Face"],["hair","💇","Hair"],["hat","👒","Hat"],["clothes","👕","Clothes"]].concat(little?[]:[["extras","👓","Extras"]]);
+  const tabs=[["skin","✋","Skin"],["face","😊","Face"],["hair","💇","Hair"],["hat","👒","Hat"],["clothes","👕","Clothes"],["specs","👓","Glasses"]].concat(little?[]:[["beard","🧔","Beard"],["extras","✨","Extras"]]);
   const T=$("#dTabs");T.innerHTML="";for(const [id,e,l] of tabs){const b=el("button",dr.tab===id?"on":"",`<span>${e}</span>${l}`);b.onclick=()=>{dr.tab=id;blip(520,.05);renderDress()};T.append(b)}
   const O=$("#dOpts");O.innerHTML="";O.className="dopts"+(little?" little":"");
   const tile=(patch,label,on)=>{const t=el("button","dtile"+(on?" on":""),`<img src="${avatarURL(cleanLook(Object.assign({},L,patch)),"full")}" alt="">`+`<small>${esc(label)}</small>`);t.onclick=()=>setLook(patch);t.setAttribute("aria-label",label);return t};
@@ -3237,13 +3240,15 @@ function renderDress(){
   if(dr.tab==="hair"){O.append(dots(AV.hairCs,"hairC","Hair color"));AV.hairs.forEach(([k,l])=>grid.append(tile({hair:k},l,L.hair===k)))}
   if(dr.tab==="hat"){O.append(dots(AV.clothCs,"hatC","Hat color"));AV.hats.forEach(([k,l])=>grid.append(tile({hat:k},l,L.hat===k)))}
   if(dr.tab==="clothes"){O.append(dots(AV.clothCs,"clothC","Clothes color"));AV.outfits.forEach(([k,l])=>grid.append(tile({outfit:k},l,L.outfit===k)))}
+  if(dr.tab==="specs") AV.specs.forEach(([k,l])=>grid.append(tile({specs:k},l,(L.specs||"none")===k)));
+  if(dr.tab==="beard"){O.append(dots(AV.hairCs,"hairC","Beard color (same as hair)"));AV.beards.forEach(([k,l])=>grid.append(tile({beard:k},l,(L.beard||"none")===k)))}
   if(dr.tab==="extras") AV.extras.forEach(([k,l])=>grid.append(tile({[k]:!L[k]},`${L[k]?"Take off":"Add"} ${l.toLowerCase()}`,L[k])));
   O.append(grid);
 }
 $("#dDone").onclick=()=>{blip(880,.12,"triangle");tada();goLobby()};
 $("#dBack").onclick=()=>goLobby();
 $("#dDice").onclick=()=>{const r=n=>Math.floor(Math.random()*n);
-  setLook({skin:dr.look.skin,face:AV.faces[r(6)][0],hair:AV.hairs[r(10)][0],hairC:r(AV.hairCs.length),hat:AV.hats[r(8)][0],hatC:r(12),outfit:AV.outfits[r(6)][0],clothC:r(12),glasses:r(4)===0,freckles:r(3)===0,cheeks:r(2)===0,bow:r(4)===0,bandana:r(5)===0,boots:r(3)===0})};
+  setLook({skin:dr.look.skin,face:AV.faces[r(6)][0],hair:AV.hairs[r(10)][0],hairC:r(AV.hairCs.length),hat:AV.hats[r(8)][0],hatC:r(12),outfit:AV.outfits[r(6)][0],clothC:r(12),specs:r(4)===0?AV.specs[1+r(3)][0]:"none",beard:lvl()!=="little"&&r(5)===0?AV.beards[1+r(4)][0]:"none",freckles:r(3)===0,cheeks:r(2)===0,bow:r(4)===0,bandana:r(5)===0,boots:r(3)===0})};
 
 /* ---- generated avatar art (art/avatar/, isometric sprite style) ----
    Every file is a 320×320 layer at the same spot: base → outfit → feet → hair → hat → extras.
@@ -3251,8 +3256,9 @@ $("#dDice").onclick=()=>{const r=n=>Math.floor(Math.random()*n);
 const AVART={imgs:{},ready:false,failed:false,skinCache:{},cache:new Map(),sprites:new Map()};
 const AVFILES=["base","outfit/overalls","outfit/dress","outfit/shirt","outfit/apron","outfit/bandana","outfit/raincoat","feet/rainboots",
   "hair/pigtails","hair/short","hair/curly","hair/ponytail","hair/bun","hair/braids","hair/long","hair/spiky","hair/bob","hair/buzz",
-  "hat/straw","hat/cap","hat/bonnet","hat/flowercrown","hat/beanie","hat/cowboy","hat/crown","extra/glasses","extra/bow"];
-const AV_KEEP=new Set(["hat/straw","hat/flowercrown","hat/cowboy","hat/crown","extra/glasses"]); // keep their own colors
+  "hat/straw","hat/cap","hat/bonnet","hat/flowercrown","hat/beanie","hat/cowboy","hat/crown","extra/glasses","extra/squareglasses","extra/sunglasses","extra/bow",
+  "facehair/mustache","facehair/beard","facehair/goatee","facehair/stubble"];
+const AV_KEEP=new Set(["hat/straw","hat/flowercrown","hat/cowboy","hat/crown","extra/glasses","extra/squareglasses","extra/sunglasses"]); // keep their own colors
 (function loadAvatarArt(){
   let left=AVFILES.length;
   for(const f of AVFILES){const im=new Image();im.onload=()=>{AVART.imgs[f]=im;if(--left===0){AVART.ready=true;applyLooks();refreshFaces();if(screen==="dress")renderDress()}};
@@ -3306,8 +3312,9 @@ function avatarCanvas(L){
   if(L.boots) g.drawImage(tinted(A["feet/rainboots"],ht),0,0);
   if(L.bandana) g.drawImage(tinted(A["outfit/bandana"],ht),0,0);
   drawFace(g,L);
+  if(L.beard&&L.beard!=="none"&&A["facehair/"+L.beard]) g.drawImage(tinted(A["facehair/"+L.beard],hc),0,0);
   const hairFile="hair/"+L.hair; if(A[hairFile]) g.drawImage(tinted(A[hairFile],hc),0,0);
-  if(L.glasses) g.drawImage(A["extra/glasses"],0,0);
+  const specFile={round:"extra/glasses",square:"extra/squareglasses",sun:"extra/sunglasses"}[L.specs]; if(specFile&&A[specFile]) g.drawImage(A[specFile],0,0);
   if(L.hat!=="none"){const f="hat/"+(L.hat==="flowers"?"flowercrown":L.hat);if(A[f])g.drawImage(AV_KEEP.has(f)?A[f]:tinted(A[f],ht),0,0)}
   if(L.bow) g.drawImage(tinted(A["extra/bow"],L.hat==="none"?"#FF5FA2":ht),0,0);
   return c;

@@ -26,6 +26,60 @@
   "cutout": true,
   "made": "2026-10-27"
  },
+ "avatar/extra/squareglasses": {
+  "file": "art/avatar/extra/squareglasses.webp",
+  "w": 320,
+  "h": 320,
+  "prompt": "add square black-rimmed glasses on the character's face",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-27"
+ },
+ "avatar/extra/sunglasses": {
+  "file": "art/avatar/extra/sunglasses.webp",
+  "w": 320,
+  "h": 320,
+  "prompt": "add black sunglasses on the character's face",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-27"
+ },
+ "avatar/facehair/beard": {
+  "file": "art/avatar/facehair/beard.webp",
+  "w": 320,
+  "h": 320,
+  "prompt": "add a full rounded pure white beard covering the character's chin and cheeks, mouth still visible",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-27"
+ },
+ "avatar/facehair/goatee": {
+  "file": "art/avatar/facehair/goatee.webp",
+  "w": 320,
+  "h": 320,
+  "prompt": "add a small pure white goatee beard on the character's chin",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-27"
+ },
+ "avatar/facehair/mustache": {
+  "file": "art/avatar/facehair/mustache.webp",
+  "w": 320,
+  "h": 320,
+  "prompt": "add a big bushy pure white mustache under the character's nose",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-27"
+ },
+ "avatar/facehair/stubble": {
+  "file": "art/avatar/facehair/stubble.webp",
+  "w": 320,
+  "h": 320,
+  "prompt": "add short pure white stubble on the character's jaw and chin",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-27"
+ },
  "avatar/feet/rainboots": {
   "file": "art/avatar/feet/rainboots.webp",
   "w": 320,
@@ -298,7 +352,7 @@
  },
  "iso/farm/carrot/growing": {
   "file": "art/iso/farm/carrot/growing.webp",
-  "w": 235,
+  "w": 234,
   "h": 256,
   "prompt": "a young carrot plant with a few short green leaves in a small round mound of brown soil, no orange visible",
   "model": "klein",
@@ -317,7 +371,7 @@
  "iso/farm/carrot/sprout": {
   "file": "art/iso/farm/carrot/sprout.webp",
   "w": 256,
-  "h": 242,
+  "h": 243,
   "prompt": "a tiny green sprout with two small round leaves poking out of a small square mound of brown soil, nothing else",
   "model": "klein",
   "cutout": true,
@@ -344,7 +398,7 @@
  "iso/farm/cow/sleep": {
   "file": "art/iso/farm/cow/sleep.webp",
   "w": 256,
-  "h": 171,
+  "h": 167,
   "prompt": "Edit the reference image: the animal lies down flat on its belly on the ground with its legs folded and tucked under its body, head resting low, eyes closed, sleeping, keep the exact same character, colors, proportions and style as the reference image",
   "model": "klein",
   "cutout": true,
@@ -388,7 +442,7 @@
  },
  "iso/farm/hen/stand": {
   "file": "art/iso/farm/hen/stand.webp",
-  "w": 210,
+  "w": 211,
   "h": 256,
   "prompt": "hen, standing, body facing toward the bottom left",
   "model": "klein",
@@ -397,7 +451,7 @@
  },
  "iso/farm/pig/back": {
   "file": "art/iso/farm/pig/back.webp",
-  "w": 221,
+  "w": 222,
   "h": 256,
   "prompt": "Edit the reference image: turn the animal around 180 degrees so it faces away from the viewer toward the top right; show its rear, tail and back, the face is hidden, walking away, keep the exact same character, colors, proportions and style as the reference image",
   "model": "klein",
@@ -406,7 +460,7 @@
  },
  "iso/farm/pig/eat": {
   "file": "art/iso/farm/pig/eat.webp",
-  "w": 211,
+  "w": 212,
   "h": 256,
   "prompt": "Edit the reference image: the pig bends down and pushes its snout into a small pile of yellow corn on the ground in front of it, head low, eating, keep the exact same character, colors, proportions and style as the reference image",
   "model": "klein",
@@ -416,7 +470,7 @@
  "iso/farm/pig/sleep": {
   "file": "art/iso/farm/pig/sleep.webp",
   "w": 256,
-  "h": 214,
+  "h": 196,
   "prompt": "Edit the reference image: the animal lies down flat on its belly on the ground with its legs folded and tucked under its body, head resting low, eyes closed, sleeping, keep the exact same character, colors, proportions and style as the reference image",
   "model": "klein",
   "cutout": true,
@@ -442,7 +496,7 @@
  },
  "iso/farm/pumpkin/ripe": {
   "file": "art/iso/farm/pumpkin/ripe.webp",
-  "w": 223,
+  "w": 222,
   "h": 256,
   "prompt": "a big round orange pumpkin on a short green vine with leaves, fully grown and ripe, growing in a small mound of brown soil",
   "model": "klein",
@@ -460,7 +514,7 @@
  },
  "iso/farm/sheep/back": {
   "file": "art/iso/farm/sheep/back.webp",
-  "w": 229,
+  "w": 241,
   "h": 256,
   "prompt": "the same animal seen from behind, walking away toward the top right, back view, face not visible, keep the exact same character, colors, proportions and style as the reference image",
   "model": "klein",
@@ -469,8 +523,8 @@
  },
  "iso/farm/sheep/eat": {
   "file": "art/iso/farm/sheep/eat.webp",
-  "w": 244,
-  "h": 256,
+  "w": 256,
+  "h": 250,
   "prompt": "Edit the reference image: the animal lowers its head all the way down so its mouth touches the grass, eating, body still facing the bottom left, keep the exact same character, colors, proportions and style as the reference image",
   "model": "klein",
   "cutout": true,
@@ -479,7 +533,7 @@
  "iso/farm/sheep/sheared": {
   "file": "art/iso/farm/sheep/sheared.webp",
   "w": 256,
-  "h": 243,
+  "h": 244,
   "prompt": "Edit the reference image: the same sheep after its wool has been sheared off, slim body with short smooth pale fuzz, same face, legs and colors, keep the exact same character, colors, proportions and style as the reference image",
   "model": "klein",
   "cutout": true,
@@ -488,7 +542,7 @@
  "iso/farm/sheep/sleep": {
   "file": "art/iso/farm/sheep/sleep.webp",
   "w": 256,
-  "h": 205,
+  "h": 192,
   "prompt": "Edit the reference image: the animal lies down flat on its belly on the ground with its legs folded and tucked under its body, head resting low, eyes closed, sleeping, keep the exact same character, colors, proportions and style as the reference image",
   "model": "klein",
   "cutout": true,
@@ -496,8 +550,8 @@
  },
  "iso/farm/sheep/stand": {
   "file": "art/iso/farm/sheep/stand.webp",
-  "w": 255,
-  "h": 256,
+  "w": 256,
+  "h": 241,
   "prompt": "sheep, standing, body facing toward the bottom left",
   "model": "klein",
   "cutout": true,

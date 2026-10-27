@@ -217,8 +217,36 @@ def isobatch(path, a):
 
 
 AV_STYLE = ISO.replace("plain solid flat light grey background", "plain solid flat medium grey background")
-AV_ZONES = {"head": (0, .56), "torso": (.45, .88), "feet": (.80, 1.0), "face": (.15, .56), "all": (0, 1)}
+AV_ZONES = {"hair": (0, .74), "head": (0, .56), "torso": (.45, .88), "feet": (.80, 1.0), "face": (.15, .56), "all": (0, 1)}
 AV_FRAME = 320
+
+
+def solid_cut(raw):
+    """Full-frame cutout with no see-through patches: background = edge-connected pixels
+    close to the flat background colour; everything enclosed is solid."""
+    import numpy as np
+    from PIL import Image
+    from scipy.ndimage import label, binary_fill_holes, binary_opening, gaussian_filter
+    rgb = np.array(Image.open(io.BytesIO(raw)).convert("RGB")).astype(int)
+    bgc = np.median(np.concatenate([rgb[0], rgb[-1], rgb[:, 0], rgb[:, -1]]), axis=0)
+    near = np.abs(rgb - bgc).max(axis=2) < 14
+    lab, _ = label(near)
+    edge = set(np.unique(np.concatenate([lab[0], lab[-1], lab[:, 0], lab[:, -1]]))) - {0}
+    fg = binary_fill_holes(~np.isin(lab, list(edge)))
+    # drop the soft ground shadow: neutral grey, darker than the background, in the bottom fifth
+    ys = np.where(fg.any(axis=1))[0]
+    if len(ys):
+        low = np.zeros_like(fg); low[int(ys.max() - (ys.max() - ys.min()) * .35):] = True
+        mx, mn = rgb.max(axis=2), rgb.min(axis=2)
+        shadow = low & (mx - mn < 20) & (mx < bgc.max() - 3) & (mx > 90)
+        fg = binary_fill_holes(fg & ~shadow)   # enclosed grey (fur shading) comes back; open shadow stays gone
+    fg = binary_opening(fg, iterations=2)
+    lab2, k = label(fg)
+    if k:
+        sz = np.bincount(lab2.ravel()); sz[0] = 0; fg = (sz > sz.max() * .05)[lab2]
+    a = np.clip(gaussian_filter(fg.astype(float), .8) * 255, 0, 255)
+    a = np.where(fg, 255, a).astype("uint8")
+    return Image.fromarray(np.dstack([rgb, a]).astype("uint8"), "RGBA")
 
 
 def _layer(raw, base_raw, zone, white):
@@ -263,8 +291,7 @@ def avatar(path, a):
         bp.write_bytes(generate(spec["base"], "klein", None, spec.get("seed", 31), AV_STYLE))
     base_raw = bp.read_bytes()
     if not (ART / "avatar/base.webp").exists():
-        from rembg import remove, new_session
-        cut = remove(Image.open(io.BytesIO(base_raw)).convert("RGBA"), session=new_session("isnet-general-use"))
+        cut = solid_cut(base_raw)
         save("avatar/base", spec["base"], "klein", _frame(cut), (AV_FRAME, AV_FRAME), False)
         print("✓ art/avatar/base.webp")
     made = 0

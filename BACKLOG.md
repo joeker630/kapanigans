@@ -636,6 +636,10 @@ Build the **simple parts for the avatar builder** (#3 farmer avatars, used as ev
   - Pet dog, cat and duckling, as isometric pose sets like the farm animals (via `genart.py poses`).
   - Back views, if the farmer should show its back when walking away (about 27 images).
   - Do these on a later day: the 7 PM art budget tonight goes to farm Batch A.
+- ✅ **Added Oct 27:**
+  - **Glasses tab** for everyone: none, round, square or sunglasses (`specs` in a look; old `glasses: true` reads as round).
+  - **Beard tab** for Big players and grown-ups: mustache, beard, goatee or stubble, colored like the hair (`beard` in a look).
+  - **Fixes:** the base body was partly see-through (the grass showed through the shirt), and the farm animals' white patches (the cow's face, the sheep's wool) were too. All are now solid, with the baked-in grey ground shadows removed. Long hair, braids and ponytails no longer stop flat at the neck.
 - **New parts:** add to `tools/batches/avatar1.json` and run `python3 tools/genart.py avatar tools/batches/avatar1.json` (skips what's made). Each part is generated as an edit of the base, then cut out by comparing it to the base, which is why every layer lines up.
 
 **Acceptance criteria**
