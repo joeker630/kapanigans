@@ -541,6 +541,32 @@ Make sure the same person (for example Quinn) can't be signed in on two devices 
 
 ---
 
+## 12. 🆕 Switch camera: front or back
+
+Add a button to the video chat bubble to **flip between the iPad's front and back cameras**, so a kid can show the other person something (a drawing on paper, a toy, the dog) and then flip back to their face.
+
+**Today:** the video always uses the front camera (`facingMode: "user"`).
+
+**How it works**
+- A **flip camera button** (🔄) in the video bubble, next to mute and camera-off. It's big enough for Violet, and reads "Flip camera" aloud for Little players.
+- Tapping it switches cameras **without dropping the call**: the new camera's video is swapped into the live connection (`replaceTrack`), so the other person just sees the picture change.
+- The iPad can only use one camera at a time, so the old camera is turned off first, then the new one starts. There's a brief fade during the swap.
+- **Your own small preview** is mirrored for the front camera (like a mirror) and not mirrored for the back camera, so text and drawings read the right way.
+- The choice resets to the front camera at the start of each new call.
+- On a device with only one camera, the button is hidden.
+
+**Acceptance criteria**
+- [ ] The flip button switches between front and back cameras on iPad and iPhone
+- [ ] The call stays connected and the other person sees the new view within about a second
+- [ ] Mute and camera-off still work after flipping
+- [ ] The self-view is mirrored only for the front camera
+- [ ] The button is hidden on devices with one camera
+
+**🔍 Decisions needed**
+- Should there also be a quick "Show it!" button for Little players that flips to the back camera, then flips back automatically after about 20 seconds?
+
+---
+
 ## Shared groundwork (needed by #1, #3, #4, #5 and #8)
 
 - ✅ **Art kit: decided on Cloudflare Workers AI (free) + `tools/genart.py`.** Claude generates art on request and pushes it to `art/` in this repo (served by GitHub Pages).
