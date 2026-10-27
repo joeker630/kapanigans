@@ -3546,6 +3546,8 @@ function coopComplete(sid){
   coopTx(sid+"/status",st=>st==="playing"?"done":undefined).then(ok=>{if(!ok)return;const s=CO.sess[sid];const C=s&&COOP_CHORES[s.chore];if(C)C.finish(s)})
 }
 // Quinn's 5-in-a-row bonus (called by finishTask)
+// bonus Moolah for longer puzzles (called by finishTask)
+function farmPuzzleBonus(n){if(me&&n>0)fUpd({["jars/"+me]:INC(n)})}
 function farmStreakBonus(){if(screen==="farm"&&me){fUpd({["jars/"+me]:INC(2)});toast("🔥 5 in a row! +2 🪙")}}
 
 /* ---- farmer avatars: everyone on the farm walks around as their own farmer, and everyone sees everyone ----
@@ -3777,7 +3779,11 @@ function pickType(types){
 
 /* ---------------- task engine ---------------- */
 var tk=null; // var, not let: show() looks at it and can run before this line
-function roundsFor(type,L){if(type==="money")return L==="little"?1:2;return ["count","letters","color","pattern"].includes(type)?(L==="little"?2:3):(type==="trace"&&L!=="little"?2:1)}
+// One problem per puzzle, then back to the farm (several rounds in a row made the farm feel like homework).
+function roundsFor(type,L){return 1}
+// Longer puzzles pay more: a Moolah bonus on top of the chore's normal reward (0, +1 or +2).
+const PUZZLE_SIZE={big:{count:1,letters:1,color:1,pattern:1,money:1,memory:2,trace:2,build:3,jigsaw:3},little:{count:1,letters:1,color:1,pattern:1,money:1,memory:2,trace:2,build:2,jigsaw:2}};
+function puzzleBonus(my){return Math.max(0,((PUZZLE_SIZE[my.lvl==="little"?"little":"big"]||{})[my.type]||1)-1)}
 function openTask(o){
   if(tk) closeTask(false);
   tk=Object.assign({round:0,rounds:roundsFor(o.type,o.lvl),wrong:0,hinted:false,t0:Date.now(),fx:[],store:{},ctx:{}},o);
@@ -3828,6 +3834,8 @@ function finishTask(){
       (sk.full?`<p class="tbonus">5 in a row!${typeof farmStreakBonus==="function"&&screen==="farm"?" +2 🪙":""}</p>`:`<p class="tsmall">${sk.n} in a row</p>`);
     if(sk.full){setTimeout(()=>{if(tk===my)say("Five in a row! Super farmer!")},1100);if(typeof farmStreakBonus==="function")farmStreakBonus()}
   }
+  const bonus=screen==="farm"&&typeof farmPuzzleBonus==="function"?puzzleBonus(my):0;
+  if(bonus){farmPuzzleBonus(bonus);extra+=`<p class="tbonus">Big puzzle bonus +${bonus} 🪙</p>`}
   $("#tArea").append(el("div","tdone",`<span class="em">🎉</span><h2>${esc(msg)}</h2>${extra}${my.reward?`<p>${esc(my.reward)}</p>`:""}`));
   setTimeout(()=>{if(tk!==my)return;closeTask(false);my.onWin&&my.onWin()},my.lvl!=="little"?2400:1700);
 }
@@ -4417,7 +4425,8 @@ function moneySale(api){
   return api.store.sale={lines,total:tot(lines)};
 }
 const saleSay=lines=>lines.map(([k,n])=>`${NUMW[n]||n} ${n===1?GOODS[k].name:GOODS[k].names}`).join(" and ");
-TASKS.money=api=>{const sale=moneySale(api);(api.L?moneyTap:api.round===0?moneyAdd:moneyChange)(api,sale)};
+let moneyFlip=Math.random()<.5;
+TASKS.money=api=>{const sale=moneySale(api);if(api.L)return moneyTap(api,sale);moneyFlip=!moneyFlip;(moneyFlip?moneyAdd:moneyChange)(api,sale)}; // Big: one problem, adding up or making change, taking turns
 function moneyTap(api,sale){
   const [k,n]=sale.lines[0],G=GOODS[k];let got=0;
   const m=sale.lines[0][1];
@@ -4512,7 +4521,7 @@ function openFarm(){if(!me){goLobby();return}if(!fm.cv)farmInit();farmConnect();
 $("#fHome").onclick=()=>{closeSheet();hush();goLobby()};
 $("#fBack").onclick=()=>{closeSheet();hush();goLobby()};
 $("#playFarm").onclick=()=>{sayLittle("Kapanigan Farmstand");openFarm()};
-if(/[?&]farmlocal\b/.test(location.search))window.__farm={F,fm,FW,openBank,bankPut,farmZoomTo,fwWalk,farmTapAt:(i,j)=>{const p=fIso(i,j),r=fm.cv.getBoundingClientRect(),d=fm.cv.width/r.width;farmTap({clientX:r.left+p.x/d,clientY:r.top+p.y/d})},CO,coopUpd,coopTick,startTeam,joinTeam,tk:()=>tk,tapPlot,tapAnimal,tapStruct,openStore,openOrders,openJar,openSell,buyIt,storeItems,deliver,sendGift,win:finishTask,quit:()=>closeTask(true)}; // testing only
+if(/[?&]farmlocal\b/.test(location.search))window.__farm={openTask,TASK_TYPES,F,fm,FW,openBank,bankPut,farmZoomTo,fwWalk,farmTapAt:(i,j)=>{const p=fIso(i,j),r=fm.cv.getBoundingClientRect(),d=fm.cv.width/r.width;farmTap({clientX:r.left+p.x/d,clientY:r.top+p.y/d})},CO,coopUpd,coopTick,startTeam,joinTeam,tk:()=>tk,tapPlot,tapAnimal,tapStruct,openStore,openOrders,openJar,openSell,buyIt,storeItems,deliver,sendGift,win:finishTask,quit:()=>closeTask(true)}; // testing only
 })();
 </script>
 </body>

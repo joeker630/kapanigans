@@ -124,6 +124,11 @@ A **live co-op farm** the kids share. Every farm action is done by solving a sho
     - Every deposit and every bank purchase goes in the **ledger** (who, what, how much, when), with totals put in and spent per person.
     - Data: `farm/bank` is the balance; `farm/ledger/<id>` = `{at, who, kind: in|out, amt, what}`.
   - Fixed: the farm's ⬅️ and 🏠 buttons had stopped working (lost in the v2 merge).
+- **One problem per puzzle (Oct 27):** every puzzle is a single round now (`roundsFor()` returns 1). That covers counting, letters, colors and patterns (were 2–3 rounds) and Big tracing (was 2). Big's money puzzle takes turns between adding up and making change.
+  - **Longer puzzles pay more:** a Moolah bonus on top of the chore's reward, shown on the 🎉 screen ("Big puzzle bonus +2 🪙"). See `PUZZLE_SIZE`:
+    - Big: memory +1, tracing +1, jigsaw +2, building shapes +2.
+    - Little: memory, tracing, jigsaw and building shapes +1 each.
+    - Quick ones (counting, letters, colors, patterns, money) +0.
 - **Ready to use:** `farmPuzzle()` to put a puzzle in front of any farm action, `logAttempt()` for the grown-up dashboard (#8), `say()` / `sayLittle()` read-aloud, Firebase under `families/<code>/`, and `tools/genart.py` for isometric art.
 
 ### 🧩 Every action is a puzzle
