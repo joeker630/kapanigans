@@ -145,6 +145,7 @@ A **live co-op farm** the kids share. Every farm action is done by solving a sho
   - In each slot an animal strolls from one waypoint to the next, then grazes, stands or naps. The waypoints and the activity come from a seeded "random" based on the animal's id and the slot number.
   - Waypoints stay near each animal's own home spot in the pasture, so they spread out.
   - Every device computes the same answer and nothing extra is synced. Eating after being fed is a short local animation on top.
+- **Spaced-out crop plots (Oct 27):** plots sit 1.75 tiles apart (`FIELD_GAP`), with grass between them, so tall plants don't cover their neighbors and each plot is its own tap target. The field now takes up 4.5 × 9.75 tiles (it still moves as one piece), and three default decoration spots moved just outside it.
 - **Seeds are bought and used up (Oct 27):** seeds work like decorations, a repeat purchase at the Farm Store, instead of a one-time unlock.
   - Packs: 3 carrot 🪙1, 3 tomato 🪙3, 3 strawberry 🪙3, 3 corn 🪙4, 2 pumpkin 🪙4. Each pack is priced below what its crops sell for.
   - Planting uses one seed. The seed picker shows how many you have, says when you're out, and has a "Buy seeds" button that walks you to the store.

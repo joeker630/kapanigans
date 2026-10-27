@@ -4228,7 +4228,9 @@ const ANIMALS={
 };
 const HUNGRY=20*60e3, THIRSTY=2*60e3, OLD_RIPE=30*60e3;
 // Field spots: 3 across, one more row per field upgrade (6, 9, 12, 15, 18 plots)
-const FIELD_SPOTS=[];for(let j=9;j<15;j++)for(let i=1;i<4;i++)FIELD_SPOTS.push([i,j]);
+// Crop plots sit FIELD_GAP tiles apart (a strip of grass between them) so tall plants don't cover their neighbors
+const FIELD_GAP=1.75,FIELD_W=3*FIELD_GAP-(FIELD_GAP-1),FIELD_H=6*FIELD_GAP-(FIELD_GAP-1);
+const FIELD_SPOTS=[];for(let j=0;j<6;j++)for(let i=0;i<3;i++)FIELD_SPOTS.push([1+i*FIELD_GAP,9+j*FIELD_GAP]);
 const plotCount=()=>6+3*Math.min(4,(F.st&&F.st.field)||0);
 const PASTURES=[{i0:7,j0:1,i1:14,j1:8},{i0:7,j0:0,i1:20,j1:9.6}];
 const pasture=()=>PASTURES[Math.min(1,(F.st&&F.st.fence)||0)];
@@ -4247,7 +4249,7 @@ const STRUCT={
 const DECOR={flowers:{icon:"🌷",name:"flowers",price:3},sunflower:{icon:"🌻",name:"sunflowers",price:4},lantern:{icon:"🏮",name:"lantern",price:5},
   bench:{icon:"🪑",name:"bench",price:6},mailbox:{icon:"📫",name:"mailbox",price:6},tree:{icon:"🌳",name:"tree",price:8},
   beehive:{icon:"🐝",name:"beehive",price:10},pond:{icon:"🦆",name:"duck pond",price:20}};
-const DECOR_SPOTS=[[5,3],[0,8],[5,9],[0,12],[5,13],[6,0],[15,15],[9,14],[12,14],[15,13],[0,0],[3,15],[6,6],[0,3],[17,11],[19,13],[17,16],[20,18],[13,19],[8,18],[3,19],[11,16],[20,10],[0,17]];
+const DECOR_SPOTS=[[5,3],[0,8],[6,9],[0,12],[6,13],[6,0],[15,15],[9,14],[12,14],[15,13],[0,0],[3,19],[6,6],[0,3],[17,11],[19,13],[17,16],[20,18],[13,19],[8,18],[3,19],[11,16],[20,10],[0,17]];
 const PRICES={seed:{tomato:10,corn:15,strawberry:20},field:[15,25,40,60],fence:20,fert:3,animal:{hen:5,pig:12,sheep:15,cow:25}};
 const ORDERERS=()=>Object.keys(KIDS).filter(k=>k!==me&&k!=="bear"&&k!=="fox");
 
@@ -5037,7 +5039,7 @@ FW.anim={};
    The footprint shows green where it fits and red where it would overlap something or leave the farm. */
 const STRUCT_HOME={};for(const [k,v] of Object.entries(STRUCT))STRUCT_HOME[k]={i:v.i,j:v.j};
 const FIELD_HOME=[1,9];let FIELD_O=FIELD_HOME.slice();
-function fieldSpotsAt(i0,j0){FIELD_SPOTS.length=0;for(let j=0;j<6;j++)for(let i=0;i<3;i++)FIELD_SPOTS.push([i0+i,j0+j])}
+function fieldSpotsAt(i0,j0){FIELD_SPOTS.length=0;for(let j=0;j<6;j++)for(let i=0;i<3;i++)FIELD_SPOTS.push([i0+i*FIELD_GAP,j0+j*FIELD_GAP])}
 const okNum=v=>typeof v==="number"&&isFinite(v);
 function applyLayout(){const L=(F.st&&F.st.layout)||{},mv=fm.moving;
   for(const [k,v] of Object.entries(STRUCT)){const o=L[k],h=STRUCT_HOME[k];v.i=o&&okNum(o.i)?o.i:h.i;v.j=o&&okNum(o.j)?o.j:h.j}
@@ -5050,7 +5052,7 @@ const structHere=id=>!STRUCT[id].home||(F.st&&F.st.builds||{})[id];
 // footprints [i,j,wi,wj] of everything that takes up ground, except the thing being moved
 function footprints(skip){const out=[];
   for(const id of Object.keys(STRUCT))if(structHere(id)&&skip!=="struct:"+id){const S=STRUCT[id];out.push([S.i,S.j,S.wi,S.wj])}
-  if(skip!=="field")out.push([FIELD_O[0],FIELD_O[1],3,6]);
+  if(skip!=="field")out.push([FIELD_O[0],FIELD_O[1],FIELD_W,FIELD_H]);
   for(const key of Object.keys((F.st&&F.st.decor)||{}))if(skip!=="decor:"+key){const p=decorPos(key);if(p)out.push([p[0],p[1],1,1])}
   const P=pasture();out.push([P.i0,P.j0,P.i1-P.i0,P.j1-P.j0]);return out}
 function fpOk(r,skip){const N=fm.N,e=.04;if(r[0]<-e||r[1]<-e||r[0]+r[2]>N+e||r[1]+r[3]>N+e)return false;
@@ -5061,7 +5063,7 @@ function fmvStart(t,pid,cx,cy){
   let kind,ref,i0,j0,wi,wj,name;
   if(t.kind==="struct"){kind="struct";ref=t.ref;const S=STRUCT[ref];[i0,j0,wi,wj]=[S.i,S.j,S.wi,S.wj];name=S.name}
   else if(t.kind==="decor"){kind="decor";ref=t.key;if(!ref)return;const p=decorPos(ref);[i0,j0,wi,wj]=[p[0],p[1],1,1];name=(DECOR[t.ref]||{}).name||"decoration"}
-  else{kind="field";ref="field";[i0,j0,wi,wj]=[FIELD_O[0],FIELD_O[1],3,6];name="crop field"}
+  else{kind="field";ref="field";[i0,j0,wi,wj]=[FIELD_O[0],FIELD_O[1],FIELD_W,FIELD_H];name="crop field"}
   const [ti,tj]=fmvTile(cx,cy);
   fm.moving={kind,ref,id:pid,oi:i0,oj:j0,ci:i0,cj:j0,wi,wj,gi:ti-i0,gj:tj-j0,ok:true,name,skip:kind==="field"?"field":kind+":"+ref};
   fm.drag=null;fm.press=null;fPickClose();
