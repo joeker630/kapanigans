@@ -196,6 +196,31 @@ Kids design outfits for a "model," then watch the model walk an animated runway,
 
 ---
 
+## 6. 🆕 Shorter family code: 4 random letters and numbers
+
+Today the family code is a word plus 4 digits (for example `CABBAGE4821`), at least 6 characters. Make it **4 random letters and numbers** instead (for example `K7QM`), so it's quick to type on every iPad.
+
+**Details**
+- **Generate it:** a grown-up taps **New code** and gets 4 random characters from a secure random source.
+- **Easy to read:** leave out look-alike characters (0/O, 1/I/L, 5/S, 2/Z), so kids and grandparents can copy it correctly. That leaves about 28 characters, or roughly 600,000 possible codes.
+- **Big display:** show the code in big type with each character in its own box, and use 4 boxes on the entry screen too, with auto-advance to the next box.
+- **Existing devices:** a device already using a long code keeps working until a grown-up switches it. Long codes are still accepted if typed.
+- **Firebase rules:** the planned rule `$code.length >= 6` changes to allow 4-character codes.
+
+**Acceptance criteria**
+- [ ] New codes are exactly 4 characters, random, uppercase, with no look-alike characters
+- [ ] Typing is not case-sensitive; any lowercase letters typed are treated as uppercase
+- [ ] Devices with the same 4-character code find each other in the lobby
+- [ ] The Inbox and saved data (Firebase) work with 4-character codes
+
+**🔍 Decisions needed**
+- **Privacy trade-off:** the family code is the only key to your games, the video chat and (later) the Inbox. A 4-character code is much easier for a stranger to guess than the current one. Options:
+  - Accept it: the risk is low for a family app, and the code can be changed anytime.
+  - Add a lock so only devices a grown-up approves can join, or ask a grown-up to approve the first time a new device joins.
+  - Keep video chat and the Inbox behind a separate, longer grown-up code.
+
+---
+
 ## Shared groundwork (needed by #1, #3, #4 and #5)
 
 - ✅ **Saved data: decided on Firebase Realtime Database (free Spark plan).** No credit card, live updates to every device, works from GitHub Pages. Everything lives under `families/<family code>/`, so the family code is the key (no passwords).
