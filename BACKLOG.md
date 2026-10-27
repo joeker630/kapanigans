@@ -6,7 +6,7 @@ Levels used below: **Little** = Violet level (age 3), **Big** = Quinn level (age
 
 ---
 
-## 1. 🆕 New game: Write a Bedtime Story
+## 1. 🛠️ New game: Write a Bedtime Story (playable; waiting on Firebase for reliable delivery)
 
 A fill-in-the-blanks (mad-libs style) bedtime story that one child makes as a **gift** for another child, with simple characters they draw that get gentle animations.
 
@@ -27,11 +27,12 @@ A fill-in-the-blanks (mad-libs style) bedtime story that one child makes as a **
 - "Thank you" reactions go back to the author (❤️, 😴, 🤗).
 
 **Acceptance criteria**
-- [ ] At least 3 story templates, each with 5–8 blanks and 4–6 pages
-- [ ] Little authors can finish a story without reading anything
-- [ ] Drawn characters appear on the story pages with at least 4 animation types
-- [ ] The gift arrives on the recipient's device even if they weren't online when it was sent
-- [ ] A "Gift shelf" where each child can rewatch stories they've received
+- [x] At least 3 story templates, each with 5–8 blanks and 4–6 pages (The Sleepy Dragon, The Moon Picnic, The Lost Teddy)
+- [x] Little authors can finish a story without reading anything (picture choices, everything read aloud)
+- [x] Drawn characters appear on the story pages with at least 4 animation types (bob, hop, wiggle, float, spin, sleepy)
+- [~] The gift arrives on the recipient's device even if they weren't online when it was sent: works today through retained messages on the relay, which the relay may drop. Moves to Firebase for a guarantee.
+- [~] "My stories" shelf to rewatch received stories: works, but each device keeps its own copy. Firebase will sync it across devices.
+- [x] Thank-you reactions (❤️ 😴 🤗) go back to the author, even if they're offline
 
 **🔍 Decisions needed**
 - ~~Where gifts are stored~~ → decided: Firebase (see Shared groundwork). Gifts land in the recipient's **Inbox** (#4).
@@ -173,3 +174,4 @@ Every person (kids, friends and grown-ups) gets an **Inbox** for messages the fa
 - ✅ Home-screen icon
 - ✅ Grown-up personas (#2) and the "Who are you!? :)" welcome
 - ✅ Read-aloud helper and new game menu
+- ✅ Bedtime Story: make, send, unwrap, read aloud with word highlighting, thank-yous

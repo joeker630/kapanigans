@@ -199,6 +199,124 @@ h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance;l
 .vbtns button{width:40px;height:40px;border-radius:50%;background:var(--paper);font-size:18px;box-shadow:0 3px 0 var(--sky-deep)}
 .vbtns button.off{background:var(--fox)}
 
+
+/* ---------- Bedtime Story ---------- */
+:root{--night:#141B3D;--night2:#25306B;--moon:#FFF3C4;--starlite:#FFE27A}
+.giftbar{display:flex;flex-direction:column;gap:8px}
+.giftnew{display:flex;align-items:center;gap:12px;background:var(--night);color:#fff;border-radius:22px;padding:12px 18px;text-align:left;box-shadow:0 5px 0 #0b1029;font-size:17px}
+.giftnew .box{font-size:40px;animation:jiggle 1.6s ease-in-out infinite}
+.giftnew b{color:var(--starlite)}
+@keyframes jiggle{0%,70%,100%{transform:rotate(0)}75%{transform:rotate(-12deg)}85%{transform:rotate(10deg)}95%{transform:rotate(-4deg)}}
+
+#story{padding-block:12px;gap:12px;overflow:auto;background:transparent}
+.shead{display:flex;align-items:center;gap:10px}
+.shead h1{font-size:clamp(24px,4.4vw,36px);flex:1;min-width:0}
+.sbody{display:flex;flex-direction:column;align-items:center;gap:16px;flex:1;padding-bottom:16px}
+.sbody h2{font-size:clamp(26px,5vw,42px);text-align:center}
+.sbody .sub{color:var(--ink-soft);font-weight:600;text-align:center;margin:-8px 0 0}
+.choices{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;width:100%;max-width:900px}
+.choice{background:var(--paper);border-radius:24px;padding:14px 8px;display:flex;flex-direction:column;align-items:center;gap:4px;box-shadow:0 5px 0 var(--sky-deep);border:4px solid transparent;font-size:16px;font-weight:800}
+.choice:active{transform:translateY(3px);box-shadow:0 2px 0 var(--sky-deep)}
+.choice .em{font-size:52px;line-height:1.1}
+.choice .num{font-family:var(--display);font-size:46px;line-height:1.1}
+.choice .dots{font-size:12px;letter-spacing:2px;color:var(--violet)}
+.choice.person{border-color:var(--k)}
+.choice.person small{font-size:12px;color:var(--ink-soft);font-weight:700}
+.little-choices .choice .em{font-size:64px}
+.storycards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;width:100%;max-width:900px}
+.scard{background:linear-gradient(160deg,var(--night2),var(--night));color:#fff;border-radius:26px;padding:22px;display:flex;flex-direction:column;gap:8px;align-items:flex-start;text-align:left;box-shadow:0 6px 0 #0b1029;min-height:170px}
+.scard .em{font-size:60px;line-height:1}
+.scard h3{font-size:24px;color:var(--moon)}
+.scard p{margin:0;font-size:14px;font-weight:600;opacity:.8}
+.bigchoices{display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
+.bigchoices .scard{width:min(300px,100%);min-height:200px;align-items:center;text-align:center;justify-content:center}
+.progress{display:flex;gap:6px;justify-content:center}
+.progress i{width:12px;height:12px;border-radius:50%;background:var(--sky-deep)}
+.progress i.on{background:var(--violet)}
+.typeown{display:flex;gap:8px;width:100%;max-width:520px}
+.typeown input{flex:1;min-width:0;font:inherit;font-size:20px;padding:10px 14px;border-radius:16px;border:3px solid var(--sky-deep);background:#fff;color:var(--ink)}
+.typeown input:focus{outline:none;border-color:var(--violet)}
+.padwrap{display:flex;gap:14px;align-items:flex-start;justify-content:center;flex-wrap:wrap;width:100%}
+.pad{width:min(62vh,88vw,520px);aspect-ratio:1;max-width:100%;background:#fff;border-radius:26px;box-shadow:0 6px 0 var(--sky-deep);touch-action:none;display:block;
+  background-image:radial-gradient(circle,rgba(43,33,64,.06) 1.5px,transparent 0);background-size:24px 24px}
+.padtools{display:flex;flex-direction:column;gap:10px;max-width:min(520px,100%)}
+.padtools .trow{flex-wrap:wrap;overflow:visible}
+.rowbtns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;align-items:center}
+.wiggles{display:flex;gap:18px;flex-wrap:wrap;justify-content:center}
+.wcard{background:var(--paper);border-radius:24px;padding:12px;display:flex;flex-direction:column;align-items:center;gap:10px;box-shadow:0 5px 0 var(--sky-deep)}
+.wcard .stagebox{width:180px;height:180px;display:grid;place-items:center;background:linear-gradient(var(--night2),var(--night));border-radius:18px;overflow:hidden}
+.wcard .stagebox img,.wcard .stagebox .emc{width:140px;height:140px;object-fit:contain;font-size:110px;line-height:140px;text-align:center}
+.animbtns{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.animbtns button{background:var(--sky);border-radius:14px;padding:6px 4px;font-size:22px;line-height:1.1;border:3px solid transparent;min-width:58px}
+.animbtns button small{display:block;font-size:11px;font-weight:900;color:var(--ink-soft)}
+.animbtns button.on{background:var(--sun);border-color:var(--ink)}
+.sentbox{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
+.sentbox .gift{font-size:110px;animation:fly 1.6s ease-in forwards}
+@keyframes fly{0%{transform:scale(.6)}30%{transform:scale(1.15) rotate(-6deg)}60%{transform:scale(1) rotate(4deg)}100%{transform:translateY(-30vh) scale(.4);opacity:0}}
+.shelf{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px;width:100%;max-width:900px}
+.shelf .scard{position:relative}
+.shelf .scard .from{font-size:14px;font-weight:800;color:var(--starlite)}
+.shelf .new{position:absolute;top:14px;right:14px;background:var(--sun);color:var(--ink);font-size:11px;font-weight:900;letter-spacing:.08em;padding:3px 9px;border-radius:999px}
+.empty{color:var(--ink-soft);font-weight:700;text-align:center;max-width:40ch}
+
+/* reader: always night */
+#reader{background:radial-gradient(ellipse at 70% 0%,var(--night2),var(--night) 70%);color:#fff;padding-block:10px;gap:8px;position:relative;overflow:hidden}
+#reader .rhead{display:flex;align-items:center;gap:10px;z-index:2}
+#reader .rhead h1{font-size:clamp(20px,3.6vw,30px);color:var(--moon);flex:1;min-width:0}
+#reader .round{background:rgba(255,255,255,.12);color:#fff;box-shadow:none}
+.rstars{position:absolute;inset:0;pointer-events:none}
+.rstars i{position:absolute;width:3px;height:3px;border-radius:50%;background:#fff;animation:twinkle 3s ease-in-out infinite}
+@keyframes twinkle{0%,100%{opacity:.25}50%{opacity:1}}
+.rscene{position:relative;flex:1;min-height:0;z-index:1}
+.rscene::after{content:"";position:absolute;left:-10%;right:-10%;bottom:-40px;height:110px;border-radius:50%;background:#1E2A5A;box-shadow:0 -6px 0 #2B3A78}
+.rmoon{position:absolute;top:2%;right:6%;width:clamp(50px,9vw,90px);aspect-ratio:1;border-radius:50%;background:var(--moon);box-shadow:0 0 40px 10px rgba(255,243,196,.35);max-width:100%}
+.rcast{position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:center;gap:4%;padding-bottom:30px;z-index:2}
+.rchar{width:min(34vh,32vw);aspect-ratio:1;display:grid;place-items:center;max-width:100%}
+.rchar img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 6px 10px rgba(0,0,0,.35))}
+.rchar .emc{font-size:min(24vh,22vw);line-height:1}
+.rprops{position:absolute;inset:0;pointer-events:none;z-index:1}
+.rprops span{position:absolute;font-size:clamp(34px,6vw,56px);animation:floaty 4s ease-in-out infinite}
+@keyframes floaty{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-14px) rotate(6deg)}}
+.zzz{position:absolute;top:-10%;right:0;font-family:var(--display);font-size:28px;color:var(--starlite);animation:zz 2.4s ease-in-out infinite}
+@keyframes zz{0%{opacity:0;transform:translate(0,10px)}50%{opacity:1}100%{opacity:0;transform:translate(14px,-20px)}}
+.rtext{z-index:2;background:rgba(10,14,40,.72);border-radius:22px;padding:14px 20px;font-size:clamp(20px,3.2vw,30px);line-height:1.45;font-weight:700;min-height:3.2em;max-width:1000px;width:100%;align-self:center;text-wrap:pretty}
+.rtext .w{transition:color .15s,background .15s;border-radius:6px}
+.rtext .w.now{background:var(--starlite);color:var(--night)}
+.rtext .bw{color:var(--starlite)}
+.rtext .bem{font-size:.9em;margin-left:2px}
+.rnav{display:flex;align-items:center;gap:10px;justify-content:center;z-index:2;padding-bottom:4px}
+.rnav .arrow{width:64px;height:64px;border-radius:50%;background:var(--sun);color:var(--ink);font-size:30px;box-shadow:0 4px 0 var(--sun-deep);display:grid;place-items:center}
+.rnav .arrow:disabled{opacity:.3}
+.rdots{display:flex;gap:8px}
+.rdots i{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.3)}
+.rdots i.on{background:var(--starlite)}
+.rend{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:rgba(10,14,40,.82);text-align:center;padding:24px}
+.rend h2{font-size:clamp(40px,8vw,72px);color:var(--moon)}
+.rend p{margin:0;font-size:18px;font-weight:700}
+.thanks{display:flex;gap:14px}
+.thanks button{width:84px;height:84px;border-radius:50%;background:rgba(255,255,255,.14);font-size:44px}
+.thanks button:active{transform:scale(.9)}
+.unwrap{position:absolute;inset:0;z-index:6;display:grid;place-items:center;background:var(--night)}
+.unwrap button{display:flex;flex-direction:column;align-items:center;gap:12px;color:#fff;font-family:var(--display);font-size:26px}
+.unwrap .box{font-size:150px;animation:jiggle 1.4s ease-in-out infinite}
+.unwrap.pop .box{animation:popopen .6s ease-in forwards}
+@keyframes popopen{to{transform:scale(2.2);opacity:0}}
+
+/* character animations */
+.anim-bob{animation:a-bob 2.2s ease-in-out infinite}
+@keyframes a-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+.anim-hop{animation:a-hop 1.3s ease-in-out infinite;transform-origin:50% 100%}
+@keyframes a-hop{0%,100%{transform:translateY(0) scale(1.06,.94)}15%{transform:translateY(0) scale(1)}45%{transform:translateY(-42px) scale(.97,1.04)}75%{transform:translateY(0) scale(1.05,.95)}}
+.anim-wiggle{animation:a-wig 1s ease-in-out infinite;transform-origin:50% 90%}
+@keyframes a-wig{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+.anim-float{animation:a-float 5s ease-in-out infinite}
+@keyframes a-float{0%,100%{transform:translate(0,0) rotate(-3deg)}25%{transform:translate(12px,-20px) rotate(2deg)}50%{transform:translate(0,-32px) rotate(4deg)}75%{transform:translate(-12px,-16px) rotate(-2deg)}}
+.anim-spin{animation:a-spin 7s linear infinite}
+@keyframes a-spin{to{transform:rotate(360deg)}}
+.anim-sleepy{animation:a-sleep 3.2s ease-in-out infinite;transform-origin:50% 100%}
+@keyframes a-sleep{0%,100%{transform:scale(1) rotate(0)}50%{transform:scale(.95,.92) rotate(-3deg)}}
+@media (max-height:560px){.rchar{width:min(30vh,26vw)}.rtext{font-size:18px;padding:8px 14px}.rnav .arrow{width:48px;height:48px;font-size:22px}}
+
 @media (orientation:landscape) and (max-height:560px){
   #game{grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto minmax(0,1fr);grid-template-areas:"head head" "stage tray"}
   .tray{flex-direction:row;max-width:260px;overflow-y:auto;margin-bottom:0}
@@ -250,11 +368,12 @@ h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance;l
     <button class="mechip" id="meChip"></button>
   </div>
   <div class="here" id="here"></div>
+  <div class="giftbar" id="giftbar"></div>
   <div class="inprog" id="inprog"></div>
   <div class="section-title">Pick a game</div>
   <div class="games">
     <button class="game live" id="playColor"><span class="tag">Play</span><span class="icon">🎨</span><h3>Color Together</h3><p>Everyone colors their own part of one big picture.</p></button>
-    <button class="game soon" data-say="Bedtime Story. Coming soon!"><span class="tag">Soon</span><span class="icon">🌙</span><h3>Bedtime Story</h3><p>Make a silly story with your own characters and send it as a gift.</p></button>
+    <button class="game live" id="playStory"><span class="tag">Play</span><span class="icon">🌙</span><h3>Bedtime Story</h3><p>Make a silly story with your own characters and send it as a gift.</p></button>
     <button class="game soon" data-say="Kapanigan Farmstand. Coming soon!"><span class="tag">Soon</span><span class="icon">🥕</span><h3>Kapanigan Farmstand</h3><p>Grow crops and care for animals together on the family farm.</p></button>
     <button class="game soon" data-say="Inbox. Coming soon!"><span class="tag">Soon</span><span class="icon">💌</span><h3>Inbox</h3><p>Send stickers, drawings and voice notes to the family.</p></button>
   </div>
@@ -297,6 +416,45 @@ h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance;l
   </div>
   <div class="vbtns"><button id="vMic" aria-label="Microphone on or off">🎤</button><button id="vCam" aria-label="Camera on or off">📷</button></div>
 </div>
+
+
+<!-- ============ BEDTIME STORY: make ============ -->
+<section class="screen" id="story" hidden>
+  <div class="shead">
+    <button class="round" id="sBack" aria-label="Back">⬅️</button>
+    <h1>🌙 Bedtime Story</h1>
+    <button class="round" id="sHome" aria-label="Home">🏠</button>
+  </div>
+  <div class="sbody" id="sBody"></div>
+</section>
+
+<!-- ============ BEDTIME STORY: read ============ -->
+<section class="screen" id="reader" hidden>
+  <div class="rstars" id="rStars"></div>
+  <div class="rhead">
+    <button class="round" id="rClose" aria-label="Close story">✖️</button>
+    <h1 id="rTitle"></h1>
+    <button class="round" id="rAuto" aria-label="Read by itself">▶️</button>
+  </div>
+  <div class="rscene">
+    <div class="rmoon"></div>
+    <div class="rprops" id="rProps"></div>
+    <div class="rcast" id="rCast"></div>
+  </div>
+  <div class="rtext" id="rText"></div>
+  <div class="rnav">
+    <button class="arrow" id="rPrev" aria-label="Back a page">◀</button>
+    <div class="rdots" id="rDots"></div>
+    <button class="arrow" id="rNext" aria-label="Next page">▶</button>
+  </div>
+  <div class="rend" id="rEnd" hidden>
+    <h2>The End</h2>
+    <p id="rEndMsg"></p>
+    <div class="thanks" id="rThanks"><button data-r="❤️" aria-label="Love it">❤️</button><button data-r="😴" aria-label="Sleepy">😴</button><button data-r="🤗" aria-label="Hug">🤗</button></div>
+    <div class="rowbtns"><button class="ghost" id="rAgain">Read it again</button><button class="bigbtn" id="rDone">Goodnight 🌙</button></div>
+  </div>
+  <div class="unwrap" id="rUnwrap" hidden><button id="rOpen"><span class="box">🎁</span><span id="rUnwrapMsg">Tap to open!</span></button></div>
+</section>
 
 <div class="party" id="party" hidden>
   <canvas class="confetti" id="confetti"></canvas>
@@ -362,7 +520,7 @@ function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i)
 function rng(seed){let a=seed>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 function esc(s){return String(s).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]))}
 function kidOf(k){return KIDS[k] || KIDS.bear}
-function show(id){for(const s of ["setup","pick","lobby","game"]) $("#"+s).hidden = s!==id; screen=id; if(id!=="game") $("#vid").hidden=true}
+function show(id){if(screen==="reader"&&id!=="reader")hush();for(const s of ["setup","pick","lobby","game","story","reader"]) $("#"+s).hidden = s!==id; screen=id; if(id!=="game") $("#vid").hidden=true}
 /* ---------------- read-aloud helper ---------------- */
 // say(text, {rate, pitch, onWord(charIndex,len), onEnd}) speaks with the device voice.
 // sayLittle(text) speaks only for Little-level players (Violet, Bear friend).
@@ -585,14 +743,14 @@ function redrawSeat(s){const [x,y,w,h]=zoneOf(s);pctx.clearRect(x,y,w,h);for(con
 function makeRoom(code){
   const base="kapanigans/v1/"+code.toLowerCase()+"/", me=myPeer, pTopic=base+"p/"+me, sTopic=base+"s/"+me;
   let ok=false, pres={}, snap=null, pubT=null, queued=false, dead=false;
-  const handlers={}, peerFns=[], connFns=[], sigFns=[], peerMap=new Map();
+  const handlers={}, peerFns=[], connFns=[], sigFns=[], storeFns=[], peerMap=new Map();
   const notify=()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;snap=null;for(const f of peerFns)f({})})};
   const setOk=v=>{if(ok!==v){ok=v;for(const f of connFns)f(v)}};
   const client=mqtt.connect(BROKER,{clientId:"kpg_"+me,clean:true,keepalive:30,reconnectPeriod:2500,connectTimeout:10000,
     will:{topic:pTopic,payload:"",retain:true,qos:0}});
   const pub=()=>{pubT=null;if(ok&&!dead)client.publish(pTopic,JSON.stringify(Object.assign({},pres,{ts:Date.now()})),{retain:true,qos:0})};
   const schedule=()=>{if(!pubT)pubT=setTimeout(pub,90)};
-  client.on("connect",()=>{client.subscribe([base+"p/+",base+"e",sTopic],{qos:0});setOk(true);pub()});
+  client.on("connect",()=>{client.subscribe([base+"p/+",base+"e",sTopic,base+"g/+/+",base+"t/+/+"],{qos:0});setOk(true);pub()});
   client.on("close",()=>setOk(false)); client.on("offline",()=>setOk(false)); client.on("error",()=>{});
   client.on("message",(topic,buf)=>{
     const s=buf.toString();
@@ -602,6 +760,12 @@ function makeRoom(code){
       let d;try{d=JSON.parse(s)}catch(e){return} if(!d||typeof d!=="object") return;
       if(typeof d.ts==="number"&&Date.now()-d.ts>60000) return; // stale leftover
       peerMap.set(id,{peer:id,sameTab:false,isMe:false,kind:"viewer",presence:Object.freeze(d),seen:Date.now()}); notify(); return;
+    }
+    if(topic.startsWith(base+"g/")||topic.startsWith(base+"t/")){
+      const [kind,to,id]=topic.slice(base.length).split("/");
+      if(!/^[a-z]{2,20}$/.test(to)||!/^[a-z0-9]{4,40}$/.test(id)) return;
+      let d=null; if(s){try{d=JSON.parse(s)}catch(e){return}}
+      for(const f of storeFns) f(kind,to,id,d); return;
     }
     let m;try{m=JSON.parse(s)}catch(e){return} if(!m||typeof m!=="object") return;
     if(topic===base+"e"){ if(typeof m.t!=="string"||typeof m.f!=="string") return; for(const f of handlers[m.t]||[]) f({topic:m.t,peer:m.f,sameTab:m.f===me,isMe:m.f===me,data:m.d}); }
@@ -620,6 +784,9 @@ function makeRoom(code){
     onConnection:f=>{connFns.push(f);setTimeout(()=>f(ok),0);return()=>{}},
     signal:(to,m)=>{if(ok&&!dead&&/^[a-z0-9]{4,20}$/.test(to))client.publish(base+"s/"+to,JSON.stringify(Object.assign({},m,{f:me})))},
     onSignal:f=>sigFns.push(f),
+    // retained "mailbox" messages (best effort until Firebase): kind g = story gift, t = thank-you
+    put:(kind,to,id,obj)=>{if(!ok||dead)return false;client.publish(base+kind+"/"+to+"/"+id,obj?JSON.stringify(obj):"",{retain:true,qos:1});return true},
+    onStore:f=>storeFns.push(f),
     end:()=>{dead=true;clearInterval(hb);document.removeEventListener("visibilitychange",vis);try{if(ok)client.publish(pTopic,"",{retain:true});client.end(false)}catch(e){}}
   };
 }
@@ -647,6 +814,7 @@ function wireRoom(){
     if(screen==="game") {renderSeats();renderCursors();checkParty();videoTick()}
   },()=>{});
   room.onSignal(m=>{onSignal(m).catch(()=>{})});
+  room.onStore(onStoreMsg);
   room.on("start",m=>{
     if(m.sameTab||screen!=="lobby"||!m.data) return;
     const g=m.data; if(!Array.isArray(g.seats)||!PICS[g.pic]) return;
@@ -694,6 +862,10 @@ function goLobby(){show("lobby");renderLobby()}
 function renderLobby(){
   const K=kidOf(me);
   $("#codeChip").innerHTML=`Family code <b>${esc(familyCode||"")}</b>`;
+  const gb=$("#giftbar"); gb.innerHTML="";
+  for(const g of unopenedGifts().slice(0,3)){const b=document.createElement("button");b.className="giftnew";
+    b.innerHTML=`<span class="box">🎁</span><span><b>${esc(nameOf(g.from))}</b> made you a bedtime story!<br><small>Tap to open</small></span>`;
+    b.onclick=()=>openReader(g,{gift:true}); gb.append(b)}
   const mc=$("#meChip"); mc.style.setProperty("--k",K.hue);
   mc.innerHTML=`<span class="face">${K.face}</span><span>${esc(K.name)}<small>Tap to switch</small></span>`;
   const players=lobbyPlayers();
@@ -949,6 +1121,7 @@ $("#grownups").innerHTML=Object.entries(KIDS).filter(([,v])=>v.grown).map(([k,v]
 document.querySelectorAll(".kid,.gubtn").forEach(b=>b.onclick=()=>chooseKid(b.dataset.kid));
 $("#meChip").onclick=()=>show("pick");
 $("#playColor").onclick=()=>{sayLittle("Color Together");openPics()};
+$("#playStory").onclick=()=>{sayLittle("Bedtime Story");draft=null;openStory("home")};
 document.querySelectorAll(".game.soon").forEach(b=>b.onclick=()=>{blip(330,.12,"triangle",.08);say(b.dataset.say);toast("Coming soon!")});
 function syncVoiceBtn(){const b=$("#voiceBtn");b.textContent=speech.on?"🔊":"🔇";b.hidden=!speech.ok}
 $("#voiceBtn").onclick=()=>{speech.on=!speech.on;store("kp.voice",speech.on?"on":"off");syncVoiceBtn();if(speech.on)say("Reading out loud is on");else hush()};
@@ -1078,6 +1251,361 @@ $("#vCam").onclick=()=>{vid.cam=!vid.cam;$("#vCam").classList.toggle("off",!vid.
     const x=Math.max(4,Math.min(innerWidth-r.width-4,e.clientX-d.dx)),y=Math.max(4,Math.min(innerHeight-r.height-4,e.clientY-d.dy));
     box.style.left=x+"px";box.style.top=y+"px";box.style.right="auto"});
   const end=()=>d=null; box.addEventListener("pointerup",end); box.addEventListener("pointercancel",end);})();
+
+
+/* ================= BEDTIME STORY ================= */
+const NUM_WORDS=["zero","one","two","three","four","five","six","seven","eight","nine","ten"];
+const BLANKS={
+  animal:{ask:"Pick an animal!",opts:[["puppy","🐶"],["kitty","🐱"],["bunny","🐰"],["bear","🐻"],["fox","🦊"],["frog","🐸"],["owl","🦉"],["elephant","🐘"]]},
+  color:{ask:"Pick a color!",opts:[["red","🔴"],["orange","🟠"],["yellow","🟡"],["green","🟢"],["blue","🔵"],["purple","🟣"],["pink","🩷"],["rainbow","🌈"]]},
+  food:{ask:"Pick a yummy food!",opts:[["pizza","🍕"],["strawberries","🍓"],["cookies","🍪"],["bananas","🍌"],["cheese","🧀"],["ice cream","🍦"],["carrots","🥕"],["pancakes","🥞"]]},
+  place:{ask:"Pick a place!",opts:[["castle","🏰"],["forest","🌳"],["beach","🏖️"],["mountain","⛰️"],["garden","🌷"],["jungle","🌴"],["snowy land","❄️"],["treehouse","🛖"]]},
+  adj:{ask:"Pick a silly word!",opts:[["sleepy","😴"],["giggly","😂"],["sparkly","🤩"],["tiny","🤏"],["giant","🦣"],["snuggly","🥰"],["speedy","⚡"],["wobbly","🍮"]]},
+  sound:{ask:"Pick a sound!",opts:[["la la la","🎵"],["boing","🦘"],["whoosh","💨"],["ding dong","🔔"],["choo choo","🚂"],["buzz buzz","🐝"],["boom boom","🥁"],["moo","🐮"]]},
+  toy:{ask:"Pick a toy!",opts:[["ball","⚽"],["kite","🪁"],["balloon","🎈"],["yo-yo","🪀"],["toy car","🚗"],["drum","🥁"],["bubble wand","🫧"],["teddy","🧸"]]},
+  number:{ask:"Pick a number!",opts:null},
+};
+const STORIES={
+  dragon:{title:"The Sleepy Dragon",cover:"🐉",blurb:"A dragon who can't stop yawning, and a friend who can't fall asleep.",
+    blanks:["place","color","adj","food","number","animal","sound"],
+    cast:[{draw:"Draw the dragon!",emoji:"🐉"},{draw:"Draw the {animal}!",from:"animal"}],
+    pages:[
+      {t:"Once upon a time, near a faraway {place}, there lived a {color} dragon who was very, very {adj}.",c:[0],props:["place"]},
+      {t:"Every night, the dragon ate {number} bowls of {food} for dinner. Yum, yum, yum!",c:[0],props:["food"]},
+      {t:"One night, a little {animal} knocked on the dragon's door. \"I can't fall asleep!\" said the {animal}.",c:[0,1]},
+      {t:"So the dragon sang a lullaby that went {sound}, {sound}, {sound}.",c:[0,1],props:["sound"]},
+      {t:"The {animal} gave a great big yawn, and so did the dragon. Soon they were both snoring.",c:[0,1],sleepy:true},
+      {t:"And the sleepiest one of all was {to}. Goodnight, {to}! Love, {from}.",c:[0,1],sleepy:true},
+    ]},
+  moon:{title:"The Moon Picnic",cover:"🌙",blurb:"A rocket ride to a picnic on the moon with a brand new friend.",
+    blanks:["color","adj","animal","food","toy","sound"],
+    cast:[{draw:"Draw {to}!",emoji:"🧑‍🚀"},{draw:"Draw the {animal}!",from:"animal"}],
+    pages:[
+      {t:"One starry night, {to} climbed into a {color} rocket and flew all the way to the moon.",c:[0],props:["color"]},
+      {t:"On the moon there was a {adj} {animal} having a picnic.",c:[1]},
+      {t:"\"Would you like some {food}?\" asked the {animal}. \"Moon {food} is extra crunchy!\"",c:[0,1],props:["food"]},
+      {t:"They played with a {toy} and bounced so high they touched the stars. {sound}!",c:[0,1],props:["toy"]},
+      {t:"When the sky got sleepy, the {animal} waved goodbye, and {to} flew home to bed.",c:[0],sleepy:true},
+      {t:"Sweet dreams, {to}. Your friend, {from}.",c:[0,1],sleepy:true},
+    ]},
+  teddy:{title:"The Lost Teddy",cover:"🧸",blurb:"Mr. Snuggles is missing! Who will help find him before bedtime?",
+    blanks:["color","place","adj","animal","food","number","sound"],
+    cast:[{draw:"Draw Mr. Snuggles the teddy!",emoji:"🧸"},{draw:"Draw the {animal}!",from:"animal"}],
+    pages:[
+      {t:"{to} had a {color} teddy bear named Mr. Snuggles, who went everywhere with {to}.",c:[0]},
+      {t:"But one evening, Mr. Snuggles was missing! {to} looked under the bed and all around the {place}.",c:[],props:["place"]},
+      {t:"Then a {adj} {animal} came along. \"I'll help you look!\" said the {animal}.",c:[1]},
+      {t:"They followed a trail of {food} crumbs. {number} crumbs... and then, {sound}!",c:[1],props:["food"]},
+      {t:"There was Mr. Snuggles, fast asleep in a cozy pile of socks.",c:[0,1],sleepy:true},
+      {t:"{to} hugged Mr. Snuggles tight, and everyone went to sleep. Goodnight! Love, {from}.",c:[0,1],sleepy:true},
+    ]},
+};
+const ANIMS=[["bob","🌊","Bob"],["hop","🐸","Hop"],["wiggle","💃","Wiggle"],["float","🎈","Float"],["spin","🌀","Spin"],["sleepy","😴","Sleepy"]];
+const ANIM_KEYS=ANIMS.map(a=>a[0]);
+const PAD=512;
+
+function numberOpts(){const n=lvl()==="little"?5:10;return Array.from({length:n},(_,i)=>[NUM_WORDS[i+1],String(i+1)])}
+function blankOpts(type){return type==="number"?numberOpts():BLANKS[type].opts}
+function nameOf(k){return kidOf(k).name}
+function fillTokens(str,g){return str.replace(/\{(\w+)\}/g,(m,k)=>k==="to"?nameOf(g.to):k==="from"?nameOf(g.from):(g.words[k]?String(g.words[k].w).slice(0,20):k))}
+
+/* ---- gift store: relay (retained, best effort) + this device's shelf ---- */
+const gifts=new Map();
+let opened=new Set(), thanksSeen=new Set();
+try{opened=new Set(JSON.parse(load("kp.opened")||"[]"))}catch(e){}
+try{thanksSeen=new Set(JSON.parse(load("kp.thanksSeen")||"[]"))}catch(e){}
+try{for(const g of JSON.parse(load("kp.shelf")||"[]")) if(validGift(g)) gifts.set(g.id,g)}catch(e){}
+const appStart=Date.now();
+function saveShelf(){const arr=[...gifts.values()].sort((a,b)=>b.at-a.at).slice(0,60);store("kp.shelf",JSON.stringify(arr))}
+function validGift(g){
+  if(!g||typeof g!=="object"||typeof g.id!=="string"||!/^[a-z0-9]{4,40}$/.test(g.id)) return false;
+  if(!KIDS[g.to]||!KIDS[g.from]||!STORIES[g.story]||typeof g.at!=="number") return false;
+  if(!g.words||typeof g.words!=="object"||!Array.isArray(g.chars)||g.chars.length>3) return false;
+  for(const k of STORIES[g.story].blanks){const w=g.words[k];if(!w||typeof w.w!=="string"||w.w.length>20||(w.e!=null&&typeof w.e!=="string"))return false}
+  for(const c of g.chars){if(c!==null&&(typeof c!=="object"||!Array.isArray(c.s)||!ANIM_KEYS.includes(c.a)))return false}
+  return true;
+}
+function myGifts(){return [...gifts.values()].filter(g=>g.to===me).sort((a,b)=>b.at-a.at)}
+function unopenedGifts(){return myGifts().filter(g=>!opened.has(g.id))}
+function onStoreMsg(kind,to,id,data){
+  if(kind==="g"){
+    if(!data){return}
+    if(!validGift(data)||data.id!==id||data.to!==to) return;
+    const isNew=!gifts.has(id); gifts.set(id,data); saveShelf();
+    if(isNew&&data.to===me&&!opened.has(id)&&data.at>appStart-10000){
+      blip(660,.2,"triangle",.12);setTimeout(()=>blip(990,.25,"triangle",.12),160);
+      toast(`🎁 A bedtime story from ${nameOf(data.from)}!`); say(`You got a bedtime story from ${nameOf(data.from)}!`);
+    }
+    if(screen==="lobby") renderLobby();
+  } else if(kind==="t"){
+    if(!data||typeof data!=="object"||to!==me||!KIDS[data.from]||!["❤️","😴","🤗"].includes(data.r)||thanksSeen.has(id)) return;
+    thanksSeen.add(id); store("kp.thanksSeen",JSON.stringify([...thanksSeen].slice(-200)));
+    const title=STORIES[data.story]?STORIES[data.story].title:"your story";
+    const word={"❤️":"loved","😴":"got sleepy from","🤗":"sends a hug for"}[data.r];
+    floatReaction(data.r,data.from); toast(`${nameOf(data.from)} ${word} ${title}`);
+    say(`${nameOf(data.from)} ${word} ${title}!`);
+  }
+}
+
+/* ---- authoring wizard ---- */
+let draft=null, sStep="home";
+function newDraft(){return {to:null,story:null,words:{},bi:0,chars:[],ci:0}}
+function openStory(step){draft=draft||newDraft();sStep=step||"home";show("story");renderStory()}
+function sGo(step){sStep=step;renderStory();$("#sBody").scrollTop=0;window.scrollTo(0,0)}
+$("#sHome").onclick=()=>{hush();draft=null;goLobby()};
+$("#sBack").onclick=()=>{
+  hush();
+  const back={home:null,shelf:"home",to:"home",pick:"to",blank:"pick",draw:"blank",wiggle:"draw",ready:"wiggle",sent:null}[sStep];
+  if(sStep==="blank"&&draft.bi>0){draft.bi--;return renderStory()}
+  if(sStep==="draw"&&draft.ci>0){draft.ci--;return renderStory()}
+  if(sStep==="draw"){draft.bi=STORIES[draft.story].blanks.length-1}
+  if(back) sGo(back); else {draft=null;goLobby()}
+};
+function el(tag,cls,html){const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e}
+function renderStory(){
+  const B=$("#sBody"); B.innerHTML=""; B.classList.toggle("little-choices",lvl()==="little");
+  const S=draft.story&&STORIES[draft.story];
+  if(sStep==="home"){
+    B.append(el("h2",null,"What do you want to do?"));
+    const row=el("div","bigchoices");
+    const mk=el("button","scard",`<span class="em">✏️</span><h3>Make a story</h3><p>Make a bedtime story gift for someone.</p>`);
+    mk.onclick=()=>{draft=newDraft();sGo("to");say("Who is the story for?")};
+    const n=unopenedGifts().length;
+    const sh=el("button","scard",`<span class="em">📚</span><h3>My stories</h3><p>${myGifts().length?`${myGifts().length} stor${myGifts().length>1?"ies":"y"} for you${n?` · ${n} new!`:""}`:"Stories people send you live here."}</p>`);
+    sh.onclick=()=>{sGo("shelf");sayLittle("My stories")};
+    row.append(mk,sh); B.append(row); sayLittle("Make a story, or read my stories?");
+  }
+  else if(sStep==="shelf"){
+    B.append(el("h2",null,"My stories"));
+    const list=myGifts();
+    if(!list.length){B.append(el("p","empty",`No stories yet. When someone makes you a bedtime story, it shows up here.`));return}
+    const grid=el("div","shelf");
+    for(const g of list){const st=STORIES[g.story];
+      const b=el("button","scard",`${opened.has(g.id)?"":'<span class="new">New</span>'}<span class="em">${st.cover}</span><h3>${esc(st.title)}</h3><span class="from">from ${esc(nameOf(g.from))}</span>`);
+      b.onclick=()=>openReader(g,{gift:!opened.has(g.id)}); grid.append(b)}
+    B.append(grid);
+  }
+  else if(sStep==="to"){
+    B.append(el("h2",null,"Who is it for?"));
+    const here=new Set(peers().filter(p=>!p.sameTab&&p.presence&&p.presence.kid).map(p=>p.presence.kid));
+    const grid=el("div","choices");
+    const keys=Object.keys(KIDS).filter(k=>k!==me).sort((a,b)=>(here.has(b)-here.has(a))||(!!KIDS[a].grown-!!KIDS[b].grown));
+    for(const k of keys){const K=KIDS[k];
+      const b=el("button","choice person",`<span class="em">${K.face}</span>${esc(K.name)}${here.has(k)?"<small>🟢 here now</small>":""}`);
+      b.style.setProperty("--k",K.hue); b.onclick=()=>{draft.to=k;sayLittle(`For ${K.name}!`);sGo("pick")}; grid.append(b)}
+    B.append(grid);
+  }
+  else if(sStep==="pick"){
+    B.append(el("h2",null,"Pick a story"));
+    const grid=el("div","storycards");
+    for(const [id,st] of Object.entries(STORIES)){
+      const b=el("button","scard",`<span class="em">${st.cover}</span><h3>${esc(st.title)}</h3><p>${esc(st.blurb)}</p>`);
+      b.onclick=()=>{if(draft.story!==id){draft.words={};draft.chars=[]}draft.story=id;draft.bi=0;draft.ci=0;sayLittle(st.title);sGo("blank");setTimeout(()=>say(BLANKS[STORIES[id].blanks[0]].ask),900)};
+      grid.append(b)}
+    B.append(grid);
+  }
+  else if(sStep==="blank"){
+    const type=S.blanks[draft.bi], Bk=BLANKS[type];
+    const prog=el("div","progress");S.blanks.forEach((_,i)=>prog.append(el("i",i<=draft.bi?"on":"")));B.append(prog);
+    B.append(el("h2",null,esc(Bk.ask)));
+    const ask=el("button","ghost","🔊 Say it");ask.onclick=()=>say(Bk.ask);B.append(ask);
+    const grid=el("div","choices");
+    const pick=(w,e)=>{draft.words[type]={w,e};blip(700,.08);
+      if(draft.bi<S.blanks.length-1){draft.bi++;renderStory();say(BLANKS[S.blanks[draft.bi]].ask)}
+      else{draft.ci=0;sGo("draw");say(castPrompt(0))}};
+    for(const [w,e] of blankOpts(type)){
+      const b=el("button","choice");
+      if(type==="number"){b.innerHTML=`<span class="num">${e}</span><span class="dots">${"●".repeat(+e)}</span>`}
+      else b.innerHTML=`<span class="em">${e}</span>${esc(w)}`;
+      if(draft.words[type]&&draft.words[type].w===w) b.style.borderColor="var(--violet)";
+      b.onclick=()=>{say(w);pick(w,type==="number"?"":e)}; grid.append(b)}
+    B.append(grid);
+    if(lvl()!=="little"&&type!=="number"){
+      const f=el("div","typeown");const inp=el("input");inp.id="ownWord";inp.maxLength=20;inp.placeholder="…or type your own";inp.autocomplete="off";
+      const go=el("button","bigbtn","Next");
+      const sub=()=>{const v=inp.value.replace(/[^\p{L}\p{N} '\-!]/gu,"").trim().slice(0,20);if(!v){inp.focus();return}pick(v,"")};
+      go.onclick=sub; inp.onkeydown=e=>{if(e.key==="Enter")sub()}; f.append(inp,go); B.append(f);
+    }
+  }
+  else if(sStep==="draw") renderDraw(B,S);
+  else if(sStep==="wiggle"){
+    B.append(el("h2",null,"How do they move?"));
+    const wrap=el("div","wiggles");
+    S.cast.forEach((c,i)=>{
+      const ch=draft.chars[i]; const card=el("div","wcard");
+      const box=el("div","stagebox"); const fig=charFigure({story:draft.story,words:draft.words,chars:draft.chars},i); fig.className="anim-"+ch.a; box.append(fig);
+      const ab=el("div","animbtns");
+      for(const [k,e,l] of ANIMS){const b=el("button",ch.a===k?"on":"",`${e}<small>${l}</small>`);b.onclick=()=>{ch.a=k;fig.className="anim-"+k;ab.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));sayLittle(l);blip(600,.06)};ab.append(b)}
+      card.append(box,ab); wrap.append(card);
+    });
+    B.append(wrap);
+    const nx=el("button","bigbtn","Next ➡️"); nx.onclick=()=>{sGo("ready");say("Your story is ready!")}; B.append(nx);
+  }
+  else if(sStep==="ready"){
+    const K=kidOf(draft.to);
+    B.append(el("h2",null,`Your story for ${esc(K.name)} is ready!`));
+    B.append(el("p","sub",`${S.cover} ${esc(S.title)}`));
+    const row=el("div","rowbtns");
+    const prev=el("button","ghost","👀 Read it first"); prev.onclick=()=>openReader(draftGift(),{preview:true});
+    const send=el("button","bigbtn",`Send gift to ${esc(K.name)} 🎁`); send.onclick=sendGift;
+    row.append(prev,send); B.append(row);
+  }
+  else if(sStep==="sent"){
+    const K=kidOf(draft.to);
+    const box=el("div","sentbox",`<span class="gift">🎁</span><h2>Sent to ${esc(K.name)}!</h2><p class="sub">${here(draft.to)?`${esc(K.name)} will see it right away.`:`${esc(K.name)} will find it next time they open Kapanigans.`}</p>`);
+    const row=el("div","rowbtns");const again=el("button","ghost","Make another");again.onclick=()=>{draft=newDraft();sGo("to")};
+    const home=el("button","bigbtn","Back to games");home.onclick=()=>{draft=null;goLobby()};row.append(again,home);box.append(row);B.append(box);
+  }
+}
+function here(k){return peers().some(p=>!p.sameTab&&p.presence&&p.presence.kid===k)}
+function castPrompt(i){const S=STORIES[draft.story];return fillTokens(S.cast[i].draw,{to:draft.to,from:me,words:draft.words})}
+
+/* ---- drawing pad ---- */
+const pad={strokes:[],tool:"pen",c:null,size:1};
+function renderDraw(B,S){
+  const i=draft.ci; if(!draft.chars[i]) draft.chars[i]={s:[],a:i===0?"bob":"hop"};
+  const ch=draft.chars[i]; pad.strokes=ch.s; const L=lvl();
+  if(!pad.c||!(L==="little"?LITTLE_COLORS:BIG_COLORS).includes(pad.c)) pad.c=L==="little"?LITTLE_COLORS[5]:BIG_COLORS[16];
+  const prog=el("div","progress");S.cast.forEach((_,j)=>prog.append(el("i",j<=i?"on":"")));B.append(prog);
+  B.append(el("h2",null,esc(castPrompt(i))));
+  const wrap=el("div","padwrap");
+  const cv=el("canvas","pad");cv.width=PAD;cv.height=PAD;cv.id="padCanvas";wrap.append(cv);
+  const tools=el("div","padtools "+L);
+  const r1=el("div","trow");
+  const tb=(id,e,l)=>{const b=el("button","tool",`${e}<small>${l}</small>`);b.dataset.t=id;b.onclick=()=>{pad.tool=id;sayLittle(l);sync()};r1.append(b)};
+  tb("pen",L==="little"?"🖍️":"🖊️",L==="little"?"Crayon":"Pen");
+  if(L!=="little") tb("erase","🧽","Eraser");
+  const oops=el("button","tool",`↩️<small>${L==="little"?"Oops":"Undo"}</small>`);oops.onclick=()=>{pad.strokes.pop();redraw();sayLittle("Oops!")};r1.append(oops);
+  const clr=el("button","tool",`🗑️<small>Clear</small>`);clr.onclick=()=>{pad.strokes.length=0;redraw()};r1.append(clr);
+  tools.append(r1);
+  if(L!=="little"){const r2=el("div","trow");[6,14,26].forEach((w,j)=>{const b=el("button","sz",`<i style="width:${6+j*8}px;height:${6+j*8}px"></i>`);b.dataset.sz=j;b.onclick=()=>{pad.size=j;sync()};r2.append(b)});tools.append(r2)}
+  const r3=el("div","trow");
+  for(const col of (L==="little"?LITTLE_COLORS:BIG_COLORS)){const s=el("button","sw");s.style.setProperty("--c",col);s.dataset.c=col;s.setAttribute("aria-label","color");s.onclick=()=>{pad.c=col;pad.tool="pen";sayLittle(COLOR_NAMES[col]);sync()};r3.append(s)}
+  tools.append(r3); wrap.append(tools); B.append(wrap);
+  const row=el("div","rowbtns");
+  const skip=el("button","ghost",`Skip (use ${S.cast[i].from?(draft.words[S.cast[i].from]||{}).e||"⭐":S.cast[i].emoji})`);
+  const done=el("button","bigbtn","Done ✔️");
+  const next=()=>{if(draft.ci<S.cast.length-1){draft.ci++;renderStory();say(castPrompt(draft.ci))}else{sGo("wiggle");say("How do they move?")}};
+  skip.onclick=()=>{ch.s=[];pad.strokes=ch.s;next()}; done.onclick=()=>{if(!ch.s.length){say("Draw something first, or tap skip");return}next()};
+  row.append(skip,done); B.append(row);
+  const ctx=cv.getContext("2d");
+  function redraw(){ctx.clearRect(0,0,PAD,PAD);drawStrokes(ctx,pad.strokes,1)}
+  function sync(){tools.querySelectorAll(".tool[data-t]").forEach(b=>b.classList.toggle("on",b.dataset.t===pad.tool));
+    tools.querySelectorAll(".sw").forEach(b=>b.classList.toggle("on",b.dataset.c===pad.c&&pad.tool==="pen"));
+    tools.querySelectorAll(".sz").forEach(b=>b.classList.toggle("on",+b.dataset.sz===pad.size))}
+  let cur=null;
+  const pt=e=>{const r=cv.getBoundingClientRect();return[Math.round((e.clientX-r.left)/r.width*PAD),Math.round((e.clientY-r.top)/r.height*PAD)]};
+  cv.onpointerdown=e=>{e.preventDefault();if(cur)return;cv.setPointerCapture(e.pointerId);const [x,y]=pt(e);
+    const w=L==="little"?20:[6,14,26][pad.size];cur={id:e.pointerId,st:{c:pad.tool==="erase"?"erase":pad.c,w:pad.tool==="erase"?w*2:w,p:[x,y]}};pad.strokes.push(cur.st);redraw()};
+  cv.onpointermove=e=>{if(!cur||e.pointerId!==cur.id)return;const p=cur.st.p;for(const ev of (e.getCoalescedEvents?e.getCoalescedEvents():[e])){const [x,y]=pt(ev);if(Math.hypot(x-p[p.length-2],y-p[p.length-1])>=3)p.push(x,y)}
+    if(p.length>3000){p.length=3000} redraw()};
+  const up=e=>{if(cur&&e.pointerId===cur.id)cur=null};cv.onpointerup=up;cv.onpointercancel=up;
+  redraw();sync();
+}
+function drawStrokes(ctx,strokes,scale){
+  ctx.lineCap="round";ctx.lineJoin="round";
+  for(const s of strokes){
+    if(!s||!Array.isArray(s.p)||s.p.length<2) continue;
+    const p=s.p.filter(Number.isFinite); if(p.length<2) continue;
+    ctx.globalCompositeOperation=s.c==="erase"?"destination-out":"source-over";
+    ctx.strokeStyle=/^#[0-9A-Fa-f]{6}$/.test(s.c)?s.c:"#2B2140"; ctx.lineWidth=Math.min(80,Math.max(1,+s.w||8))*scale;
+    ctx.beginPath();ctx.moveTo(p[0]*scale,p[1]*scale);
+    if(p.length===2) ctx.lineTo(p[0]*scale+.1,p[1]*scale); else for(let i=2;i+1<p.length;i+=2) ctx.lineTo(p[i]*scale,p[i+1]*scale);
+    ctx.stroke();
+  }
+  ctx.globalCompositeOperation="source-over";
+}
+const figCache=new Map();
+function charFigure(g,i){
+  const ch=g.chars[i], S=STORIES[g.story];
+  if(ch&&ch.s&&ch.s.length){
+    const key=(g.id||"draft")+":"+i+":"+ch.s.length;
+    let url=g.id?figCache.get(key):null;
+    if(!url){const cv=document.createElement("canvas");cv.width=PAD;cv.height=PAD;drawStrokes(cv.getContext("2d"),ch.s,1);url=cv.toDataURL("image/png");if(g.id)figCache.set(key,url)}
+    const img=new Image();img.src=url;img.alt="";return img;
+  }
+  const d=el("div","emc");d.textContent=S.cast[i].from?((g.words[S.cast[i].from]||{}).e||"⭐"):S.cast[i].emoji;return d;
+}
+function draftGift(){return {id:null,to:draft.to,from:me,story:draft.story,words:draft.words,chars:STORIES[draft.story].cast.map((_,i)=>draft.chars[i]||{s:[],a:"bob"}),at:Date.now()}}
+function sendGift(){
+  if(!room||!room.connected()){toast("Can't send right now. Check the Wi-Fi.");say("Hmm, I can't send it right now.");return}
+  const g=draftGift(); g.id=Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+  // keep it small for the relay: thin out very long strokes
+  for(const c of g.chars) for(const s of c.s) if(s.p.length>600){const q=[];for(let i=0;i<s.p.length;i+=4)q.push(s.p[i],s.p[i+1]);s.p=q}
+  const size=JSON.stringify(g).length;
+  if(size>180000){toast("That drawing is too big to send. Try a simpler one.");return}
+  room.put("g",g.to,g.id,g); tada(); sGo("sent"); say(`Sent to ${nameOf(g.to)}!`);
+}
+
+/* ---- reader ---- */
+const rd={g:null,page:0,auto:false,preview:false,wordSpans:[],timer:null};
+(()=>{const s=$("#rStars");for(let i=0;i<60;i++){const st=document.createElement("i");st.style.left=Math.random()*100+"%";st.style.top=Math.random()*70+"%";st.style.animationDelay=(Math.random()*3)+"s";if(Math.random()<.2){st.style.width=st.style.height="4px"}s.append(st)}})();
+function openReader(g,o={}){
+  rd.g=g; rd.page=0; rd.preview=!!o.preview; rd.auto=lvl()==="little";
+  show("reader"); $("#rTitle").textContent=STORIES[g.story].title; $("#rEnd").hidden=true; syncAuto();
+  try{navigator.wakeLock&&navigator.wakeLock.request("screen").catch(()=>{})}catch(e){}
+  if(o.gift){$("#rUnwrapMsg").textContent=`A story from ${nameOf(g.from)}! Tap to open`;$("#rUnwrap").hidden=false;$("#rUnwrap").classList.remove("pop");say(`A story from ${nameOf(g.from)}! Tap to open.`)}
+  else {$("#rUnwrap").hidden=true; renderPage()}
+}
+$("#rOpen").onclick=()=>{const u=$("#rUnwrap");u.classList.add("pop");tada();setTimeout(()=>{u.hidden=true;markOpened(rd.g);renderPage()},600)};
+function markOpened(g){if(!g.id||opened.has(g.id))return;opened.add(g.id);store("kp.opened",JSON.stringify([...opened].slice(-300)))}
+function renderPage(){
+  clearTimeout(rd.timer);
+  const g=rd.g,S=STORIES[g.story],P=S.pages[rd.page];
+  // cast
+  const cast=$("#rCast");cast.innerHTML="";
+  for(const i of P.c){const wrap=el("div","rchar");const fig=charFigure(g,i);const a=P.sleepy?"sleepy":(g.chars[i]?g.chars[i].a:"bob");wrap.className="rchar anim-"+a;wrap.style.position="relative";wrap.append(fig);if(P.sleepy){const z=el("span","zzz");z.textContent="z z z";wrap.append(z)}cast.append(wrap)}
+  // props
+  const props=$("#rProps");props.innerHTML="";
+  (P.props||[]).forEach((t,j)=>{const e=g.words[t]&&g.words[t].e;if(!e)return;for(let k=0;k<2;k++){const sp=el("span");sp.textContent=e;sp.style.left=(k?72:10)+j*6+"%";sp.style.top=(18+k*14+j*8)+"%";sp.style.animationDelay=(k*1.3)+"s";props.append(sp)}});
+  // text with word spans
+  const T=$("#rText");T.innerHTML="";rd.wordSpans=[];let spoken="";
+  const parts=P.t.split(/(\{\w+\})/);
+  for(const part of parts){
+    if(!part) continue;
+    const m=part.match(/^\{(\w+)\}$/);
+    let text=part, blank=false, emo="";
+    if(m){blank=true;text=fillTokens(part,g);if(m[1]!=="to"&&m[1]!=="from"&&g.words[m[1]])emo=String(g.words[m[1]].e||"").slice(0,8)}
+    const tokens=text.split(/(\s+)/);
+    for(const tk of tokens){
+      if(!tk) continue;
+      if(/^\s+$/.test(tk)){T.append(document.createTextNode(" "));spoken+=tk;continue}
+      const sp=el("span","w"+(blank?" bw":""));sp.textContent=tk;T.append(sp);
+      rd.wordSpans.push({start:spoken.length,end:spoken.length+tk.length,el:sp});spoken+=tk;
+    }
+    if(emo){const e=el("span","bem");e.textContent=emo;T.append(e)}
+  }
+  // nav
+  $("#rPrev").disabled=rd.page===0;
+  const dots=$("#rDots");dots.innerHTML="";S.pages.forEach((_,i)=>dots.append(el("i",i===rd.page?"on":"")));
+  readPage(spoken);
+}
+function readPage(text){
+  const spans=rd.wordSpans;
+  const mark=i=>spans.forEach((s,j)=>s.el.classList.toggle("now",j===i));
+  const after=()=>{mark(-1);if(rd.auto&&screen==="reader")rd.timer=setTimeout(nextPage,1500)};
+  if(!speech.ok||!speech.on){if(rd.auto)rd.timer=setTimeout(nextPage,Math.max(4000,text.length*70));return}
+  say(text,{rate:lvl()==="little"?.82:.9,pitch:1.05,onWord:(ci)=>{const i=spans.findIndex(s=>ci>=s.start&&ci<s.end);if(i>=0)mark(i)},onEnd:after});
+}
+function nextPage(){clearTimeout(rd.timer);const S=STORIES[rd.g.story];if(rd.page<S.pages.length-1){rd.page++;renderPage()}else showEnd()}
+function showEnd(){
+  hush();const g=rd.g;$("#rEnd").hidden=false;
+  const fromOther=!rd.preview&&g.from!==me&&g.id;
+  $("#rThanks").hidden=!fromOther;
+  $("#rEndMsg").textContent=fromOther?`Tap to say thank you to ${nameOf(g.from)}`:"Sweet dreams!";
+  say(fromOther?`The end. Say thank you to ${nameOf(g.from)}!`:"The end. Sweet dreams!");
+}
+$("#rNext").onclick=()=>{blip(520,.06);nextPage()};
+$("#rPrev").onclick=()=>{clearTimeout(rd.timer);if(rd.page>0){rd.page--;renderPage()}};
+function syncAuto(){$("#rAuto").textContent=rd.auto?"⏸️":"▶️"}
+$("#rAuto").onclick=()=>{rd.auto=!rd.auto;syncAuto();if(rd.auto&&!(speech.ok&&speechSynthesis.speaking))nextPage();else if(!rd.auto)clearTimeout(rd.timer)};
+$("#rAgain").onclick=()=>{$("#rEnd").hidden=true;rd.page=0;renderPage()};
+const closeReader=()=>{clearTimeout(rd.timer);hush();if(rd.preview){show("story");renderStory()}else if(screen==="reader"){if(draft&&sStep==="shelf"){show("story");renderStory()}else goLobby()}};
+$("#rClose").onclick=closeReader; $("#rDone").onclick=closeReader;
+$("#rThanks").addEventListener("click",e=>{const b=e.target.closest("button");if(!b||!rd.g)return;const g=rd.g;
+  floatReaction(b.dataset.r,me);
+  if(room&&room.connected()) room.put("t",g.from,g.id+me.replace(/[^a-z0-9]/g,""),{from:me,r:b.dataset.r,story:g.story,at:Date.now()});
+  toast(`Sent to ${nameOf(g.from)}!`);});
 
 /* ---------------- start ---------------- */
 const savedCode=cleanCode(load("kp.code"));
