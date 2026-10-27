@@ -512,7 +512,7 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
 .dwrap{display:grid;grid-template-columns:minmax(220px,340px) minmax(0,1fr);gap:18px;align-items:start}
 .dleft{display:flex;flex-direction:column;align-items:center;gap:10px;background:var(--paper);border-radius:28px;padding:16px;box-shadow:0 6px 0 var(--sky-deep);position:sticky;top:0}
 .dprev{width:100%;max-width:300px;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 50% 40%,#fff,var(--sky));overflow:hidden;animation:dbob 2.6s ease-in-out infinite}
-.dprev svg{width:100%;height:100%;display:block}
+.dprev svg,.dprev img{width:100%;height:100%;display:block;object-fit:contain}
 @keyframes dbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 .dleft b{font-family:var(--display);font-size:26px}
 .dright{display:flex;flex-direction:column;gap:12px;min-width:0}
@@ -524,7 +524,7 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
 .dgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:10px}
 .dopts.little .dgrid{grid-template-columns:repeat(auto-fill,minmax(136px,1fr))}
 .dtile{background:var(--paper);border-radius:20px;padding:6px 6px 8px;display:flex;flex-direction:column;align-items:center;gap:2px;box-shadow:0 4px 0 var(--sky-deep);border:4px solid transparent}
-.dtile svg{width:100%;height:auto;max-width:120px}
+.dtile svg,.dtile img{width:100%;height:auto;max-width:130px;aspect-ratio:1;object-fit:contain}
 .dtile small{font-size:12px;font-weight:800;color:var(--ink-soft);text-align:center}
 .dtile.on{border-color:var(--violet);background:#F3EEFF}
 .ddots{display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:var(--paper);border-radius:18px;padding:8px 12px}
@@ -3122,15 +3122,15 @@ const AV={
   faces:[["happy","Happy"],["grin","Big smile"],["wow","Surprised"],["sleepy","Sleepy"],["silly","Silly"],["wink","Wink"]],
   hairs:[["short","Short"],["curly","Curly"],["pigtails","Pigtails"],["ponytail","Ponytail"],["bun","Bun"],["braids","Braids"],["long","Long"],["spiky","Spiky"],["bob","Bob"],["buzz","Buzz"]],
   hats:[["none","No hat"],["straw","Straw hat"],["cap","Cap"],["bonnet","Bonnet"],["flowers","Flower crown"],["beanie","Beanie"],["cowboy","Cowboy hat"],["crown","Crown"]],
-  outfits:[["overalls","Overalls"],["dress","Farm dress"],["plaid","Plaid shirt"],["apron","Apron"],["tee","T-shirt"],["hoodie","Hoodie"]],
-  extras:[["glasses","Glasses","👓"],["freckles","Freckles","✨"],["cheeks","Rosy cheeks","🌸"],["bow","Bow","🎀"]],
+  outfits:[["overalls","Overalls"],["dress","Farm dress"],["plaid","Plaid shirt"],["apron","Apron"],["tee","T-shirt"],["raincoat","Raincoat"]],
+  extras:[["glasses","Glasses","👓"],["freckles","Freckles","✨"],["cheeks","Rosy cheeks","🌸"],["bow","Bow","🎀"],["bandana","Bandana","🧣"],["boots","Rain boots","🥾"]],
 };
 const INKC="#2B2140";
 function shade(hex,a){const n=parseInt(hex.slice(1),16);let r=n>>16&255,g=n>>8&255,b=n&255;const f=a<0?0:255,t=Math.abs(a);r=Math.round(r+(f-r)*t);g=Math.round(g+(f-g)*t);b=Math.round(b+(f-b)*t);return`rgb(${r},${g},${b})`}
 function defaultLook(k){const K=KIDS[k]||{},h=[...String(k)].reduce((a,c)=>a*31+c.charCodeAt(0)>>>0,7);
   return {skin:h%6,face:"happy",hair:AV.hairs[h%10][0],hairC:(h>>3)%6,hat:k==="violet"?"flowers":"none",hatC:6,outfit:"overalls",clothC:Math.max(0,AV.clothCs.indexOf(K.hue)),glasses:false,freckles:false,cheeks:true,bow:false}}
 function cleanLook(v){
-  if(!v||typeof v!=="object") return null; const has=(list,x)=>list.some(o=>o[0]===x), idx=(n,max)=>Number.isInteger(n)&&n>=0&&n<max;
+  if(!v||typeof v!=="object") return null; if(v.outfit==="hoodie") v=Object.assign({},v,{outfit:"tee"}); const has=(list,x)=>list.some(o=>o[0]===x), idx=(n,max)=>Number.isInteger(n)&&n>=0&&n<max;
   const L={skin:idx(v.skin,6)?v.skin:1,face:has(AV.faces,v.face)?v.face:"happy",hair:has(AV.hairs,v.hair)?v.hair:"short",hairC:idx(v.hairC,AV.hairCs.length)?v.hairC:1,
     hat:has(AV.hats,v.hat)?v.hat:"none",hatC:idx(v.hatC,AV.clothCs.length)?v.hatC:0,outfit:has(AV.outfits,v.outfit)?v.outfit:"overalls",clothC:idx(v.clothC,AV.clothCs.length)?v.clothC:4};
   for(const [x] of AV.extras) L[x]=!!v[x];
@@ -3210,7 +3210,7 @@ function looksConnect(){
 }
 function applyLooks(){
   for(const k of Object.keys(KIDS)){const L=cleanLook(looks.data[k]);KIDS[k].look=L;
-    KIDS[k].avatar=L?svgURL(avatarSVG(L,"bust",160)):null; KIDS[k].avatarHead=L?svgURL(avatarSVG(L,"head",160)):null}
+    KIDS[k].avatar=L?avatarURL(L,"bust"):null; KIDS[k].avatarHead=L?svgURL(avatarSVG(L,"head",160)):null}
 }
 
 /* ---- dressing room ---- */
@@ -3221,15 +3221,15 @@ function openDress(){
   if(!KIDS[me].look) saveLook();
 }
 function saveLook(){clearTimeout(dr.saveT);dr.saveT=setTimeout(()=>{if(looks.ref&&me)looks.ref.child(me).set(dr.look).catch(()=>toast("Couldn't save. Check the Wi-Fi."))},350);
-  KIDS[me].look=cleanLook(dr.look);KIDS[me].avatar=svgURL(avatarSVG(dr.look,"bust",160));KIDS[me].avatarHead=svgURL(avatarSVG(dr.look,"head",160))}
+  KIDS[me].look=cleanLook(dr.look);KIDS[me].avatar=avatarURL(KIDS[me].look,"bust");KIDS[me].avatarHead=svgURL(avatarSVG(dr.look,"head",160))}
 function setLook(patch){Object.assign(dr.look,patch);blip(600,.05);saveLook();renderDress()}
 function renderDress(){
   const L=dr.look, little=lvl()==="little", K=kidOf(me);
-  $("#dPreview").innerHTML=avatarSVG(L,"bust",320); $("#dName").textContent=K.name;
+  $("#dPreview").innerHTML=`<img src="${avatarURL(cleanLook(L),"full")}" alt="">`; $("#dName").textContent=K.name;
   const tabs=[["skin","✋","Skin"],["face","😊","Face"],["hair","💇","Hair"],["hat","👒","Hat"],["clothes","👕","Clothes"]].concat(little?[]:[["extras","👓","Extras"]]);
   const T=$("#dTabs");T.innerHTML="";for(const [id,e,l] of tabs){const b=el("button",dr.tab===id?"on":"",`<span>${e}</span>${l}`);b.onclick=()=>{dr.tab=id;blip(520,.05);renderDress()};T.append(b)}
   const O=$("#dOpts");O.innerHTML="";O.className="dopts"+(little?" little":"");
-  const tile=(patch,label,on)=>{const t=el("button","dtile"+(on?" on":""),avatarSVG(Object.assign({},L,patch),"bust",little?120:96)+`<small>${esc(label)}</small>`);t.onclick=()=>setLook(patch);t.setAttribute("aria-label",label);return t};
+  const tile=(patch,label,on)=>{const t=el("button","dtile"+(on?" on":""),`<img src="${avatarURL(cleanLook(Object.assign({},L,patch)),"full")}" alt="">`+`<small>${esc(label)}</small>`);t.onclick=()=>setLook(patch);t.setAttribute("aria-label",label);return t};
   const dots=(list,key,label)=>{const r=el("div","ddots");r.append(el("span","dlab",label));list.forEach((c,i)=>{const b=el("button","sw"+(L[key]===i?" on":""));b.style.setProperty("--c",c);b.setAttribute("aria-label",label+" color");b.onclick=()=>setLook({[key]:i});r.append(b)});return r};
   const grid=el("div","dgrid");
   if(dr.tab==="skin") AV.skins.forEach((c,i)=>grid.append(tile({skin:i},`Skin ${i+1}`,L.skin===i)));
@@ -3243,7 +3243,88 @@ function renderDress(){
 $("#dDone").onclick=()=>{blip(880,.12,"triangle");tada();goLobby()};
 $("#dBack").onclick=()=>goLobby();
 $("#dDice").onclick=()=>{const r=n=>Math.floor(Math.random()*n);
-  setLook({skin:dr.look.skin,face:AV.faces[r(6)][0],hair:AV.hairs[r(10)][0],hairC:r(AV.hairCs.length),hat:AV.hats[r(8)][0],hatC:r(12),outfit:AV.outfits[r(6)][0],clothC:r(12),glasses:r(4)===0,freckles:r(3)===0,cheeks:r(2)===0,bow:r(4)===0})};
+  setLook({skin:dr.look.skin,face:AV.faces[r(6)][0],hair:AV.hairs[r(10)][0],hairC:r(AV.hairCs.length),hat:AV.hats[r(8)][0],hatC:r(12),outfit:AV.outfits[r(6)][0],clothC:r(12),glasses:r(4)===0,freckles:r(3)===0,cheeks:r(2)===0,bow:r(4)===0,bandana:r(5)===0,boots:r(3)===0})};
+
+/* ---- generated avatar art (art/avatar/, isometric sprite style) ----
+   Every file is a 320×320 layer at the same spot: base → outfit → feet → hair → hat → extras.
+   White parts are tinted (multiply). Skin is recolored from the base; faces are drawn on top. */
+const AVART={imgs:{},ready:false,failed:false,skinCache:{},cache:new Map(),sprites:new Map()};
+const AVFILES=["base","outfit/overalls","outfit/dress","outfit/shirt","outfit/apron","outfit/bandana","outfit/raincoat","feet/rainboots",
+  "hair/pigtails","hair/short","hair/curly","hair/ponytail","hair/bun","hair/braids","hair/long","hair/spiky","hair/bob","hair/buzz",
+  "hat/straw","hat/cap","hat/bonnet","hat/flowercrown","hat/beanie","hat/cowboy","hat/crown","extra/glasses","extra/bow"];
+const AV_KEEP=new Set(["hat/straw","hat/flowercrown","hat/cowboy","hat/crown","extra/glasses"]); // keep their own colors
+(function loadAvatarArt(){
+  let left=AVFILES.length;
+  for(const f of AVFILES){const im=new Image();im.onload=()=>{AVART.imgs[f]=im;if(--left===0){AVART.ready=true;applyLooks();refreshFaces();if(screen==="dress")renderDress()}};
+    im.onerror=()=>{AVART.failed=true};im.src=`art/avatar/${f}.webp`}
+})();
+const hex2rgb=h=>{const n=parseInt(h.slice(1),16);return[n>>16&255,n>>8&255,n&255]};
+function avCanvas(){const c=document.createElement("canvas");c.width=c.height=320;return c}
+function tinted(img,hex){const c=avCanvas(),g=c.getContext("2d");g.drawImage(img,0,0);g.globalCompositeOperation="multiply";g.fillStyle=hex;g.fillRect(0,0,320,320);
+  g.globalCompositeOperation="destination-in";g.drawImage(img,0,0);return c}
+function skinBase(i,shirtHex){ // base body with this skin tone (and shirt color for the T-shirt look)
+  const key=i+"|"+(shirtHex||""); if(AVART.skinCache[key]) return AVART.skinCache[key];
+  const c=avCanvas(),g=c.getContext("2d");g.drawImage(AVART.imgs.base,0,0);
+  const d=g.getImageData(0,0,320,320),p=d.data,[sr,sg,sb]=hex2rgb(AV.skins[i]),k0=253+207+168,sh=shirtHex?hex2rgb(shirtHex):null;
+  for(let y=0;y<320;y++)for(let x=0;x<320;x++){const o=(y*320+x)*4;if(p[o+3]<20)continue;const r=p[o],gg=p[o+1],b=p[o+2];
+    if(y<272&&r>gg+15&&gg>b){const f=Math.min(1.25,(r+gg+b)/k0);p[o]=Math.min(255,sr*f);p[o+1]=Math.min(255,sg*f);p[o+2]=Math.min(255,sb*f)}
+    else if(sh&&y>158&&y<240&&Math.max(r,gg,b)-Math.min(r,gg,b)<28&&r>150){const f=r/255;p[o]=sh[0]*f;p[o+1]=sh[1]*f;p[o+2]=sh[2]*f}}
+  g.putImageData(d,0,0); return AVART.skinCache[key]=c;
+}
+// eyes and mouth on the base art (it faces the bottom left, so the right eye sits a little lower)
+const AVFACE={le:[107.5,130.5],re:[157,142],mo:[130.5,154]};
+function drawFace(g,L){
+  const skin=AV.skins[L.skin],ink="#2B2140",[lx,ly]=AVFACE.le,[rx,ry]=AVFACE.re,[mx,my]=AVFACE.mo;
+  g.lineCap="round";g.lineJoin="round";
+  if(L.cheeks){g.fillStyle="rgba(255,120,150,.45)";g.beginPath();g.ellipse(lx-8,ly+18,9,6,0,0,7);g.ellipse(rx+10,ry+16,9,6,0,0,7);g.fill()}
+  if(L.freckles){g.fillStyle="#A0522D";for(const [x,y] of [[lx-12,ly+14],[lx-6,ly+17],[lx-14,ly+20],[rx+6,ry+12],[rx+12,ry+15],[rx+8,ry+19]]){g.beginPath();g.arc(x,y,1.6,0,7);g.fill()}}
+  if(L.face==="happy") return;
+  // paint over the drawn eyes and smile, then draw the new expression
+  g.fillStyle=skin;g.beginPath();g.ellipse(lx,ly,8,10,0,0,7);g.ellipse(rx,ry,9,11,0,0,7);g.ellipse(mx,my,12,7,.25,0,7);g.fill();
+  g.fillStyle=ink;g.strokeStyle=ink;g.lineWidth=3;
+  const dot=(x,y,r)=>{g.beginPath();g.ellipse(x,y,r*.85,r,0,0,7);g.fill();g.fillStyle="#fff";g.beginPath();g.arc(x+1.5,y-2,1.4,0,7);g.fill();g.fillStyle=ink};
+  const shut=(x,y)=>{g.beginPath();g.moveTo(x-6,y);g.quadraticCurveTo(x,y+5,x+6,y+1);g.stroke()};
+  const F=L.face;
+  if(F==="sleepy"){shut(lx,ly);shut(rx,ry)} else if(F==="wink"){shut(lx,ly);dot(rx,ry,5.5)} else {dot(lx,ly,F==="wow"?7:5.5);dot(rx,ry,F==="wow"?7.5:6)}
+  g.beginPath();
+  if(F==="grin"){g.moveTo(mx-10,my-3);g.quadraticCurveTo(mx,my+14,mx+11,my);g.closePath();g.fill();g.fillStyle="#FF8FA3";g.beginPath();g.ellipse(mx+1,my+4,4,2.5,.2,0,7);g.fill()}
+  else if(F==="wow"){g.ellipse(mx,my+1,4.5,5.5,0,0,7);g.fill()}
+  else if(F==="silly"){g.moveTo(mx-8,my-2);g.quadraticCurveTo(mx,my+6,mx+9,my);g.stroke();g.fillStyle="#FF6F91";g.beginPath();g.ellipse(mx+3,my+5,4,5,.2,0,7);g.fill()}
+  else if(F==="sleepy"){g.moveTo(mx-5,my);g.quadraticCurveTo(mx,my+3,mx+5,my+1);g.stroke();g.fillStyle="#4DA3FF";g.font="900 18px sans-serif";g.fillText("z",rx+30,ry-40);g.fillText("z",rx+42,ry-54)}
+  else {g.moveTo(mx-8,my-2);g.quadraticCurveTo(mx,my+7,mx+9,my);g.stroke()}
+}
+function plaid(c,hex){const g=c.getContext("2d");g.globalCompositeOperation="source-atop";g.strokeStyle="rgba(255,255,255,.45)";g.lineWidth=4;
+  for(let x=100;x<240;x+=14){g.beginPath();g.moveTo(x,150);g.lineTo(x,260);g.stroke()}for(let y=160;y<260;y+=14){g.beginPath();g.moveTo(90,y);g.lineTo(240,y);g.stroke()}
+  g.strokeStyle="rgba(0,0,0,.15)";g.lineWidth=2;for(let x=107;x<240;x+=14){g.beginPath();g.moveTo(x,150);g.lineTo(x,260);g.stroke()}g.globalCompositeOperation="source-over";return c}
+function avatarCanvas(L){
+  const A=AVART.imgs, cl=AV.clothCs[L.clothC], hc=AV.hairCs[L.hairC], ht=AV.clothCs[L.hatC];
+  const c=avCanvas(),g=c.getContext("2d");
+  const teeLook=L.outfit==="tee";
+  g.drawImage(skinBase(L.skin,teeLook?cl:null),0,0);
+  const outfitFile={overalls:"outfit/overalls",dress:"outfit/dress",plaid:"outfit/shirt",apron:"outfit/apron",raincoat:"outfit/raincoat"}[L.outfit];
+  if(outfitFile){const t=tinted(A[outfitFile],cl);if(L.outfit==="plaid")plaid(t,cl);g.drawImage(t,0,0)}
+  if(L.boots) g.drawImage(tinted(A["feet/rainboots"],ht),0,0);
+  if(L.bandana) g.drawImage(tinted(A["outfit/bandana"],ht),0,0);
+  drawFace(g,L);
+  const hairFile="hair/"+L.hair; if(A[hairFile]) g.drawImage(tinted(A[hairFile],hc),0,0);
+  if(L.glasses) g.drawImage(A["extra/glasses"],0,0);
+  if(L.hat!=="none"){const f="hat/"+(L.hat==="flowers"?"flowercrown":L.hat);if(A[f])g.drawImage(AV_KEEP.has(f)?A[f]:tinted(A[f],ht),0,0)}
+  if(L.bow) g.drawImage(tinted(A["extra/bow"],L.hat==="none"?"#FF5FA2":ht),0,0);
+  return c;
+}
+// full = whole farmer (dressing room, farm); bust = head and shoulders (chips, cards)
+function avatarURL(L,mode){
+  if(!AVART.ready) return svgURL(avatarSVG(L,mode==="full"?"bust":mode,240));
+  const key=mode+JSON.stringify(L); if(AVART.cache.has(key)) return AVART.cache.get(key);
+  const full=avatarCanvas(L); let out=full;
+  if(mode==="bust"){out=document.createElement("canvas");out.width=out.height=200;out.getContext("2d").drawImage(full,50,18,210,210,0,0,200,200)}
+  const url=out.toDataURL("image/png"); if(AVART.cache.size>300) AVART.cache.clear(); AVART.cache.set(key,url); return url;
+}
+function avatarSprite(K){ // the farm draws this as the walking farmer
+  if(!AVART.ready||!K||!K.look) return null; const url=avatarURL(K.look,"full");
+  let im=AVART.sprites.get(url); if(!im){im=new Image();im.src=url;AVART.sprites.set(url,im)} return im.complete&&im.naturalWidth?im:null;
+}
+
 
 /* ---------------- start ---------------- */
 const savedCode=cleanCode(load("kp.code"));
@@ -3918,6 +3999,9 @@ function fwDraw(g,x,y,K,o){
   g.save();
   g.fillStyle="rgba(0,0,0,.2)";g.beginPath();g.ellipse(x,y,H*.24,th*.2,0,0,7);g.fill();
   if(o.me){g.strokeStyle=K.hue;g.lineWidth=Math.max(2,th*.06);g.beginPath();g.ellipse(x,y,H*.3,th*.26,0,0,7);g.stroke()}
+  const spr=avatarSprite(K);
+  if(spr){g.translate(x,y+bob);if(dir>0)g.scale(-1,1);const S=H*1.3;g.drawImage(spr,-S*.5,-S*.89,S,S);g.restore()}
+  else{
   g.translate(x,y+bob);g.scale(dir<0?-1:1,1);
   const u=H/100; // drawing units: 100 tall
   // legs + boots
@@ -3942,6 +4026,7 @@ function fwDraw(g,x,y,K,o){
   g.fillStyle="#D9AE4E";g.beginPath();g.ellipse(0,hy-hr*.9,hr*.85,hr*.55,0,Math.PI,0);g.fill();g.fillRect(-hr*.85,hy-hr*.92,hr*1.7,hr*.3);
   g.fillStyle=K.hue;g.fillRect(-hr*.85,hy-hr*.78,hr*1.7,hr*.16);
   g.restore();
+  }
   // name tag
   const ty=y-H-th*.35;g.font=`800 ${Math.max(11,th*.28)}px system-ui`;const nm=o.me?`${K.name} (you)`:K.name,tw=g.measureText(nm).width+th*.3;
   g.fillStyle=o.me?K.hue:"rgba(255,255,255,.92)";rr(x-tw/2,ty-th*.24,tw,th*.36,th*.18,g.fillStyle);

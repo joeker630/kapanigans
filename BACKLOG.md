@@ -568,7 +568,7 @@ Build a library of **white, colorable clothing pieces** for Fashion Show (#5), s
 
 ---
 
-## 10. 🛠️ Avatar builder (engine and dressing room built with code-drawn parts; generated art still to come)
+## 10. 🛠️ Avatar builder (generated art live in the dressing room, everywhere faces show, and the farm; costumes and pets still to come)
 
 Build the **simple parts for the avatar builder** (#3 farmer avatars, used as every player's avatar across Kapanigans) in the **same chunky 3D style as the farm animals** (`art/farm/`).
 
@@ -593,11 +593,16 @@ Build the **simple parts for the avatar builder** (#3 farmer avatars, used as ev
 - Avatar parts and Fashion Show clothes can mix: a Fashion Show piece can be worn by your avatar, and your avatar can walk the runway.
 
 **✅ Built so far (code-drawn parts, no image credits used)**
-- **Dressing room** (👗 Dress up on your home-screen card): Skin (6), Face (6: happy, big smile, surprised, sleepy, silly, wink), Hair (10 styles + 10 colors), Hat (7 + none, any color), Clothes (overalls, farm dress, plaid shirt, apron, T-shirt, hoodie, any of 12 colors), Extras for Big/grown-ups (glasses, freckles, rosy cheeks, bow), 🎲 surprise me. Violet's level gets bigger tiles and no Extras tab.
+- **Dressing room** (👗 Dress up on your home-screen card): Skin (6), Face (6: happy, big smile, surprised, sleepy, silly, wink), Hair (10 styles + 10 colors), Hat (7 + none, any color), Clothes (overalls, farm dress, plaid shirt, apron, T-shirt, raincoat, any of 12 colors), Extras for Big/grown-ups (glasses, freckles, rosy cheeks, bow, bandana, rain boots), 🎲 surprise me. Violet's level gets bigger tiles and no Extras tab.
 - Saved per person in Firebase (`families/<code>/looks/<person>`), the same on every device.
 - The avatar replaces the emoji (and photo) on the home screen, "Who are you?", seat chips, zone labels, inbox and the video tile when the camera is off; the farm farmer wears the avatar's face and hair under the straw hat.
 - **Swapping in art later:** each part is one slot in `avatarSVG()` (skin, face, hair back/front, hat, outfit, extras). Generated cutouts can replace a slot's drawing one at a time without changing the dressing room or saved looks.
-- Still to do: unlockables (pumpkin and chicken costumes, pets) once Farmstand coins can buy them; generated art per the table above.
+- Still to do: unlockables (pumpkin and chicken costumes, pets) once Farmstand coins can buy them.
+
+**✅ Generated art swapped in (Oct 27)**
+- The dressing room preview and tiles, the head-and-shoulders face everywhere (home cards, seat chips, zone tags, inbox, video tile) and the **farm farmer sprite** now use the `art/avatar/` layers, stacked and tinted in code (`avatarCanvas()` in index.html). The code-drawn SVG is the fallback until the art loads.
+- Hoodie replaced by **raincoat** (saved hoodie looks show as T-shirt). **Bandana** and **rain boots** added to Extras, tinted with the hat color.
+- Skin is recolored from the base; the T-shirt look tints the base shirt; plaid is drawn over `outfit/shirt`; the 5 non-happy expressions are painted over the base face.
 
 **🎨 Generated art ready to swap in (Oct 27) — `art/avatar/`, from `tools/batches/avatar1.json`**
 - **Style:** the flat **isometric sprite** style of the farm animals (`art/iso/farm/`), not the chunky 3D `art/farm/` style named above, so farmers match the animals they walk among. Facing the bottom left like the animals; mirror for the other side.
