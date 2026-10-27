@@ -6,7 +6,7 @@ Levels used below: **Little** = Violet level (age 3), **Big** = Quinn level (age
 
 ---
 
-## 1. 🛠️ New game: Write a Bedtime Story (playable; waiting on Firebase for reliable delivery)
+## 1. ✅ New game: Write a Bedtime Story
 
 A fill-in-the-blanks (mad-libs style) bedtime story that one child makes as a **gift** for another child, with simple characters they draw that get gentle animations.
 
@@ -30,8 +30,8 @@ A fill-in-the-blanks (mad-libs style) bedtime story that one child makes as a **
 - [x] At least 3 story templates, each with 5–8 blanks and 4–6 pages (The Sleepy Dragon, The Moon Picnic, The Lost Teddy)
 - [x] Little authors can finish a story without reading anything (picture choices, everything read aloud)
 - [x] Drawn characters appear on the story pages with at least 4 animation types (bob, hop, wiggle, float, spin, sleepy)
-- [~] The gift arrives on the recipient's device even if they weren't online when it was sent: works today through retained messages on the relay, which the relay may drop. Moves to Firebase for a guarantee.
-- [~] "My stories" shelf to rewatch received stories: works, but each device keeps its own copy. Firebase will sync it across devices.
+- [x] The gift arrives on the recipient's device even if they weren't online when it was sent (saved in Firebase, delivered to their Inbox)
+- [x] "My stories" shelf to rewatch received stories, the same on every device
 - [x] Thank-you reactions (❤️ 😴 🤗) go back to the author, even if they're offline
 
 **🔍 Decisions needed**
@@ -124,7 +124,7 @@ A **live co-op farm** that the kids share. They grow crops and raise animals tog
 
 ---
 
-## 4. 🆕 Inbox for every persona
+## 4. ✅ Inbox for every persona
 
 Every person (kids, friends and grown-ups) gets an **Inbox** for messages the family sends each other. No passwords: it's all family, and the family code is the only key.
 
@@ -146,14 +146,15 @@ Every person (kids, friends and grown-ups) gets an **Inbox** for messages the fa
 - Messages stay until you delete them; grown-ups can clear any inbox
 
 **Acceptance criteria**
-- [ ] A message sent to a device that's asleep or closed is waiting in the inbox when it's next opened
-- [ ] Unread badge on the lobby mailbox and on each person in the "Who are you?" screen
-- [ ] Violet can send and open messages without reading anything
-- [ ] Voice messages up to 30 seconds
+- [x] A message sent to a device that's asleep or closed is waiting in the inbox when it's next opened
+- [x] Unread badge on the lobby mailbox and on each person in the "Who are you?" screen
+- [x] Violet can send and open messages without reading anything
+- [x] Voice messages up to 30 seconds
+- [x] Send a finished Color Together picture to someone's inbox ("Send it 💌" on the celebration screen)
 
 **🔍 Decisions needed**
-- Should kids be able to message only family personas, or Bear friend and Fox friend too?
-- Should grown-ups see every inbox (a parent view), or only their own?
+- Should kids be able to message only family personas, or Bear friend and Fox friend too? *(For now: anyone can message anyone; "Everyone" goes to family only, not Bear or Fox friend.)*
+- Should grown-ups see every inbox (a parent view), or only their own? *(For now: only their own.)*
 
 ---
 
@@ -199,7 +200,7 @@ Kids design outfits for a "model," then watch the model walk an animated runway,
 
 - ✅ **Saved data: decided on Firebase Realtime Database (free Spark plan).** No credit card, live updates to every device, works from GitHub Pages. Everything lives under `families/<family code>/`, so the family code is the key (no passwords).
   - Why not the others: Supabase's free plan pauses projects after a week without use, and Firebase *Storage* (for files) now needs a paid plan, so voice clips and drawings are saved as small compressed data inside the database instead.
-  - 🛠️ Waiting on Joe: create the Firebase project and send over its web config.
+  - ✅ Firebase project `kapanigans` is connected. Rules only allow reading and writing under `families/<code>` (codes of 6+ characters); everything else is denied.
   - Later: consider moving live game sync from the HiveMQ relay to Firebase too, so everything uses one service.
 - ✅ **Read-aloud helper:** `say()` / `sayLittle()` use the device's built-in voice. Little players already hear their tool, color, picture and reaction names; there's a 🔊 on/off button in the lobby. Ready for stories, chore instructions and inbox messages.
 - ✅ **Game menu:** the placeholder cards are replaced with Bedtime Story, Kapanigan Farmstand and Inbox (marked Soon; tapping one says "Coming soon!").
@@ -213,3 +214,4 @@ Kids design outfits for a "model," then watch the model walk an animated runway,
 - ✅ Grown-up personas (#2) and the "Who are you!? :)" welcome
 - ✅ Read-aloud helper and new game menu
 - ✅ Bedtime Story: make, send, unwrap, read aloud with word highlighting, thank-yous
+- ✅ Firebase storage and the Inbox (#4): stickers, phrases, typed notes, drawings, voice messages, colored pictures, story gifts and thank-yous

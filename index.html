@@ -317,6 +317,37 @@ h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance;l
 @keyframes a-sleep{0%,100%{transform:scale(1) rotate(0)}50%{transform:scale(.95,.92) rotate(-3deg)}}
 @media (max-height:560px){.rchar{width:min(30vh,26vw)}.rtext{font-size:18px;padding:8px 14px}.rnav .arrow{width:48px;height:48px;font-size:22px}}
 
+/* ---------- Inbox ---------- */
+#inbox{padding-block:12px;gap:12px;overflow:auto}
+.mailbtn{position:relative}
+.mailbtn.bounce{animation:mbounce .9s}
+@keyframes mbounce{0%,100%{transform:translateY(0)}20%{transform:translateY(-12px) rotate(-8deg)}40%{transform:translateY(0)}60%{transform:translateY(-6px) rotate(6deg)}}
+.badge{position:absolute;top:-6px;right:-6px;min-width:24px;height:24px;padding:0 6px;border-radius:999px;background:var(--fox);color:#fff;font-size:13px;font-weight:900;display:grid;place-items:center;box-shadow:0 0 0 3px #fff;font-family:var(--body);line-height:1}
+.kid,.gubtn{position:relative}
+.mlist{display:flex;flex-direction:column;gap:10px;width:100%;max-width:760px}
+.mrow{display:flex;align-items:center;gap:12px;background:var(--paper);border-radius:20px;padding:10px 16px;text-align:left;box-shadow:0 4px 0 var(--sky-deep);border-left:8px solid var(--k)}
+.mrow .face{font-size:36px}
+.mrow .mmain{flex:1;min-width:0;display:flex;flex-direction:column}
+.mrow .mmain span{color:var(--ink-soft);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mrow .mtime{font-size:12px;color:var(--ink-soft);white-space:nowrap}
+.mrow.unread{background:#FFF8DC}
+.mrow.unread b::after{content:" ●";color:var(--fox)}
+.mhead{display:flex;align-items:center;gap:12px;background:var(--paper);border-radius:999px;padding:6px 20px 6px 8px;border:4px solid var(--k)}
+.mhead .face{font-size:40px}.mhead b{display:block;font-size:20px}.mhead small{color:var(--ink-soft)}
+.mcard{background:var(--paper);border-radius:28px;padding:22px;display:flex;flex-direction:column;align-items:center;gap:14px;box-shadow:0 6px 0 var(--sky-deep);width:100%;max-width:640px}
+.bigsticker{font-size:min(40vw,180px);line-height:1;animation:popin .5s ease-out}
+.bigsticker.small{font-size:80px}
+@keyframes popin{0%{transform:scale(.2) rotate(-20deg)}70%{transform:scale(1.1) rotate(5deg)}100%{transform:scale(1)}}
+.mtextbig{font-family:var(--display);font-size:clamp(24px,5vw,40px);text-align:center;text-wrap:balance;overflow-wrap:anywhere}
+.mdraw,.mpic{width:100%;max-width:480px;border-radius:18px;border:3px solid #eee;background:#fff}
+.replies .round.big{width:60px;height:60px;font-size:30px}
+.msgtext{width:100%;max-width:640px;font:inherit;font-size:22px;padding:14px;border-radius:20px;border:3px solid var(--sky-deep);color:var(--ink);background:#fff;resize:vertical}
+.msgtext:focus{outline:none;border-color:var(--violet)}
+.recbtn{width:160px;height:160px;border-radius:50%;background:var(--paper);font-size:76px;box-shadow:0 8px 0 var(--sky-deep)}
+.recbtn.on{background:var(--fox);animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(229,72,77,.5)}50%{box-shadow:0 0 0 22px rgba(229,72,77,0)}}
+.voiceplay{width:110px;height:110px;border-radius:50%;background:var(--sun);font-size:50px;box-shadow:0 6px 0 var(--sun-deep)}
+
 @media (orientation:landscape) and (max-height:560px){
   #game{grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto minmax(0,1fr);grid-template-areas:"head head" "stage tray"}
   .tray{flex-direction:row;max-width:260px;overflow-y:auto;margin-bottom:0}
@@ -364,6 +395,7 @@ h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance;l
     <h1>Kapanigans</h1>
     <span class="status" id="status"><i></i><span>Connecting…</span></span>
     <button class="codechip" id="codeChip"></button>
+    <button class="voicebtn mailbtn" id="mailBtn" aria-label="Inbox">💌<span class="badge" id="mailBadge" hidden></span></button>
     <button class="voicebtn" id="voiceBtn" aria-label="Read aloud on or off">🔊</button>
     <button class="mechip" id="meChip"></button>
   </div>
@@ -375,7 +407,7 @@ h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance;l
     <button class="game live" id="playColor"><span class="tag">Play</span><span class="icon">🎨</span><h3>Color Together</h3><p>Everyone colors their own part of one big picture.</p></button>
     <button class="game live" id="playStory"><span class="tag">Play</span><span class="icon">🌙</span><h3>Bedtime Story</h3><p>Make a silly story with your own characters and send it as a gift.</p></button>
     <button class="game soon" data-say="Kapanigan Farmstand. Coming soon!"><span class="tag">Soon</span><span class="icon">🥕</span><h3>Kapanigan Farmstand</h3><p>Grow crops and care for animals together on the family farm.</p></button>
-    <button class="game soon" data-say="Inbox. Coming soon!"><span class="tag">Soon</span><span class="icon">💌</span><h3>Inbox</h3><p>Send stickers, drawings and voice notes to the family.</p></button>
+    <button class="game live" id="playInbox"><span class="tag">Play</span><span class="icon">💌</span><h3>Inbox</h3><p>Send stickers, drawings and voice notes to the family.</p></button>
   </div>
 </section>
 
@@ -417,6 +449,16 @@ h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance;l
   <div class="vbtns"><button id="vMic" aria-label="Microphone on or off">🎤</button><button id="vCam" aria-label="Camera on or off">📷</button></div>
 </div>
 
+
+<!-- ============ INBOX ============ -->
+<section class="screen" id="inbox" hidden>
+  <div class="shead">
+    <button class="round" id="iBack" aria-label="Back">⬅️</button>
+    <h1 id="iTitle">💌 Inbox</h1>
+    <button class="round" id="iHome" aria-label="Home">🏠</button>
+  </div>
+  <div class="sbody" id="iBody"></div>
+</section>
 
 <!-- ============ BEDTIME STORY: make ============ -->
 <section class="screen" id="story" hidden>
@@ -464,6 +506,7 @@ h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance;l
     <div class="waiting" id="partyWait" hidden></div>
     <div class="btns">
       <button class="bigbtn" id="saveBtn">Save picture 💾</button>
+      <button class="bigbtn" id="sendPicBtn">Send it 💌</button>
       <button class="ghost" id="keepBtn">Keep coloring</button>
       <button class="ghost" id="partyHome">Back to games</button>
     </div>
@@ -473,6 +516,8 @@ h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance;l
 <div class="toast" id="toast" hidden></div>
 
 <script src="https://unpkg.com/mqtt@5.15.1/dist/mqtt.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
 <script>
 (() => {
 "use strict";
@@ -520,7 +565,8 @@ function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i)
 function rng(seed){let a=seed>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 function esc(s){return String(s).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]))}
 function kidOf(k){return KIDS[k] || KIDS.bear}
-function show(id){if(screen==="reader"&&id!=="reader")hush();for(const s of ["setup","pick","lobby","game","story","reader"]) $("#"+s).hidden = s!==id; screen=id; if(id!=="game") $("#vid").hidden=true}
+function show(id){if(screen==="reader"&&id!=="reader")hush();if(screen==="inbox"&&id!=="inbox"&&typeof stopRec==="function")stopRec();for(const s of ["setup","pick","lobby","game","story","reader","inbox"]) $("#"+s).hidden = s!==id; screen=id; if(id!=="game") $("#vid").hidden=true; if(id==="pick"&&typeof syncMailBadges==="function") syncMailBadges();
+  if(me&&room&&id!=="game"&&id!=="setup") setPresence({scr:id==="lobby"?"lobby":"busy"})}
 /* ---------------- read-aloud helper ---------------- */
 // say(text, {rate, pitch, onWord(charIndex,len), onEnd}) speaks with the device voice.
 // sayLittle(text) speaks only for Little-level players (Violet, Bear friend).
@@ -750,7 +796,7 @@ function makeRoom(code){
     will:{topic:pTopic,payload:"",retain:true,qos:0}});
   const pub=()=>{pubT=null;if(ok&&!dead)client.publish(pTopic,JSON.stringify(Object.assign({},pres,{ts:Date.now()})),{retain:true,qos:0})};
   const schedule=()=>{if(!pubT)pubT=setTimeout(pub,90)};
-  client.on("connect",()=>{client.subscribe([base+"p/+",base+"e",sTopic,base+"g/+/+",base+"t/+/+"],{qos:0});setOk(true);pub()});
+  client.on("connect",()=>{client.subscribe([base+"p/+",base+"e",sTopic],{qos:0});setOk(true);pub()});
   client.on("close",()=>setOk(false)); client.on("offline",()=>setOk(false)); client.on("error",()=>{});
   client.on("message",(topic,buf)=>{
     const s=buf.toString();
@@ -814,7 +860,6 @@ function wireRoom(){
     if(screen==="game") {renderSeats();renderCursors();checkParty();videoTick()}
   },()=>{});
   room.onSignal(m=>{onSignal(m).catch(()=>{})});
-  room.onStore(onStoreMsg);
   room.on("start",m=>{
     if(m.sameTab||screen!=="lobby"||!m.data) return;
     const g=m.data; if(!Array.isArray(g.seats)||!PICS[g.pic]) return;
@@ -853,6 +898,7 @@ function wireRoom(){
 /* ---------------- screens ---------------- */
 function chooseKid(k){
   me=k; joinedAt=Date.now(); store("kp.kid",k);
+  for(const m of unreadOf(k)) mail.seen.add(m.id);
   say(`Hi ${kidOf(k).name}!`);
   setPresence({kid:k,at:joinedAt,scr:"lobby",g:null,seat:null,done:null});
   blip(700); goLobby();
@@ -865,7 +911,10 @@ function renderLobby(){
   const gb=$("#giftbar"); gb.innerHTML="";
   for(const g of unopenedGifts().slice(0,3)){const b=document.createElement("button");b.className="giftnew";
     b.innerHTML=`<span class="box">🎁</span><span><b>${esc(nameOf(g.from))}</b> made you a bedtime story!<br><small>Tap to open</small></span>`;
-    b.onclick=()=>openReader(g,{gift:true}); gb.append(b)}
+    b.onclick=()=>openStoryMsg(g); gb.append(b)}
+  const others=me?unreadOf(me).filter(m=>m.kind!=="story").length:0;
+  if(others){const b=document.createElement("button");b.className="giftnew";b.innerHTML=`<span class="box">💌</span><span><b>${others} new message${others>1?"s":""}</b> in your inbox<br><small>Tap to read</small></span>`;b.onclick=()=>openInbox("list");gb.append(b)}
+  syncMailBadges();
   const mc=$("#meChip"); mc.style.setProperty("--k",K.hue);
   mc.innerHTML=`<span class="face">${K.face}</span><span>${esc(K.name)}<small>Tap to switch</small></span>`;
   const players=lobbyPlayers();
@@ -1144,6 +1193,7 @@ function openSetup(){
 function connect(code){
   if(room){room.end();room=null}
   familyCode=code; store("kp.code",code);
+  fbConnect(code);
   if(!window.mqtt){toast("Offline: playing on this device only");return}
   room=makeRoom(code); wireRoom();
   if(me) setPresence({kid:me,at:joinedAt,scr:screen==="game"?"game":"lobby"});
@@ -1309,43 +1359,17 @@ function blankOpts(type){return type==="number"?numberOpts():BLANKS[type].opts}
 function nameOf(k){return kidOf(k).name}
 function fillTokens(str,g){return str.replace(/\{(\w+)\}/g,(m,k)=>k==="to"?nameOf(g.to):k==="from"?nameOf(g.from):(g.words[k]?String(g.words[k].w).slice(0,20):k))}
 
-/* ---- gift store: relay (retained, best effort) + this device's shelf ---- */
-const gifts=new Map();
-let opened=new Set(), thanksSeen=new Set();
-try{opened=new Set(JSON.parse(load("kp.opened")||"[]"))}catch(e){}
-try{thanksSeen=new Set(JSON.parse(load("kp.thanksSeen")||"[]"))}catch(e){}
-try{for(const g of JSON.parse(load("kp.shelf")||"[]")) if(validGift(g)) gifts.set(g.id,g)}catch(e){}
-const appStart=Date.now();
-function saveShelf(){const arr=[...gifts.values()].sort((a,b)=>b.at-a.at).slice(0,60);store("kp.shelf",JSON.stringify(arr))}
+/* ---- story gifts (stored in the Firebase inbox) ---- */
 function validGift(g){
-  if(!g||typeof g!=="object"||typeof g.id!=="string"||!/^[a-z0-9]{4,40}$/.test(g.id)) return false;
+  if(!g||typeof g!=="object"||typeof g.id!=="string"||!/^[-_A-Za-z0-9]{4,40}$/.test(g.id)) return false;
   if(!KIDS[g.to]||!KIDS[g.from]||!STORIES[g.story]||typeof g.at!=="number") return false;
   if(!g.words||typeof g.words!=="object"||!Array.isArray(g.chars)||g.chars.length>3) return false;
   for(const k of STORIES[g.story].blanks){const w=g.words[k];if(!w||typeof w.w!=="string"||w.w.length>20||(w.e!=null&&typeof w.e!=="string"))return false}
   for(const c of g.chars){if(c!==null&&(typeof c!=="object"||!Array.isArray(c.s)||!ANIM_KEYS.includes(c.a)))return false}
   return true;
 }
-function myGifts(){return [...gifts.values()].filter(g=>g.to===me).sort((a,b)=>b.at-a.at)}
-function unopenedGifts(){return myGifts().filter(g=>!opened.has(g.id))}
-function onStoreMsg(kind,to,id,data){
-  if(kind==="g"){
-    if(!data){return}
-    if(!validGift(data)||data.id!==id||data.to!==to) return;
-    const isNew=!gifts.has(id); gifts.set(id,data); saveShelf();
-    if(isNew&&data.to===me&&!opened.has(id)&&data.at>appStart-10000){
-      blip(660,.2,"triangle",.12);setTimeout(()=>blip(990,.25,"triangle",.12),160);
-      toast(`🎁 A bedtime story from ${nameOf(data.from)}!`); say(`You got a bedtime story from ${nameOf(data.from)}!`);
-    }
-    if(screen==="lobby") renderLobby();
-  } else if(kind==="t"){
-    if(!data||typeof data!=="object"||to!==me||!KIDS[data.from]||!["❤️","😴","🤗"].includes(data.r)||thanksSeen.has(id)) return;
-    thanksSeen.add(id); store("kp.thanksSeen",JSON.stringify([...thanksSeen].slice(-200)));
-    const title=STORIES[data.story]?STORIES[data.story].title:"your story";
-    const word={"❤️":"loved","😴":"got sleepy from","🤗":"sends a hug for"}[data.r];
-    floatReaction(data.r,data.from); toast(`${nameOf(data.from)} ${word} ${title}`);
-    say(`${nameOf(data.from)} ${word} ${title}!`);
-  }
-}
+function myGifts(){return inboxOf(me).filter(m=>m.kind==="story"&&STORIES[m.story])}
+function unopenedGifts(){return myGifts().filter(m=>!m.read)}
 
 /* ---- authoring wizard ---- */
 let draft=null, sStep="home";
@@ -1381,8 +1405,8 @@ function renderStory(){
     if(!list.length){B.append(el("p","empty",`No stories yet. When someone makes you a bedtime story, it shows up here.`));return}
     const grid=el("div","shelf");
     for(const g of list){const st=STORIES[g.story];
-      const b=el("button","scard",`${opened.has(g.id)?"":'<span class="new">New</span>'}<span class="em">${st.cover}</span><h3>${esc(st.title)}</h3><span class="from">from ${esc(nameOf(g.from))}</span>`);
-      b.onclick=()=>openReader(g,{gift:!opened.has(g.id)}); grid.append(b)}
+      const b=el("button","scard",`${g.read?"":'<span class="new">New</span>'}<span class="em">${st.cover}</span><h3>${esc(st.title)}</h3><span class="from">from ${esc(nameOf(g.from))}</span>`);
+      b.onclick=()=>openStoryMsg(g); grid.append(b)}
     B.append(grid);
   }
   else if(sStep==="to"){
@@ -1464,17 +1488,27 @@ function castPrompt(i){const S=STORIES[draft.story];return fillTokens(S.cast[i].
 const pad={strokes:[],tool:"pen",c:null,size:1};
 function renderDraw(B,S){
   const i=draft.ci; if(!draft.chars[i]) draft.chars[i]={s:[],a:i===0?"bob":"hop"};
-  const ch=draft.chars[i]; pad.strokes=ch.s; const L=lvl();
-  if(!pad.c||!(L==="little"?LITTLE_COLORS:BIG_COLORS).includes(pad.c)) pad.c=L==="little"?LITTLE_COLORS[5]:BIG_COLORS[16];
+  const ch=draft.chars[i]; pad.strokes=ch.s;
   const prog=el("div","progress");S.cast.forEach((_,j)=>prog.append(el("i",j<=i?"on":"")));B.append(prog);
   B.append(el("h2",null,esc(castPrompt(i))));
+  buildPad(B,ch.s);
+  const row=el("div","rowbtns");
+  const skip=el("button","ghost",`Skip (use ${S.cast[i].from?(draft.words[S.cast[i].from]||{}).e||"⭐":S.cast[i].emoji})`);
+  const done=el("button","bigbtn","Done ✔️");
+  const next=()=>{if(draft.ci<S.cast.length-1){draft.ci++;renderStory();say(castPrompt(draft.ci))}else{sGo("wiggle");say("How do they move?")}};
+  skip.onclick=()=>{ch.s=[];pad.strokes=ch.s;next()}; done.onclick=()=>{if(!ch.s.length){say("Draw something first, or tap skip");return}next()};
+  row.append(skip,done); B.append(row);
+}
+function buildPad(B,strokes){
+  pad.strokes=strokes; const L=lvl();
+  if(!pad.c||!(L==="little"?LITTLE_COLORS:BIG_COLORS).includes(pad.c)) pad.c=L==="little"?LITTLE_COLORS[5]:BIG_COLORS[16];
   const wrap=el("div","padwrap");
   const cv=el("canvas","pad");cv.width=PAD;cv.height=PAD;cv.id="padCanvas";wrap.append(cv);
   const tools=el("div","padtools "+L);
   const r1=el("div","trow");
   const tb=(id,e,l)=>{const b=el("button","tool",`${e}<small>${l}</small>`);b.dataset.t=id;b.onclick=()=>{pad.tool=id;sayLittle(l);sync()};r1.append(b)};
   tb("pen",L==="little"?"🖍️":"🖊️",L==="little"?"Crayon":"Pen");
-  if(L!=="little") tb("erase","🧽","Eraser");
+  if(L!=="little") tb("erase","🧽","Eraser"); else if(pad.tool==="erase") pad.tool="pen";
   const oops=el("button","tool",`↩️<small>${L==="little"?"Oops":"Undo"}</small>`);oops.onclick=()=>{pad.strokes.pop();redraw();sayLittle("Oops!")};r1.append(oops);
   const clr=el("button","tool",`🗑️<small>Clear</small>`);clr.onclick=()=>{pad.strokes.length=0;redraw()};r1.append(clr);
   tools.append(r1);
@@ -1482,12 +1516,6 @@ function renderDraw(B,S){
   const r3=el("div","trow");
   for(const col of (L==="little"?LITTLE_COLORS:BIG_COLORS)){const s=el("button","sw");s.style.setProperty("--c",col);s.dataset.c=col;s.setAttribute("aria-label","color");s.onclick=()=>{pad.c=col;pad.tool="pen";sayLittle(COLOR_NAMES[col]);sync()};r3.append(s)}
   tools.append(r3); wrap.append(tools); B.append(wrap);
-  const row=el("div","rowbtns");
-  const skip=el("button","ghost",`Skip (use ${S.cast[i].from?(draft.words[S.cast[i].from]||{}).e||"⭐":S.cast[i].emoji})`);
-  const done=el("button","bigbtn","Done ✔️");
-  const next=()=>{if(draft.ci<S.cast.length-1){draft.ci++;renderStory();say(castPrompt(draft.ci))}else{sGo("wiggle");say("How do they move?")}};
-  skip.onclick=()=>{ch.s=[];pad.strokes=ch.s;next()}; done.onclick=()=>{if(!ch.s.length){say("Draw something first, or tap skip");return}next()};
-  row.append(skip,done); B.append(row);
   const ctx=cv.getContext("2d");
   function redraw(){ctx.clearRect(0,0,PAD,PAD);drawStrokes(ctx,pad.strokes,1)}
   function sync(){tools.querySelectorAll(".tool[data-t]").forEach(b=>b.classList.toggle("on",b.dataset.t===pad.tool));
@@ -1528,27 +1556,26 @@ function charFigure(g,i){
 }
 function draftGift(){return {id:null,to:draft.to,from:me,story:draft.story,words:draft.words,chars:STORIES[draft.story].cast.map((_,i)=>draft.chars[i]||{s:[],a:"bob"}),at:Date.now()}}
 function sendGift(){
-  if(!room||!room.connected()){toast("Can't send right now. Check the Wi-Fi.");say("Hmm, I can't send it right now.");return}
-  const g=draftGift(); g.id=Date.now().toString(36)+Math.random().toString(36).slice(2,8);
-  // keep it small for the relay: thin out very long strokes
-  for(const c of g.chars) for(const s of c.s) if(s.p.length>600){const q=[];for(let i=0;i<s.p.length;i+=4)q.push(s.p[i],s.p[i+1]);s.p=q}
-  const size=JSON.stringify(g).length;
-  if(size>180000){toast("That drawing is too big to send. Try a simpler one.");return}
-  room.put("g",g.to,g.id,g); tada(); sGo("sent"); say(`Sent to ${nameOf(g.to)}!`);
+  if(!mail.ref){toast("Can't send right now. Check the Wi-Fi.");say("Hmm, I can't send it right now.");return}
+  const g=draftGift(); delete g.id;
+  for(const c of g.chars) c.s=thin(c.s);
+  if(JSON.stringify(g).length>400000){toast("That drawing is too big to send. Try a simpler one.");return}
+  if(!sendMsg([g.to],{kind:"story",story:g.story},g)) return;
+  tada(); sGo("sent"); say(`Sent to ${nameOf(g.to)}!`);
 }
 
 /* ---- reader ---- */
-const rd={g:null,page:0,auto:false,preview:false,wordSpans:[],timer:null};
+const rd={g:null,msg:null,ret:"lobby",page:0,auto:false,preview:false,wordSpans:[],timer:null};
 (()=>{const s=$("#rStars");for(let i=0;i<60;i++){const st=document.createElement("i");st.style.left=Math.random()*100+"%";st.style.top=Math.random()*70+"%";st.style.animationDelay=(Math.random()*3)+"s";if(Math.random()<.2){st.style.width=st.style.height="4px"}s.append(st)}})();
 function openReader(g,o={}){
+  if(screen!=="reader") rd.ret=screen; if(o.preview) rd.msg=null;
   rd.g=g; rd.page=0; rd.preview=!!o.preview; rd.auto=lvl()==="little";
   show("reader"); $("#rTitle").textContent=STORIES[g.story].title; $("#rEnd").hidden=true; syncAuto();
   try{navigator.wakeLock&&navigator.wakeLock.request("screen").catch(()=>{})}catch(e){}
   if(o.gift){$("#rUnwrapMsg").textContent=`A story from ${nameOf(g.from)}! Tap to open`;$("#rUnwrap").hidden=false;$("#rUnwrap").classList.remove("pop");say(`A story from ${nameOf(g.from)}! Tap to open.`)}
   else {$("#rUnwrap").hidden=true; renderPage()}
 }
-$("#rOpen").onclick=()=>{const u=$("#rUnwrap");u.classList.add("pop");tada();setTimeout(()=>{u.hidden=true;markOpened(rd.g);renderPage()},600)};
-function markOpened(g){if(!g.id||opened.has(g.id))return;opened.add(g.id);store("kp.opened",JSON.stringify([...opened].slice(-300)))}
+$("#rOpen").onclick=()=>{const u=$("#rUnwrap");u.classList.add("pop");tada();setTimeout(()=>{u.hidden=true;markRead(rd.msg);renderPage()},600)};
 function renderPage(){
   clearTimeout(rd.timer);
   const g=rd.g,S=STORIES[g.story],P=S.pages[rd.page];
@@ -1600,12 +1627,244 @@ $("#rPrev").onclick=()=>{clearTimeout(rd.timer);if(rd.page>0){rd.page--;renderPa
 function syncAuto(){$("#rAuto").textContent=rd.auto?"⏸️":"▶️"}
 $("#rAuto").onclick=()=>{rd.auto=!rd.auto;syncAuto();if(rd.auto&&!(speech.ok&&speechSynthesis.speaking))nextPage();else if(!rd.auto)clearTimeout(rd.timer)};
 $("#rAgain").onclick=()=>{$("#rEnd").hidden=true;rd.page=0;renderPage()};
-const closeReader=()=>{clearTimeout(rd.timer);hush();if(rd.preview){show("story");renderStory()}else if(screen==="reader"){if(draft&&sStep==="shelf"){show("story");renderStory()}else goLobby()}};
+const closeReader=()=>{clearTimeout(rd.timer);hush();if(rd.preview||rd.ret==="story"){show("story");renderStory()}else if(rd.ret==="inbox"){show("inbox");ib.view="list";renderInbox()}else goLobby()};
 $("#rClose").onclick=closeReader; $("#rDone").onclick=closeReader;
 $("#rThanks").addEventListener("click",e=>{const b=e.target.closest("button");if(!b||!rd.g)return;const g=rd.g;
   floatReaction(b.dataset.r,me);
-  if(room&&room.connected()) room.put("t",g.from,g.id+me.replace(/[^a-z0-9]/g,""),{from:me,r:b.dataset.r,story:g.story,at:Date.now()});
+  sendMsg([g.from],{kind:"react",r:b.dataset.r,about:"story",story:g.story});
   toast(`Sent to ${nameOf(g.from)}!`);});
+
+
+/* ================= FIREBASE: inbox + saved things =================
+   families/<CODE>/inbox/<personaKey>/<msgId> = small message (from, at, kind, read, ...)
+   families/<CODE>/blobs/<msgId>               = heavy payload (story gift, drawing, voice, picture)  */
+const FIREBASE={apiKey:"AIzaSyA2pqkz9vmL5lJiwKi0BmwSYr5rFuMYuBY",authDomain:"kapanigans.firebaseapp.com",
+  databaseURL:"https://kapanigans-default-rtdb.firebaseio.com",projectId:"kapanigans",storageBucket:"kapanigans.firebasestorage.app",
+  messagingSenderId:"260885181974",appId:"1:260885181974:web:8a5cedc02660fadebaa737"};
+const mail={db:null,ref:null,all:{},ready:false,online:false,seen:new Set(),blobs:new Map()};
+const appStart=Date.now();
+const MSG_KINDS=["sticker","phrase","text","draw","voice","picture","story","react"];
+function fbConnect(code){
+  if(!window.firebase||!firebase.database) return;
+  try{if(!firebase.apps.length) firebase.initializeApp(FIREBASE); mail.db=firebase.database()}catch(e){return}
+  if(mail.ref) mail.ref.child("inbox").off();
+  mail.ref=mail.db.ref("families/"+code); mail.all={}; mail.ready=false; mail.seen=new Set();
+  mail.ref.child("inbox").on("value",snap=>{mail.all=snap.val()||{};const first=!mail.ready;mail.ready=true;onMail(first)},()=>{});
+  mail.db.ref(".info/connected").on("value",s=>{mail.online=!!s.val()});
+}
+function validMsg(m){return !!(m&&typeof m==="object"&&KIDS[m.from]&&typeof m.at==="number"&&MSG_KINDS.includes(m.kind))}
+function inboxOf(k){const box=(k&&mail.all[k])||{};return Object.entries(box).map(([id,m])=>Object.assign({},m,{id})).filter(validMsg).sort((a,b)=>b.at-a.at)}
+function unreadOf(k){return inboxOf(k).filter(m=>!m.read)}
+function onMail(first){
+  if(me) for(const m of unreadOf(me)){
+    if(mail.seen.has(m.id)) continue; mail.seen.add(m.id);
+    if(first||m.at<appStart-10000) continue;
+    blip(660,.2,"triangle",.12);setTimeout(()=>blip(990,.25,"triangle",.12),160);
+    const mb=$("#mailBtn"); if(mb){mb.classList.remove("bounce");void mb.offsetWidth;mb.classList.add("bounce")}
+    if(m.kind==="story"){toast(`🎁 A bedtime story from ${nameOf(m.from)}!`);say(`You got a bedtime story from ${nameOf(m.from)}!`)}
+    else if(m.kind==="react"){floatReaction(m.r||"❤️",m.from);toast(reactLine(m));say(reactLine(m))}
+    else {toast(`💌 New message from ${nameOf(m.from)}!`);say(`You got a message from ${nameOf(m.from)}!`)}
+  }
+  syncMailBadges();
+  if(screen==="lobby") renderLobby();
+  if(screen==="inbox"&&ib.view==="list") renderInbox();
+  if(screen==="story"&&(sStep==="shelf"||sStep==="home")) renderStory();
+}
+function syncMailBadges(){
+  const n=me?unreadOf(me).length:0; const b=$("#mailBadge"); if(b){b.hidden=!n;b.textContent=n>9?"9+":n}
+  document.querySelectorAll("#pick [data-kid]").forEach(btn=>{let s=btn.querySelector(".badge");const c=unreadOf(btn.dataset.kid).length;
+    if(!c){if(s)s.remove();return} if(!s){s=document.createElement("span");s.className="badge";btn.append(s)} s.textContent=c>9?"9+":c});
+}
+function sendMsg(toList,msg,blob){
+  if(!mail.ref){toast("Messages aren't connected. Check the Wi-Fi.");return null}
+  const id=mail.ref.child("inbox").push().key, up={};
+  const base=Object.assign({from:me,at:Date.now()},msg); if(blob){up["blobs/"+id]=blob;base.blob=id}
+  for(const k of toList) up[`inbox/${k}/${id}`]=base;
+  mail.ref.update(up).catch(()=>toast("That didn't send. Try again."));
+  if(!mail.online) toast("It'll send when the Wi-Fi is back.");
+  return id;
+}
+function getBlob(id){
+  if(mail.blobs.has(id)) return Promise.resolve(mail.blobs.get(id));
+  if(!mail.ref) return Promise.resolve(null);
+  return mail.ref.child("blobs/"+id).once("value").then(s=>{const v=s.val();if(v)mail.blobs.set(id,v);return v}).catch(()=>null);
+}
+function markRead(m){if(m&&!m.read&&mail.ref&&me&&m.id) mail.ref.child(`inbox/${me}/${m.id}/read`).set(true).catch(()=>{})}
+function deleteMsg(m){if(mail.ref&&me&&m.id) mail.ref.child(`inbox/${me}/${m.id}`).remove().catch(()=>{})}
+function reactLine(m){
+  const what=m.about==="story"&&STORIES[m.story]?STORIES[m.story].title:"your message";
+  const word={"❤️":"loved","😴":"got sleepy from","🤗":"sends a hug for"}[m.r]||"loved";
+  return `${nameOf(m.from)} ${word} ${what}`;
+}
+function ago(t){const s=(Date.now()-t)/1000;if(s<60)return"just now";if(s<3600)return`${Math.floor(s/60)} min ago`;if(s<86400)return`${Math.floor(s/3600)} hr ago`;if(s<172800)return"yesterday";return new Date(t).toLocaleDateString(undefined,{month:"short",day:"numeric"})}
+
+/* story gifts live in the inbox now */
+function normGift(raw,m){
+  if(!raw||typeof raw!=="object") return null;
+  const g=Object.assign({},raw,{id:m.id,from:m.from,to:me});
+  g.words=g.words&&typeof g.words==="object"?g.words:{};
+  g.chars=Array.isArray(g.chars)?g.chars.map(c=>c&&typeof c==="object"?{s:Array.isArray(c.s)?c.s.filter(s=>s&&Array.isArray(s.p)):[],a:c.a}:{s:[],a:"bob"}):[];
+  return validGift(g)?g:null;
+}
+async function openStoryMsg(m){
+  const raw=await getBlob(m.blob||m.id); const g=normGift(raw,m);
+  if(!g){toast("That story couldn't open.");return}
+  rd.msg=m; openReader(g,{gift:!m.read}); if(m.read) markRead(m);
+}
+
+/* ================= INBOX ================= */
+const STICKERS=[["🦄","a unicorn"],["🦖","a dinosaur"],["🌈","a rainbow"],["⭐","a star"],["❤️","a heart"],["🐶","a puppy"],["🍕","a pizza"],["🎉","a party"],["🌙","a moon"],["🤗","a hug"],["😜","a silly face"],["🍪","a cookie"]];
+const PHRASES=[["❤️","I love you!"],["🌙","Good night!"],["☀️","Good morning!"],["🎮","Come play with me!"],["🤗","Big hug!"],["😜","You're silly!"],["🎉","You did it!"],["🥺","I miss you!"]];
+const ib={view:"list",msg:null,to:null,kind:null,attach:null,rec:null};
+function openInbox(view,opts={}){ib.view=view||"list";ib.to=opts.to||null;ib.kind=opts.kind||null;ib.attach=opts.attach||null;ib.msg=null;show("inbox");renderInbox()}
+function ibGo(v){stopRec();ib.view=v;renderInbox();window.scrollTo(0,0)}
+$("#iHome").onclick=()=>{stopRec();hush();goLobby()};
+$("#iBack").onclick=()=>{hush();const back={list:null,read:"list",to:"list",what:"to",sticker:"what",phrase:"what",text:"what",draw:"what",voice:"what",sent:"list"}[ib.view];
+  if(ib.view==="to"&&ib.attach){ib.attach=null;return ibGo("list")} back?ibGo(back):(stopRec(),goLobby())};
+function msgPreview(m){
+  return {sticker:`${m.emoji||"⭐"} Sticker`,phrase:`${m.emoji||"💬"} ${m.text||""}`,text:`💬 ${m.text||""}`,draw:"🖍️ A drawing",voice:`🎤 Voice message${m.dur?` (${m.dur}s)`:""}`,
+    picture:"🎨 A colored picture",story:`🌙 Bedtime story: ${STORIES[m.story]?STORIES[m.story].title:""}`,react:`${m.r||"❤️"} ${reactLine(m)}`}[m.kind]||"Message";
+}
+function renderInbox(){
+  const B=$("#iBody"); B.innerHTML=""; B.classList.toggle("little-choices",lvl()==="little");
+  const K=kidOf(me); $("#iTitle").textContent=`💌 ${K.name}'s Inbox`;
+  if(ib.view==="list"){
+    const top=el("div","rowbtns");const nw=el("button","bigbtn","✏️ Send a message");nw.onclick=()=>{sayLittle("Who is it for?");ibGo("to")};top.append(nw);B.append(top);
+    if(!mail.ref){B.append(el("p","empty","Messages need the internet. Check the Wi-Fi."));return}
+    const list=inboxOf(me);
+    if(!list.length){B.append(el("p","empty","No messages yet. When someone sends you one, it shows up here."));return}
+    const ul=el("div","mlist");
+    for(const m of list){const F=kidOf(m.from);
+      const b=el("button","mrow"+(m.read?"":" unread"));b.style.setProperty("--k",F.hue);
+      b.innerHTML=`<span class="face">${F.face}</span><span class="mmain"><b>${esc(F.name)}</b><span>${esc(msgPreview(m))}</span></span><span class="mtime">${esc(ago(m.at))}</span>`;
+      b.onclick=()=>{if(m.kind==="story"){openStoryMsg(m);return}ib.msg=m;ibGo("read")};ul.append(b)}
+    B.append(ul);
+  }
+  else if(ib.view==="read") renderMsg(B,ib.msg);
+  else if(ib.view==="to"){
+    B.append(el("h2",null,"Who is it for?"));
+    const grid=el("div","choices");
+    const all=el("button","choice person","<span class=\"em\">👨‍👩‍👧‍👦</span>Everyone");all.style.setProperty("--k","var(--sun-deep)");
+    all.onclick=()=>{ib.to="all";sayLittle("Everyone!");ib.attach?sendAttach():ibGo("what")};grid.append(all);
+    for(const k of Object.keys(KIDS).filter(k=>k!==me)){const P=KIDS[k];
+      const b=el("button","choice person",`<span class="em">${P.face}</span>${esc(P.name)}${here(k)?"<small>🟢 here now</small>":""}`);
+      b.style.setProperty("--k",P.hue);b.onclick=()=>{ib.to=k;sayLittle(`For ${P.name}!`);ib.attach?sendAttach():(ibGo("what"),sayLittle("What do you want to send?"))};grid.append(b)}
+    B.append(grid);
+  }
+  else if(ib.view==="what"){
+    B.append(el("h2",null,"What do you want to send?"));
+    const grid=el("div","choices");
+    const opts=[["sticker","😀","Sticker"],["phrase","💬","Say something"],["draw","🖍️","Drawing"],["voice","🎤","Voice"]];
+    if(lvl()!=="little") opts.splice(2,0,["text","✍️","Type it"]);
+    for(const [v,e,l] of opts){const b=el("button","choice",`<span class="em">${e}</span>${l}`);b.onclick=()=>{sayLittle(l);ibGo(v)};grid.append(b)}
+    B.append(grid);
+  }
+  else if(ib.view==="sticker"){
+    B.append(el("h2",null,"Pick a sticker"));
+    const grid=el("div","choices");
+    for(const [e,n] of STICKERS){const b=el("button","choice",`<span class="em">${e}</span>`);b.onclick=()=>{say(n);deliver({kind:"sticker",emoji:e,name:n})};grid.append(b)}
+    B.append(grid);
+  }
+  else if(ib.view==="phrase"){
+    B.append(el("h2",null,"What do you want to say?"));
+    const grid=el("div","choices");
+    for(const [e,t] of PHRASES){const b=el("button","choice",`<span class="em">${e}</span>${esc(t)}`);b.onclick=()=>{say(t);deliver({kind:"phrase",emoji:e,text:t})};grid.append(b)}
+    B.append(grid);
+  }
+  else if(ib.view==="text"){
+    B.append(el("h2",null,"Type your message"));
+    const ta=el("textarea","msgtext");ta.id="msgText";ta.maxLength=200;ta.rows=4;ta.placeholder="Write something nice…";B.append(ta);
+    const go=el("button","bigbtn","Send 💌");go.onclick=()=>{const t=ta.value.replace(/[\u0000-\u0008\u000B-\u001F]/g,"").trim().slice(0,200);if(!t){ta.focus();return}deliver({kind:"text",text:t})};B.append(go);
+    setTimeout(()=>ta.focus(),50);
+  }
+  else if(ib.view==="draw"){
+    B.append(el("h2",null,"Draw something!"));
+    pad.strokes=[]; buildPad(B,pad.strokes);
+    const go=el("button","bigbtn","Send 💌");go.onclick=()=>{if(!pad.strokes.length){say("Draw something first!");return}deliver({kind:"draw"},{type:"draw",s:thin(pad.strokes)})};
+    const row=el("div","rowbtns");row.append(go);B.append(row);
+  }
+  else if(ib.view==="voice") renderVoice(B);
+  else if(ib.view==="sent"){
+    const who=ib.to==="all"?"everyone":nameOf(ib.to);
+    B.append(el("div","sentbox",`<span class="gift">💌</span><h2>Sent to ${esc(who)}!</h2>`));
+    const row=el("div","rowbtns");const again=el("button","ghost","Send another");again.onclick=()=>ibGo("to");
+    const back=el("button","bigbtn","Back to my inbox");back.onclick=()=>ibGo("list");row.append(again,back);B.append(row);
+  }
+}
+function recipients(){return ib.to==="all"?Object.keys(KIDS).filter(k=>k!==me&&k!=="bear"&&k!=="fox"):[ib.to]}
+function deliver(msg,blob){if(!ib.to)return ibGo("to");const id=sendMsg(recipients(),msg,blob);if(!id)return;tada();ibGo("sent");say(`Sent to ${ib.to==="all"?"everyone":nameOf(ib.to)}!`)}
+function sendAttach(){const a=ib.attach;ib.attach=null;deliver(a.msg,a.blob)}
+function thin(strokes){return strokes.map(s=>{if(s.p.length<=600)return s;const q=[];for(let i=0;i<s.p.length;i+=4)q.push(s.p[i],s.p[i+1]);return Object.assign({},s,{p:q})})}
+function renderMsg(B,m){
+  const F=kidOf(m.from); markRead(m);
+  const head=el("div","mhead",`<span class="face">${F.face}</span><span><b>${esc(F.name)}</b><small>${esc(ago(m.at))}</small></span>`);head.style.setProperty("--k",F.hue);B.append(head);
+  const card=el("div","mcard");B.append(card);
+  if(m.kind==="sticker"){const s=el("div","bigsticker");s.textContent=m.emoji||"⭐";card.append(s);say(`${F.name} sent you ${m.name||"a sticker"}!`)}
+  else if(m.kind==="phrase"||m.kind==="text"){const t=el("div","mtextbig");if(m.emoji){const e=el("div","bigsticker small");e.textContent=m.emoji;card.append(e)}t.textContent=String(m.text||"").slice(0,200);card.append(t);
+    const rb=el("button","ghost","🔊 Read it to me");rb.onclick=()=>say(`${F.name} says: ${m.text}`);card.append(rb);say(`${F.name} says: ${m.text}`)}
+  else if(m.kind==="react"){const s=el("div","bigsticker");s.textContent=m.r||"❤️";card.append(s);const t=el("div","mtextbig");t.textContent=reactLine(m);card.append(t);say(reactLine(m))}
+  else {const wait=el("p","empty","Opening…");card.append(wait);
+    getBlob(m.blob||m.id).then(b=>{wait.remove();if(!b){card.append(el("p","empty","This message couldn't be opened."));return}
+      if(m.kind==="draw"&&Array.isArray(b.s)){const cv=document.createElement("canvas");cv.width=PAD;cv.height=PAD;cv.className="mdraw";drawStrokes(cv.getContext("2d"),b.s.filter(s=>s&&Array.isArray(s.p)),1);card.append(cv);say(`${F.name} drew you a picture!`)}
+      else if(m.kind==="picture"&&typeof b.data==="string"&&b.data.startsWith("data:image/")){const img=new Image();img.src=b.data;img.className="mpic";img.alt="Colored picture";card.append(img);say(`${F.name} sent you a picture they colored!`)}
+      else if(m.kind==="voice"&&typeof b.data==="string"){const a=voicePlayer(b);card.append(a.el);a.play();}
+      else card.append(el("p","empty","This message couldn't be opened."));});
+  }
+  const row=el("div","rowbtns replies");
+  if(m.kind!=="react") for(const r of ["❤️","🤗"]){const b=el("button","round big",r);b.onclick=()=>{sendMsg([m.from],{kind:"react",r,about:"message"});floatReaction(r,me);toast(`Sent to ${F.name}!`)};row.append(b)}
+  const back=el("button","bigbtn","↩️ Send one back");back.onclick=()=>{ib.to=m.from;ibGo("what");sayLittle("What do you want to send?")};row.append(back);
+  const del=el("button","round","🗑️");del.setAttribute("aria-label","Delete");del.onclick=()=>{deleteMsg(m);toast("Deleted");ibGo("list")};row.append(del);
+  B.append(row);
+}
+function voicePlayer(b){
+  let url;try{const bin=atob(b.data);const u8=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u8[i]=bin.charCodeAt(i);url=URL.createObjectURL(new Blob([u8],{type:/^audio\/[\w.+-]+/.test(b.mime)?b.mime.split(";")[0]:"audio/mp4"}))}catch(e){url=""}
+  const audio=new Audio(url); audio.playsInline=true;
+  const btn=el("button","voiceplay","▶️");btn.setAttribute("aria-label","Play");
+  audio.onplay=()=>btn.textContent="⏸️"; audio.onpause=audio.onended=()=>btn.textContent="▶️";
+  btn.onclick=()=>audio.paused?audio.play().catch(()=>{}):audio.pause();
+  return {el:btn,play:()=>{hush();audio.play().catch(()=>{})}};
+}
+/* voice recording: tap to start, tap to stop, 30 seconds max */
+function stopRec(){const r=ib.rec;if(!r)return;clearInterval(r.tick);if(r.mr&&r.mr.state==="recording")r.mr.stop();if(r.stream)r.stream.getTracks().forEach(t=>t.stop());ib.rec=null}
+function renderVoice(B){
+  B.append(el("h2",null,"Say something!"));
+  const ok=!!(navigator.mediaDevices&&window.MediaRecorder);
+  if(!ok){B.append(el("p","empty","This device can't record voice messages."));return}
+  const big=el("button","recbtn","🎤");big.setAttribute("aria-label","Record");const lab=el("p","sub","Tap the microphone to start");
+  const out=el("div","rowbtns");B.append(big,lab,out);
+  let result=null;
+  big.onclick=async()=>{
+    if(ib.rec){ib.rec.mr.stop();return}
+    hush(); out.innerHTML=""; result=null;
+    let stream;try{stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}})}catch(e){lab.textContent="The microphone is blocked. Allow it in Settings › Safari › Microphone.";return}
+    const type=["audio/mp4","audio/webm;codecs=opus","audio/webm"].find(t=>MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(t))||"";
+    let mr;try{mr=new MediaRecorder(stream,type?{mimeType:type,audioBitsPerSecond:32000}:{audioBitsPerSecond:32000})}catch(e){mr=new MediaRecorder(stream)}
+    const chunks=[];const t0=Date.now();
+    ib.rec={mr,stream,tick:setInterval(()=>{const s=Math.floor((Date.now()-t0)/1000);lab.textContent=`Recording… ${30-s}s left. Tap to stop`;if(s>=30)mr.stop()},250)};
+    big.classList.add("on");big.textContent="⏹️";lab.textContent="Recording… tap to stop";
+    mr.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
+    mr.onstop=()=>{const r=ib.rec;if(r){clearInterval(r.tick);r.stream.getTracks().forEach(t=>t.stop())}ib.rec=null;
+      big.classList.remove("on");big.textContent="🎤";
+      const blob=new Blob(chunks,{type:mr.mimeType||type||"audio/mp4"});const dur=Math.max(1,Math.round((Date.now()-t0)/1000));
+      if(blob.size<500){lab.textContent="That was too short. Try again!";return}
+      if(blob.size>700000){lab.textContent="That one is too long to send. Try a shorter one.";return}
+      const fr=new FileReader();fr.onload=()=>{const data=String(fr.result).split(",")[1];result={mime:(mr.mimeType||type||"audio/mp4").split(";")[0],data,dur};
+        lab.textContent="Listen, then send it!";const pl=voicePlayer(result);const re=el("button","ghost","🔁 Again");re.onclick=()=>{out.innerHTML="";lab.textContent="Tap the microphone to start"};
+        const send=el("button","bigbtn","Send 💌");send.onclick=()=>deliver({kind:"voice",dur},{type:"voice",mime:result.mime,data:result.data});
+        out.innerHTML="";out.append(pl.el,re,send)};fr.readAsDataURL(blob)};
+    mr.start(1000);
+  };
+}
+
+$("#mailBtn").onclick=()=>{sayLittle("My inbox");openInbox("list")};
+$("#playInbox").onclick=()=>{sayLittle("Inbox");openInbox("list")};
+$("#sendPicBtn").onclick=()=>{
+  const cv=snapshot(),sm=document.createElement("canvas");sm.width=800;sm.height=600;sm.getContext("2d").drawImage(cv,0,0,800,600);
+  const data=sm.toDataURL("image/jpeg",.8);
+  sayLittle("Who should get it?");
+  $("#party").hidden=true; const keep=game; if(keep) leaveGame();
+  openInbox("to",{attach:{msg:{kind:"picture"},blob:{type:"picture",data}}});
+};
 
 /* ---------------- start ---------------- */
 const savedCode=cleanCode(load("kp.code"));
