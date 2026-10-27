@@ -745,6 +745,8 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
   .vid.dock .vtiles{flex-direction:row;flex-wrap:wrap;align-items:flex-end;justify-content:flex-start}
   .vid.ingame.dock .vtiles .vtile{width:calc(var(--colw) * .54)}
   .vid.ingame.dock .vtiles .vtile.mine{width:calc(var(--colw) * .3)}
+  .vid.ingame.dock.many .vtiles .vtile{width:calc(var(--colw) * .44)}
+  .vid.ingame.dock.many .vtiles .vtile.mine{width:calc(var(--colw) * .26)}
   .vid.dock .vbtns{justify-content:flex-start}
   .vid.ingame .vtiles .vtile.mine{width:clamp(64px,7vw,100px)}
 }
@@ -1739,6 +1741,7 @@ function fitTray(){
   for(const r of rows) for(let z=+r.style.zoom||1;z>.5&&r.scrollWidth>r.clientWidth+1;z-=.04) r.style.zoom=z.toFixed(2);
   // phones: too narrow for one line, so let the row wrap onto two lines at a friendly size instead
   for(const r of rows){r.style.flexWrap=""; if(r.scrollWidth>r.clientWidth+1&&(+r.style.zoom)<.75){r.style.flexWrap="wrap";r.style.justifyContent="center";r.style.zoom=.78}}
+  T.scrollTop=0;
   const sig=rows.map(r=>r.style.zoom+r.style.flexWrap).join();
   if(T.dataset.fit!==sig){T.dataset.fit=sig;if(screen==="game")requestAnimationFrame(()=>{const s0=T.dataset.fit;fitBoard();T.dataset.fit=s0})}
 }
@@ -1753,11 +1756,14 @@ function fitBoard(){ requestAnimationFrame(fitTray);
   // not enough room beside the picture: tuck the video under the tools instead of covering the picture
   if(vb){vb.classList.toggle("dock",dock);
     if(dock){const r=tray.getBoundingClientRect();vb.style.setProperty("--colw",Math.round(r.width)+"px");vb.style.left=Math.round(r.left)+"px";
-      requestAnimationFrame(()=>{tray.style.marginBottom=(vb.getBoundingClientRect().height+10)+"px"})}
+      requestAnimationFrame(()=>{tray.style.marginBottom=(vb.getBoundingClientRect().height+10)+"px";requestAnimationFrame(fitTray)})}
     else{if(!vb.dataset.dragged)vb.style.left="";tray.style.marginBottom=""}}
   const b=$("#board");b.style.width=Math.floor(w)+"px";b.style.height=Math.floor(h)+"px";b.style.transform=shift?`translateX(${Math.round(shift)}px)`:"";
 }
 new ResizeObserver(()=>{if(screen==="game")fitBoard()}).observe($("#stage"));
+// more cameras make the docked video taller: keep the tools above it and re-fit Violet's tray
+new ResizeObserver(()=>{const vb=$("#vid"),tray=$("#tray");if(screen!=="game"||!vb||!vb.classList.contains("dock"))return;
+  tray.style.marginBottom=(vb.getBoundingClientRect().height+10)+"px";requestAnimationFrame(fitTray)}).observe($("#vid"));
 
 function renderZones(){
   const z=$("#zones");z.innerHTML="";
@@ -2190,7 +2196,7 @@ function renderVideoUI(){
   // always visible: everywhere except the home screen, which shows everyone's video on the people cards
   const show=screen!=="lobby"&&!!(vid.local||vid.streams.size);
   box.hidden=!show; if(!show){if(screen==="game")requestAnimationFrame(fitBoard);for(const id of ["dress","story","inbox","grown"]){const sc=$("#"+id);if(sc)sc.style.paddingRight=""}return}
-  box.classList.toggle("min",vid.min); box.classList.toggle("ingame",screen==="game");
+  box.classList.toggle("min",vid.min); box.classList.toggle("ingame",screen==="game"); box.classList.toggle("many",videoPeers().filter(p=>vid.streams.has(p.peer)).length>=2);
   if(screen!=="game"&&box.classList.contains("dock")){box.classList.remove("dock");if(!box.dataset.dragged)box.style.left="";const tr=$("#tray");if(tr)tr.style.marginBottom=""}
   const tiles=$("#vTiles"); tiles.innerHTML="";
   for(const p of videoPeers()) if(vid.streams.has(p.peer)) tiles.append(tileFor(p,false));
