@@ -423,6 +423,35 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
 .holdbtn .ring{position:absolute;inset:0;border-radius:50%;background:conic-gradient(var(--violet) calc(var(--p,0)*360deg),transparent 0);-webkit-mask:radial-gradient(circle,transparent 56%,#000 57%);mask:radial-gradient(circle,transparent 56%,#000 57%)}
 .mtextbig.report{font-family:var(--body);font-size:16px;font-weight:600;text-align:left;white-space:pre-wrap;line-height:1.5}
 
+/* ---------- people on the home screen + video ---------- */
+.people{display:flex;flex-direction:column;gap:10px}
+.peoplehead{display:flex;align-items:center;gap:8px;font-family:var(--display);font-size:24px}
+.peoplehead em{font-style:normal;font-family:var(--body);font-size:14px;background:#2ECC40;color:#fff;border-radius:999px;padding:2px 10px}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+@media (max-width:520px){.pgrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.pinfo b{font-size:17px}.where{font-size:12px}.pact .bigbtn{font-size:14px;padding:7px 10px}
+  .topbar h1{flex:1 1 100%;font-size:28px}.status span{display:none}}
+.pcard{background:var(--paper);border-radius:24px;padding:10px;display:flex;flex-direction:column;gap:8px;box-shadow:0 5px 0 var(--sky-deep);border-top:6px solid var(--k);min-width:0}
+.pcard .vtile{width:100%}
+.pinfo{display:flex;flex-direction:column;gap:2px;padding:0 4px}
+.pinfo b{font-family:var(--display);font-size:20px}.pinfo small{font-family:var(--body);font-size:12px;color:var(--ink-soft)}
+.where{display:flex;gap:6px;align-items:flex-start;font-size:14px;color:var(--ink-soft);font-weight:700;line-height:1.3}
+.where i{font-style:normal;font-size:18px;line-height:1}
+.pact{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:0 4px 4px}
+.pact .bigbtn{font-size:16px;padding:8px 16px}
+.round.off{background:var(--fox)}
+.vtile{position:relative;aspect-ratio:4/3;border-radius:16px;overflow:hidden;background:var(--ink);border:4px solid var(--k);max-width:100%}
+.vtile video{width:100%;height:100%;object-fit:cover;display:block}
+.vtile video.mirror{transform:scaleX(-1)}
+.vtile video.audioonly{position:absolute;width:1px;height:1px;opacity:0}
+.vface{position:absolute;inset:0;display:grid;place-items:center;font-size:min(70px,12vw);background:linear-gradient(160deg,var(--k),var(--ink))}
+.vmute{position:absolute;right:6px;bottom:6px;background:rgba(0,0,0,.55);border-radius:999px;padding:2px 6px;font-size:14px}
+.vid{width:auto}
+.vtiles{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+.vtiles .vtile{width:clamp(110px,17vw,190px)}
+.vtiles .vtile.mine{width:clamp(70px,10vw,110px)}
+.vid.min .vtiles{display:none}
+.invite{position:fixed;left:50%;top:calc(12px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:55;background:var(--ink);color:#fff;border-radius:24px;padding:14px 18px;display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center;font-family:var(--display);font-size:20px;width:min(520px,calc(100% - 32px));box-shadow:0 10px 30px rgba(0,0,0,.3)}
+
 @media (orientation:landscape) and (max-height:560px){
   #game{grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto minmax(0,1fr);grid-template-areas:"head head" "stage tray"}
   .tray{flex-direction:row;max-width:260px;overflow-y:auto;margin-bottom:0}
@@ -483,9 +512,8 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
     <button class="voicebtn" id="grownBtn" aria-label="Grown-ups">🔒</button>
     <button class="mechip" id="meChip"></button>
   </div>
-  <div class="here" id="here"></div>
+  <div class="people" id="people"></div>
   <div class="giftbar" id="giftbar"></div>
-  <div class="inprog" id="inprog"></div>
   <div class="section-title">Pick a game</div>
   <div class="games">
     <button class="game live" id="playColor"><span class="tag">Play</span><span class="icon">🎨</span><h3>Color Together</h3><p>Everyone colors their own part of one big picture.</p></button>
@@ -525,13 +553,10 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
 </section>
 
 <div class="vid" id="vid" hidden>
-  <div class="vframe" id="vFrame">
-    <video id="vThem" autoplay playsinline></video>
-    <div class="vmsg" id="vMsg"></div>
-    <div class="vme"><video id="vMe" autoplay playsinline muted></video></div>
-  </div>
-  <div class="vbtns"><button id="vMic" aria-label="Microphone on or off">🎤</button><button id="vCam" aria-label="Camera on or off">📷</button></div>
+  <div class="vtiles" id="vTiles"></div>
+  <div class="vbtns"><button id="vMin" aria-label="Shrink video">➖</button><button id="vMic" aria-label="Microphone on or off">🎤</button><button id="vCam" aria-label="Camera on or off">📷</button></div>
 </div>
+<div class="invite" id="invite" hidden><span id="inviteMsg"></span><div class="rowbtns"><button class="bigbtn" id="inviteJoin">Join</button><button class="ghost" id="inviteNo">Not now</button></div></div>
 
 
 <!-- ============ GROWN-UPS ============ -->
@@ -676,8 +701,8 @@ function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i)
 function rng(seed){let a=seed>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 function esc(s){return String(s).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]))}
 function kidOf(k){return KIDS[k] || (k==="kapanigans"?SYS:KIDS.bear)}
-function show(id){if(screen==="reader"&&id!=="reader")hush();if(screen==="inbox"&&id!=="inbox"&&typeof stopRec==="function")stopRec();for(const s of ["setup","pick","lobby","game","story","reader","inbox","grown","farm"]) $("#"+s).hidden = s!==id; screen=id; if(id!=="game") $("#vid").hidden=true; if(id==="pick"&&typeof syncMailBadges==="function") syncMailBadges();
-  if(me&&room&&id!=="game"&&id!=="setup") setPresence({scr:id==="lobby"?"lobby":"busy"});
+function show(id){if(screen==="reader"&&id!=="reader")hush();if(screen==="inbox"&&id!=="inbox"&&typeof stopRec==="function")stopRec();for(const s of ["setup","pick","lobby","game","story","reader","inbox","grown","farm"]) $("#"+s).hidden = s!==id; screen=id; if(typeof renderVideoUI==="function") renderVideoUI(); if(id==="pick"&&typeof syncMailBadges==="function") syncMailBadges();
+  if(me&&room&&id!=="game"&&id!=="setup") setPresence({scr:id});
   if(typeof tickStats==="function") tickStats()}
 /* ---------------- read-aloud helper ---------------- */
 // say(text, {rate, pitch, pause, onWord(charIndex,len), onEnd}) speaks one sentence at a time with short pauses.
@@ -1020,14 +1045,16 @@ function wireRoom(){
   room.onPeers(()=>{
     const mine=room.peers().find(p=>p.sameTab); if(mine) myPeer=mine.peer;
     if(screen==="lobby") renderLobby();
-    if(screen==="game") {renderSeats();renderCursors();checkParty();videoTick()}
+    if(screen==="game") {renderSeats();renderCursors();checkParty()}
+    videoSync();
   },()=>{});
   room.onSignal(m=>{onSignal(m).catch(()=>{})});
   room.on("start",m=>{
-    if(m.sameTab||screen!=="lobby"||!m.data) return;
+    if(m.sameTab||!m.data) return;
     const g=m.data; if(!Array.isArray(g.seats)||!PICS[g.pic]) return;
-    const idx=g.seats.findIndex(s=>s.p===myPeer);
-    if(idx>=0){blip(880,.2,"triangle");sayLittle(`Let's color ${PICS[g.pic].name}!`);enterGame(g,idx,false)}
+    const idx=g.seats.findIndex(s=>s.p===myPeer); if(idx<0) return;
+    if(screen==="lobby"){blip(880,.2,"triangle");sayLittle(`Let's color ${PICS[g.pic].name}!`);enterGame(g,idx,false)}
+    else if(me&&!["setup","pick"].includes(screen)) showInvite(g,idx,m.peer);
   });
   room.on("react",m=>{
     if(!m.data||!KIDS[m.data.k]||typeof m.data.r!=="string") return;
@@ -1046,7 +1073,7 @@ function chooseKid(k){
   setPresence({kid:k,at:joinedAt,scr:"lobby",g:null,seat:null,done:null});
   blip(700); goLobby();
 }
-function goLobby(){show("lobby");renderLobby()}
+function goLobby(){show("lobby");renderLobby();if(!vid.local&&!vid.denied)startMedia()}
 
 function renderLobby(){
   const K=kidOf(me);
@@ -1060,30 +1087,18 @@ function renderLobby(){
   syncMailBadges();
   const mc=$("#meChip"); mc.style.setProperty("--k",K.hue);
   mc.innerHTML=`<span class="face">${K.face}</span><span>${esc(K.name)}<small>Tap to switch</small></span>`;
-  const players=lobbyPlayers();
-  $("#here").innerHTML=`<span class="lbl">Here now:</span>`+players.map(p=>{const k=kidOf(p.presence.kid);return`<span class="pal" style="--k:${k.hue}"><span class="face">${k.face}</span>${esc(k.name)}${p.sameTab?" <em>(you)</em>":""}</span>`}).join("");
-  // games already going
-  const games={};
-  for(const p of peers()){const pr=p.presence;if(!pr||pr.scr!=="game"||!pr.g||!PICS[pr.g.pic]||!Array.isArray(pr.g.seats))continue;(games[pr.g.e]=games[pr.g.e]||{g:pr.g,holders:[]}).holders.push(pr.seat)}
-  const box=$("#inprog"); box.innerHTML="";
-  for(const e in games){
-    const {g,holders}=games[e];
-    const names=g.seats.map(s=>kidOf(s.k).name).join(" & ");
-    const mySeat=g.seats.findIndex((s,i)=>s.k===me&&!holders.includes(i));
-    const card=document.createElement("div");card.className="card";
-    card.innerHTML=`<span>🎨 <b>${esc(names)}</b> are coloring <b>${esc(PICS[g.pic].name)}</b></span>`;
-    if(mySeat>=0){const b=document.createElement("button");b.className="bigbtn";b.textContent="Jump back in";b.onclick=()=>enterGame(g,mySeat,true);card.append(b)}
-    else {const b=document.createElement("button");b.className="ghost watchbtn";b.textContent="👀 Watch";b.onclick=()=>{sayLittle(`Let's watch ${names}!`);enterGame(g,-1,true)};card.append(b)}
-    box.append(card);
-  }
+  renderPeople();
   if(!$("#picSheet").hidden) renderWho();
 }
+let picInvite=null;
 function renderWho(){
+  if(picInvite){const names=picInvite.map(pp=>{const q=peers().find(x=>x.peer===pp);return q&&q.presence?kidOf(q.presence.kid).name:"them"});$("#whoStarts").textContent=`Just you and ${names.join(" & ")}. Everyone gets their own part.`;return}
   const pl=lobbyPlayers().slice(0,4);
   const extra=lobbyPlayers().length-4;
   $("#whoStarts").textContent = pl.length>1 ? `Starts for ${pl.map(p=>kidOf(p.presence.kid).name).join(", ")}. Everyone gets their own part.${extra>0?` (4 players max)`:""}` : "Just you right now. Anyone who opens Kapanigans with your family code shows up here.";
 }
-function openPics(){
+function openPics(invite){
+  picInvite=Array.isArray(invite)?invite:null;
   const box=$("#pics");
   if(!box.childElementCount){
     for(const id in PICS){
@@ -1099,8 +1114,9 @@ function openPics(){
 }
 function startColoring(pic){
   $("#picSheet").hidden=true;
-  const pl=lobbyPlayers().slice(0,4);
-  const seats=pl.map(p=>({k:p.presence.kid,p:p.peer}));
+  let seats;
+  if(picInvite){seats=[{k:me,p:myPeer}];for(const pp of picInvite){const q=peers().find(x=>x.peer===pp);if(q&&q.presence&&KIDS[q.presence.kid])seats.push({k:q.presence.kid,p:pp})}picInvite=null}
+  else seats=lobbyPlayers().slice(0,4).map(p=>({k:p.presence.kid,p:p.peer}));
   const g={e:Date.now().toString(36)+uid,pic,seats};
   if(room&&room.root){const TS=firebase.database.ServerValue.TIMESTAMP;
     room.root.child("games/"+g.e+"/meta").set({pic,at:TS}).catch(()=>{});
@@ -1124,11 +1140,10 @@ function enterGame(g,seat,rejoin){
   show("game"); $("#party").hidden=true;
   buildTray(); renderZones(); renderSeats(); fitBoard();
   subscribeGame();
-  setPresence({vr:null}); stopVideo(); setTimeout(videoTick,50);
+  renderVideoUI();
   keepAwake();
 }
 function leaveGame(){
-  stopVideo();
   if(game&&game.refs) game.refs.forEach(r=>r.off());
   game=null; $("#party").hidden=true;
   setPresence({scr:"lobby",g:null,seat:null,done:null,cx:null,cy:null,at:joinedAt});
@@ -1365,7 +1380,7 @@ function confetti(){
 $("#grownups").innerHTML=Object.entries(KIDS).filter(([,v])=>v.grown).map(([k,v])=>`<button class="gubtn" data-kid="${k}" style="--k:${v.hue}"><span class="face">${v.face}</span>${esc(v.name)}</button>`).join("");
 document.querySelectorAll(".kid,.gubtn").forEach(b=>b.onclick=()=>chooseKid(b.dataset.kid));
 $("#meChip").onclick=()=>show("pick");
-$("#playColor").onclick=()=>{sayLittle("Color Together");openPics()};
+$("#playColor").onclick=()=>{sayLittle("Color Together");openPics(null)};
 $("#playStory").onclick=()=>{sayLittle("Bedtime Story");draft=null;openStory("home")};
 document.querySelectorAll(".game.soon").forEach(b=>b.onclick=()=>{blip(330,.12,"triangle",.08);say(b.dataset.say);toast("Coming soon!")});
 function syncVoiceBtn(){const b=$("#voiceBtn");b.textContent=speech.on?"🔊":"🔇";b.hidden=!speech.ok}
@@ -1400,6 +1415,7 @@ function openSetup(){
   show("setup");
 }
 function connect(code){
+  if(typeof vid!=="undefined") for(const p of [...vid.pcs.keys()]) closePc(p,false);
   if(room){room.end();room=null}
   familyCode=code; store("kp.code",code);
   fbConnect(code);
@@ -1417,93 +1433,128 @@ $("#saveCode").onclick=()=>{
 };
 $("#codeIn").addEventListener("keydown",e=>{if(e.key==="Enter")$("#saveCode").click()});
 
-/* ---------------- 2-player video chat ---------------- */
-const vid={pc:null,pcPeer:null,local:null,pending:[],mic:true,cam:true,asking:false,denied:false};
+/* ---------------- family video: camera + mic start on the home screen ----------------
+   Everyone online (up to 3 others) is connected straight to each other. Signaling goes through Firebase (live/signal). */
+const vid={local:null,asking:false,denied:false,mic:load("kp.mic")!=="off",cam:load("kp.cam")!=="off",pcs:new Map(),streams:new Map(),els:new Map(),min:false};
 const ICE=[{urls:["stun:stun.l.google.com:19302","stun:stun1.l.google.com:19302"]}];
-function videoWanted(){return !!(game&&!game.watch&&game.seats.length===2&&room&&navigator.mediaDevices&&navigator.mediaDevices.getUserMedia&&window.RTCPeerConnection)}
-function otherPeer(){const p=gamePeers().find(p=>!p.sameTab);return p||null}
-function otherKid(){if(!game)return KIDS.bear;const s=game.seats[1-game.seat];return kidOf(s&&s.k)}
-function vMsg(html){const m=$("#vMsg");m.hidden=!html;m.innerHTML=html||""}
-async function ensureLocal(){
-  if(vid.local) return vid.local;
-  if(vid.asking) throw new Error("busy");
-  vid.asking=true;
-  try{
-    vid.local=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true},video:{facingMode:"user",width:{ideal:320},height:{ideal:240},frameRate:{ideal:15,max:20}}});
-    vid.denied=false;
-    const v=$("#vMe"); v.srcObject=vid.local; v.play().catch(()=>{});
-    vid.local.getAudioTracks().forEach(t=>t.enabled=vid.mic); vid.local.getVideoTracks().forEach(t=>t.enabled=vid.cam);
-    setPresence({vr:true});
-    return vid.local;
-  }catch(e){vid.denied=true;throw e}
-  finally{vid.asking=false}
+const MAX_REMOTE=3;
+function mediaOK(){return !!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia&&window.RTCPeerConnection)}
+function startMedia(){
+  if(vid.local||vid.asking||!mediaOK()||!me) return;
+  vid.asking=true; renderVideoUI();
+  // called straight from a tap where possible, so iPhone/iPad allow it
+  navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true},
+      video:{facingMode:"user",width:{ideal:320},height:{ideal:240},frameRate:{ideal:15,max:20}}})
+    .then(s=>{
+      vid.local=s; vid.denied=false; applyTracks();
+      s.getTracks().forEach(t=>t.addEventListener("ended",()=>{if(vid.local===s){stopMedia();setTimeout(()=>{if(document.visibilityState==="visible")startMedia()},800)}}));
+      setPresence({vr:true,mic:vid.mic,cam:vid.cam}); videoSync();
+    })
+    .catch(()=>{vid.denied=true})
+    .finally(()=>{vid.asking=false;renderVideoUI()});
 }
-function closePc(sayBye){
-  if(vid.pc){try{vid.pc.close()}catch(e){} if(sayBye&&vid.pcPeer&&room) room.signal(vid.pcPeer,{y:"bye",e:game&&game.e});}
-  vid.pc=null;vid.pcPeer=null;$("#vThem").srcObject=null;
-}
-function stopVideo(){
-  closePc(true); vid.pending=[];
+function applyTracks(){if(!vid.local)return;vid.local.getAudioTracks().forEach(t=>t.enabled=vid.mic);vid.local.getVideoTracks().forEach(t=>t.enabled=vid.cam)}
+function stopMedia(){
+  for(const p of [...vid.pcs.keys()]) closePc(p,true);
   if(vid.local){vid.local.getTracks().forEach(t=>t.stop());vid.local=null}
-  $("#vMe").srcObject=null; $("#vid").hidden=true;
+  setPresence({vr:null}); renderVideoUI();
 }
-function videoTick(){
-  const box=$("#vid");
-  if(screen!=="game"||!videoWanted()){box.hidden=true;return}
-  box.hidden=false; const K=otherKid(); $("#vFrame").style.setProperty("--k",K.hue);
-  if(!vid.local){
-    if(vid.asking){vMsg(`<span class="face">${K.face}</span>Starting camera…`);return}
-    if(vid.denied) vMsg(`<span class="face">${K.face}</span><button id="vStart">Turn on video</button>`);
-    else { vMsg(`<span class="face">${K.face}</span>Starting camera…`); ensureLocal().then(videoTick,videoTick); }
-    const b=$("#vStart"); if(b) b.onclick=()=>{vid.denied=false;ensureLocal().then(videoTick,()=>{vMsg(`<span class="face">📷</span>Camera is blocked. Allow it in Settings › Safari › Camera.`)})};
-    return;
-  }
-  const op=otherPeer();
-  if(!op){closePc(false);vMsg(`<span class="face">${K.face}</span>Waiting for ${esc(K.name)}…`);return}
-  if(vid.pcPeer&&vid.pcPeer!==op.peer) closePc(false);
-  if(vid.pc&&vid.pc.connectionState==="connected"){vMsg("");return}
-  if(!vid.pc) vMsg(`<span class="face">${K.face}</span>Calling ${esc(K.name)}…`);
-  if(!vid.pc&&op.presence.vr&&myPeer<op.peer) call(op.peer).catch(()=>closePc(false));
+function setMic(on){vid.mic=on;store("kp.mic",on?"on":"off");applyTracks();setPresence({mic:on});renderVideoUI()}
+function setCam(on){vid.cam=on;store("kp.cam",on?"on":"off");applyTracks();setPresence({cam:on});renderVideoUI()}
+function videoPeers(){
+  return peers().filter(p=>!p.sameTab&&p.presence&&KIDS[p.presence.kid]&&p.presence.vr).sort((a,b)=>(a.presence.at||0)-(b.presence.at||0)).slice(0,MAX_REMOTE);
+}
+let vsT=null;
+function videoSync(){clearTimeout(vsT);vsT=setTimeout(doVideoSync,150)}
+function doVideoSync(){
+  const want=new Set(videoPeers().map(p=>p.peer));
+  for(const p of [...vid.pcs.keys()]) if(!want.has(p)) closePc(p,false);
+  for(const p of [...vid.streams.keys()]) if(!want.has(p)) {vid.streams.delete(p)}
+  if(vid.local) for(const p of want) if(!vid.pcs.has(p)&&myPeer<p) call(p).catch(()=>closePc(p,false));
+  renderVideoUI();
+}
+function closePc(peer,bye){
+  const c=vid.pcs.get(peer); if(!c) return;
+  try{c.pc.close()}catch(e){} clearTimeout(c.t); vid.pcs.delete(peer); vid.streams.delete(peer);
+  if(bye&&room) room.signal(peer,{y:"bye"});
+  renderVideoUI();
 }
 function newPc(peer){
-  const pc=new RTCPeerConnection({iceServers:ICE});
+  const pc=new RTCPeerConnection({iceServers:ICE}), c={pc,pending:[],t:null};
   vid.local.getTracks().forEach(t=>{const snd=pc.addTrack(t,vid.local);
-    if(t.kind==="video"&&snd.getParameters){try{const prm=snd.getParameters();prm.encodings=prm.encodings&&prm.encodings.length?prm.encodings:[{}];prm.encodings[0].maxBitrate=300000;snd.setParameters(prm).catch(()=>{})}catch(e){}}});
-  pc.onicecandidate=e=>{if(e.candidate&&game) room.signal(peer,{y:"ice",c:e.candidate.toJSON(),e:game.e})};
-  pc.ontrack=e=>{const v=$("#vThem");const st=e.streams[0]||new MediaStream([e.track]);if(v.srcObject!==st)v.srcObject=st;
-    v.play().then(()=>vMsg(""),()=>vMsg(`<span class="face">${otherKid().face}</span><button id="vPlay">Tap to see ${esc(otherKid().name)}</button>`));
-    const b=$("#vPlay"); if(b) b.onclick=()=>v.play().then(()=>vMsg(""),()=>{});};
+    if(t.kind==="video"&&snd.getParameters){try{const prm=snd.getParameters();prm.encodings=prm.encodings&&prm.encodings.length?prm.encodings:[{}];prm.encodings[0].maxBitrate=250000;snd.setParameters(prm).catch(()=>{})}catch(e){}}});
+  pc.onicecandidate=e=>{if(e.candidate&&room) room.signal(peer,{y:"ice",c:e.candidate.toJSON()})};
+  pc.ontrack=e=>{const st=e.streams[0]||new MediaStream([e.track]);vid.streams.set(peer,st);renderVideoUI()};
   pc.onconnectionstatechange=()=>{
-    if(vid.pc!==pc) return; const s=pc.connectionState;
-    if(s==="connected"){vMsg("");blip(880,.15,"triangle",.08)}
-    else if(s==="failed"||s==="closed"){closePc(false);setTimeout(videoTick,2500)}
-    else if(s==="disconnected"){setTimeout(()=>{if(vid.pc===pc&&pc.connectionState!=="connected"){closePc(false);videoTick()}},6000)}
+    if(vid.pcs.get(peer)!==c) return; const s=pc.connectionState;
+    if(s==="connected"){renderVideoUI()}
+    else if(s==="failed"||s==="closed"){closePc(peer,false);setTimeout(videoSync,2500)}
+    else if(s==="disconnected"){setTimeout(()=>{if(vid.pcs.get(peer)===c&&pc.connectionState!=="connected"){closePc(peer,false);videoSync()}},6000)}
   };
-  vid.pc=pc; vid.pcPeer=peer; return pc;
+  vid.pcs.set(peer,c); return c;
 }
-function flushIce(){const pc=vid.pc;if(!pc||!pc.remoteDescription)return;const keep=[];for(const m of vid.pending){if(m.f===vid.pcPeer)pc.addIceCandidate(m.c).catch(()=>{});else keep.push(m)}vid.pending=keep.slice(-50)}
+function flushIce(c){if(!c.pc.remoteDescription)return;for(const x of c.pending)c.pc.addIceCandidate(x).catch(()=>{});c.pending=[]}
 async function call(peer){
-  const pc=newPc(peer); const off=await pc.createOffer(); await pc.setLocalDescription(off);
-  room.signal(peer,{y:"offer",sdp:pc.localDescription.sdp,e:game.e});
-  setTimeout(()=>{if(vid.pc===pc&&pc.signalingState==="have-local-offer"){closePc(false);videoTick()}},12000);
+  const c=newPc(peer); const off=await c.pc.createOffer(); await c.pc.setLocalDescription(off);
+  room.signal(peer,{y:"offer",sdp:c.pc.localDescription.sdp});
+  c.t=setTimeout(()=>{if(vid.pcs.get(peer)===c&&c.pc.signalingState==="have-local-offer"){closePc(peer,false);videoSync()}},12000);
 }
+const earlyIce=new Map();
 async function onSignal(m){
-  if(!game||m.e!==game.e||!videoWanted()) return;
-  if(m.f===myPeer) return;
+  const peer=m.f; if(!peer||peer===myPeer) return;
   if(m.y==="offer"&&typeof m.sdp==="string"){
-    if(!vid.local){try{await ensureLocal()}catch(e){videoTick();return}}
-    closePc(false); const pc=newPc(m.f);
-    await pc.setRemoteDescription({type:"offer",sdp:m.sdp}); flushIce();
-    const ans=await pc.createAnswer(); await pc.setLocalDescription(ans);
-    room.signal(m.f,{y:"answer",sdp:pc.localDescription.sdp,e:game.e});
+    if(!vid.local) return; // they'll retry once our camera is on
+    closePc(peer,false); const c=newPc(peer);
+    for(const x of earlyIce.get(peer)||[]) c.pending.push(x); earlyIce.delete(peer);
+    await c.pc.setRemoteDescription({type:"offer",sdp:m.sdp}); flushIce(c);
+    const ans=await c.pc.createAnswer(); await c.pc.setLocalDescription(ans);
+    room.signal(peer,{y:"answer",sdp:c.pc.localDescription.sdp});
   } else if(m.y==="answer"&&typeof m.sdp==="string"){
-    if(vid.pc&&vid.pcPeer===m.f&&vid.pc.signalingState==="have-local-offer"){await vid.pc.setRemoteDescription({type:"answer",sdp:m.sdp});flushIce()}
+    const c=vid.pcs.get(peer); if(c&&c.pc.signalingState==="have-local-offer"){await c.pc.setRemoteDescription({type:"answer",sdp:m.sdp});flushIce(c)}
   } else if(m.y==="ice"&&m.c){
-    if(vid.pc&&vid.pcPeer===m.f&&vid.pc.remoteDescription) vid.pc.addIceCandidate(m.c).catch(()=>{}); else vid.pending.push(m);
-  } else if(m.y==="bye"){ if(vid.pcPeer===m.f){closePc(false);videoTick()} }
+    const c=vid.pcs.get(peer);
+    if(c&&c.pc.remoteDescription) c.pc.addIceCandidate(m.c).catch(()=>{});
+    else if(c) c.pending.push(m.c);
+    else {const a=earlyIce.get(peer)||[];a.push(m.c);earlyIce.set(peer,a.slice(-40))}
+  } else if(m.y==="bye"){ closePc(peer,false); }
 }
-$("#vMic").onclick=()=>{vid.mic=!vid.mic;$("#vMic").classList.toggle("off",!vid.mic);$("#vMic").textContent=vid.mic?"🎤":"🔇";if(vid.local)vid.local.getAudioTracks().forEach(t=>t.enabled=vid.mic)};
-$("#vCam").onclick=()=>{vid.cam=!vid.cam;$("#vCam").classList.toggle("off",!vid.cam);if(vid.local)vid.local.getVideoTracks().forEach(t=>t.enabled=vid.cam)};
+/* one <video> per person, moved between the home screen cards and the floating bubble */
+function videoEl(peer,stream,mine){
+  let v=vid.els.get(peer);
+  if(!v){v=document.createElement("video");v.autoplay=true;v.playsInline=true;v.setAttribute("playsinline","");if(mine){v.muted=true;v.classList.add("mirror")}vid.els.set(peer,v)}
+  if(v.srcObject!==stream) v.srcObject=stream;
+  return v;
+}
+function playAll(){for(const v of vid.els.values()) if(v.srcObject&&v.paused) v.play().catch(()=>{})}
+addEventListener("pointerdown",()=>{playAll();if(me&&!vid.local&&!vid.asking&&!vid.tapTried&&!["setup","pick"].includes(screen)){vid.tapTried=true;startMedia()}},{capture:true});
+function tileFor(p,mine){
+  const K=kidOf(p.presence.kid), t=el("div","vtile"); t.style.setProperty("--k",K.hue);
+  const st=mine?vid.local:vid.streams.get(p.peer);
+  const camOn=mine?vid.cam:p.presence.cam!==false, micOn=mine?vid.mic:p.presence.mic!==false;
+  if(st&&camOn){const v=videoEl(mine?"me":p.peer,st,mine);t.append(v);v.play().catch(()=>{})}
+  else{const f=el("div","vface");f.textContent=K.face;t.append(f);if(st&&!mine){const v=videoEl(p.peer,st,false);v.classList.add("audioonly");t.append(v);v.play().catch(()=>{})}}
+  if(!micOn) t.append(el("span","vmute","🔇"));
+  return t;
+}
+/* floating bubble everywhere except the home screen (which shows the people cards) */
+function renderVideoUI(){
+  if(screen==="lobby"&&typeof renderPeople==="function") renderPeople();
+  const box=$("#vid"); if(!box) return;
+  const show=me&&["game","story","reader","inbox"].includes(screen)&&(vid.local||vid.streams.size);
+  box.hidden=!show; if(!show) return;
+  box.classList.toggle("min",vid.min);
+  const tiles=$("#vTiles"); tiles.innerHTML="";
+  if(!vid.min){
+    for(const p of videoPeers()) if(vid.streams.has(p.peer)) tiles.append(tileFor(p,false));
+    const mine=tileFor({peer:myPeer,presence:{kid:me}},true);mine.classList.add("mine");tiles.append(mine);
+  }
+  $("#vMic").textContent=vid.mic?"🎤":"🔇"; $("#vMic").classList.toggle("off",!vid.mic);
+  $("#vCam").classList.toggle("off",!vid.cam);
+  $("#vMin").textContent=vid.min?"📹":"➖";
+}
+$("#vMic").onclick=()=>setMic(!vid.mic);
+$("#vCam").onclick=()=>setCam(!vid.cam);
+$("#vMin").onclick=()=>{vid.min=!vid.min;renderVideoUI()};
 // drag the bubble out of the way
 (()=>{const box=$("#vid");let d=null;
   box.addEventListener("pointerdown",e=>{if(e.target.closest("button"))return;const r=box.getBoundingClientRect();d={dx:e.clientX-r.left,dy:e.clientY-r.top,id:e.pointerId};box.setPointerCapture(e.pointerId)});
@@ -1511,6 +1562,65 @@ $("#vCam").onclick=()=>{vid.cam=!vid.cam;$("#vCam").classList.toggle("off",!vid.
     const x=Math.max(4,Math.min(innerWidth-r.width-4,e.clientX-d.dx)),y=Math.max(4,Math.min(innerHeight-r.height-4,e.clientY-d.dy));
     box.style.left=x+"px";box.style.top=y+"px";box.style.right="auto"});
   const end=()=>d=null; box.addEventListener("pointerup",end); box.addEventListener("pointercancel",end);})();
+/* ---------------- home screen: who's on, where they are, and how to join them ---------------- */
+const WHERE={lobby:["🏠","At home"],story:["🌙","Making a bedtime story"],reader:["📖","Reading a story"],inbox:["💌","In the Inbox"],grown:["🔒","Grown-ups area"],pick:["👋","Choosing who they are"],game:["🎨","Coloring"],watch:["👀","Watching"]};
+let peopleSig="";
+function whereOf(pr){
+  const w=WHERE[pr.scr]||["⏳","Busy"];
+  if((pr.scr==="game"||pr.scr==="watch")&&pr.g&&PICS[pr.g.pic]&&Array.isArray(pr.g.seats)){
+    const others=pr.g.seats.filter((s,i)=>pr.scr==="watch"||i!==pr.seat).map(s=>kidOf(s.k).name);
+    return pr.scr==="game"?[w[0],`Coloring ${PICS[pr.g.pic].name}${others.length?` with ${others.join(" & ")}`:""}`]:[w[0],`Watching ${others.join(" & ")} color`];
+  }
+  return w;
+}
+function renderPeople(){
+  const box=$("#people"); if(!box||!me) return;
+  const list=peers().filter(p=>p.presence&&KIDS[p.presence.kid]).sort((a,b)=>(b.sameTab-a.sameTab)||((a.presence.at||0)-(b.presence.at||0)));
+  const sig=JSON.stringify([me,vid.mic,vid.cam,!!vid.local,vid.asking,vid.denied,list.map(p=>[p.peer,p.presence.kid,p.presence.scr,p.presence.g&&p.presence.g.e,p.presence.seat,p.presence.vr,p.presence.mic,p.presence.cam,vid.streams.has(p.peer)])]);
+  if(sig===peopleSig&&box.childElementCount) return; peopleSig=sig;
+  box.innerHTML="";
+  const head=el("div","peoplehead",`<span>Who's on</span><em>${list.length}</em>`); box.append(head);
+  const grid=el("div","pgrid"); box.append(grid);
+  for(const p of list){
+    const pr=p.presence, K=kidOf(pr.kid), mine=p.sameTab;
+    const card=el("div","pcard"+(mine?" mine":"")); card.style.setProperty("--k",K.hue);
+    const tile=tileFor(p,mine); card.append(tile);
+    const [ic,txt]=mine?["📍","You are here"]:whereOf(pr);
+    const info=el("div","pinfo",`<b>${esc(K.name)}${mine?" <small>(you)</small>":""}</b><span class="where"><i>${ic}</i>${esc(txt)}</span>`); card.append(info);
+    const act=el("div","pact"); card.append(act);
+    if(mine){
+      if(!mediaOK()) act.append(el("span","note","No camera on this device"));
+      else if(!vid.local){const b=el("button","bigbtn",vid.asking?"Starting…":"📷 Turn on camera");b.disabled=vid.asking;b.onclick=()=>{vid.denied=false;startMedia()};act.append(b);
+        if(vid.denied) act.append(el("span","note","If nothing happens, allow the camera and microphone in Settings › Safari."))}
+      else{const m=el("button","round"+(vid.mic?"":" off"),vid.mic?"🎤":"🔇");m.setAttribute("aria-label","Microphone");m.onclick=()=>setMic(!vid.mic);
+        const c=el("button","round"+(vid.cam?"":" off"),"📷");c.setAttribute("aria-label","Camera");c.onclick=()=>setCam(!vid.cam);act.append(m,c)}
+    } else if(["lobby","story","reader","inbox"].includes(pr.scr)){
+      const b=el("button","bigbtn",`🎨 Color with ${esc(K.name)}`);b.onclick=()=>{sayLittle(`Color with ${K.name}!`);openPics([p.peer])};act.append(b);
+      if(pr.scr!=="lobby"){const n=el("button","ghost","💌 Note");n.onclick=()=>{sayLittle(`Send ${K.name} a note`);openInbox("what",{to:pr.kid})};act.append(n)}
+    } else if((pr.scr==="game"||pr.scr==="watch")&&pr.g&&PICS[pr.g.pic]&&Array.isArray(pr.g.seats)){
+      const g=pr.g, held=peers().filter(q=>q.presence&&q.presence.scr==="game"&&q.presence.g&&q.presence.g.e===g.e).map(q=>q.presence.seat);
+      const mySeat=g.seats.findIndex((s,i)=>s.k===me&&!held.includes(i));
+      if(mySeat>=0){const b=el("button","bigbtn","↩️ Jump back in");b.onclick=()=>enterGame(g,mySeat,true);act.append(b)}
+      else{const b=el("button","bigbtn","👀 Watch");b.onclick=()=>{sayLittle(`Let's watch!`);enterGame(g,-1,true)};act.append(b)}
+    } else {
+      const b=el("button","ghost","💌 Send a note");b.onclick=()=>{sayLittle(`Send ${K.name} a note`);openInbox("what",{to:pr.kid})};act.append(b);
+    }
+    grid.append(card);
+  }
+  if(list.length<2) grid.append(el("p","empty","Nobody else is on yet. When someone opens Kapanigans with your family code, they show up here with their camera."));
+}
+
+/* invites: someone started a game with you while you were somewhere else */
+let inviteT=null;
+function showInvite(g,idx,fromPeer){
+  const starter=peers().find(p=>p.peer===fromPeer); const who=starter&&starter.presence?kidOf(starter.presence.kid).name:"Someone";
+  $("#inviteMsg").textContent=`🎨 ${who} wants to color ${PICS[g.pic].name} with you!`;
+  $("#invite").hidden=false; blip(660,.15,"triangle",.12); setTimeout(()=>blip(880,.2,"triangle",.12),150);
+  say(`${who} wants to color with you!`);
+  $("#inviteJoin").onclick=()=>{$("#invite").hidden=true;if(game&&game.refs)game.refs.forEach(r=>r.off());game=null;hush();enterGame(g,idx,false)};
+  $("#inviteNo").onclick=()=>{$("#invite").hidden=true};
+  clearTimeout(inviteT); inviteT=setTimeout(()=>{$("#invite").hidden=true},60000);
+}
 
 
 /* ================= BEDTIME STORY ================= */
@@ -2039,7 +2149,7 @@ function voicePlayer(b){
   return {el:btn,play:()=>{hush();audio.play().catch(()=>{})}};
 }
 /* voice recording: tap to start, tap to stop, 30 seconds max */
-function stopRec(){const r=ib.rec;if(!r)return;clearInterval(r.tick);if(r.mr&&r.mr.state==="recording")r.mr.stop();if(r.stream)r.stream.getTracks().forEach(t=>t.stop());ib.rec=null}
+function stopRec(){const r=ib.rec;if(!r)return;clearInterval(r.tick);if(r.mr&&r.mr.state==="recording")r.mr.stop();if(r.own&&r.stream)r.stream.getTracks().forEach(t=>t.stop());ib.rec=null;applyTracks()}
 function renderVoice(B){
   B.append(el("h2",null,"Say something!"));
   const ok=!!(navigator.mediaDevices&&window.MediaRecorder);
@@ -2050,14 +2160,16 @@ function renderVoice(B){
   big.onclick=async()=>{
     if(ib.rec){ib.rec.mr.stop();return}
     hush(); out.innerHTML=""; result=null;
-    let stream;try{stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}})}catch(e){lab.textContent="The microphone is blocked. Allow it in Settings › Safari › Microphone.";return}
+    let stream,own=false;const live=vid.local&&vid.local.getAudioTracks().find(t=>t.readyState==="live");
+    if(live){live.enabled=true;stream=new MediaStream([live])}
+    else{try{stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}});own=true}catch(e){lab.textContent="The microphone is blocked. Allow it in Settings › Safari › Microphone.";return}}
     const type=["audio/mp4","audio/webm;codecs=opus","audio/webm"].find(t=>MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(t))||"";
     let mr;try{mr=new MediaRecorder(stream,type?{mimeType:type,audioBitsPerSecond:32000}:{audioBitsPerSecond:32000})}catch(e){mr=new MediaRecorder(stream)}
     const chunks=[];const t0=Date.now();
-    ib.rec={mr,stream,tick:setInterval(()=>{const s=Math.floor((Date.now()-t0)/1000);lab.textContent=`Recording… ${30-s}s left. Tap to stop`;if(s>=30)mr.stop()},250)};
+    ib.rec={mr,stream,own,tick:setInterval(()=>{const s=Math.floor((Date.now()-t0)/1000);lab.textContent=`Recording… ${30-s}s left. Tap to stop`;if(s>=30)mr.stop()},250)};
     big.classList.add("on");big.textContent="⏹️";lab.textContent="Recording… tap to stop";
     mr.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
-    mr.onstop=()=>{const r=ib.rec;if(r){clearInterval(r.tick);r.stream.getTracks().forEach(t=>t.stop())}ib.rec=null;
+    mr.onstop=()=>{const r=ib.rec;if(r){clearInterval(r.tick);if(r.own)r.stream.getTracks().forEach(t=>t.stop())}ib.rec=null;applyTracks();
       big.classList.remove("on");big.textContent="🎤";
       const blob=new Blob(chunks,{type:mr.mimeType||type||"audio/mp4"});const dur=Math.max(1,Math.round((Date.now()-t0)/1000));
       if(blob.size<500){lab.textContent="That was too short. Try again!";return}
@@ -2086,12 +2198,11 @@ function keepAwake(){try{if(navigator.wakeLock&&document.visibilityState==="visi
 document.addEventListener("visibilitychange",()=>{
   if(document.visibilityState!=="visible") return;
   if(screen==="game"||screen==="reader") keepAwake();
-  if(screen==="game"&&game){
-    renderSeats();
-    if(vid.local&&vid.local.getTracks().some(t=>t.readyState==="ended")){stopVideo();setPresence({vr:null})}
-    if(vid.pc&&vid.pc.connectionState!=="connected"){closePc(false)}
-    setTimeout(videoTick,400);
-  }
+  if(screen==="game"&&game) renderSeats();
+  if(vid.local&&vid.local.getTracks().some(t=>t.readyState==="ended")) stopMedia();
+  for(const [peer,c] of [...vid.pcs]) if(c.pc.connectionState!=="connected") closePc(peer,false);
+  if(me&&!vid.local&&!["setup","pick"].includes(screen)) startMedia();
+  videoSync(); playAll();
 });
 
 
