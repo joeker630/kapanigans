@@ -583,7 +583,7 @@ Build the **simple parts for the avatar builder** (#3 farmer avatars, used as ev
 | Unlockables | Pumpkin costume, chicken costume, a pet dog, cat and duckling that follow you |
 
 **How they're made**
-- Same art kit and house style as the farm animals. The farm hen is used as the **style reference** (`--ref art/farm/hen.webp`), so the avatars look like they belong on the farm.
+- ~~Same chunky 3D style, hen as reference~~ → changed: isometric sprite style (see the generated art section below).
 - Same layering approach as #9: one base body that every part fits on, parts listed in the manifest with their slot, offset and scale, and white parts tinted in the game.
 - **Little-friendly:** big, simple shapes that still read clearly when small, such as on a seat chip or the lobby.
 - Extra poses for the base body (walk, wave, cheer, yawn) are animated in code by moving the parts, not drawn separately.
@@ -599,8 +599,29 @@ Build the **simple parts for the avatar builder** (#3 farmer avatars, used as ev
 - **Swapping in art later:** each part is one slot in `avatarSVG()` (skin, face, hair back/front, hat, outfit, extras). Generated cutouts can replace a slot's drawing one at a time without changing the dressing room or saved looks.
 - Still to do: unlockables (pumpkin and chicken costumes, pets) once Farmstand coins can buy them; generated art per the table above.
 
+**🎨 Generated art ready to swap in (Oct 27) — `art/avatar/`, from `tools/batches/avatar1.json`**
+- **Style:** the flat **isometric sprite** style of the farm animals (`art/iso/farm/`), not the chunky 3D `art/farm/` style named above, so farmers match the animals they walk among. Facing the bottom left like the animals; mirror for the other side.
+- **How to stack:** every file is a **320×320 full-frame layer at the same position**. Draw `base.webp`, then outfit → feet → hair → hat → extras on top at the same x, y and size. No offsets needed.
+- **Tinting:** files marked `"white": true` in the batch file are white; tint them in the game (multiply by the chosen color). Straw hat, cowboy hat, crown, flower crown and glasses keep their own colors.
+- **Files → dressing-room slots:**
+  - Hair (10, matches the 10 styles): `hair/` pigtails, short, curly, ponytail, bun, braids, long, spiky, bob, buzz.
+  - Hat (7, matches): `hat/` straw, cap, bonnet, flowercrown, beanie, cowboy, crown.
+  - Clothes: `outfit/` overalls, dress (farm dress), shirt (use for plaid shirt; the plaid can be drawn over it), apron. The dressing room's T-shirt is the base body's own shirt, tinted. **No art yet for hoodie**; there's art for **bandana** and **raincoat**, which aren't in the dressing room yet.
+  - Feet: `feet/rainboots` (no slot yet). Extras: `extra/glasses`, `extra/bow`.
+- **Done in code, not images:**
+  - **Skin:** recolor the peach pixels of `base.webp` (red > green + 15 and green > blue). Leave the boots out (bottom 15% of the figure), or they get recolored too.
+  - **Face:** the base face is plain dot eyes and a smile; keep drawing the 6 expressions on top. This also keeps the eyes visible on the darkest skin tones.
+  - Freckles and rosy cheeks.
+- **Still to make:**
+  - A hoodie.
+  - Pumpkin and chicken costumes.
+  - Pet dog, cat and duckling, as isometric pose sets like the farm animals (via `genart.py poses`).
+  - Back views, if the farmer should show its back when walking away (about 27 images).
+  - Do these on a later day: the 7 PM art budget tonight goes to farm Batch A.
+- **New parts:** add to `tools/batches/avatar1.json` and run `python3 tools/genart.py avatar tools/batches/avatar1.json` (skips what's made). Each part is generated as an edit of the base, then cut out by comparing it to the base, which is why every layer lines up.
+
 **Acceptance criteria**
-- [ ] Every part matches the farm animals' style side by side on a contact sheet
+- [x] Every part matches the farm animals' style side by side on a contact sheet (generated set, `art/avatar/`)
 - [x] At least 6 skin tones, 10 hairstyles, 6 hats and 6 outfits at launch
 - [x] Hair and clothes can be tinted to any color
 - [x] An avatar stays readable at small sizes (seat chips, lobby)
