@@ -100,7 +100,7 @@ A **live co-op farm** that the kids share. They grow crops and raise animals tog
 - **Unlocks from playing:** coins from the farmstand buy extra items, such as a cowboy hat, rain boots, a pumpkin costume or a pet that follows you (a dog, cat or duckling).
 - Avatars do small animations: walk, wave, cheer when a chore puzzle is solved, and yawn as the 30 minutes wind down.
 - The look is saved per persona (in Firebase), so it's the same on every device.
-- **Shares a dress-up system with Fashion Show (#5).** Body parts, clothing layers and recoloring are built once and used by both games, and possibly as the avatar in the lobby too.
+- **Shares a dress-up system with Fashion Show (#5).** Body parts, clothing layers and recoloring are built once and used by both games, and as each player's avatar everywhere in Kapanigans.
 
 **⏱️ 30-minute play limit (per player)**
 - The farm is designed so a full visit takes **no more than 30 minutes**. Each player gets **30 minutes of farm time**; once it's used, the farm is closed to that player for **24 hours** from that moment.
@@ -131,7 +131,7 @@ A **live co-op farm** that the kids share. They grow crops and raise animals tog
 - Should crops be able to wilt if nobody visits, or stay safe forever (kinder for little ones)?
 - ~~Daily play limit~~ → decided: 30 minutes per player, then a 24-hour rest (see above).
 - Do grown-ups follow the same 30-minute limit, or are they exempt?
-- Should the custom farmer avatar also replace the emoji avatar in the lobby and other games?
+- ~~Avatar everywhere?~~ → decided: **yes**. The custom avatar replaces the emoji avatar in the lobby, the "Who are you!? :)" screen, seat chips and all games (including as a model option in Fashion Show).
 - Does customizing the avatar count toward the 30 minutes of farm time? (Suggested: no, the dressing room doesn't use farm time.)
 - Can a grown-up grant extra time or reset a player's cooldown (for a sick day or a road trip)?
 - Should the 24 hours run from when the time ran out (as written), or should the farm reopen every morning at a set time (for example 7 AM), which is easier for little ones to understand?
