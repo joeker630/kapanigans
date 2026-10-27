@@ -178,6 +178,8 @@ Puzzle types come from the **Age-appropriate tasks** chat. That chat is building
   - **Session (generic):** `families/<code>/coop/<id>` = `{chore, type, title, pic, target, host, at, status: open|playing|done|off, members, order, lv, prog:{who:{piece:true}}}`. A new team chore is an entry in `COOP_CHORES` (puzzle type, picture, what it needs, what it gives). A new puzzle type joins by building its shared version when `api.ctx.coop` is set, like `buildCoopJigsaw`. Sessions older than an hour are cleaned up.
   - Next: more team chores (shear together, a team harvest) and co-op versions of other puzzle types.
 
+- **Grown-up puzzles (Oct 27):** grown-ups get real games on their chores, and they **can lose**. Losing means the chore doesn't happen; the lose screen offers *Try again* (a fresh game) or *Back to the farm*. Each chore picks the game that grown-up played least recently: **Sudoku** (40 blanks, 3 wrong numbers and you lose), **Word guess** (5 letters, 6 tries; guess list in `words/guesses.txt`), **Blackjack** (first to win 2 hands; dealer stands on 17; double down counts twice), **Minesweeper** (9×9, 10 mines, first tap is always safe, long-press or flag mode to flag) and **Codebreaker** (4 colors from 6, 8 tries). Wins pay a Moolah bonus (Sudoku +2, the rest +1). Losses are logged as unfinished attempts.
+
 **Rules for every puzzle** (from the Age-appropriate tasks chat):
 - **Little:** no fail state. A wrong tap wiggles and stays put. Every prompt is spoken, and a puzzle is done in under a minute.
 - **Big:** shows a star rating and a streak of up to 5 (built), and never punishes a wrong answer.

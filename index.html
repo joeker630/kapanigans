@@ -674,6 +674,73 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
 .group:active{transform:translateY(3px)}
 .show svg{width:clamp(110px,22vw,180px);height:clamp(110px,22vw,180px);display:block}
 
+/* grown-up puzzles */
+#task.grown .tprompt{font-size:clamp(18px,3vw,26px)}
+.adstat{font-size:16px;text-align:center;display:flex;gap:10px;align-items:baseline;justify-content:center;flex-wrap:wrap}
+.adsm{font-size:12px;color:var(--ink-soft);font-weight:700}
+.tdone.lost{background:rgba(43,33,64,.82);color:#fff}
+.tdone.lost h2{color:#FFD6D6}.tdone.lost p{max-width:40ch;text-align:center}
+.tdone .tbtns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:6px}
+.tdone.lost .ghost{color:var(--ink)}
+.tdone.peek{background:transparent;pointer-events:none;justify-content:flex-end}
+.tdone.peek>*{pointer-events:auto}
+.tdone.peek .lostcard{background:rgba(43,33,64,.92);color:#fff;border-radius:22px;padding:14px 18px;display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:6px}
+/* sudoku */
+.adwrap{display:flex;flex-direction:column;align-items:center;gap:12px}
+.adwrap.land{flex-direction:row}
+.sdk{display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(9,1fr);background:#fff;border:3px solid var(--ink);border-radius:8px;overflow:hidden}
+.sdc{border:1px solid #D8D2E4;font-family:var(--body);font-weight:800;color:#2D5BD8;padding:0;line-height:1;display:grid;place-items:center;border-radius:0}
+.sdc.giv{color:var(--ink)}
+.sdc.br{border-right:3px solid var(--ink)}.sdc.bb{border-bottom:3px solid var(--ink)}
+.sdc.near{background:#F1EEF8}.sdc.same{background:#DCE7FF}.sdc.sel{background:#FFE7A3}
+.sdc.err{background:#FFD2D2;color:var(--fox)}
+.sdkpad{display:grid;grid-template-columns:repeat(9,1fr);gap:6px;width:min(100%,560px)}
+.adwrap.land .sdkpad{grid-template-columns:repeat(3,64px);width:auto}
+.sdk-k{background:var(--paper);border-radius:12px;font-family:var(--display);font-size:26px;height:54px;box-shadow:0 3px 0 var(--sky-deep)}
+.sdk-k.gone{visibility:hidden}
+/* word guess */
+.wdl{display:grid;gap:6px;--wt:56px}
+.wrow{display:grid;grid-template-columns:repeat(5,var(--wt));gap:6px}
+.wt{width:var(--wt);height:var(--wt);border:3px solid #D3CDE0;border-radius:8px;background:#fff;display:grid;place-items:center;font-family:var(--display);font-size:calc(var(--wt)*.55);text-transform:uppercase;transition:background .2s,border-color .2s}
+.wt.fill{border-color:#8E82AA}
+.wt.hit,.wk.hit{background:#43A047;border-color:#43A047;color:#fff}
+.wt.near,.wk.near{background:#E0B400;border-color:#E0B400;color:#fff}
+.wt.no,.wk.no{background:#8A8494;border-color:#8A8494;color:#fff}
+.wkb{display:flex;flex-direction:column;gap:6px;width:min(100%,560px)}
+.wkr{display:flex;gap:5px;justify-content:center}
+.wk{flex:1;max-width:48px;height:50px;border-radius:8px;background:var(--paper);font-weight:900;font-size:17px;box-shadow:0 2px 0 var(--sky-deep);padding:0}
+.wk.wide{max-width:76px;flex:1.6;font-size:13px}
+/* blackjack */
+.bj{display:flex;flex-direction:column;align-items:center;gap:10px;width:min(100%,640px);background:#1F7A45;border-radius:26px;padding:16px;color:#fff;box-shadow:inset 0 0 0 6px #17603A}
+.bjl{font-family:var(--display);font-size:18px;opacity:.85}
+.bjh{display:flex;gap:8px;align-items:center;min-height:110px;flex-wrap:wrap;justify-content:center}
+.bjc{width:72px;height:102px;border-radius:10px;background:#fff;color:#1d1d1d;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 3px 6px rgba(0,0,0,.3);animation:popin .3s ease-out}
+.bjc b{font-size:26px;line-height:1}.bjc span{font-size:30px;line-height:1}
+.bjc.red{color:#D32F2F}
+.bjc.down{background:repeating-linear-gradient(45deg,#2D5BD8 0 8px,#3F6EE8 8px 16px);border:4px solid #fff}
+.bjt{font-family:var(--display);font-size:24px;background:rgba(0,0,0,.25);border-radius:999px;padding:2px 12px;margin-left:6px}
+.bjmsg{min-height:1.4em;font-size:17px;text-align:center}
+.bjbtns{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.bj .ghost{color:var(--ink)}
+/* minesweeper */
+.mns{display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(9,1fr);gap:2px;background:#B9AFCF;border:3px solid var(--ink);border-radius:10px;overflow:hidden;touch-action:manipulation}
+.mc{background:#E9E4F4;border-radius:0;padding:0;font-weight:900;line-height:1;display:grid;place-items:center;box-shadow:inset -3px -3px 0 rgba(0,0,0,.12),inset 3px 3px 0 #fff}
+.mc.open{background:#fff;box-shadow:none}
+.mc.mine{background:#FFE1E1}.mc.boom{background:#FF6B6B}
+.mc[data-n="1"]{color:#2D5BD8}.mc[data-n="2"]{color:#2E9E4F}.mc[data-n="3"]{color:#D32F2F}.mc[data-n="4"]{color:#5B2A86}.mc[data-n="5"]{color:#8B3A1A}.mc[data-n="6"]{color:#0F766E}
+.mnt{display:flex;gap:12px;align-items:center}
+.mnt .ghost.on{background:var(--sun)}
+/* codebreaker */
+.cbb{display:flex;flex-direction:column;gap:6px;overflow:auto;max-height:100%;min-height:0;flex:1;padding:4px}
+.cbr{display:flex;align-items:center;gap:8px;background:var(--paper);border-radius:14px;padding:6px 10px}
+.cbr.now{outline:3px dashed var(--sun-deep)}
+.cbr.ans{background:#FFF3D6}
+.cbg{display:inline-block;width:34px;height:34px;border-radius:50%;border:3px solid rgba(43,33,64,.25)}
+.cbg.empty{background:#EEE;border-style:dashed}
+.cbslot{padding:0;background:none;border-radius:50%}
+.cbk{min-width:96px;font-size:15px;letter-spacing:1px}
+.cbp{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;align-items:center}
+.cbc{width:52px;height:52px;border-radius:50%;border:4px solid #fff;box-shadow:0 3px 0 var(--sky-deep)}
 </style>
 
 </head>
@@ -3750,13 +3817,14 @@ function farmFrame(t){
 const FARM_ACTIONS={plant:"pattern",water:"color",harvest:"count",feed:"letters",collect:"memory",milk:"jigsaw",shear:"trace",build:"build",sell:"money"};
 const FARM_MIX=.6; // chance of borrowing another puzzle type; lower it once more actions are built
 function puzzleFor(action){
+  if(isGrown()) return pickType(ADULT_TYPES); // grown-ups get real games they can lose
   const main=FARM_ACTIONS[action];
   if(main&&Math.random()>=FARM_MIX){pickType([main]);return main}
   return pickType(TASK_TYPES.filter(t=>t!==main));
 }
 function farmPuzzle(action,o,done){
   if(tk) return false;
-  openTask({type:puzzleFor(action),lvl:lvl(),chore:action,title:o.title,ctx:Object.assign({item:o.item,pic:o.pic},o.ctx||{}),reward:o.reward,onWin:done,onQuit:o.onQuit});
+  openTask({type:puzzleFor(action),lvl:isGrown()?"grown":lvl(),chore:action,title:o.title,ctx:Object.assign({item:o.item,pic:o.pic},o.ctx||{}),reward:o.reward,onWin:done,onQuit:o.onQuit});
   return true;
 }
 
@@ -3783,11 +3851,12 @@ var tk=null; // var, not let: show() looks at it and can run before this line
 function roundsFor(type,L){return 1}
 // Longer puzzles pay more: a Moolah bonus on top of the chore's normal reward (0, +1 or +2).
 const PUZZLE_SIZE={big:{count:1,letters:1,color:1,pattern:1,money:1,memory:2,trace:2,build:3,jigsaw:3},little:{count:1,letters:1,color:1,pattern:1,money:1,memory:2,trace:2,build:2,jigsaw:2}};
-function puzzleBonus(my){return Math.max(0,((PUZZLE_SIZE[my.lvl==="little"?"little":"big"]||{})[my.type]||1)-1)}
+PUZZLE_SIZE.grown={sudoku:3,wordle:2,blackjack:2,mines:2,codebreaker:2};
+function puzzleBonus(my){return Math.max(0,((PUZZLE_SIZE[my.lvl]||PUZZLE_SIZE.big)[my.type]||1)-1)}
 function openTask(o){
   if(tk) closeTask(false);
   tk=Object.assign({round:0,rounds:roundsFor(o.type,o.lvl),wrong:0,hinted:false,t0:Date.now(),fx:[],store:{},ctx:{}},o);
-  const T=$("#task"); T.hidden=false; T.classList.toggle("little",o.lvl==="little");
+  const T=$("#task"); T.hidden=false; T.classList.toggle("little",o.lvl==="little"); T.classList.toggle("grown",o.lvl==="grown");
   $("#tTitle").textContent=o.title||"";
   nextRound();
 }
@@ -3803,7 +3872,18 @@ function taskApi(A){
   const my=tk;
   const api={area:A,lvl:my.lvl,L:my.lvl==="little",ctx:my.ctx||{},round:my.round,store:my.store,
     live:()=>tk===my&&!my.won,
-    ask(text,spoken){my.ask=spoken||text;$("#tPrompt").textContent=text;setTimeout(()=>{if(tk===my)say(my.ask)},200)},
+    ask(text,spoken){my.ask=spoken||text;$("#tPrompt").textContent=text;if(my.lvl!=="grown")setTimeout(()=>{if(tk===my)say(my.ask)},200)},
+    // grown-up games can be lost: the chore doesn't happen; "Try again" starts a fresh game
+    lose(reason,reveal){
+      if(tk!==my||my.won) return; my.won=true; taskStat(false,my); my.statted=true;
+      if(reveal) try{reveal()}catch(e){}
+      blip(160,.35,"sawtooth",.1);
+      const d=el("div","tdone lost peek",`<div class="lostcard"><h2>😵 You lost</h2><p>${esc(reason)}</p><div class="tbtns"></div></div>`);
+      const again=el("button","bigbtn","Try again"),back=el("button","ghost","Back to the farm");
+      again.onclick=()=>{if(tk!==my)return;Object.assign(my,{won:false,statted:false,wrong:0,hinted:false,t0:Date.now(),store:{}});nextRound()};
+      back.onclick=()=>{if(tk===my)closeTask(true)};
+      d.querySelector(".tbtns").append(again,back); A.append(d);
+    },
     win(wait=0,quiet=false){
       if(tk!==my||my.won) return; my.won=true;
       setTimeout(()=>{
@@ -3825,9 +3905,9 @@ function taskApi(A){
 }
 function finishTask(){
   const my=tk; if(!my) return; taskStat(true,my); tada();
-  const msg=pickOne(PRAISE); say(msg);
+  const msg=my.lvl==="grown"?"🏆 You won!":pickOne(PRAISE); if(my.lvl!=="grown")say(msg);
   let extra="";
-  if(my.lvl!=="little"){ // Big: stars for this puzzle and a 5-in-a-row meter that only ever goes up
+  if(my.lvl==="big"){ // Big: stars for this puzzle and a 5-in-a-row meter that only ever goes up
     const st=starsFor(my),sk=bumpStreak();
     extra=`<div class="tstars">${"⭐".repeat(st)}<span class="dim">${"⭐".repeat(3-st)}</span></div>`+
       `<div class="tstreak">${[0,1,2,3,4].map(i=>`<i class="${i<sk.n?"on":""}">🔥</i>`).join("")}</div>`+
@@ -3843,7 +3923,7 @@ function closeTask(quit){
   if(!tk) return; const my=tk; tk=null;
   for(const f of my.fx.splice(0)) try{f()}catch(e){}
   $("#task").hidden=true; $("#tArea").innerHTML="";
-  if(quit){taskStat(false,my);my.onQuit&&my.onQuit()}
+  if(quit){if(!my.statted)taskStat(false,my);my.onQuit&&my.onQuit()}
 }
 function taskStat(done,my){
   if(!my) return;
@@ -4462,6 +4542,187 @@ function moneyChange(api,sale){
   api.area.append(bar,back);
   api.hint(()=>{sum.innerHTML+=` <span class="mhint">(count up from ${t} to ${paid}: you need ${ch})</span>`});
 }
+
+/* ============ GROWN-UP PUZZLES ============
+   Grown-ups get real games on their farm chores, and these can be LOST. Losing means the chore doesn't happen:
+   the lose screen offers "Try again" (a fresh game) or "Back to the farm".
+   sudoku (3 mistakes and you're out), wordle (6 guesses), blackjack (first to 2 hands), mines (hit one and it's over),
+   codebreaker (crack 4 colors in 8 tries). Each farm chore picks the one this grown-up played least recently. */
+const ADULT_TYPES=["sudoku","wordle","blackjack","mines","codebreaker"];
+Object.assign(SKILL,{sudoku:"logic",wordle:"words",blackjack:"cards",mines:"logic",codebreaker:"deduction"});
+Object.assign(PUZZLE_NAMES,{sudoku:"sudoku",wordle:"word guess",blackjack:"blackjack",mines:"minesweeper",codebreaker:"codebreaker"});
+const isGrown=()=>!!(me&&KIDS[me]&&KIDS[me].grown);
+function adStatus(api,html){let s=api.area.querySelector(".adstat");if(!s){s=el("div","adstat");api.area.prepend(s)}s.innerHTML=html;return s}
+function adFit(api,box,fn){const go=()=>{const r=api.area.getBoundingClientRect();if(r.width)fn(r)};go();if(window.ResizeObserver){const ro=new ResizeObserver(go);ro.observe(api.area);api.after(()=>ro.disconnect())}}
+function adKeys(api,fn){const h=e=>{if(!api.live()||e.metaKey||e.ctrlKey||e.altKey)return;if(fn(e)!==false)e.preventDefault()};addEventListener("keydown",h);api.after(()=>removeEventListener("keydown",h))}
+
+/* ---- 1. Sudoku: fill the grid; 3 wrong numbers and you lose ---- */
+function sdkSolve(g,limit=2){ // counts solutions up to limit
+  let n=0; const rec=()=>{const i=g.indexOf(0);if(i<0){n++;return n>=limit}
+    const r=Math.floor(i/9),c=i%9,br=r-r%3,bc=c-c%3;
+    for(let v=1;v<=9;v++){let ok=true;for(let k=0;k<9&&ok;k++)if(g[r*9+k]===v||g[k*9+c]===v||g[(br+Math.floor(k/3))*9+bc+k%3]===v)ok=false;
+      if(ok){g[i]=v;if(rec()){g[i]=0;return true}g[i]=0}}return false};
+  rec(); return n;
+}
+function sdkMake(blanks){
+  const g=Array(81).fill(0);
+  const fill=i=>{if(i===81)return true;const r=Math.floor(i/9),c=i%9,br=r-r%3,bc=c-c%3;
+    for(const v of shuffle([1,2,3,4,5,6,7,8,9])){let ok=true;for(let k=0;k<9&&ok;k++)if(g[r*9+k]===v||g[k*9+c]===v||g[(br+Math.floor(k/3))*9+bc+k%3]===v)ok=false;
+      if(ok){g[i]=v;if(fill(i+1))return true;g[i]=0}}return false};
+  fill(0); const sol=g.slice(), puz=g.slice(); let removed=0;
+  for(const i of shuffle([...Array(81).keys()])){if(removed>=blanks)break;const v=puz[i];puz[i]=0;if(sdkSolve(puz.slice())===1)removed++;else puz[i]=v}
+  return {sol,puz};
+}
+TASKS.sudoku=api=>{
+  const {sol,puz}=sdkMake(40), cur=puz.slice(), MAX=3; let sel=-1, bad=0;
+  api.ask("Sudoku: fill every row, column and box with 1 to 9");
+  const stat=()=>adStatus(api,`Mistakes: ${"❌".repeat(bad)}${"▫️".repeat(MAX-bad)} <span class="adsm">${MAX} and you lose</span>`);stat();
+  const wrap=el("div","adwrap"), grid=el("div","sdk"), pad=el("div","sdkpad"); wrap.append(grid,pad); api.area.append(wrap);
+  const cells=cur.map((v,i)=>{const b=el("button","sdc"+(v?" giv":""),v||"");const r=Math.floor(i/9),c=i%9;
+    if(c%3===2&&c<8)b.classList.add("br");if(r%3===2&&r<8)b.classList.add("bb");b.onclick=()=>{sel=i;paint()};grid.append(b);return b});
+  const keys=[1,2,3,4,5,6,7,8,9].map(v=>{const b=el("button","sdk-k",String(v));b.onclick=()=>put(v);pad.append(b);return b});
+  function paint(){
+    const sv=sel>=0?cur[sel]:0,sr=Math.floor(sel/9),sc=sel%9;
+    cells.forEach((b,i)=>{const r=Math.floor(i/9),c=i%9;b.textContent=cur[i]||"";
+      b.classList.toggle("sel",i===sel);b.classList.toggle("near",sel>=0&&i!==sel&&(r===sr||c===sc||(Math.floor(r/3)===Math.floor(sr/3)&&Math.floor(c/3)===Math.floor(sc/3))));
+      b.classList.toggle("same",!!sv&&cur[i]===sv&&i!==sel)});
+    keys.forEach((k,n)=>{k.classList.toggle("gone",cur.filter(x=>x===n+1).length>=9)});
+  }
+  function put(v){
+    if(!api.live()||sel<0||cur[sel])return;
+    if(sol[sel]===v){cur[sel]=v;cells[sel].classList.add("ok");blip(660,.06);paint();if(cur.every((x,i)=>x===sol[i]))api.win(500)}
+    else{bad++;stat();const b=cells[sel];b.textContent=v;b.classList.add("err");blip(180,.2,"sawtooth",.08);
+      setTimeout(()=>{b.classList.remove("err");paint()},700);if(bad>=MAX)api.lose("Three wrong numbers.",()=>{cur.splice(0,81,...sol);paint()})}
+  }
+  adKeys(api,e=>{if(/^[1-9]$/.test(e.key))put(+e.key);else if(e.key.startsWith("Arrow")&&sel>=0){const d={ArrowUp:-9,ArrowDown:9,ArrowLeft:-1,ArrowRight:1}[e.key];sel=clamp(sel+d,0,80);paint()}else return false});
+  adFit(api,wrap,r=>{const land=r.width>r.height*1.15;wrap.classList.toggle("land",land);
+    const s=Math.floor(Math.min(land?r.width*.62:r.width,land?r.height-50:r.height-170,560));grid.style.width=grid.style.height=s+"px";grid.style.fontSize=(s/9*.55)+"px"});
+  paint();
+};
+
+/* ---- 2. Word guess: find the 5-letter word in 6 tries ---- */
+const WORDLE_ANSWERS="about their there which would other after first think could these where right being going still never those world great while every state three since under thing house place again found might money night until doing group start today point music power water small white later order party thank black whole maybe story least early local video young court given level often death south known large wrong along class close cause happy human woman leave north watch light short taken third among check heart child major media phone quite final front ready bring march study clear month board field fight force issue price space total above share sense break event sorry guess learn alone movie press worth sound value round stand stuff drive green match model trust range trade chief lower style blood china stage title enjoy cover legal seven staff super union built crazy daily paper voice whose earth below offer sleep table truth build piece visit wrote river shall speak write album eight funny peace spent store track ahead allow brown radio cross focus extra quick agree clean photo scene spend coach heavy train claim hotel judge brain floor image meant reach civil dance stock trump worst beach older color dream grand sweet touch doubt drink shown basic carry crime fully japan plant smith worse award block peter avoid catch coast trial truly queen broke glass prior royal serve begin twice worry brand count fresh mouth owner scale score smart throw click faith metal agent apply basis enter prime waste weird adult grade stone apart aware fifth birth labor lucky prove tough alive apple dress horse magic stick frank guide raise treat youth henry exist guard shoot solid sport taste harry hello plane shape upper cheap joint steel crowd enemy limit ocean proof chair honor stuck sugar drama entry grant grown lying route smoke squad teach abuse angry laugh lunch storm actor chain equal quiet split urban fault phase smile truck blame dying false novel shirt cream giant mayor minor theme usual draft spoke upset cycle aside empty prize rural admit favor frame guest teeth bunch fruit index shift stood tight crown grace chose crash depth dirty error noise panel plate shame cable print sight broad drawn motor solar blind brief chest debut paint pilot steam exact quote swear trend bread inner reply tower wheel pride rough smell topic lewis sharp trick audio chart mount occur argue awful bound cloud loose moral shock thick threw angel bonus flash gross refer trail uncle badly chase ideal jimmy kelly clock label pitch pizza plain anger comic ghost newly skill solve trash virus boost dutch knife saint steal buddy delay elite forth layer marry nurse sheet bench idiot medal roger shell silly angle clark forum grass hence rapid sixth valid vital creek fraud honey ratio scary spell sword begun daddy drove glory juice logic strip dozen fancy input knock ought flood maria rally swing alert arena billy brave fleet robin shake shore blast pound punch grave mouse piano slave craft devil sauce slide tiger alien beast candy fifty relax alarm globe larry spare opera quest anime barry jerry lover panic scope alpha brick mercy outer screw venue habit laura naval noble robot terry toxic wound asset baker brush essay maker snake ultra usage bobby canal climb fever fluid nasty perry twist unity blown fence stole swiss dealt flesh forty laser loyal patch radar villa adopt blade cargo humor nerve sandy sheep trace chill didnt grain liver rifle rival sadly slept spray suite verse bless chuck couch crush genre lease shine tweet blake inter react rocky shade tommy vocal yield bacon burst costa salad stake swift welsh awake blank curve harsh hurry mason nancy organ pearl sweat alike arrow cabin eagle eaten guilt haven theft valve charm cruel delta ridge tribe canon stamp voter witch array belly booth cliff derby fatal lemon ralph shark colin dairy diary drill meter olive setup skull smash basin bride chick fairy freak grief lodge merit micro rebel tooth viral widow beard curse drain flame ninth penny petty reign scare sunny cheat cheer chile demon elder fiber pulse realm shout alter brass graph shook stack aging audit singh spite burnt buyer cease cloth eager elect lobby orbit ranch trunk badge carol ferry gauge rider shelf width legit loser sheer stark thumb wheat wrist acute blair civic clerk crude drone flour minus pause puppy slice vinyl probe remix sneak spark steep straw weigh adapt dense kitty whale amber ankle armor berry clash grasp handy manga poker sally scout steak sweep tumor cheek curry drake polar skirt spike toast waist wreck blend brake cough depot drank feast frost purse tense chess float grind grove hobby lance lynch risky sober spice swept towel arise bloom clown dodge guild prone satan siege sixty sonic spine admin betty crane donor honda marco randy tenth batch paste plaza stare blunt champ ditch riley scrap shaft slope snack stern stiff sworn unite vault wagon homer jenny midst mommy onion rogue abbey baron bunny choir holly karma shiny spoon thief alley bully burke marsh messy molly roast salon vague brett coral covid dough hardy irony maple relay risen stunt yahoo ivory kerry niche porch utter walsh creep donna elbow exile goose grill ruler spill swamp tasty urine cyrus decay flown imply merry reset shave vodka drift hatch niece scent slate surge token woody yacht manor pupil spoil allan altar fatty flush hairy ounce pablo seize spicy sting belle raven stall strap bliss daisy faint forge notch omega queue trout bravo crawl digit flint jelly lunar peach silva cedar heath pinch rover syrup dwarf liner merge moron naive pedro rigid vivid boxer brook hedge joker laden rainy salty serum skate stray tempo torch turbo arose blink chang chili excel genus glove greet negro owing proxy renew rumor stoke thigh troll aisle amino brace choke motto onset prose razor steer ample bingo cubic macro shady slack slick stove tract vista vogue adore crisp crust flora gamma grape juicy moody prank spear stain tidal wrath blaze".split(" ");
+let wordleAllowed=null;
+function wordleLoad(){if(wordleAllowed)return Promise.resolve(wordleAllowed);
+  return fetch("words/guesses.txt").then(r=>r.ok?r.text():"").then(t=>{const s=new Set(t.split(/\s+/).filter(w=>w.length===5));WORDLE_ANSWERS.forEach(w=>s.add(w));if(s.size>1000)wordleAllowed=s;return wordleAllowed}).catch(()=>null)}
+function wordleScore(guess,ans){const res=Array(5).fill("no"),left={};
+  for(let i=0;i<5;i++){if(guess[i]===ans[i])res[i]="hit";else left[ans[i]]=(left[ans[i]]||0)+1}
+  for(let i=0;i<5;i++)if(res[i]!=="hit"&&left[guess[i]]){res[i]="near";left[guess[i]]--}
+  return res}
+TASKS.wordle=api=>{
+  const ans=pickOne(WORDLE_ANSWERS); let row=0, cur=""; const keyState={}; wordleLoad();
+  api.ask("Guess the 5-letter word");
+  const stat=()=>adStatus(api,`Guesses left: <b>${6-row}</b> <span class="adsm">🟩 right spot · 🟨 in the word</span>`);stat();
+  const board=el("div","wdl"), kb=el("div","wkb"); api.area.append(board,kb);
+  const tiles=[...Array(6)].map(()=>{const r=el("div","wrow");const t=[...Array(5)].map(()=>{const x=el("div","wt");r.append(x);return x});board.append(r);return t});
+  const keyEls={};
+  for(const line of ["QWERTYUIOP","ASDFGHJKL","⏎ZXCVBNM⌫"]){const r=el("div","wkr");
+    for(const ch of line){const b=el("button","wk"+(ch==="⏎"||ch==="⌫"?" wide":""),ch==="⏎"?"Enter":ch);b.onclick=()=>key(ch);if(/[A-Z]/.test(ch))keyEls[ch]=b;r.append(b)}kb.append(r)}
+  const show=()=>tiles[row]&&tiles[row].forEach((t,i)=>{t.textContent=cur[i]||"";t.classList.toggle("fill",!!cur[i])});
+  function key(ch){
+    if(!api.live())return;
+    if(ch==="⌫"){cur=cur.slice(0,-1);return show()}
+    if(ch==="⏎"){
+      if(cur.length<5){shake("Not enough letters");return}
+      const w=cur.toLowerCase();
+      if(wordleAllowed&&!wordleAllowed.has(w)){shake("Not in the word list");return}
+      const sc=wordleScore(w,ans);
+      tiles[row].forEach((t,i)=>setTimeout(()=>{t.classList.add(sc[i]);const L=cur[i]||w[i].toUpperCase(),k=keyEls[w[i].toUpperCase()],rank={no:0,near:1,hit:2};
+        if(k&&(rank[sc[i]]>(rank[keyState[L]]??-1))){keyState[L]=sc[i];k.classList.remove("no","near","hit");k.classList.add(sc[i])}},i*180));
+      blip(500,.06); const won=w===ans; row++; cur=""; stat();
+      if(won){setTimeout(()=>api.win(300),950)}
+      else if(row>=6){setTimeout(()=>api.lose(`The word was ${ans.toUpperCase()}.`),950)}
+      return;
+    }
+    if(cur.length<5&&/^[A-Z]$/.test(ch)){cur+=ch;show()}
+  }
+  function shake(msg){const r=board.children[row];r.classList.remove("wig");void r.offsetWidth;r.classList.add("wig");toast(msg)}
+  adKeys(api,e=>{if(e.key==="Enter")key("⏎");else if(e.key==="Backspace")key("⌫");else if(/^[a-z]$/i.test(e.key))key(e.key.toUpperCase());else return false});
+  adFit(api,board,r=>{const kbH=Math.min(200,r.height*.34),s=Math.floor(Math.min((r.width-40)/5,(r.height-kbH-60)/6,64));board.style.setProperty("--wt",s+"px")});
+};
+
+/* ---- 3. Blackjack: first to win 2 hands; the dealer stands on 17 ---- */
+function bjDeck(){const d=[];for(const s of ["♠","♥","♦","♣"])for(const r of ["A","2","3","4","5","6","7","8","9","10","J","Q","K"])d.push({r,s});return shuffle(d)}
+function bjTotal(h){let t=0,a=0;for(const c of h){if(c.r==="A"){a++;t+=11}else t+=/[JQK]/.test(c.r)?10:+c.r}while(t>21&&a){t-=10;a--}return t}
+const bjCard=(c,down)=>down?`<div class="bjc down"></div>`:`<div class="bjc${c.s==="♥"||c.s==="♦"?" red":""}"><b>${c.r}</b><span>${c.s}</span></div>`;
+TASKS.blackjack=api=>{
+  const NEED=2; let me_=0, dl=0, deck=bjDeck(), P=[], D=[], phase="", dbl=false;
+  api.ask("Blackjack: win 2 hands before the dealer does");
+  const stat=()=>adStatus(api,`You <b>${me_}</b> · Dealer <b>${dl}</b> <span class="adsm">first to ${NEED} · dealer stands on 17 · double down counts twice</span>`);stat();
+  const table=el("div","bj"), dEl=el("div","bjh"), pEl=el("div","bjh"), msg=el("div","bjmsg"), btns=el("div","bjbtns");
+  table.append(el("div","bjl","Dealer"),dEl,msg,pEl,el("div","bjl","You"),btns); api.area.append(table);
+  const draw=()=>{if(deck.length<10)deck=bjDeck();return deck.pop()};
+  const render=hide=>{dEl.innerHTML=D.map((c,i)=>bjCard(c,hide&&i===1)).join("")+`<span class="bjt">${hide?"?":bjTotal(D)}</span>`;
+    pEl.innerHTML=P.map(c=>bjCard(c)).join("")+`<span class="bjt">${bjTotal(P)}</span>`};
+  const B=(t,f,cls="bigbtn")=>{const b=el("button",cls,t);b.onclick=()=>{if(api.live())f()};return b};
+  function deal(){P=[draw(),draw()];D=[draw(),draw()];dbl=false;phase="play";msg.textContent="";render(true);
+    const pb=bjTotal(P)===21,db=bjTotal(D)===21;if(pb||db)return settle(pb&&db?"push":pb?"win":"lose",pb&&db?"Both blackjack. Push.":pb?"Blackjack!":"Dealer blackjack.");
+    btns.replaceChildren(B("Hit",hit),B("Stand",stand,"ghost"),B("Double",()=>{dbl=true;P.push(draw());render(true);if(bjTotal(P)>21)return settle("lose","Bust on the double.");stand()},"ghost"))}
+  function hit(){P.push(draw());render(true);blip(520,.05);btns.lastChild&&btns.lastChild.textContent==="Double"&&btns.lastChild.remove();
+    const t=bjTotal(P);if(t>21)settle("lose",`Bust with ${t}.`);else if(t===21)stand()}
+  function stand(){phase="dealer";btns.replaceChildren();render(false);
+    const step=()=>{if(!api.live())return;if(bjTotal(D)<17){D.push(draw());render(false);blip(440,.05);setTimeout(step,550);return}
+      const p=bjTotal(P),d=bjTotal(D);if(d>21)settle("win",`Dealer busts with ${d}.`);else if(p>d)settle("win",`${p} beats ${d}.`);else if(p<d)settle("lose",`${d} beats ${p}.`);else settle("push",`Push at ${p}.`)};
+    setTimeout(step,500)}
+  function settle(r,why){phase="done";render(false);const n=dbl?2:1;
+    if(r==="win"){me_+=n;blip(880,.15,"triangle")}else if(r==="lose"){dl+=n;blip(200,.2,"sawtooth",.08)}
+    msg.innerHTML=`<b>${r==="win"?"You win the hand":r==="lose"?"Dealer wins the hand":"Push"}</b>${dbl&&r!=="push"?" (doubled)":""} · ${esc(why)}`;stat();
+    if(me_>=NEED){btns.replaceChildren();return api.win(1100)}
+    if(dl>=NEED){btns.replaceChildren();return setTimeout(()=>api.lose(`The dealer won ${dl} hands to ${me_}.`),1100)}
+    btns.replaceChildren(B("Next hand",deal))}
+  adKeys(api,e=>{const k=e.key.toLowerCase();if(phase==="play"&&k==="h")hit();else if(phase==="play"&&k==="s")stand();else if(phase==="done"&&(k==="enter"||k===" "))deal();else return false});
+  deal();
+};
+
+/* ---- 4. Minesweeper: 9×9 with 10 mines; tap a mine and you lose ---- */
+TASKS.mines=api=>{
+  const N=9, M=10; let mines=null, open=new Set(), flags=new Set(), flagMode=false;
+  api.ask("Minesweeper: open every safe square");
+  const stat=()=>adStatus(api,`💣 ${M-flags.size} left <span class="adsm">numbers count the mines touching that square</span>`);stat();
+  const grid=el("div","mns"), tools=el("div","mnt"); api.area.append(grid,tools);
+  const fb=el("button","ghost","🚩 Flag mode: off");fb.onclick=()=>{flagMode=!flagMode;fb.textContent=`🚩 Flag mode: ${flagMode?"on":"off"}`;fb.classList.toggle("on",flagMode)};
+  tools.append(fb,el("span","adsm","or long-press to flag"));
+  const nb=i=>{const r=Math.floor(i/N),c=i%N,o=[];for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++){if(!dr&&!dc)continue;const rr=r+dr,cc=c+dc;if(rr>=0&&rr<N&&cc>=0&&cc<N)o.push(rr*N+cc)}return o};
+  const cnt=i=>nb(i).filter(j=>mines.has(j)).length;
+  const cells=[...Array(N*N)].map((_,i)=>{const b=el("button","mc");let t=null,long=false;
+    b.onpointerdown=()=>{long=false;t=setTimeout(()=>{long=true;flag(i)},450)};
+    b.onpointerup=b.onpointerleave=b.onpointercancel=()=>clearTimeout(t);
+    b.onclick=()=>{if(long)return;flagMode?flag(i):reveal(i)};
+    b.oncontextmenu=e=>{e.preventDefault();flag(i)};grid.append(b);return b});
+  function flag(i){if(!api.live()||open.has(i))return;flags.has(i)?flags.delete(i):flags.add(i);cells[i].textContent=flags.has(i)?"🚩":"";blip(600,.04);stat()}
+  function reveal(i){
+    if(!api.live()||flags.has(i)||open.has(i))return;
+    if(!mines){const safe=new Set([i,...nb(i)]);mines=new Set(shuffle([...Array(N*N).keys()].filter(j=>!safe.has(j))).slice(0,M))}
+    if(mines.has(i)){cells[i].classList.add("boom");mines.forEach(j=>{cells[j].textContent="💣";cells[j].classList.add("mine")});cells[i].textContent="💥";blip(120,.4,"sawtooth",.12);return api.lose("You hit a mine.")}
+    const q=[i];while(q.length){const j=q.pop();if(open.has(j)||flags.has(j))continue;open.add(j);const n=cnt(j),b=cells[j];b.classList.add("open");b.textContent=n||"";if(n)b.dataset.n=n;else q.push(...nb(j))}
+    blip(700,.04);if(open.size===N*N-M){mines.forEach(j=>cells[j].textContent="🚩");api.win(500)}
+  }
+  adFit(api,grid,r=>{const s=Math.floor(Math.min(r.width,r.height-110,520));grid.style.width=grid.style.height=s+"px";grid.style.fontSize=(s/N*.5)+"px"});
+};
+
+/* ---- 5. Codebreaker: find the 4-color code in 8 tries ---- */
+const CB_COLS=[["red","#E5484D"],["orange","#FF8A00"],["yellow","#FFD600"],["green","#2ECC40"],["blue","#2D8CFF"],["purple","#8B5CF6"]];
+TASKS.codebreaker=api=>{
+  const LEN=4, TRIES=8, code=[...Array(LEN)].map(()=>rint(0,5)); let rows=[], cur=[];
+  api.ask("Codebreaker: crack the 4-color code");
+  const stat=()=>adStatus(api,`Tries left: <b>${TRIES-rows.length}</b> <span class="adsm">⚫ right color, right spot · ⚪ right color, wrong spot · colors can repeat</span>`);stat();
+  const board=el("div","cbb"), pal=el("div","cbp"); api.area.append(board,pal);
+  const peg=(c,cls="")=>`<i class="cbg ${cls}" ${c!=null?`style="background:${CB_COLS[c][1]}" aria-label="${CB_COLS[c][0]}"`:""}></i>`;
+  const render=()=>{board.innerHTML=rows.map(r=>`<div class="cbr">${r.g.map(c=>peg(c)).join("")}<span class="cbk">${"⚫".repeat(r.b)}${"⚪".repeat(r.w)}${"·".repeat(LEN-r.b-r.w)}</span></div>`).join("")+
+    (rows.length<TRIES&&api.live()?`<div class="cbr now">${[...Array(LEN)].map((_,i)=>`<button class="cbslot" data-i="${i}">${peg(cur[i]??null,cur[i]==null?"empty":"")}</button>`).join("")}<span class="cbk"></span></div>`:"");
+    board.querySelectorAll(".cbslot").forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(cur[i]!=null){cur.splice(i,1);render()}});board.scrollTop=board.scrollHeight};
+  CB_COLS.forEach(([n,h],k)=>{const b=el("button","cbc");b.style.background=h;b.setAttribute("aria-label",n);b.onclick=()=>{if(!api.live()||cur.length>=LEN)return;cur.push(k);blip(500+k*60,.05);render()};pal.append(b)});
+  const go=el("button","bigbtn","Check");go.onclick=()=>{
+    if(!api.live())return; if(cur.length<LEN){toast("Pick 4 colors");return}
+    let b=0,w=0;const cl={},gl={};cur.forEach((c,i)=>{if(c===code[i])b++;else{cl[code[i]]=(cl[code[i]]||0)+1;gl[c]=(gl[c]||0)+1}});for(const c in gl)w+=Math.min(gl[c],cl[c]||0);
+    rows.push({g:cur,b,w});cur=[];stat();blip(b===LEN?880:420,.1,"triangle");
+    if(b===LEN){render();return api.win(600)}
+    if(rows.length>=TRIES){render();return api.lose("Out of tries. The code was:",()=>{board.insertAdjacentHTML("beforeend",`<div class="cbr ans">${code.map(c=>peg(c)).join("")}<span class="cbk">the code</span></div>`)})}
+    render()};
+  const undo=el("button","ghost","⌫");undo.onclick=()=>{cur.pop();render()};pal.append(undo,go);
+  adKeys(api,e=>{if(/^[1-6]$/.test(e.key)){pal.children[+e.key-1].click()}else if(e.key==="Backspace")undo.click();else if(e.key==="Enter")go.click();else return false});
+  render();
+};
 
 /* ---- star streak for Big players: stars for each puzzle and up to 5 in a row. Nothing is ever taken away. ---- */
 function starsFor(my){return my.wrong===0&&!my.hinted?3:my.wrong<=2?2:1}
