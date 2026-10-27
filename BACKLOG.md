@@ -727,7 +727,57 @@ Add a button to the video chat bubble to **flip between the iPad's front and bac
 
 ---
 
-## Shared groundwork (needed by #1, #3, #4, #5 and #8)
+## 13. 🆕 Bedtime Story 2.0: better art, write your own story, more animations
+
+Bedtime Story (#1) works, but the pictures are plain, kids can only fill in blanks in 3 templates, and there are only 6 simple moves. This upgrade makes it look like a real picture book, lets kids **write a whole story from scratch**, and adds many more animations.
+
+**A. Better graphics**
+- **Illustrated scene backgrounds** made with the art kit (`tools/genart.py`) in the same chunky 3D house style as the farm and avatars, with a soft bedtime palette: a starry bedroom, a moonlit forest, a castle, under the sea, outer space, a cloud kingdom, a farm at night (reusing the Farmstand art), a beach at sunset, a snowy village and a candy land. Start with about 12.
+- **Ready-made characters and props** in the same style, white where useful so they can be recolored: a dragon, unicorn, bear, bunny, owl, puppy, kitten, a princess or knight (human avatars, #10), a moon, stars, a rocket, a boat, a teddy, a blanket and a treasure chest. About 30 to start.
+- **Your own avatar can star in the story:** each player's custom avatar (#10) is available as a character.
+- **Drawn characters look better:** a soft glow outline, a gentle shadow on the ground, and a smoothed line option so kids' drawings sit nicely on the illustrated scenes.
+- **Page look:** a storybook frame, a cozy font, a page-turn animation, and night details like twinkling stars, a glowing moon and floating fireflies.
+- The current 3 templates get the new art too.
+
+**B. Write your own story (from scratch)**
+- A new **"My own story"** choice next to the templates, for building a story page by page:
+  1. **Pick a scene** for the page from the backgrounds.
+  2. **Add characters and props:** drag in ready-made ones, your avatar, or draw your own. Pinch to resize, drag to place, and flip to face left or right.
+  3. **Give each one a move** (see C), and optionally a path to follow across the page (drag a finger to draw it).
+  4. **Tell the page's story:**
+     - **Big:** type the words. A spelling helper underlines and suggests; story starters can help ("Once upon a time…", "Then suddenly…", "The end.").
+     - **Little:** **record her voice** telling the page (no reading or typing needed), or pick from picture-sentence cards ("🐻 went to 🌙").
+     - **Anyone:** voice-to-text so a spoken page becomes written words.
+  5. Add another page (up to 12), reorder pages by dragging, then name the story and draw a **cover**.
+- **Save drafts** to come back later (in Firebase, per persona), and send to anyone's Inbox like today.
+- **Grown-ups can help:** a grown-up can open a kid's draft on another device to help type, or make a story for a kid.
+
+**C. More animations**
+- **Moves (about 20):** bob, hop, wiggle, float, spin and sleepy today, plus walk across, run, fly across, swim, bounce, twirl, wave, jump for joy, shiver, grow, shrink, peek in from the side, pop in, fade away, sparkle and tiptoe. Each one is a picture button for Little players.
+- **Path moves:** a character follows a line drawn with a finger (a dragon flying in a loop, a bunny hopping across).
+- **Feelings:** happy bounce, sad droop, surprised jump, scared shake and love hearts, each with a small effect (tears, a "!" or hearts).
+- **Scene effects:** falling snow, rain, shooting stars, fireflies, bubbles underwater, leaves blowing, a sun setting, a moon rising, and a night-light dim at "The end."
+- **Timing:** each character's move can start when the page opens, after a set time, or on a tap, so a story can have "tap the dragon to wake it up" moments.
+- **Sounds (optional):** soft effects to match (a whoosh, a pop, an owl hoot, a lullaby music box), with a mute option.
+- Animations run in code (moving and stretching the art), so they stay smooth and small to download.
+
+**Acceptance criteria**
+- [ ] At least 12 illustrated backgrounds and 30 characters and props in the house style, as small WebP files
+- [ ] A player can make a complete story from scratch: pages, scenes, characters, moves, words or voice, a title and a cover
+- [ ] Little players can make a whole story without reading or typing (picture choices and recorded voice)
+- [ ] At least 20 moves, path drawing, 5 feelings and 6 scene effects
+- [ ] Drafts save and reopen on any device
+- [ ] Stories made from scratch send, unwrap and replay just like template stories
+- [ ] Smooth playback on the iPad and the Fire tablet
+
+**🔍 Decisions needed**
+- Should kids be able to share a story they made as a **new template** for others to fill in?
+- Should there be a "make it together" mode where two players build the same story at once (live, like Color Together)?
+- Typed words go through a simple **kid-safe word filter**?
+
+---
+
+## Shared groundwork (needed by #1, #3, #4, #5, #8 and #13)
 
 - ⚠️ **One shared script:** Farmstand and the rest of the game live in the same `<script>`, so two `function` declarations with the same name silently replace each other (this broke story and inbox sending once: `sendGift`, `deliver`). Use unique names; a quick check is to list duplicate `function` names before pushing.
 
