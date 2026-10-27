@@ -452,11 +452,39 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
 .vid.min .vtiles{display:none}
 .invite{position:fixed;left:50%;top:calc(12px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:55;background:var(--ink);color:#fff;border-radius:24px;padding:14px 18px;display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center;font-family:var(--display);font-size:20px;width:min(520px,calc(100% - 32px));box-shadow:0 10px 30px rgba(0,0,0,.3)}
 
+/* landscape (computer, iPad sideways, phone sideways): tools in a slim left column, picture gets everything else */
+@media (orientation:landscape){
+  #game{grid-template-columns:clamp(170px,18vw,250px) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);grid-template-areas:"head stage" "tray stage";column-gap:14px;row-gap:8px}
+  .ghead{flex-direction:column;align-items:stretch;gap:6px;flex-wrap:nowrap}
+  .ghead>.round{align-self:flex-start}
+  .ghead .seats{flex-direction:column;flex:0 0 auto}
+  .ghead .seat{align-self:flex-start}
+  .reacts{justify-content:space-between}
+  .reacts button{width:38px;height:38px;font-size:19px}
+  .donebtn{width:100%;font-size:16px;padding:7px 10px}
+  .tray{overflow-y:auto;min-height:0;padding:8px;gap:6px;align-self:stretch;margin-bottom:env(safe-area-inset-bottom,0px)}
+  .trow{flex-wrap:wrap;overflow:visible;gap:6px}
+  .tool{min-width:50px;height:50px;font-size:22px;border-radius:14px}
+  .tool small{font-size:9px}
+  .little .tool{min-width:58px;height:58px;font-size:28px}
+  .little .tool small{font-size:11px}
+  .sw{width:30px;height:30px}
+  .little .sw{width:40px;height:40px}
+  .sz{width:38px;height:38px}
+  .sep{display:none}
+  .watchnote{flex-direction:column;font-size:16px}
+  .vid.ingame .vtiles .vtile{width:clamp(96px,12vw,170px)}
+  .vid.dock{right:auto;top:auto;bottom:calc(12px + env(safe-area-inset-bottom,0px));width:var(--colw);background:var(--paper);border-radius:20px;padding:8px;box-shadow:0 5px 0 var(--sky-deep)}
+  .vid.dock .vtiles{flex-direction:row;flex-wrap:wrap;align-items:flex-end;justify-content:flex-start}
+  .vid.ingame.dock .vtiles .vtile{width:calc(var(--colw) * .54)}
+  .vid.ingame.dock .vtiles .vtile.mine{width:calc(var(--colw) * .3)}
+  .vid.dock .vbtns{justify-content:flex-start}
+  .vid.ingame .vtiles .vtile.mine{width:clamp(64px,7vw,100px)}
+}
 @media (orientation:landscape) and (max-height:560px){
-  #game{grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto minmax(0,1fr);grid-template-areas:"head head" "stage tray"}
-  .tray{flex-direction:row;max-width:260px;overflow-y:auto;margin-bottom:0}
-  .trow{flex-wrap:wrap;overflow:visible;align-content:flex-start}
-  .tray{flex-direction:column}
+  .ghead .seats{display:none}
+  .tool{min-width:44px;height:44px;font-size:20px}.tool small{display:none}
+  .little .tool{min-width:54px;height:54px}
 }
 @media (max-width:520px){
   .reacts button{width:38px;height:38px;font-size:19px}
@@ -1150,9 +1178,19 @@ function leaveGame(){
   goLobby();
 }
 function fitBoard(){
-  const st=$("#stage").getBoundingClientRect(); let w=st.width,h=w*3/4;
-  if(h>st.height){h=st.height;w=h*4/3}
-  const b=$("#board");b.style.width=Math.floor(w)+"px";b.style.height=Math.floor(h)+"px";
+  const st=$("#stage").getBoundingClientRect(), fit=(a,c)=>{let w=a,h=w*3/4;if(h>c){h=c;w=h*4/3}return[w,h]};
+  let [w,h]=fit(st.width,st.height), shift=0;
+  // keep the video bubble from covering the picture when there's room to the side
+  const vb=$("#vid"), tray=$("#tray"); let dock=false;
+  if(innerWidth>innerHeight&&vb&&!vb.hidden&&!vb.dataset.dragged){
+    const vw=Math.max(Math.min(Math.max(96,innerWidth*.12),170),132)+14;
+    if((st.width-w)/2<vw){const [w2,h2]=fit(st.width-vw,st.height);if(w2>=w*.9){w=w2;h=h2;shift=-vw/2}else dock=true}}
+  // not enough room beside the picture: tuck the video under the tools instead of covering the picture
+  if(vb){vb.classList.toggle("dock",dock);
+    if(dock){const r=tray.getBoundingClientRect();vb.style.setProperty("--colw",Math.round(r.width)+"px");vb.style.left=Math.round(r.left)+"px";
+      requestAnimationFrame(()=>{tray.style.marginBottom=(vb.getBoundingClientRect().height+10)+"px"})}
+    else{if(!vb.dataset.dragged)vb.style.left="";tray.style.marginBottom=""}}
+  const b=$("#board");b.style.width=Math.floor(w)+"px";b.style.height=Math.floor(h)+"px";b.style.transform=shift?`translateX(${Math.round(shift)}px)`:"";
 }
 new ResizeObserver(()=>{if(screen==="game")fitBoard()}).observe($("#stage"));
 
@@ -1541,8 +1579,8 @@ function renderVideoUI(){
   if(screen==="lobby"&&typeof renderPeople==="function") renderPeople();
   const box=$("#vid"); if(!box) return;
   const show=me&&["game","story","reader","inbox"].includes(screen)&&(vid.local||vid.streams.size);
-  box.hidden=!show; if(!show) return;
-  box.classList.toggle("min",vid.min);
+  box.hidden=!show; if(!show){if(screen==="game")requestAnimationFrame(fitBoard);return}
+  box.classList.toggle("min",vid.min); box.classList.toggle("ingame",screen==="game");
   const tiles=$("#vTiles"); tiles.innerHTML="";
   if(!vid.min){
     for(const p of videoPeers()) if(vid.streams.has(p.peer)) tiles.append(tileFor(p,false));
@@ -1551,6 +1589,7 @@ function renderVideoUI(){
   $("#vMic").textContent=vid.mic?"🎤":"🔇"; $("#vMic").classList.toggle("off",!vid.mic);
   $("#vCam").classList.toggle("off",!vid.cam);
   $("#vMin").textContent=vid.min?"📹":"➖";
+  if(screen==="game") requestAnimationFrame(fitBoard);
 }
 $("#vMic").onclick=()=>setMic(!vid.mic);
 $("#vCam").onclick=()=>setCam(!vid.cam);
@@ -1560,7 +1599,7 @@ $("#vMin").onclick=()=>{vid.min=!vid.min;renderVideoUI()};
   box.addEventListener("pointerdown",e=>{if(e.target.closest("button"))return;const r=box.getBoundingClientRect();d={dx:e.clientX-r.left,dy:e.clientY-r.top,id:e.pointerId};box.setPointerCapture(e.pointerId)});
   box.addEventListener("pointermove",e=>{if(!d||e.pointerId!==d.id)return;const r=box.getBoundingClientRect();
     const x=Math.max(4,Math.min(innerWidth-r.width-4,e.clientX-d.dx)),y=Math.max(4,Math.min(innerHeight-r.height-4,e.clientY-d.dy));
-    box.style.left=x+"px";box.style.top=y+"px";box.style.right="auto"});
+    box.style.left=x+"px";box.style.top=y+"px";box.style.right="auto";box.style.bottom="auto";box.dataset.dragged="1";box.classList.remove("dock")});
   const end=()=>d=null; box.addEventListener("pointerup",end); box.addEventListener("pointercancel",end);})();
 /* ---------------- home screen: who's on, where they are, and how to join them ---------------- */
 const WHERE={lobby:["🏠","At home"],story:["🌙","Making a bedtime story"],reader:["📖","Reading a story"],inbox:["💌","In the Inbox"],grown:["🔒","Grown-ups area"],pick:["👋","Choosing who they are"],game:["🎨","Coloring"],watch:["👀","Watching"]};
