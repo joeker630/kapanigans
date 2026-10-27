@@ -3561,7 +3561,7 @@ const inPasture=(i,j,m=.5)=>{const P=pasture();return i>P.i0+m&&i<P.i1-m&&j>P.j0
 
 /* ---- derived state ---- */
 function plotState(p,now){
-  if(!p||!p.crop)return {st:"empty"};
+  if(!p||!p.crop||!CROPS[p.crop]||!GOODS[p.crop])return {st:"empty"};
   const grow=CROPS[p.crop].grow/(p.fert?2:1);
   if(!p.watered)return {st:"thirsty",droop:now-p.planted>THIRSTY};
   const t=now-p.watered;
@@ -4251,11 +4251,25 @@ function drawStruct(id,s,now){
   const lx=(a.x+c.x)/2,ly=topY-th*.25;bubble(lx,ly,s.label,now,s.i);
   fm.hits.push({kind:"struct",ref:id,d:s.i+s.j+s.wi+s.wj,x0:d.x,x1:b.x,y0:ly-th*.8,y1:c.y});
 }
+// The farm never goes blank: errors are caught, the frame keeps going, and each new error is reported once
+// to families/ERRLOG/farm (no family data, just the message, where it happened, person and device type).
+const fmErrSeen=new Set();
+function fmErr(e,where){const msg=String(e&&e.message||e).slice(0,200),key=where+"|"+msg;if(fmErrSeen.has(key))return;fmErrSeen.add(key);console.error("farm",where,e);
+  try{if(window.firebase&&firebase.apps.length)firebase.database().ref("families/ERRLOG/farm").push({at:Date.now(),where,msg,stack:String(e&&e.stack||"").slice(0,600),who:me||"",ua:navigator.userAgent.slice(0,160),v:document.lastModified||""}).catch(()=>{})}catch(_){}}
 function farmFrame(t){
   if(screen!=="farm"){fm.raf=0;fwLeave();return}
+  try{
+    // a bad measurement (canvas laid out at 0 size) is fixed on the next frame
+    if(!(fm.tw>0)||!(fm.cv.width>0)||!isFinite(fm.ox)||!isFinite(fm.oy)){fm.zoom=fm.zoom>0?fm.zoom:1;farmFit()}
+    const g=fm.g;g.setTransform(1,0,0,1,0,0);g.globalAlpha=1;g.setLineDash&&g.setLineDash([]);g.shadowBlur=0;try{g.filter="none"}catch(_){}
+    farmDraw(t);
+  }catch(e){fmErr(e,"frame")}
+  fm.raf=requestAnimationFrame(farmFrame);
+}
+function farmDraw(t){
   const dt=Math.min(.05,(t-fm.last)/1000);fm.last=t;const g=fm.g,W=fm.cv.width,H=fm.cv.height,N=fm.N,th=fm.th,now=Date.now();
   g.clearRect(0,0,W,H);fm.hits=[];
-  if(!F.st){g.fillStyle="#5E5577";g.font=`${th*.5}px system-ui`;g.textAlign="center";g.fillText("Opening the farm…",W/2,H/2);fm.raf=requestAnimationFrame(farmFrame);return}
+  if(!F.st){g.fillStyle="#5E5577";g.font=`${Math.max(16,th*.5)}px system-ui`;g.textAlign="center";g.fillText("Opening the farm…",W/2,H/2);return}
   const l=fIso(0,N),m=fIso(N,N),r=fIso(N,0),dep=th*.45;
   g.fillStyle="#B98A5A";g.beginPath();g.moveTo(l.x,l.y);g.lineTo(m.x,m.y);g.lineTo(m.x,m.y+dep);g.lineTo(l.x,l.y+dep);g.fill();
   g.fillStyle="#A07447";g.beginPath();g.moveTo(m.x,m.y);g.lineTo(r.x,r.y);g.lineTo(r.x,r.y+dep);g.lineTo(m.x,m.y+dep);g.fill();
@@ -4321,8 +4335,8 @@ function farmFrame(t){
       if(w.state==="sleep"){g.fillStyle="#3A4A5A";g.textAlign="left";for(let k=0;k<3;k++){const q=(w.t*.5+k/3)%1;g.globalAlpha=1-q;g.font=`900 ${th*(.28+k*.08)}px system-ui`;g.fillText("z",p.x+wd*.3+q*th*.4,p.y-Hh*.8-q*th*.8)}g.globalAlpha=1}
       if(hungry)fBub(p.x,p.y-Hh-th*.05,A.foodIcon,t,w.i,{kind:"animal",ref:w});else if(as==="ready")fBub(p.x,p.y-Hh-th*.05,GOODS[A.good].icon,t,w.i,{kind:"animal",ref:w});
       fm.hits.push({kind:"animal",ref:w,d:w.i+w.j+.5,x0:p.x-wd*.4,x1:p.x+wd*.4,y0:p.y-Hh*.92,y1:p.y+th*.25})}})}
-  fwItems(items,dt,t);
-  items.sort((a,b)=>a.d-b.d).forEach(it=>it.draw());
+  try{fwItems(items,dt,t)}catch(e){fmErr(e,"farmers")}
+  items.sort((a,b)=>a.d-b.d).forEach(it=>{const g=fm.g;g.save();try{it.draw()}catch(e){fmErr(e,"item")}g.restore()});
   fHighlight(t,false);
   if(fm.moving){const m=fm.moving,gg0=fm.g,q=[fIso(m.ci,m.cj),fIso(m.ci+m.wi,m.cj),fIso(m.ci+m.wi,m.cj+m.wj),fIso(m.ci,m.cj+m.wj)];gg0.save();gg0.strokeStyle=m.ok?"#16A34A":"#DC2626";gg0.lineWidth=Math.max(3,fm.th*.1);gg0.setLineDash([fm.th*.3,fm.th*.18]);gg0.lineDashOffset=-t/40;gg0.beginPath();q.forEach((p,n)=>n?gg0.lineTo(p.x,p.y):gg0.moveTo(p.x,p.y));gg0.closePath();gg0.stroke();gg0.restore()}
   if(fm.moving){const m=fm.moving,c=fIso(m.ci+m.wi/2,m.cj+m.wj/2),th=fm.th,txt=m.ok?`✋ ${m.name}`:"🚫 doesn't fit here",gg=fm.g;gg.font=`800 ${Math.max(13,th*.32)}px system-ui`;
@@ -4330,7 +4344,6 @@ function farmFrame(t){
   g.textAlign="center";fm.pops=fm.pops.filter(p=>(p.t+=dt)<1.2);for(const p of fm.pops){g.globalAlpha=1-p.t/1.2;g.font=`${th*.7}px system-ui`;g.fillText(p.txt,p.x,p.y-p.t*th*1.2)}g.globalAlpha=1;
   if(t-(fm.oChk||0)>5000){fm.oChk=t;ensureOrders()}
   if(t-(fm.cChk||0)>1000){fm.cChk=t;coopTick()}
-  fm.raf=requestAnimationFrame(farmFrame);
 }
 /* ============ FARM PUZZLES ============
    Every farm action is done by solving a quick learning puzzle, with a Little version (Violet, age 3-4) and a Big
