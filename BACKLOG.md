@@ -510,6 +510,37 @@ Build the **simple parts for the avatar builder** (#3 farmer avatars, used as ev
 
 ---
 
+## 11. 🆕 One device per person (no double logins)
+
+Make sure the same person (for example Quinn) can't be signed in on two devices at the same time.
+
+**Why it matters**
+- Two "Quinns" in a game take two seats and confuse the lobby, seat chips and video.
+- Farm time (#3) and progress stats (#8) are tracked per person, so two devices playing as the same person would double-count or get around the 30-minute limit.
+- Inbox (#4) "unread" and reply state should belong to one active device.
+
+**How it works**
+- When a device picks a person, it **claims** that person in Firebase (`families/<code>/claims/<persona>`), with the device ID and time. The claim uses the same presence system the lobby already uses, and is released automatically (`onDisconnect`) when the app closes, the iPad sleeps or the connection drops.
+- On the **"Who are you!? :)"** screen, people already playing on another device are shown greyed out with a small "playing on another iPad" label, read aloud for Little players.
+- Tapping a taken person asks: **"Quinn is playing on another iPad. Play here instead?"**
+  - **Yes:** this device takes over. The other device goes back to the "Who are you!? :)" screen with a friendly message ("Quinn moved to another iPad"), and any game it was in saves first.
+  - **No:** pick someone else.
+- A heartbeat every 30 seconds clears claims left behind by a device that crashed or lost Wi-Fi, so nobody stays stuck as "taken."
+- A device that wakes from sleep re-checks its claim; if someone else has taken over, it goes back to the "Who are you!? :)" screen.
+
+**Acceptance criteria**
+- [ ] A person can be active on only one device at a time
+- [ ] Taken people are clearly marked on the "Who are you!? :)" screen
+- [ ] "Play here instead" moves the person cleanly, and the other device returns to the picker without losing game progress
+- [ ] A claim from a closed or crashed device clears within about a minute
+- [ ] Farm time and stats can't be doubled by playing as the same person on two devices
+
+**🔍 Decisions needed**
+- Should Bear friend and Fox friend (guest personas) be allowed on several devices at once, so visiting friends can all use them?
+- Should a kid be able to take over their own name from another device, or only a grown-up (to stop siblings bumping each other)?
+
+---
+
 ## Shared groundwork (needed by #1, #3, #4, #5 and #8)
 
 - ✅ **Art kit: decided on Cloudflare Workers AI (free) + `tools/genart.py`.** Claude generates art on request and pushes it to `art/` in this repo (served by GitHub Pages).
