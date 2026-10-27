@@ -229,7 +229,15 @@ h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance;l
 .basket{background:var(--paper);border-radius:999px;padding:6px 14px;font-size:19px;box-shadow:0 3px 0 var(--sky-deep);white-space:nowrap}
 .basket:active{transform:translateY(2px)}
 .jarchip{background:var(--sun);box-shadow:0 3px 0 var(--sun-deep)}
+.fzoom{position:absolute;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:8px;z-index:4}
+.paysrc button{font-size:15px}
+.bsum{display:flex;flex-wrap:wrap;gap:6px}.bchip{background:var(--paper);border-radius:999px;padding:4px 12px;font-size:14px}.bchip .in{color:#15803D}.bchip .out{color:#B91C1C}
+.ledger{display:flex;flex-direction:column;gap:6px}
+.lrow{display:flex;align-items:center;gap:10px;background:var(--paper);border-radius:14px;padding:8px 12px}
+.lface{font-size:26px}.lwhat{flex:1;min-width:0;font-size:15px}.lwhat small{display:block;color:var(--ink-soft);font-weight:600}
+.lamt{font-family:var(--display);font-size:20px}.lamt.in{color:#15803D}.lamt.out{color:#B91C1C}
 @media (max-width:520px){#farmGoods{max-width:34vw;overflow:hidden;text-overflow:ellipsis;font-size:16px;padding:6px 10px}}
+.fsheet{z-index:43}
 .fsheet .inner{max-height:86%}
 .fbody{display:flex;flex-direction:column;gap:12px}
 .fbody .choice small{font-size:13px;color:var(--ink-soft);font-weight:700}
@@ -805,7 +813,7 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
     <button class="round" id="fTeam" aria-label="Do a chore together">🤝</button>
     <button class="round" id="fHome" aria-label="Home">🏠</button>
   </div>
-  <div id="farmBody"><canvas id="farmCv"></canvas><div class="coopbar" id="farmCoop" hidden></div></div>
+  <div id="farmBody"><canvas id="farmCv"></canvas><div class="coopbar" id="farmCoop" hidden></div><div class="fzoom"><button class="round" id="fZoomIn" aria-label="Zoom in">➕</button><button class="round" id="fZoomOut" aria-label="Zoom out">➖</button></div></div>
 </section>
 <div class="task" id="task" hidden>
   <div class="thead"><button class="round" id="tClose" aria-label="Stop">✖️</button><h1 id="tTitle"></h1><button class="round" id="tSay" aria-label="Say it again">🔊</button></div>
@@ -1794,7 +1802,7 @@ function tileFor(p,mine){
 function renderVideoUI(){
   if(screen==="lobby"&&typeof renderPeople==="function") renderPeople();
   const box=$("#vid"); if(!box) return;
-  const show=me&&["game","story","reader","inbox"].includes(screen)&&(vid.local||vid.streams.size);
+  const show=me&&["game","story","reader","inbox","farm"].includes(screen)&&(vid.local||vid.streams.size);
   box.hidden=!show; if(!show){if(screen==="game")requestAnimationFrame(fitBoard);return}
   box.classList.toggle("min",vid.min); box.classList.toggle("ingame",screen==="game");
   const tiles=$("#vTiles"); tiles.innerHTML="";
@@ -3028,6 +3036,7 @@ const pasture=()=>PASTURES[Math.min(1,(F.st&&F.st.fence)||0)];
 const STRUCT={
   stand:{i:1,j:1,wi:2,wj:1,h:.45,top:"#E9C99A",l:"#E5484D",r:"#C23B3B",label:"🧺",name:"Farmstand",say:"The farmstand. Sell your goods here!"},
   board:{i:4.3,j:1.3,wi:.5,wj:.5,h:.55,top:"#B07A45",l:"#9A6A3A",r:"#86592E",label:"📋",name:"Order board",say:"The order board. See what your family wants!"},
+  bank:{i:4.4,j:4.3,wi:1.1,wj:1,h:.75,top:"#E8E0C8",l:"#CFC4A4",r:"#B8AC8A",roof:"#2F6F4E",label:"🏦",name:"Family Bank",say:"The Farm Family Bank. Put Moolah in for the whole family!"},
   barn:{i:1,j:4,wi:2,wj:2,h:.9,top:"#D64545",l:"#C23B3B",r:"#A83232",roof:"#7A2E2E",label:"🔨",name:"Farm Store",say:"The Farm Store. Build your farm here!"},
   coop:{i:7,j:11,wi:1,wj:1,h:.6,top:"#F2D27A",l:"#E0BC5E",r:"#C9A44A",roof:"#C2410C",label:"🐔",name:"Chicken coop",home:"hen",room:3},
   pen:{i:9,j:11,wi:1,wj:1,h:.35,top:"#C9A27A",l:"#B08A62",r:"#987552",label:"🐷",name:"Pig pen",home:"pig",room:2},
@@ -3113,16 +3122,32 @@ function farmInit(){
   for(const k in ANIMALS)for(const p of ["stand","eat","sleep","back"])farmImg(k+"/"+p);farmImg("sheep/sheared");
   for(const c in CROPS)for(const p of ["growing","ripe"])farmImg(c+"/"+p);farmImg("carrot/sprout");
   new ResizeObserver(farmFit).observe($("#farmBody"));
-  fm.cv.addEventListener("pointerdown",e=>{fm.drag={x:e.clientX,y:e.clientY,cx:fm.camX,cy:fm.camY,moved:false,id:e.pointerId};try{fm.cv.setPointerCapture(e.pointerId)}catch(_){}});
-  fm.cv.addEventListener("pointermove",e=>{const d=fm.drag;if(!d||d.id!==e.pointerId)return;const dx=e.clientX-d.x,dy=e.clientY-d.y;
+  // one finger drags (or taps); two fingers pinch to zoom; the mouse wheel and the ➕ ➖ buttons zoom too
+  fm.ptrs=new Map();
+  fm.cv.addEventListener("pointerdown",e=>{fm.ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});try{fm.cv.setPointerCapture(e.pointerId)}catch(_){}
+    if(fm.ptrs.size===2){const [a,b]=[...fm.ptrs.values()];fm.pinch={d:Math.hypot(a.x-b.x,a.y-b.y),z:fm.zoom};if(fm.drag)fm.drag.moved=true;return}
+    fm.drag={x:e.clientX,y:e.clientY,cx:fm.camX,cy:fm.camY,moved:false,id:e.pointerId}});
+  fm.cv.addEventListener("pointermove",e=>{if(fm.ptrs.has(e.pointerId))fm.ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(fm.pinch&&fm.ptrs.size>=2){const [a,b]=[...fm.ptrs.values()];farmZoomTo(fm.pinch.z*Math.hypot(a.x-b.x,a.y-b.y)/Math.max(1,fm.pinch.d),(a.x+b.x)/2,(a.y+b.y)/2);return}
+    const d=fm.drag;if(!d||d.id!==e.pointerId)return;const dx=e.clientX-d.x,dy=e.clientY-d.y;
     if(!d.moved&&Math.hypot(dx,dy)<12)return;d.moved=true;const k=devicePixelRatio||1;fm.camX=d.cx-dx*k;fm.camY=d.cy-dy*k;farmClamp()});
-  const up=e=>{const d=fm.drag;fm.drag=null;if(d&&!d.moved&&e.type==="pointerup")farmTap(e)};
+  const up=e=>{fm.ptrs.delete(e.pointerId);if(fm.ptrs.size<2)fm.pinch=null;const d=fm.drag;if(d&&d.id===e.pointerId){fm.drag=null;if(!d.moved&&e.type==="pointerup")farmTap(e)}
+    if(fm.ptrs.size===1&&!fm.drag){const [id,q]=[...fm.ptrs.entries()][0];fm.drag={x:q.x,y:q.y,cx:fm.camX,cy:fm.camY,moved:true,id}}};
   fm.cv.addEventListener("pointerup",up);fm.cv.addEventListener("pointercancel",up);
+  fm.cv.addEventListener("wheel",e=>{e.preventDefault();farmZoomTo(fm.zoom*Math.exp(-e.deltaY*.0015),e.clientX,e.clientY)},{passive:false});
+  $("#fZoomIn").onclick=()=>{const r=fm.cv.getBoundingClientRect();farmZoomTo(fm.zoom*1.3,r.left+r.width/2,r.top+r.height/2);blip(700,.05)};
+  $("#fZoomOut").onclick=()=>{const r=fm.cv.getBoundingClientRect();farmZoomTo(fm.zoom/1.3,r.left+r.width/2,r.top+r.height/2);blip(500,.05)};
   $("#farmJar").onclick=openJar;$("#farmGoods").onclick=openBasket;$("#fTeam").onclick=openTeam;
 }
 function farmFit(){const b=$("#farmBody").getBoundingClientRect(),d=devicePixelRatio||1;
   fm.cv.width=b.width*d;fm.cv.height=b.height*d;fm.cv.style.width=b.width+"px";fm.cv.style.height=b.height+"px";
-  const W=fm.cv.width,H=fm.cv.height;const portrait=H>W*1.15;fm.tw=portrait?Math.max(W/5.5,2*H/(fm.N+2)):Math.min(W/FARM_VIEW,H/(FARM_VIEW/2+1.2));fm.th=fm.tw/2;if(!fm.camSet){fm.camSet=true;fm.camX=fm.tw*.5;fm.camY=-fm.th*3}farmClamp()}
+  const W=fm.cv.width,H=fm.cv.height;const portrait=H>W*1.15;fm.base=portrait?Math.max(W/5.5,2*H/(fm.N+2)):Math.min(W/FARM_VIEW,H/(FARM_VIEW/2+1.2));
+  fm.zMin=Math.min(1,Math.min(W/(fm.N+1),2*H/(fm.N/2+2)/2)/fm.base);if(!fm.zoom)fm.zoom=1;fm.zoom=Math.max(fm.zMin,Math.min(2.5,fm.zoom));fm.tw=fm.base*fm.zoom;fm.th=fm.tw/2;if(!fm.camSet){fm.camSet=true;fm.camX=fm.tw*.5;fm.camY=-fm.th*3}farmClamp()}
+// zoom around a point on screen (client px), keeping that spot of the farm under the finger
+function farmZoomTo(z,cx,cy){if(!fm.base)return;z=Math.max(fm.zMin||.4,Math.min(2.5,z));if(Math.abs(z-fm.zoom)<1e-4)return;
+  const r=fm.cv.getBoundingClientRect(),k=fm.cv.width/r.width,mx=(cx-r.left)*k,my=(cy-r.top)*k;
+  const sx=mx-fm.ox,sy=my-fm.oy,i=(sy/(fm.th/2)+sx/(fm.tw/2))/2,j=(sy/(fm.th/2)-sx/(fm.tw/2))/2;
+  fm.zoom=z;fm.tw=fm.base*z;fm.th=fm.tw/2;farmClamp();const p=fIso(i,j);fm.camX+=p.x-mx;fm.camY+=p.y-my;farmClamp()}
 // camera: (camX,camY) is the screen-pixel offset of the world's middle from the canvas middle
 function farmClamp(){const W=fm.cv.width,H=fm.cv.height,N=fm.N,hw=N*fm.tw/2,hh=N*fm.th/2,mx=Math.max(0,hw-W/2+fm.tw),my=Math.max(0,hh-H/2+fm.th*2.5);
   fm.camX=Math.max(-mx,Math.min(mx,fm.camX));fm.camY=Math.max(-my,Math.min(my,fm.camY));
@@ -3177,12 +3202,15 @@ function farmTap(e){
   const hit=fm.hits.filter(h=>x>=h.x0&&x<=h.x1&&y>=h.y0&&y<=h.y1).sort((a,b)=>b.d-a.d)[0];
   const sx=x-fm.ox,sy=y-fm.oy,i=(sy/(fm.th/2)+sx/(fm.tw/2))/2,j=(sy/(fm.th/2)-sx/(fm.tw/2))/2;
   const spot=FIELD_SPOTS.findIndex(([pi,pj],n)=>n<plotCount()&&i>=pi&&i<pi+1&&j>=pj&&j<pj+1);
-  if(hit&&hit.kind==="animal")return tapAnimal(hit.ref);
-  if(spot>=0&&(!hit||hit.kind!=="struct"))return tapPlot(spot);
-  if(hit&&hit.kind==="struct")return tapStruct(hit.ref);
-  if(hit&&hit.kind==="decor"){blip(880,.12,"sine");fPopAt(hit.p,"✨");return}
-  if(inPasture(i,j,.2)){const a=[...F.anim.values()].filter(a=>a.state!=="sleep").sort((p,q)=>Math.hypot(p.i-i,p.j-j)-Math.hypot(q.i-i,q.j-j))[0];
-    if(a){a.ti=i;a.tj=j;a.state="walk";const k=(F.st.animals[a.id]||{}).k;if(k)sayLittle(`Here, ${ANIMALS[k].name}!`)}}
+  if(tk)return;
+  // walk my farmer over first; the chore starts when they arrive
+  if(hit&&hit.kind==="animal"){const w=hit.ref;w.held=performance.now()+15000;w.state="idle";const [si,sj]=fwStandBy(w.i,w.j,.9);
+    return fwWalk(si,sj,()=>{w.held=0;FW.me.dir=w.i-w.j>FW.me.i-FW.me.j?1:-1;tapAnimal(w)})}
+  if(spot>=0&&(!hit||hit.kind!=="struct")){const [pi,pj]=FIELD_SPOTS[spot],[si,sj]=fwStandBy(pi+.5,pj+.5,.75);return fwWalk(si,sj,()=>tapPlot(spot))}
+  if(hit&&hit.kind==="struct"){const S=STRUCT[hit.ref];return fwWalk(S.i+S.wi/2+.3,S.j+S.wj+.45,()=>tapStruct(hit.ref))}
+  if(hit&&hit.kind==="decor"){const [si,sj]=fwStandBy(hit.p?(()=>{const sp=DECOR_SPOTS.find((q,n)=>(F.st.decor||{})["d"+n]===hit.ref);return sp?sp[0]+.5:i})():i,j,.7);
+    return fwWalk(si,sj,()=>{blip(880,.12,"sine");fPopAt(hit.p,"✨")})}
+  if(i>.2&&j>.2&&i<fm.N-.2&&j<fm.N-.2)fwWalk(i,j);
 }
 function tapAnimal(w){
   const a=F.st.animals[w.id];if(!a)return;const A=ANIMALS[a.k],now=Date.now(),s=animalState(a,now);w.hop=1;
@@ -3210,7 +3238,7 @@ function tapPlot(n){
   say(ps.st==="sprout"?`A little ${GOODS[p.crop].name} sprout. It needs time to grow.`:`The ${GOODS[p.crop].name} is growing. Almost ready!`);
 }
 function tapStruct(id){const s=STRUCT[id];blip(760,.1,"sine");
-  if(id==="stand")return openSell();if(id==="board")return openOrders();if(id==="barn")return openStore();
+  if(id==="stand")return openSell();if(id==="board")return openOrders();if(id==="barn")return openStore();if(id==="bank")return openBank();
   const k=s.home;say(`The ${s.name.toLowerCase()}. It has room for ${roomFor(k)} ${roomFor(k)===1?ANIMALS[k].name:ANIMALS[k].names}.`)}
 
 /* ---- sheets ---- */
@@ -3274,6 +3302,7 @@ function openJar(){
   fSheet("🪙 My Moolah",body=>{const n=myJar();
     const big=el("div","jarbig");big.innerHTML=`<span class="jar">🫙</span><b>${n}</b>`;body.append(big);
     if(little()&&n){body.append(el("div","coinpile","🪙".repeat(Math.min(n,30))+(n>30?" …":"")))}
+    const bk=el("button","ghost",`🏦 Farm Family Bank: ${coins(+(F.st.bank||0))}`);bk.onclick=openBank;body.append(bk);
     body.append(el("p","fnote",n?"Spend Moolah at the 🔨 Farm Store, or give some as a gift:":"Sell goods at the 🧺 farmstand to earn Moolah!"));
     if(!n)return;
     const grid=el("div","choices");
@@ -3315,18 +3344,54 @@ function storeItems(){
 }
 function openStore(){
   fSheet("🔨 Farm Store",body=>{
-    body.append(el("p","fnote",`You have ${coins(myJar())} Moolah. Not enough? Family can gift you some!`));
+    const bank=+(F.st.bank||0),src=F.paySrc==="bank"?"bank":"jar";
+    const pay=el("div","seg paysrc");
+    for(const [k,l] of [["jar",`🫙 My jar ${coins(myJar())}`],["bank",`🏦 Family Bank ${coins(bank)}`]]){const b=el("button",src===k?"on":"",l);b.onclick=()=>{F.paySrc=k;F.sheet.render();say(k==="bank"?"Paying from the family bank.":"Paying from your jar.")};pay.append(b)}
+    body.append(el("p","fnote","Pay with:"),pay);
+    if(src==="bank")body.append(el("p","fnote","Bank purchases go in the family ledger with your name."));
     let sec=null,grid=null;
     for(const it of storeItems()){if(it.sec!==sec){sec=it.sec;body.append(el("h3","fsec",sec));grid=el("div","choices");body.append(grid)}
-      const poor=myJar()<it.price;
+      const poor=(src==="bank"?bank:myJar())<it.price;
       grid.append(fBtn(it.own?"owned":"",it.em,it.name,it.own?"✓ yours":`${coins(it.price)}${it.sub?" · "+it.sub:""}`,()=>buyIt(it),
         it.own?"You already have that.":it.blocked||(poor?needMoolah(it.price):false)))}
   });say(little()?"The Farm Store! What do you want to build?":"Welcome to the Farm Store!");
 }
 function buyIt(it){
   farmDo(it.puzzle?"build":"buy",{item:it.name,price:it.price}).then(ok=>{if(!ok)return;
-    fTx("jars/"+me,v=>{v=+v||0;if(v<it.price)return;return v-it.price}).then(ok=>{if(!ok){say(needMoolah(it.price));return}
+    const fromBank=F.paySrc==="bank";
+    fTx(fromBank?"bank":"jars/"+me,v=>{v=+v||0;if(v<it.price)return;return v-it.price}).then(ok=>{if(!ok){say(fromBank?`The family bank needs ${it.price} Moolah.`:needMoolah(it.price));return}
+      if(fromBank)bankLog("out",it.price,it.name);
       it.buy();blip(880,.12,"triangle");setTimeout(()=>blip(1320,.15,"triangle"),120);toast("🎉 "+it.done);say(it.done)})})}
+
+/* ---- Farm Family Bank: anyone puts Moolah in; anyone can spend it at the Farm Store; every move goes in the ledger ----
+   farm/bank = balance; farm/ledger/<id> = {at, who, kind:"in"|"out", amt, what} */
+function bankLog(kind,amt,what){const id=F.ref?F.ref.child("ledger").push().key:"l"+Date.now()+Math.random().toString(36).slice(2,5);
+  fUpd({["ledger/"+id]:{at:Date.now(),who:me,kind,amt,what:String(what||"").slice(0,60)}})}
+function openBank(){
+  fSheet("🏦 Farm Family Bank",body=>{
+    const bank=+(F.st.bank||0),n=myJar();
+    const big=el("div","jarbig");big.innerHTML=`<span class="jar">🏦</span><b>${bank}</b>`;body.append(big);
+    body.append(el("p","fnote",little()?"Moolah for the whole family! Put some in to help build the farm.":"The whole family's Moolah. Anyone can put some in, and anyone can spend it at the 🔨 Farm Store."));
+    if(n){body.append(el("h3","fsec",`Put in from my jar (${coins(n)})`));const grid=el("div","choices");
+      for(const amt of [1,5,10,25])grid.append(fBtn("","🪙",`+${amt}`,"",()=>bankPut(amt),amt>n?`You have ${n} Moolah.`:false));
+      grid.append(fBtn("","🫙",`All ${n}`,"",()=>bankPut(n)));body.append(grid)}
+    else body.append(el("p","fnote","Your jar is empty. Sell goods at the 🧺 farmstand to earn Moolah!"));
+    body.append(el("h3","fsec","📒 Ledger"));
+    const rows=Object.values(F.st.ledger||{}).filter(r=>r&&KIDS[r.who]).sort((a,b)=>b.at-a.at);
+    if(!rows.length){body.append(el("p","fnote","Nothing yet. Put in the first Moolah!"));return}
+    const tot={};for(const r of rows){const t=tot[r.who]=tot[r.who]||{in:0,out:0};t[r.kind==="in"?"in":"out"]+=+r.amt||0}
+    const sum=el("div","bsum");for(const [w,t] of Object.entries(tot)){const K=kidOf(w);sum.append(el("span","bchip",`${K.face} ${esc(K.name)}: <b class="in">+${t.in}</b> put in · <b class="out">−${t.out}</b> spent`))}body.append(sum);
+    const list=el("div","ledger");
+    for(const r of rows.slice(0,60)){const K=kidOf(r.who),inn=r.kind==="in";
+      list.append(el("div","lrow",`<span class="lface">${K.face}</span><span class="lwhat"><b>${esc(K.name)}</b> ${inn?"put in":"spent on"} ${inn?"":esc(r.what)}<small>${ago(r.at)}</small></span><span class="lamt ${inn?"in":"out"}">${inn?"+":"−"}${+r.amt||0}</span>`))}
+    body.append(list);
+    if(rows.length>60)body.append(el("p","fnote",`Showing the latest 60 of ${rows.length}.`));
+  });say(little()?"The family bank!":"");
+}
+function bankPut(amt){
+  fTx("jars/"+me,v=>{v=+v||0;if(v<amt||amt<=0)return;return v-amt}).then(ok=>{if(!ok)return;
+    fUpd({bank:INC(amt)});bankLog("in",amt,"put in");blip(1200,.1,"triangle");setTimeout(()=>blip(1500,.1,"triangle"),90);
+    say(`You put ${amt} Moolah in the family bank. Thank you!`)})}
 
 /* ---- family orders ---- */
 function availGoods(){const g=Object.keys(CROPS).filter(unlocked);for(const k of ["hen","cow","sheep"])if(animalsOf(k))g.push(ANIMALS[k].good);return g}
@@ -3483,6 +3548,107 @@ function coopComplete(sid){
 // Quinn's 5-in-a-row bonus (called by finishTask)
 function farmStreakBonus(){if(screen==="farm"&&me){fUpd({["jars/"+me]:INC(2)});toast("🔥 5 in a row! +2 🪙")}}
 
+/* ---- farmer avatars: everyone on the farm walks around as their own farmer, and everyone sees everyone ----
+   families/<CODE>/farmwalk/<who> = {fi,fj,ti,tj,t0,sp,act,at}   one walk = from (fi,fj) to (ti,tj), started at server time t0,
+   sp tiles per second. Written once per walk (not every frame); other devices animate it. Removed when the device drops.
+   act: what they're doing now ("puzzle" while a puzzle is open), shown as a bubble over their head.
+   Tapping a crop, animal or building walks your farmer there first; the puzzle opens when they arrive. */
+const FW_SPEED=3.2, FW_STALE=10*60e3;
+const FW={ref:null,others:{},me:null,go:null,skew:0,photoImg:{},beat:0};
+const FW_SPAWN=[3.5,3.6];
+function fwConnect(){
+  if(FW.ref){FW.ref.off();try{FW.ref.child(me||"_").onDisconnect().cancel()}catch(e){}}
+  FW.ref=null;FW.others={};
+  const p=(()=>{try{return JSON.parse(load("kp.fwpos."+me)||"null")}catch(e){return null}})();
+  FW.me={i:p&&p.i>0&&p.i<FARM_N_?p.i:FW_SPAWN[0]+Math.random()*.6,j:p&&p.j>0&&p.j<FARM_N_?p.j:FW_SPAWN[1]+Math.random()*.6,ti:0,tj:0,walking:false,dir:1,front:true,t:0,act:""};
+  if(F.ref){FW.ref=F.ref.parent.child("farmwalk");
+    try{firebase.database().ref(".info/serverTimeOffset").on("value",s=>{FW.skew=+s.val()||0})}catch(e){}
+    FW.ref.on("value",s=>{FW.others=s.val()||{}},()=>{});
+    try{FW.ref.child(me).onDisconnect().remove()}catch(e){}}
+  fwSend();
+}
+const FARM_N_=16;
+const fwNow=()=>Date.now()+FW.skew;
+function fwSend(){const m=FW.me;if(!m||!me)return;
+  const rec={fi:+m.i.toFixed(2),fj:+m.j.toFixed(2),ti:+(m.walking?m.ti:m.i).toFixed(2),tj:+(m.walking?m.tj:m.j).toFixed(2),t0:fwNow(),sp:FW_SPEED,act:m.act||"",at:fwNow()};
+  FW.beat=performance.now();
+  if(FW.ref)FW.ref.child(me).set(rec).catch(()=>{});else FW.others[me]=rec}
+function fwLeave(){if(FW.me)store("kp.fwpos."+me,JSON.stringify({i:FW.me.i,j:FW.me.j}));if(FW.ref&&me)FW.ref.child(me).remove().catch(()=>{});FW.go=null}
+function fwAct(a){if(!FW.me||FW.me.act===a)return;FW.me.act=a;fwSend()}
+// walk my farmer to (i,j), then do fn when they get there
+function fwWalk(i,j,fn){
+  const m=FW.me;if(!m){fn&&fn();return}
+  i=Math.max(.4,Math.min(FARM_N_-.4,i));j=Math.max(.4,Math.min(FARM_N_-.4,j));
+  if(Math.hypot(i-m.i,j-m.j)<.35){m.walking=false;FW.go=null;fwSend();fn&&fn();return}
+  m.ti=i;m.tj=j;m.walking=true;FW.go=fn||null;fwSend();blip(560,.05,"sine");
+}
+// where to stand to work on something
+function fwStandBy(ti,tj,r=.8){const m=FW.me,dx=m.i-ti,dj=m.j-tj,d=Math.hypot(dx,dj)||1;return [ti+dx/d*r,tj+dj/d*r]}
+function fwStep(dt){
+  const m=FW.me;if(!m)return;m.t+=dt;
+  if(m.walking){const di=m.ti-m.i,dj=m.tj-m.j,d=Math.hypot(di,dj);
+    if(d<.04){m.walking=false;m.i=m.ti;m.j=m.tj;fwSend();const fn=FW.go;FW.go=null;if(fn)fn()}
+    else{const s=Math.min(d,FW_SPEED*dt);m.i+=di/d*s;m.j+=dj/d*s;const sx=di-dj,sy=di+dj;m.front=sy>=-.02;if(Math.abs(sx)>.01)m.dir=sx>0?1:-1;fwFollow()}}
+  if(performance.now()-FW.beat>60e3)fwSend(); // heartbeat
+  fwAct(tk?"puzzle":"");
+}
+// keep my walking farmer on screen
+function fwFollow(){if(fm.drag)return;const p=fIso(FW.me.i,FW.me.j),W=fm.cv.width,H=fm.cv.height,mx=W*.18,my=H*.2;let dx=0,dy=0;
+  if(p.x<mx)dx=p.x-mx;else if(p.x>W-mx)dx=p.x-(W-mx);if(p.y<my+fm.th*2)dy=p.y-my-fm.th*2;else if(p.y>H-my)dy=p.y-(H-my);
+  if(dx||dy){fm.camX+=dx*.12;fm.camY+=dy*.12;farmClamp()}}
+// where another player's farmer is right now
+function fwPos(r){const now=fwNow(),di=r.ti-r.fi,dj=r.tj-r.fj,d=Math.hypot(di,dj);if(d<.01)return {i:r.ti,j:r.tj,walking:false,di,dj};
+  const k=Math.max(0,Math.min(1,(now-r.t0)*(r.sp||FW_SPEED)/1000/d));return {i:r.fi+di*k,j:r.fj+dj*k,walking:k<1,di,dj}}
+function fwPhoto(K){if(!K.photo)return null;let im=FW.photoImg[K.photo.length+K.photo.slice(-24)];if(!im){im=new Image();im.src=K.photo;FW.photoImg[K.photo.length+K.photo.slice(-24)]=im}return im.complete&&im.naturalWidth?im:null}
+// placeholder isometric farmer, drawn in code: straw hat, shirt, overalls in the player's color, boots, and their face as the head
+function fwDraw(g,x,y,K,o){
+  const th=fm.th,H=th*2.3,sw=o.walking?Math.sin(o.t*11):0,bob=o.walking?-Math.abs(Math.sin(o.t*11))*th*.08:Math.sin(o.t*2.4)*th*.015,dir=o.dir||1;
+  const rr=(x0,y0,w,h,r,f)=>{g.beginPath();g.roundRect?g.roundRect(x0,y0,w,h,r):g.rect(x0,y0,w,h);g.fillStyle=f;g.fill()};
+  g.save();
+  g.fillStyle="rgba(0,0,0,.2)";g.beginPath();g.ellipse(x,y,H*.24,th*.2,0,0,7);g.fill();
+  if(o.me){g.strokeStyle=K.hue;g.lineWidth=Math.max(2,th*.06);g.beginPath();g.ellipse(x,y,H*.3,th*.26,0,0,7);g.stroke()}
+  g.translate(x,y+bob);g.scale(dir<0?-1:1,1);
+  const u=H/100; // drawing units: 100 tall
+  // legs + boots
+  for(const [lx,ph] of [[-9,1],[9,-1]]){const lift=Math.max(0,sw*ph)*5*u,sx=sw*ph*4*u;rr(lx*u-6*u+sx,-26*u-lift,12*u,22*u,4*u,"#3B5BA5");rr(lx*u-8*u+sx,-8*u-lift,16*u,9*u,4*u,"#5A3A22")}
+  // shirt + arms
+  const shirt="#F4F1EA";
+  for(const [ax,ph] of [[-24,-1],[24,1]]){g.save();g.translate(ax*u,-58*u);g.rotate(sw*ph*.5);rr(-5*u,0,10*u,26*u,5*u,shirt);g.beginPath();g.arc(0,27*u,5.5*u,0,7);g.fillStyle="#F2C6A0";g.fill();g.restore()}
+  rr(-21*u,-62*u,42*u,36*u,12*u,shirt);
+  // overalls
+  rr(-19*u,-44*u,38*u,22*u,8*u,K.hue);rr(-12*u,-58*u,24*u,16*u,4*u,K.hue);
+  if(o.front){g.fillStyle="#FFD54A";g.beginPath();g.arc(-8*u,-54*u,2.4*u,0,7);g.arc(8*u,-54*u,2.4*u,0,7);g.fill()}
+  // head
+  const hy=-78*u,hr=17*u;
+  g.beginPath();g.arc(0,hy,hr,0,7);g.fillStyle="#F2C6A0";g.fill();
+  g.scale(dir<0?-1:1,1); // faces and text unflipped
+  const pic=o.front&&fwPhoto(K);
+  if(o.front){if(pic){g.save();g.beginPath();g.arc(0,hy,hr*.98,0,7);g.clip();g.drawImage(pic,-hr,hy-hr,hr*2,hr*2);g.restore()}
+    else{g.font=`${hr*1.75}px system-ui`;g.textAlign="center";g.textBaseline="middle";g.fillText(K.face,0,hy+hr*.08);g.textBaseline="alphabetic"}}
+  else{g.beginPath();g.arc(0,hy,hr,0,7);g.fillStyle="#7A4E2D";g.fill()}
+  // straw hat
+  g.fillStyle="#E8C36A";g.beginPath();g.ellipse(0,hy-hr*.62,hr*1.55,hr*.42,0,0,7);g.fill();
+  g.fillStyle="#D9AE4E";g.beginPath();g.ellipse(0,hy-hr*.9,hr*.85,hr*.55,0,Math.PI,0);g.fill();g.fillRect(-hr*.85,hy-hr*.92,hr*1.7,hr*.3);
+  g.fillStyle=K.hue;g.fillRect(-hr*.85,hy-hr*.78,hr*1.7,hr*.16);
+  g.restore();
+  // name tag
+  const ty=y-H-th*.35;g.font=`800 ${Math.max(11,th*.28)}px system-ui`;const nm=o.me?`${K.name} (you)`:K.name,tw=g.measureText(nm).width+th*.3;
+  g.fillStyle=o.me?K.hue:"rgba(255,255,255,.92)";rr(x-tw/2,ty-th*.24,tw,th*.36,th*.18,g.fillStyle);
+  g.fillStyle=o.me?"#fff":"#2B2140";g.textAlign="center";g.textBaseline="middle";g.fillText(nm,x,ty-th*.05);g.textBaseline="alphabetic";
+  if(o.act==="puzzle")bubble(x+H*.32,y-H*.78,"🧩",o.t*1000,x);
+}
+function fwItems(items,dt,t){
+  fwStep(dt);
+  const seen=new Set();
+  if(FW.me&&me){const m=FW.me;seen.add(me);items.push({d:m.i+m.j+.3,draw:()=>fwDraw(fm.g,...Object.values(fIso(m.i,m.j)),kidOf(me),{me:true,walking:m.walking,t:m.t,dir:m.dir,front:m.front,act:m.act})})}
+  for(const [who,r] of Object.entries(FW.others||{})){
+    if(who===me||!KIDS[who]||!r||fwNow()-(+r.at||0)>FW_STALE||seen.has(who))continue;
+    const p=fwPos(r),o=FW.anim[who]||(FW.anim[who]={t:Math.random()*9,dir:1,front:true});o.t+=dt;
+    if(p.walking){const sx=p.di-p.dj,sy=p.di+p.dj;o.front=sy>=-.02;if(Math.abs(sx)>.01)o.dir=sx>0?1:-1}
+    items.push({d:p.i+p.j+.3,draw:()=>fwDraw(fm.g,...Object.values(fIso(p.i,p.j)),kidOf(who),{walking:p.walking,t:o.t,dir:o.dir,front:o.front,act:r.act})})}
+}
+FW.anim={};
+
 /* ---- drawing ---- */
 function fPop(w,txt){fPopAt(fIso(w.i,w.j),txt,fm.th*2.2*((ANIMALS[(F.st.animals[w.id]||{}).k]||{}).h||1))}
 function fPopAt(p,txt,up=fm.th*1.6){fm.pops.push({x:p.x,y:p.y-up,txt,t:0})}
@@ -3503,7 +3669,7 @@ function drawStruct(id,s,now){
   fm.hits.push({kind:"struct",ref:id,d:s.i+s.j+s.wi+s.wj,x0:d.x,x1:b.x,y0:ly-th*.8,y1:c.y});
 }
 function farmFrame(t){
-  if(screen!=="farm"){fm.raf=0;return}
+  if(screen!=="farm"){fm.raf=0;fwLeave();return}
   const dt=Math.min(.05,(t-fm.last)/1000);fm.last=t;const g=fm.g,W=fm.cv.width,H=fm.cv.height,N=fm.N,th=fm.th,now=Date.now();
   g.clearRect(0,0,W,H);fm.hits=[];
   if(!F.st){g.fillStyle="#5E5577";g.font=`${th*.5}px system-ui`;g.textAlign="center";g.fillText("Opening the farm…",W/2,H/2);fm.raf=requestAnimationFrame(farmFrame);return}
@@ -3545,7 +3711,8 @@ function farmFrame(t){
       if(p.fert&&stage!=="ripe"){g.font=`${th*.32}px system-ui`;g.textAlign="center";g.fillText("💩",c.x-fm.tw*.32,c.y+th*.3)}}})}
   for(const w of F.anim.values()){const a=(F.st.animals||{})[w.id];if(!a||!ANIMALS[a.k])continue;const A=ANIMALS[a.k],as=animalState(a,now),hungry=as==="hungry";
     w.t+=dt;w.hop=Math.max(0,w.hop-dt*3);
-    if(w.state==="walk"){const di=w.ti-w.i,dj=w.tj-w.j,d=Math.hypot(di,dj);
+    if(w.held&&t<w.held){w.state=w.state==="eat"?"eat":"idle";w.until=w.held}
+    else if(w.state==="walk"){const di=w.ti-w.i,dj=w.tj-w.j,d=Math.hypot(di,dj);
       if(d<.05){w.state="idle";w.until=t+2500+Math.random()*3500}
       else{const s=Math.min(d,(hungry?.25:.45)*dt);w.i+=di/d*s;w.j+=dj/d*s;const sx=di-dj,sy=di+dj;w.front=sy>=-.02;if(Math.abs(sx)>.01)w.dir=sx>0?1:-1}}
     else if(t>w.until){if(w.state==="idle")fPick(w,t,hungry);else{w.state="idle";w.until=t+800}}
@@ -3565,6 +3732,7 @@ function farmFrame(t){
       if(w.state==="sleep"){g.fillStyle="#3A4A5A";g.textAlign="left";for(let k=0;k<3;k++){const q=(w.t*.5+k/3)%1;g.globalAlpha=1-q;g.font=`900 ${th*(.28+k*.08)}px system-ui`;g.fillText("z",p.x+wd*.3+q*th*.4,p.y-Hh*.8-q*th*.8)}g.globalAlpha=1}
       if(hungry)bubble(p.x,p.y-Hh-th*.05,A.foodIcon,t,w.i);else if(as==="ready")bubble(p.x,p.y-Hh-th*.05,GOODS[A.good].icon,t,w.i);
       fm.hits.push({kind:"animal",ref:w,d:w.i+w.j+.5,x0:p.x-wd*.5,x1:p.x+wd*.5,y0:p.y-Hh-th*.8,y1:p.y+th*.3})}})}
+  fwItems(items,dt,t);
   items.sort((a,b)=>a.d-b.d).forEach(it=>it.draw());
   g.textAlign="center";fm.pops=fm.pops.filter(p=>(p.t+=dt)<1.2);for(const p of fm.pops){g.globalAlpha=1-p.t/1.2;g.font=`${th*.7}px system-ui`;g.fillText(p.txt,p.x,p.y-p.t*th*1.2)}g.globalAlpha=1;
   if(t-(fm.oChk||0)>5000){fm.oChk=t;ensureOrders()}
@@ -4339,10 +4507,12 @@ function buildCoopJigsaw(api,key){
   CO.listeners.add(sync);api.after(()=>CO.listeners.delete(sync));sync();
 }
 
-function openFarm(){if(!me){goLobby();return}if(!fm.cv)farmInit();farmConnect();show("farm");farmHeader();farmFit();fm.last=performance.now();if(!fm.raf)fm.raf=requestAnimationFrame(farmFrame);
-  sayLittle("Drag to look around the farm. Tap the bubbles to help the animals and plants!")}
+function openFarm(){if(!me){goLobby();return}if(!fm.cv)farmInit();farmConnect();fwConnect();show("farm");farmHeader();farmFit();fm.last=performance.now();if(!fm.raf)fm.raf=requestAnimationFrame(farmFrame);
+  sayLittle("Tap where you want to go! Tap the bubbles to help the animals and plants.")}
+$("#fHome").onclick=()=>{closeSheet();hush();goLobby()};
+$("#fBack").onclick=()=>{closeSheet();hush();goLobby()};
 $("#playFarm").onclick=()=>{sayLittle("Kapanigan Farmstand");openFarm()};
-if(/[?&]farmlocal\b/.test(location.search))window.__farm={F,fm,CO,coopUpd,coopTick,startTeam,joinTeam,tk:()=>tk,tapPlot,tapAnimal,tapStruct,openStore,openOrders,openJar,openSell,buyIt,storeItems,deliver,sendGift,win:finishTask,quit:()=>closeTask(true)}; // testing only
+if(/[?&]farmlocal\b/.test(location.search))window.__farm={F,fm,FW,openBank,bankPut,farmZoomTo,fwWalk,farmTapAt:(i,j)=>{const p=fIso(i,j),r=fm.cv.getBoundingClientRect(),d=fm.cv.width/r.width;farmTap({clientX:r.left+p.x/d,clientY:r.top+p.y/d})},CO,coopUpd,coopTick,startTeam,joinTeam,tk:()=>tk,tapPlot,tapAnimal,tapStruct,openStore,openOrders,openJar,openSell,buyIt,storeItems,deliver,sendGift,win:finishTask,quit:()=>closeTask(true)}; // testing only
 })();
 </script>
 </body>

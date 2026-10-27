@@ -110,6 +110,20 @@ A **live co-op farm** the kids share. Every farm action is done by solving a sho
     - Grown-ups can **write an order** for Violet or Quinn.
   - Buildings, the farmstand, the board and decorations are drawn in code (boxes and emoji) until the Batch B art exists. Crops without art yet (tomato, corn, strawberry) show their emoji.
   - Testing: `?farmlocal` runs the farm in memory, without Firebase.
+- **v2.1 (Oct 27):**
+  - **Farmer avatars:** everyone on the farm walks around as their own farmer, and everyone sees everyone live with name tags.
+    - The placeholder sprite is drawn in code: straw hat, overalls in the person's color, and their photo or emoji as the head. It has front and back views and walk and idle animation.
+    - Tapping a crop, animal, building or decoration walks your farmer there first, and the puzzle starts when they arrive. An animal waits while you walk to it, and tapping grass just walks there.
+    - A 🧩 bubble shows over anyone doing a puzzle, and the camera follows your farmer.
+    - Synced at `families/<code>/farmwalk/<who>`, one record per walk (from, to, start time, speed), removed when the device drops.
+    - Real isometric avatar art is part of #10, which is waiting on the art credentials.
+  - **Zoom:** pinch, mouse wheel, or the ➕ ➖ buttons, zooming around the finger. It goes from the whole farm on screen to 2.5×.
+  - **Camera and mic on the farm:** the family video bubble now shows on the Farmstand too. Farm sheets sit above it; puzzles cover it.
+  - **Farm Family Bank (🏦 building, also from the 🪙 jar):** anyone can put Moolah in from their jar.
+    - The Farm Store has a **Pay with: 🫙 My jar / 🏦 Family Bank** switch.
+    - Every deposit and every bank purchase goes in the **ledger** (who, what, how much, when), with totals put in and spent per person.
+    - Data: `farm/bank` is the balance; `farm/ledger/<id>` = `{at, who, kind: in|out, amt, what}`.
+  - Fixed: the farm's ⬅️ and 🏠 buttons had stopped working (lost in the v2 merge).
 - **Ready to use:** `farmPuzzle()` to put a puzzle in front of any farm action, `logAttempt()` for the grown-up dashboard (#8), `say()` / `sayLittle()` read-aloud, Firebase under `families/<code>/`, and `tools/genart.py` for isometric art.
 
 ### 🧩 Every action is a puzzle
@@ -308,7 +322,8 @@ About **48 images** left including retries, which is roughly one day of the free
 - ~~Dressing room and farm time~~ → decided: **no**. Time in the dressing room doesn't count toward the 30 minutes.
 - Can a grown-up grant extra time or reset a player's cooldown (for a sick day or a road trip)?
 - Should the 24 hours run from when the time ran out (as written), or should the farm reopen every morning at a set time (for example 7 AM), which is easier for little ones to understand?
-- ~~Moolah wallet~~ → decided: **one jar per person**, and anyone can **gift** Moolah to anyone (that's how a big build gets pooled).
+- ~~Moolah wallet~~ → decided: **one jar per person**, anyone can **gift** Moolah to anyone, plus a shared **Farm Family Bank** with a ledger.
+- Should kids be able to spend from the Family Bank on their own, or only grown-ups (or kids up to a limit)? Today anyone can, and the ledger shows it.
 - Should Little players spend Moolah on their own, or does a grown-up approve big purchases?
 - Can grown-ups give Moolah as a reward (for example from the grown-ups corner)?
 - Can family members other than the 8 grown-ups place orders (Bear friend, Fox friend)?
