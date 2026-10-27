@@ -153,11 +153,12 @@ h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance;l
 .tool{flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;border-radius:18px;background:var(--sky);min-width:62px;height:62px;padding:0 6px;font-size:28px;line-height:1;border:3px solid transparent}
 .tool small{font-size:11px;font-weight:900;color:var(--ink-soft);margin-top:3px}
 .tool.on{background:var(--sun);border-color:var(--ink)}
-.little .tool{min-width:84px;height:84px;font-size:40px;border-radius:24px}
-.little .tool small{font-size:13px}
+.little .tool{min-width:100px;height:100px;font-size:50px;border-radius:26px}
+.little .tool small{font-size:14px}
 .sw{flex:none;width:40px;height:40px;border-radius:50%;background:var(--c);border:3px solid rgba(43,33,64,.15);box-shadow:inset 0 -4px 0 rgba(0,0,0,.12)}
 .sw.on{border-color:var(--ink);transform:scale(1.15);box-shadow:0 0 0 3px #fff,0 0 0 6px var(--ink)}
-.little .sw{width:64px;height:64px}
+.little .sw{width:76px;height:76px}
+.little .trow{gap:12px}
 .sz{flex:none;width:48px;height:48px;border-radius:14px;background:var(--sky);display:grid;place-items:center;border:3px solid transparent}
 .sz i{display:block;border-radius:50%;background:var(--ink)}
 .sz.on{background:var(--sun);border-color:var(--ink)}
@@ -466,10 +467,13 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
   .trow{flex-wrap:wrap;overflow:visible;gap:6px}
   .tool{min-width:50px;height:50px;font-size:22px;border-radius:14px}
   .tool small{font-size:9px}
-  .little .tool{min-width:58px;height:58px;font-size:28px}
-  .little .tool small{font-size:11px}
+  #game.little{grid-template-columns:clamp(250px,25vw,320px) minmax(0,1fr)}
+  .spacer{display:none}
+  .little .tool{min-width:84px;height:84px;font-size:42px;border-radius:22px}
+  .little .tool small{font-size:12px}
+  .little .trow{gap:8px}
   .sw{width:30px;height:30px}
-  .little .sw{width:40px;height:40px}
+  .little .sw{width:58px;height:58px}
   .sz{width:38px;height:38px}
   .sep{display:none}
   .watchnote{flex-direction:column;font-size:16px}
@@ -484,14 +488,15 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
 @media (orientation:landscape) and (max-height:560px){
   .ghead .seats{display:none}
   .tool{min-width:44px;height:44px;font-size:20px}.tool small{display:none}
-  .little .tool{min-width:54px;height:54px}
+  .little .tool{min-width:66px;height:66px;font-size:32px}
+  .little .sw{width:50px;height:50px}
 }
 @media (max-width:520px){
   .reacts button{width:38px;height:38px;font-size:19px}
   .round{width:42px;height:42px}
   .seat{font-size:12px}
-  .little .tool{min-width:70px;height:70px;font-size:34px}
-  .little .sw{width:52px;height:52px}
+  .little .tool{min-width:80px;height:80px;font-size:40px}
+  .little .sw{width:60px;height:60px}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -1239,17 +1244,18 @@ function renderCursors(){
 function lvl(){return kidOf(me).level}
 function buildTray(){
   const T=$("#tray"); const L=lvl(); T.className="tray "+L; T.innerHTML="";
+  $("#game").classList.toggle("little",L==="little"&&!(game&&game.watch));
   if(game&&game.watch){const n=document.createElement("div");n.className="watchnote";
     n.innerHTML=`<span class="eyes">👀</span><span>You're watching ${esc(game.seats.map(s=>kidOf(s.k).name).join(" & "))} color. Send them a cheer up top!</span>`;T.append(n);return}
   const row=()=>{const r=document.createElement("div");r.className="trow";T.append(r);return r};
-  const tbtn=(r,id,emoji,label)=>{const b=document.createElement("button");b.className="tool";b.dataset.t=id;b.innerHTML=`${emoji}<small>${label}</small>`;b.onclick=()=>{tool[L].t=id;blip(520,.06);sayLittle(label);syncTray()};r.append(b)};
+  const tbtn=(r,id,emoji,label)=>{const b=document.createElement("button");b.className="tool";b.dataset.t=id;b.innerHTML=`${emoji}<small>${label}</small>`;b.onclick=()=>{tool[L].t=id;blip(520,.06);syncTray()};r.append(b)};
   if(L==="little"){
     const r1=row();
     tbtn(r1,"crayon","🖍️","Crayon"); tbtn(r1,"rainbow","🌈","Rainbow"); tbtn(r1,"fill","🪣","Fill"); tbtn(r1,"stamp","⭐","Stickers");
     const sp=document.createElement("span");sp.className="spacer";r1.append(sp);
-    const u=document.createElement("button");u.className="tool";u.innerHTML=`↩️<small>Oops</small>`;u.onclick=()=>{sayLittle("Oops!");undo()};r1.append(u);
+    const u=document.createElement("button");u.className="tool";u.innerHTML=`↩️<small>Oops</small>`;u.onclick=()=>undo();r1.append(u);
     const r2=row();
-    for(const col of LITTLE_COLORS){const s=document.createElement("button");s.className="sw";s.style.setProperty("--c",col);s.dataset.c=col;s.setAttribute("aria-label","color");s.onclick=()=>{tool.little.c=col;if(tool.little.t==="rainbow")tool.little.t="crayon";blip(600,.06);sayLittle(COLOR_NAMES[col]);syncTray()};r2.append(s)}
+    for(const col of LITTLE_COLORS){const s=document.createElement("button");s.className="sw";s.style.setProperty("--c",col);s.dataset.c=col;s.setAttribute("aria-label","color");s.onclick=()=>{tool.little.c=col;if(tool.little.t==="rainbow")tool.little.t="crayon";blip(600,.06);syncTray()};r2.append(s)}
   } else {
     const r1=row();
     tbtn(r1,"marker","🖊️","Marker"); tbtn(r1,"crayon","🖍️","Crayon"); tbtn(r1,"spray","💨","Spray"); tbtn(r1,"glitter","✨","Glitter"); tbtn(r1,"fill","🪣","Fill"); tbtn(r1,"stamp","⭐","Stamp"); tbtn(r1,"eraser","🧽","Eraser");
@@ -1368,7 +1374,6 @@ function floatReaction(r,k){
   const K=kidOf(k); const el=document.createElement("div");el.className="floater";
   el.style.left=(10+Math.random()*75)+"%"; el.style.setProperty("--k",K.hue);
   el.innerHTML=`<span>${r}</span><b>${esc(K.name)}</b>`; $("#floaters").append(el);
-  if(k!==me) sayLittle(`${K.name} ${REACT_WORDS[r]||""}`);
   blip(r==="😂"?440:760,.15,"triangle",.1); setTimeout(()=>el.remove(),2700);
 }
 $("#reacts").addEventListener("click",e=>{const b=e.target.closest("button");if(!b||!game)return;floatReaction(b.dataset.r,me);send("react",{r:b.dataset.r,k:me,e:game.e})});
@@ -1590,6 +1595,7 @@ function renderVideoUI(){
   $("#vCam").classList.toggle("off",!vid.cam);
   $("#vMin").textContent=vid.min?"📹":"➖";
   if(screen==="game") requestAnimationFrame(fitBoard);
+  requestAnimationFrame(()=>{const r=box.getBoundingClientRect();if(r.right>innerWidth+2||r.bottom>innerHeight+2||r.left<-2||r.top<-2){delete box.dataset.dragged;box.style.left="";box.style.top="";box.style.right="";box.style.bottom="";if(screen==="game")fitBoard()}});
 }
 $("#vMic").onclick=()=>setMic(!vid.mic);
 $("#vCam").onclick=()=>setCam(!vid.cam);
@@ -1818,7 +1824,7 @@ function renderStory(){
       const ch=draft.chars[i]; const card=el("div","wcard");
       const box=el("div","stagebox"); const fig=charFigure({story:draft.story,words:draft.words,chars:draft.chars},i); fig.className="anim-"+ch.a; box.append(fig);
       const ab=el("div","animbtns");
-      for(const [k,e,l] of ANIMS){const b=el("button",ch.a===k?"on":"",`${e}<small>${l}</small>`);b.onclick=()=>{ch.a=k;fig.className="anim-"+k;ab.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));sayLittle(l);blip(600,.06)};ab.append(b)}
+      for(const [k,e,l] of ANIMS){const b=el("button",ch.a===k?"on":"",`${e}<small>${l}</small>`);b.onclick=()=>{ch.a=k;fig.className="anim-"+k;ab.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));blip(600,.06)};ab.append(b)}
       card.append(box,ab); wrap.append(card);
     });
     B.append(wrap);
@@ -1865,15 +1871,15 @@ function buildPad(B,strokes){
   const cv=el("canvas","pad");cv.width=PAD;cv.height=PAD;cv.id="padCanvas";wrap.append(cv);
   const tools=el("div","padtools "+L);
   const r1=el("div","trow");
-  const tb=(id,e,l)=>{const b=el("button","tool",`${e}<small>${l}</small>`);b.dataset.t=id;b.onclick=()=>{pad.tool=id;sayLittle(l);sync()};r1.append(b)};
+  const tb=(id,e,l)=>{const b=el("button","tool",`${e}<small>${l}</small>`);b.dataset.t=id;b.onclick=()=>{pad.tool=id;blip(520,.06);sync()};r1.append(b)};
   tb("pen",L==="little"?"🖍️":"🖊️",L==="little"?"Crayon":"Pen");
   if(L!=="little") tb("erase","🧽","Eraser"); else if(pad.tool==="erase") pad.tool="pen";
-  const oops=el("button","tool",`↩️<small>${L==="little"?"Oops":"Undo"}</small>`);oops.onclick=()=>{pad.strokes.pop();redraw();sayLittle("Oops!")};r1.append(oops);
+  const oops=el("button","tool",`↩️<small>${L==="little"?"Oops":"Undo"}</small>`);oops.onclick=()=>{pad.strokes.pop();redraw()};r1.append(oops);
   const clr=el("button","tool",`🗑️<small>Clear</small>`);clr.onclick=()=>{pad.strokes.length=0;redraw()};r1.append(clr);
   tools.append(r1);
   if(L!=="little"){const r2=el("div","trow");[6,14,26].forEach((w,j)=>{const b=el("button","sz",`<i style="width:${6+j*8}px;height:${6+j*8}px"></i>`);b.dataset.sz=j;b.onclick=()=>{pad.size=j;sync()};r2.append(b)});tools.append(r2)}
   const r3=el("div","trow");
-  for(const col of (L==="little"?LITTLE_COLORS:BIG_COLORS)){const s=el("button","sw");s.style.setProperty("--c",col);s.dataset.c=col;s.setAttribute("aria-label","color");s.onclick=()=>{pad.c=col;pad.tool="pen";sayLittle(COLOR_NAMES[col]);sync()};r3.append(s)}
+  for(const col of (L==="little"?LITTLE_COLORS:BIG_COLORS)){const s=el("button","sw");s.style.setProperty("--c",col);s.dataset.c=col;s.setAttribute("aria-label","color");s.onclick=()=>{pad.c=col;pad.tool="pen";blip(600,.06);sync()};r3.append(s)}
   tools.append(r3); wrap.append(tools); B.append(wrap);
   const ctx=cv.getContext("2d");
   function redraw(){ctx.clearRect(0,0,PAD,PAD);drawStrokes(ctx,pad.strokes,1)}
