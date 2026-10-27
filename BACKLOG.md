@@ -298,13 +298,17 @@ Track how much each player uses Kapanigans and how they're doing on puzzles and 
 - [ ] Every puzzle attempt records the skill, level, solve time, wrong tries and hint use
 - [ ] Play time is recorded per persona, per game and per day, and syncs across devices
 - [ ] A dashboard behind a grown-up check, with a weekly summary, skills view and struggle spots per kid
+- [ ] Every grown-up persona can see every kid's dashboard
+- [ ] A weekly summary arrives in each grown-up's Inbox
+- [ ] Detailed records older than 90 days roll up into weekly summaries
 - [ ] Kids see no scores or stats anywhere
 - [ ] Grown-ups can clear a kid's data
 
 **🔍 Decisions needed**
-- How long to keep detailed records: 90 days, then weekly summaries only?
-- Should grown-ups get a weekly summary sent to their Inbox (#4), or by email?
-- Turn on automatic difficulty adjustment now, or show the data first and decide later?
+- ~~Record retention~~ → decided: keep detailed records for **90 days**, then roll them up into **weekly summaries**.
+- ~~Weekly report delivery~~ → decided: a weekly summary goes to each grown-up's **in-game Inbox** (#4).
+- ~~Automatic difficulty~~ → decided: **look at the data first**; no automatic adjustment for now.
+- ~~Who can see reports~~ → decided: **every grown-up** (all 8) can see both kids' reports.
 
 ---
 
