@@ -889,7 +889,7 @@ Turn photos of family members into **high-resolution cartoon characters** (in th
 4. Each approved likeness can be used as a story character, and can set the starting look for their avatar builder (#10).
 
 **🔒 Privacy (a must)**
-- **The kapanigans repo is public** (GitHub Pages), so anything in `art/` can be seen by anyone on the internet. Family likeness art must **not** go in the repo.
+- **Anything in the repo's `art/` folder is served on the public GitHub Pages site**, so anyone with the link can see it (and the repo itself is public unless it's on a paid GitHub plan). Family likeness art must **not** go in the repo.
 - Instead, store it **privately under the family code in Firebase** (`families/<code>/art/family/`), like the play-made art today. Only devices with the family code can load it.
 - Original photos are never uploaded to the repo or Firebase; they're deleted from the working space after generating.
 - Names in tags use the persona names already in the game (Quinn, Violet, Joe…), with no last names, locations or other personal details.
