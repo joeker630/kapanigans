@@ -730,21 +730,15 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
 .mc[data-n="1"]{color:#2D5BD8}.mc[data-n="2"]{color:#2E9E4F}.mc[data-n="3"]{color:#D32F2F}.mc[data-n="4"]{color:#5B2A86}.mc[data-n="5"]{color:#8B3A1A}.mc[data-n="6"]{color:#0F766E}
 .mnt{display:flex;gap:12px;align-items:center}
 .mnt .ghost.on{background:var(--sun)}
-/* codebreaker */
-.cbb{display:flex;flex-direction:column;gap:6px;overflow:auto;max-height:100%;min-height:0;flex:1;padding:4px}
-.cbr{display:flex;align-items:center;gap:8px;background:var(--paper);border-radius:14px;padding:6px 10px}
-.cbr.now{outline:3px dashed var(--sun-deep)}
-.cbr.ans{background:#FFF3D6}
-.cbg{display:inline-block;width:34px;height:34px;border-radius:50%;border:3px solid rgba(43,33,64,.25)}
-.cbg.empty{background:#EEE;border-style:dashed}
-.cbg{position:relative;vertical-align:middle}
-.cbg b{position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-size:18px;text-shadow:0 1px 2px rgba(0,0,0,.6);font-family:var(--body)}
-.cbg.hit{border-color:#1B998B;box-shadow:0 0 0 3px #1B998B}
-.cbg.near{border-color:var(--sun-deep);box-shadow:0 0 0 3px var(--sun-deep)}
-.cbslot{padding:0;background:none;border-radius:50%}
-.cbk{min-width:96px;font-size:15px;letter-spacing:1px}
-.cbp{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;align-items:center}
-.cbc{width:52px;height:52px;border-radius:50%;border:4px solid #fff;box-shadow:0 3px 0 var(--sky-deep)}
+/* traffic jam */
+.jam{position:relative;background:#5E5577;border-radius:14px;box-shadow:0 0 0 6px #5E5577,0 8px 0 6px var(--sky-deep);margin-right:44px;touch-action:none;
+  background-image:linear-gradient(rgba(255,255,255,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.08) 1px,transparent 1px);background-size:calc(100%/6) calc(100%/6)}
+.jamexit{position:absolute;left:100%;top:calc(100%/3);height:calc(100%/6);display:flex;align-items:center;padding-left:10px;font-weight:900;font-size:14px;color:var(--fox);white-space:nowrap}
+.jamcar{position:absolute;box-sizing:border-box;border:5px solid transparent;background-clip:padding-box;border-radius:14px;box-shadow:inset 0 -6px 0 rgba(0,0,0,.18);touch-action:none;cursor:grab;display:grid;place-items:center;font-size:28px;transition:left .12s,top .12s}
+.jamcar.red{background:#E5484D}
+.jamcar.drag{transition:none;z-index:2;filter:brightness(1.08)}
+.jamcar.out{transition:transform .6s ease-in;transform:translateX(160%)!important}
+.jamclock{font-family:var(--display);font-size:20px}.jamclock.low{color:var(--fox)}
 .cdnote{font-size:15px;color:#FFE7A3}
 .cdpop{position:fixed;inset:0;z-index:48;display:grid;place-items:center;background:rgba(43,33,64,.35)}
 .cdcard{background:var(--paper);border-radius:26px;padding:20px 26px;display:flex;flex-direction:column;align-items:center;gap:6px;box-shadow:0 8px 0 var(--sky-deep);max-width:min(360px,calc(100% - 32px));text-align:center}
@@ -3886,7 +3880,7 @@ var tk=null; // var, not let: show() looks at it and can run before this line
 function roundsFor(type,L){return 1}
 // Longer puzzles pay more: a Moolah bonus on top of the chore's normal reward (0, +1 or +2).
 const PUZZLE_SIZE={big:{count:1,letters:1,color:1,pattern:1,money:1,memory:2,trace:2,build:3,jigsaw:3},little:{count:1,letters:1,color:1,pattern:1,money:1,memory:2,trace:2,build:2,jigsaw:2}};
-PUZZLE_SIZE.grown={sudoku:3,wordle:2,blackjack:2,mines:2,codebreaker:2};
+PUZZLE_SIZE.grown={sudoku:3,wordle:2,blackjack:2,mines:2,jam:2};
 function puzzleBonus(my){return Math.max(0,((PUZZLE_SIZE[my.lvl]||PUZZLE_SIZE.big)[my.type]||1)-1)}
 function openTask(o){
   if(tk) closeTask(false);
@@ -4582,10 +4576,10 @@ function moneyChange(api,sale){
    Grown-ups get real games on their farm chores, and these can be LOST. Losing means the chore doesn't happen:
    the lose screen offers "Try again" (a fresh game) or "Back to the farm".
    mini sudoku 6×6 (3 mistakes and you're out), wordle (6 guesses), blackjack (first to 2 hands), mines 6×6 with 5 (hit one and it's over),
-   codebreaker (crack 4 colors in 8 tries). Each farm chore picks the one this grown-up played least recently. */
-const ADULT_TYPES=["sudoku","wordle","blackjack","mines","codebreaker"];
-Object.assign(SKILL,{sudoku:"logic",wordle:"words",blackjack:"cards",mines:"logic",codebreaker:"deduction"});
-Object.assign(PUZZLE_NAMES,{sudoku:"sudoku",wordle:"word guess",blackjack:"blackjack",mines:"minesweeper",codebreaker:"codebreaker"});
+   traffic jam (get the red car out in 60 seconds). Each farm chore picks the one this grown-up played least recently. */
+const ADULT_TYPES=["sudoku","wordle","blackjack","mines","jam"];
+Object.assign(SKILL,{sudoku:"logic",wordle:"words",blackjack:"cards",mines:"logic",jam:"spatial logic"});
+Object.assign(PUZZLE_NAMES,{sudoku:"sudoku",wordle:"word guess",blackjack:"blackjack",mines:"minesweeper",jam:"traffic jam"});
 const isGrown=()=>!!(me&&KIDS[me]&&KIDS[me].grown);
 function adStatus(api,html){let s=api.area.querySelector(".adstat");if(!s){s=el("div","adstat");api.area.prepend(s)}s.innerHTML=html;return s}
 function adFit(api,box,fn){const go=()=>{const r=api.area.getBoundingClientRect();if(r.width)fn(r)};go();if(window.ResizeObserver){const ro=new ResizeObserver(go);ro.observe(api.area);api.after(()=>ro.disconnect())}}
@@ -4736,28 +4730,63 @@ TASKS.mines=api=>{
   adFit(api,grid,r=>{const s=Math.floor(Math.min(r.width,r.height-110,400));grid.style.width=grid.style.height=s+"px";grid.style.fontSize=(s/N*.45)+"px"});
 };
 
-/* ---- 5. Codebreaker: find the 4-color code in 10 tries (no repeats; every peg shows ✓ right spot or ● in the code) ---- */
-const CB_COLS=[["red","#E5484D"],["orange","#FF8A00"],["yellow","#FFD600"],["green","#2ECC40"],["blue","#2D8CFF"],["purple","#8B5CF6"]];
-TASKS.codebreaker=api=>{
-  const LEN=4, TRIES=10, code=[0,1,2,3,4,5].sort(()=>Math.random()-.5).slice(0,LEN); let rows=[], cur=[];
-  api.ask("Codebreaker: crack the 4-color code");
-  const stat=()=>adStatus(api,`Tries left: <b>${TRIES-rows.length}</b> <span class="adsm">✓ right spot · ● right color, wrong spot · no color is used twice</span>`);stat();
-  const board=el("div","cbb"), pal=el("div","cbp"); api.area.append(board,pal);
-  const peg=(c,cls="",mark="")=>`<i class="cbg ${cls}" ${c!=null?`style="background:${CB_COLS[c][1]}" aria-label="${CB_COLS[c][0]}${mark==="hit"?", right spot":mark==="near"?", wrong spot":""}"`:""}>${mark==="hit"?"<b>✓</b>":mark==="near"?"<b>●</b>":""}</i>`;
-  const render=()=>{board.innerHTML=rows.map(r=>`<div class="cbr">${r.g.map((c,i)=>peg(c,r.m[i],r.m[i])).join("")}<span class="cbk">${"⚫".repeat(r.b)}${"⚪".repeat(r.w)}${"·".repeat(LEN-r.b-r.w)}</span></div>`).join("")+
-    (rows.length<TRIES&&api.live()?`<div class="cbr now">${[...Array(LEN)].map((_,i)=>`<button class="cbslot" data-i="${i}">${peg(cur[i]??null,cur[i]==null?"empty":"")}</button>`).join("")}<span class="cbk"></span></div>`:"");
-    board.querySelectorAll(".cbslot").forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(cur[i]!=null){cur.splice(i,1);render()}});board.scrollTop=board.scrollHeight};
-  CB_COLS.forEach(([n,h],k)=>{const b=el("button","cbc");b.style.background=h;b.setAttribute("aria-label",n);b.onclick=()=>{if(!api.live()||cur.length>=LEN)return;if(cur.includes(k)){toast("Each color only once");return}cur.push(k);blip(500+k*60,.05);render()};pal.append(b)});
-  const go=el("button","bigbtn","Check");go.onclick=()=>{
-    if(!api.live())return; if(cur.length<LEN){toast("Pick 4 colors");return}
-    let b=0,w=0;const cl={},gl={};cur.forEach((c,i)=>{if(c===code[i])b++;else{cl[code[i]]=(cl[code[i]]||0)+1;gl[c]=(gl[c]||0)+1}});for(const c in gl)w+=Math.min(gl[c],cl[c]||0);
-    rows.push({g:cur,b,w,m:cur.map((c,i)=>c===code[i]?"hit":code.includes(c)?"near":"")});cur=[];stat();blip(b===LEN?880:420,.1,"triangle");
-    if(b===LEN){render();return api.win(600)}
-    if(rows.length>=TRIES){render();return api.lose("Out of tries. The code was:",()=>{board.insertAdjacentHTML("beforeend",`<div class="cbr ans">${code.map(c=>peg(c)).join("")}<span class="cbk">the code</span></div>`)})}
-    render()};
-  const undo=el("button","ghost","⌫");undo.onclick=()=>{cur.pop();render()};pal.append(undo,go);
-  adKeys(api,e=>{if(/^[1-6]$/.test(e.key)){pal.children[+e.key-1].click()}else if(e.key==="Backspace")undo.click();else if(e.key==="Enter")go.click();else return false});
-  render();
+/* ---- 5. Traffic jam: slide the cars and trucks so the red car can drive out; 60 seconds or you lose ---- */
+// vehicles: {r,c,len,h} (h = horizontal). Red car is index 0, horizontal on row 2, exits on the right.
+const JAM_N=6, JAM_ROW=2, JAM_SECS=60;
+function jamKey(v){return v.map(x=>x.h?x.c:x.r).join(",")}
+function jamGrid(v){const g=Array(JAM_N*JAM_N).fill(-1);v.forEach((x,k)=>{for(let i=0;i<x.len;i++)g[(x.r+(x.h?0:i))*JAM_N+x.c+(x.h?i:0)]=k});return g}
+function jamSolve(start,cap=20000){ // fewest moves (one slide of any length = one move); -1 if none
+  const seen=new Map([[jamKey(start),0]]); let q=[start];
+  while(q.length){const nq=[];
+    for(const v of q){const d=seen.get(jamKey(v));if(v[0].c+v[0].len===JAM_N)return d;const g=jamGrid(v);
+      v.forEach((x,k)=>{for(const dir of [-1,1])for(let s=1;s<JAM_N;s++){
+        const head=x.h?(dir<0?x.c-s:x.c+x.len-1+s):(dir<0?x.r-s:x.r+x.len-1+s);
+        if(head<0||head>=JAM_N)break; const cell=x.h?x.r*JAM_N+head:head*JAM_N+x.c; if(g[cell]!==-1)break;
+        const w=v.map(y=>({...y}));if(x.h)w[k].c+=dir*s;else w[k].r+=dir*s;const key=jamKey(w);
+        if(!seen.has(key)){seen.set(key,d+1);nq.push(w);if(seen.size>cap)return -1}}})}
+    q=nq}
+  return -1;
+}
+function jamMake(){
+  for(let tries=0;tries<400;tries++){
+    const v=[{r:JAM_ROW,c:rint(0,1),len:2,h:true}], n=rint(7,10);
+    for(let a=0;a<120&&v.length<n+1;a++){
+      const len=Math.random()<.3?3:2,h=Math.random()<.45,r=h?rint(0,JAM_N-1):rint(0,JAM_N-len),c=h?rint(0,JAM_N-len):rint(0,JAM_N-1);
+      if(h&&r===JAM_ROW)continue; // nothing else slides along the exit row
+      const g=jamGrid(v);let ok=true;for(let i=0;i<len;i++)if(g[(r+(h?0:i))*JAM_N+c+(h?i:0)]!==-1)ok=false;
+      if(ok)v.push({r,c,len,h});
+    }
+    const m=jamSolve(v); if(m>=5&&m<=11) return {v,m};
+  }
+  return {v:[{r:JAM_ROW,c:0,len:2,h:true},{r:0,c:3,len:3,h:false},{r:3,c:4,len:2,h:false},{r:1,c:4,len:2,h:true}],m:jamSolve([{r:JAM_ROW,c:0,len:2,h:true},{r:0,c:3,len:3,h:false},{r:3,c:4,len:2,h:false},{r:1,c:4,len:2,h:true}])};
+}
+const JAM_COLS=["#2D8CFF","#2ECC40","#FF8A00","#8B5CF6","#FFD600","#FF5FA2","#1B998B","#C68B59","#7FC8F8","#9BE564","#C3A6FF"];
+TASKS.jam=api=>{
+  const {v,m}=jamMake(); let moves=0, left=JAM_SECS, done=false;
+  api.ask("Traffic jam: slide the cars so the red car can get out");
+  const stat=()=>adStatus(api,`<span class="jamclock${left<=10?" low":""}">⏱️ ${left}s</span> Moves: <b>${moves}</b> <span class="adsm">can be done in ${m} · drag cars along their lane</span>`);stat();
+  const board=el("div","jam"); api.area.append(board);
+  board.append(el("div","jamexit","EXIT ➜"));
+  const els=v.map((x,k)=>{const e=el("div","jamcar"+(k?"":" red")+(x.h?" h":" v"),k?"":"🚗");if(k)e.style.background=JAM_COLS[(k-1)%JAM_COLS.length];board.append(e);return e});
+  const place=k=>{const x=v[k],e=els[k],u=100/JAM_N;Object.assign(e.style,{left:x.c*u+"%",top:x.r*u+"%",width:(x.h?x.len:1)*u+"%",height:(x.h?1:x.len)*u+"%",transform:""})};
+  v.forEach((_,k)=>place(k));
+  const timer=setInterval(()=>{if(!api.live()||done)return clearInterval(timer);left--;stat();if(left<=10&&left>0)blip(900,.04,"square",.05);
+    if(left<=0){clearInterval(timer);done=true;api.lose(`Time's up. It can be done in ${m} moves.`)}},1000);
+  api.after(()=>clearInterval(timer));
+  els.forEach((e,k)=>{let g=null;
+    e.addEventListener("pointerdown",ev=>{if(!api.live()||done)return;ev.preventDefault();try{e.setPointerCapture(ev.pointerId)}catch(_){}
+      const x=v[k],grid=jamGrid(v),cell=board.getBoundingClientRect().width/JAM_N;let lo=0,hi=0;
+      for(let s=1;s<JAM_N;s++){const h=(x.h?x.c:x.r)-s;if(h<0||grid[x.h?x.r*JAM_N+h:h*JAM_N+x.c]!==-1)break;lo=-s}
+      for(let s=1;s<JAM_N;s++){const h=(x.h?x.c:x.r)+x.len-1+s;if(h>=JAM_N||grid[x.h?x.r*JAM_N+h:h*JAM_N+x.c]!==-1)break;hi=s}
+      g={id:ev.pointerId,x0:ev.clientX,y0:ev.clientY,cell,lo,hi,off:0};e.classList.add("drag")});
+    e.addEventListener("pointermove",ev=>{if(!g||ev.pointerId!==g.id)return;const x=v[k];
+      g.off=clamp(((x.h?ev.clientX-g.x0:ev.clientY-g.y0))/g.cell,g.lo,g.hi);e.style.transform=x.h?`translateX(${g.off*g.cell}px)`:`translateY(${g.off*g.cell}px)`});
+    const up=ev=>{if(!g||ev.pointerId!==g.id)return;const s=Math.round(g.off),x=v[k];g=null;e.classList.remove("drag");
+      if(s){if(x.h)x.c+=s;else x.r+=s;moves++;blip(520,.05);stat()}place(k);
+      if(k===0&&x.c+x.len===JAM_N&&!done){done=true;clearInterval(timer);e.classList.add("out");api.win(700)}};
+    e.addEventListener("pointerup",up);e.addEventListener("pointercancel",up);
+  });
+  adFit(api,board,r=>{const s=Math.floor(Math.min(r.width-60,r.height-60,460));board.style.width=board.style.height=s+"px"});
 };
 
 /* ---- star streak for Big players: stars for each puzzle and up to 5 in a row. Nothing is ever taken away. ---- */
