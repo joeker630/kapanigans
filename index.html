@@ -12,14 +12,14 @@
 <link rel="apple-touch-icon" href="icon.png">
 <link rel="icon" href="icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sniglet:wght@400;800&family=Nunito:wght@600;800;900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;800;900&display=swap">
 <style>
 /* Layout: one-screen app — header / play area / crayon tray. Deliberately single-theme: a bright crayon box on a sky-blue table. */
 :root{
   --sky:#D6ECFF; --sky-deep:#B9DCFB; --ink:#2B2140; --ink-soft:#5E5577;
   --paper:#FFFFFF; --sun:#FFC83D; --sun-deep:#F2A900; --tray:#FFFFFF;
   --violet:#7C4DFF; --quinn:#00A88F; --bear:#F59E0B; --fox:#E5484D;
-  --display:"Sniglet","Chalkboard SE","Comic Sans MS","Trebuchet MS",system-ui,sans-serif;
+  --display:"Fredoka","Chalkboard SE","Comic Sans MS","Trebuchet MS",system-ui,sans-serif;
   --body:"Nunito","Avenir Next","Segoe UI",system-ui,sans-serif;
   color-scheme:light;
 }
@@ -737,6 +737,10 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
 .cbr.ans{background:#FFF3D6}
 .cbg{display:inline-block;width:34px;height:34px;border-radius:50%;border:3px solid rgba(43,33,64,.25)}
 .cbg.empty{background:#EEE;border-style:dashed}
+.cbg{position:relative;vertical-align:middle}
+.cbg b{position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-size:18px;text-shadow:0 1px 2px rgba(0,0,0,.6);font-family:var(--body)}
+.cbg.hit{border-color:#1B998B;box-shadow:0 0 0 3px #1B998B}
+.cbg.near{border-color:var(--sun-deep);box-shadow:0 0 0 3px var(--sun-deep)}
 .cbslot{padding:0;background:none;border-radius:50%}
 .cbk{min-width:96px;font-size:15px;letter-spacing:1px}
 .cbp{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;align-items:center}
@@ -4732,22 +4736,22 @@ TASKS.mines=api=>{
   adFit(api,grid,r=>{const s=Math.floor(Math.min(r.width,r.height-110,400));grid.style.width=grid.style.height=s+"px";grid.style.fontSize=(s/N*.45)+"px"});
 };
 
-/* ---- 5. Codebreaker: find the 4-color code in 8 tries ---- */
+/* ---- 5. Codebreaker: find the 4-color code in 10 tries (no repeats; every peg shows ✓ right spot or ● in the code) ---- */
 const CB_COLS=[["red","#E5484D"],["orange","#FF8A00"],["yellow","#FFD600"],["green","#2ECC40"],["blue","#2D8CFF"],["purple","#8B5CF6"]];
 TASKS.codebreaker=api=>{
-  const LEN=4, TRIES=8, code=[...Array(LEN)].map(()=>rint(0,5)); let rows=[], cur=[];
+  const LEN=4, TRIES=10, code=[0,1,2,3,4,5].sort(()=>Math.random()-.5).slice(0,LEN); let rows=[], cur=[];
   api.ask("Codebreaker: crack the 4-color code");
-  const stat=()=>adStatus(api,`Tries left: <b>${TRIES-rows.length}</b> <span class="adsm">⚫ right color, right spot · ⚪ right color, wrong spot · colors can repeat</span>`);stat();
+  const stat=()=>adStatus(api,`Tries left: <b>${TRIES-rows.length}</b> <span class="adsm">✓ right spot · ● right color, wrong spot · no color is used twice</span>`);stat();
   const board=el("div","cbb"), pal=el("div","cbp"); api.area.append(board,pal);
-  const peg=(c,cls="")=>`<i class="cbg ${cls}" ${c!=null?`style="background:${CB_COLS[c][1]}" aria-label="${CB_COLS[c][0]}"`:""}></i>`;
-  const render=()=>{board.innerHTML=rows.map(r=>`<div class="cbr">${r.g.map(c=>peg(c)).join("")}<span class="cbk">${"⚫".repeat(r.b)}${"⚪".repeat(r.w)}${"·".repeat(LEN-r.b-r.w)}</span></div>`).join("")+
+  const peg=(c,cls="",mark="")=>`<i class="cbg ${cls}" ${c!=null?`style="background:${CB_COLS[c][1]}" aria-label="${CB_COLS[c][0]}${mark==="hit"?", right spot":mark==="near"?", wrong spot":""}"`:""}>${mark==="hit"?"<b>✓</b>":mark==="near"?"<b>●</b>":""}</i>`;
+  const render=()=>{board.innerHTML=rows.map(r=>`<div class="cbr">${r.g.map((c,i)=>peg(c,r.m[i],r.m[i])).join("")}<span class="cbk">${"⚫".repeat(r.b)}${"⚪".repeat(r.w)}${"·".repeat(LEN-r.b-r.w)}</span></div>`).join("")+
     (rows.length<TRIES&&api.live()?`<div class="cbr now">${[...Array(LEN)].map((_,i)=>`<button class="cbslot" data-i="${i}">${peg(cur[i]??null,cur[i]==null?"empty":"")}</button>`).join("")}<span class="cbk"></span></div>`:"");
     board.querySelectorAll(".cbslot").forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(cur[i]!=null){cur.splice(i,1);render()}});board.scrollTop=board.scrollHeight};
-  CB_COLS.forEach(([n,h],k)=>{const b=el("button","cbc");b.style.background=h;b.setAttribute("aria-label",n);b.onclick=()=>{if(!api.live()||cur.length>=LEN)return;cur.push(k);blip(500+k*60,.05);render()};pal.append(b)});
+  CB_COLS.forEach(([n,h],k)=>{const b=el("button","cbc");b.style.background=h;b.setAttribute("aria-label",n);b.onclick=()=>{if(!api.live()||cur.length>=LEN)return;if(cur.includes(k)){toast("Each color only once");return}cur.push(k);blip(500+k*60,.05);render()};pal.append(b)});
   const go=el("button","bigbtn","Check");go.onclick=()=>{
     if(!api.live())return; if(cur.length<LEN){toast("Pick 4 colors");return}
     let b=0,w=0;const cl={},gl={};cur.forEach((c,i)=>{if(c===code[i])b++;else{cl[code[i]]=(cl[code[i]]||0)+1;gl[c]=(gl[c]||0)+1}});for(const c in gl)w+=Math.min(gl[c],cl[c]||0);
-    rows.push({g:cur,b,w});cur=[];stat();blip(b===LEN?880:420,.1,"triangle");
+    rows.push({g:cur,b,w,m:cur.map((c,i)=>c===code[i]?"hit":code.includes(c)?"near":"")});cur=[];stat();blip(b===LEN?880:420,.1,"triangle");
     if(b===LEN){render();return api.win(600)}
     if(rows.length>=TRIES){render();return api.lose("Out of tries. The code was:",()=>{board.insertAdjacentHTML("beforeend",`<div class="cbr ans">${code.map(c=>peg(c)).join("")}<span class="cbk">the code</span></div>`)})}
     render()};
