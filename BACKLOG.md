@@ -230,7 +230,7 @@ The read-aloud voice talks too fast and sounds a bit robotic. Make it slower and
 **Changes**
 - **Slow it down:** about 0.7 for Little and 0.8 for Big, with a slightly higher pitch (about 1.15) for a warmer sound.
 - **Natural pauses:** read one sentence at a time, with a short pause between sentences (longer between story pages), instead of one long run.
-- **Better voices first:** prefer the iPad's higher-quality **Enhanced** and **Premium** voices when they're installed (for example Ava, Zoe or Evan), and skip the novelty and robotic voices.
+- **Better voices first:** prefer the iPad's higher-quality **Enhanced** and **Premium** voices when they're installed (for example Ava, Zoe or Samantha), and skip the novelty and robotic voices.
 - **Grown-up voice settings:** a small settings panel to pick the voice, choose a speed (Slow, Normal or Faster) and tap **Test** to hear "Hi Violet! Let's play!" Saved per device.
 - **Setup tip in the app:** if only basic voices are found, show grown-ups how to download a better one on the iPad: **Settings → Accessibility → Spoken Content → Voices → English**, then download an Enhanced or Premium voice. It's free and works offline.
 
@@ -244,7 +244,7 @@ The read-aloud voice talks too fast and sounds a bit robotic. Make it slower and
 - [ ] Story read-aloud word highlighting still lines up with the slower speech
 
 **🔍 Decisions needed**
-- Preferred voice style: female, male, or let each grown-up choose per device?
+- ~~Preferred voice style~~ → decided: **female voice** by default (Ava, Zoe, Samantha, Allison). Male voices are left out of the automatic pick; grown-ups can still choose another voice in settings.
 - Should we do the recorded-voice option for the most common phrases now, or later?
 
 ---
