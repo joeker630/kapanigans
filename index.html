@@ -741,6 +741,12 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
 .cbk{min-width:96px;font-size:15px;letter-spacing:1px}
 .cbp{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;align-items:center}
 .cbc{width:52px;height:52px;border-radius:50%;border:4px solid #fff;box-shadow:0 3px 0 var(--sky-deep)}
+.cdnote{font-size:15px;color:#FFE7A3}
+.cdpop{position:fixed;inset:0;z-index:48;display:grid;place-items:center;background:rgba(43,33,64,.35)}
+.cdcard{background:var(--paper);border-radius:26px;padding:20px 26px;display:flex;flex-direction:column;align-items:center;gap:6px;box-shadow:0 8px 0 var(--sky-deep);max-width:min(360px,calc(100% - 32px));text-align:center}
+.cdcard p{margin:0}.cdcard b{font-family:var(--display);font-size:22px}
+.cdring{--p:0deg;width:110px;height:110px;border-radius:50%;background:conic-gradient(var(--quinn) var(--p),#E6E0F0 0);display:grid;place-items:center}
+.cdring span{width:84px;height:84px;border-radius:50%;background:var(--paper);display:grid;place-items:center;font-family:var(--display);font-size:24px}
 </style>
 
 </head>
@@ -3824,9 +3830,33 @@ function puzzleFor(action){
 }
 function farmPuzzle(action,o,done){
   if(tk) return false;
-  openTask({type:puzzleFor(action),lvl:isGrown()?"grown":lvl(),chore:action,title:o.title,ctx:Object.assign({item:o.item,pic:o.pic},o.ctx||{}),reward:o.reward,onWin:done,onQuit:o.onQuit});
+  const grown=isGrown(), key=cdKey(action,o);
+  if(grown&&cdLeft(key)>0){showCooldown(o.title,key);return false} // lost this one recently: it's resting
+  openTask({type:puzzleFor(action),lvl:grown?"grown":lvl(),chore:action,title:o.title,ctx:Object.assign({item:o.item,pic:o.pic},o.ctx||{}),reward:o.reward,onWin:done,onQuit:o.onQuit,cd:grown?key:null});
   return true;
 }
+/* ---- cooldown after a grown-up loses (or walks away from) a game ----
+   The same chore can't be tried again until it's over. Pass o.key to farmPuzzle to name one specific
+   animal or plot; otherwise the chore's title is the key ("🥛 Milk the cow").
+   farmCooldown(action,o) gives the ms left, for drawing a ring on the farm map. Kept per person on the device. */
+const LOSE_COOLDOWN_MS=3*60e3;
+const cdKey=(action,o)=>o&&o.key?String(o.key):action+"|"+((o&&o.title)||"");
+function cdAll(){try{return JSON.parse(load("kp.cd."+me)||"{}")||{}}catch(e){return {}}}
+function cdLeft(key){return Math.max(0,(+cdAll()[key]||0)-Date.now())}
+function cdStart(key){if(!key||!me)return;const m=cdAll(),now=Date.now();for(const k in m)if(m[k]<now)delete m[k];m[key]=now+LOSE_COOLDOWN_MS;store("kp.cd."+me,JSON.stringify(m))}
+function farmCooldown(action,o){return isGrown()?cdLeft(cdKey(action,o||{})):0}
+const mmss=ms=>{const s=Math.ceil(ms/1000);return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")};
+function showCooldown(title,key){
+  const old=$(".cdpop");if(old)old.remove();
+  const p=el("div","cdpop",`<div class="cdcard"><div class="cdring"><span></span></div><b>${esc(title||"This chore")}</b><p>is resting after a lost game.</p><p class="cdt"></p><button class="bigbtn">OK</button></div>`);
+  document.body.append(p); blip(300,.12,"triangle",.08);
+  const tick=()=>{const l=cdLeft(key);if(!p.isConnected)return clearInterval(iv);if(l<=0){p.remove();return clearInterval(iv)}
+    p.querySelector(".cdt").textContent=`Try again in ${mmss(l)}`;p.querySelector(".cdring").style.setProperty("--p",(1-l/LOSE_COOLDOWN_MS)*360+"deg");p.querySelector(".cdring span").textContent=mmss(l)};
+  const iv=setInterval(tick,250); tick();
+  p.onclick=e=>{if(e.target===p||e.target.closest("button")){p.remove();clearInterval(iv)}};
+  setTimeout(()=>{if(p.isConnected){p.remove();clearInterval(iv)}},8000);
+}
+if(/[?&]farmlocal\b/.test(location.search))window.__puzzles={farmPuzzle,cdLeft,farmCooldown};
 
 /* ---- tasks ---- */
 const TASK_TYPES=["count","letters","color","jigsaw","build","trace","pattern","memory","money"];
@@ -3878,11 +3908,11 @@ function taskApi(A){
       if(tk!==my||my.won) return; my.won=true; taskStat(false,my); my.statted=true;
       if(reveal) try{reveal()}catch(e){}
       blip(160,.35,"sawtooth",.1);
-      const d=el("div","tdone lost peek",`<div class="lostcard"><h2>😵 You lost</h2><p>${esc(reason)}</p><div class="tbtns"></div></div>`);
-      const again=el("button","bigbtn","Try again"),back=el("button","ghost","Back to the farm");
-      again.onclick=()=>{if(tk!==my)return;Object.assign(my,{won:false,statted:false,wrong:0,hinted:false,t0:Date.now(),store:{}});nextRound()};
+      if(my.cd) cdStart(my.cd); my.cdDone=true;
+      const d=el("div","tdone lost peek",`<div class="lostcard"><h2>😵 You lost</h2><p>${esc(reason)}</p>${my.cd?`<p class="cdnote">⏳ This chore rests for ${Math.round(LOSE_COOLDOWN_MS/60000)} minutes before you can try again.</p>`:""}<div class="tbtns"></div></div>`);
+      const back=el("button","bigbtn","Back to the farm");
       back.onclick=()=>{if(tk===my)closeTask(true)};
-      d.querySelector(".tbtns").append(again,back); A.append(d);
+      d.querySelector(".tbtns").append(back); A.append(d);
     },
     win(wait=0,quiet=false){
       if(tk!==my||my.won) return; my.won=true;
@@ -3923,7 +3953,7 @@ function closeTask(quit){
   if(!tk) return; const my=tk; tk=null;
   for(const f of my.fx.splice(0)) try{f()}catch(e){}
   $("#task").hidden=true; $("#tArea").innerHTML="";
-  if(quit){if(!my.statted)taskStat(false,my);my.onQuit&&my.onQuit()}
+  if(quit){if(!my.statted)taskStat(false,my);if(my.cd&&!my.cdDone)cdStart(my.cd);my.onQuit&&my.onQuit()} // walking away from a grown-up game counts as a loss
 }
 function taskStat(done,my){
   if(!my) return;
