@@ -216,6 +216,71 @@ def isobatch(path, a):
     print(f"batch done: {done} made")
 
 
+AV_STYLE = ISO.replace("plain solid flat light grey background", "plain solid flat medium grey background")
+AV_ZONES = {"head": (0, .56), "torso": (.45, .88), "feet": (.80, 1.0), "face": (.15, .56), "all": (0, 1)}
+AV_FRAME = 320
+
+
+def _layer(raw, base_raw, zone, white):
+    """Pull one dress-up part out of an edit of the base body by diffing, kept full-frame so layers stack."""
+    import numpy as np
+    from PIL import Image
+    from scipy.ndimage import binary_opening, binary_closing, binary_fill_holes, binary_dilation, label, gaussian_filter
+    E = np.array(Image.open(io.BytesIO(raw)).convert("RGB")).astype(int)
+    B = np.array(Image.open(io.BytesIO(base_raw)).convert("RGB")).astype(int)
+    bgc = np.median(np.concatenate([E[0], E[-1], E[:, 0], E[:, -1]]), axis=0)
+    notbg = np.abs(E - bgc).max(axis=2) > 16
+    m = (gaussian_filter(np.abs(E - B).max(axis=2).astype(float), 2) > 25) & notbg
+    bnb = np.abs(B - bgc).max(axis=2) > 16
+    ys = np.where(bnb.any(axis=1))[0]; top, bot = ys.min(), ys.max(); z0, z1 = AV_ZONES[zone]
+    zm = np.zeros_like(m); zm[int(top + (bot - top) * z0):int(top + (bot - top) * z1) + 1] = True; m &= zm
+    if white:  # tintable parts: only near-white pixels (+ their outline), never skin or shirt
+        mx, mn = E.max(axis=2), E.min(axis=2)
+        wh = (mn > 165) & (mx - mn < 40)
+        m &= binary_dilation(wh & m, iterations=3)
+    m = binary_opening(m, iterations=5); m = binary_closing(m, iterations=3); m = binary_fill_holes(m)
+    lab, k = label(m)
+    if k:
+        sz = np.bincount(lab.ravel()); sz[0] = 0; m = (sz > sz.max() * .08)[lab]
+    im = Image.fromarray(np.dstack([E, m * 255]).astype("uint8"), "RGBA")
+    return im
+
+
+def _frame(im):
+    from PIL import Image
+    im = im.resize((AV_FRAME, AV_FRAME), Image.LANCZOS)
+    buf = io.BytesIO(); im.save(buf, "WEBP", quality=85, method=6); return buf.getvalue()
+
+
+def avatar(path, a):
+    """Avatar parts batch. {"base": prompt, "items": {"hair/pigtails": {"prompt":..., "zone":"head", "white":true}}}
+    Every layer is saved full-frame (same size, same position) in art/avatar/ so the game just stacks them."""
+    from PIL import Image
+    spec = json.loads(Path(path).read_text())
+    rd = CFG / "raw" / "avatar"; rd.mkdir(parents=True, exist_ok=True)
+    bp = rd / "base.jpg"
+    if not bp.exists():
+        bp.write_bytes(generate(spec["base"], "klein", None, spec.get("seed", 31), AV_STYLE))
+    base_raw = bp.read_bytes()
+    if not (ART / "avatar/base.webp").exists():
+        from rembg import remove, new_session
+        cut = remove(Image.open(io.BytesIO(base_raw)).convert("RGBA"), session=new_session("isnet-general-use"))
+        save("avatar/base", spec["base"], "klein", _frame(cut), (AV_FRAME, AV_FRAME), False)
+        print("✓ art/avatar/base.webp")
+    made = 0
+    for name, it in spec["items"].items():
+        if (ART / f"avatar/{name}.webp").exists(): continue
+        t = time.time()
+        raw = generate("Edit the reference image: " + it["prompt"] + ". Change nothing else" + SAME,
+                       "klein", str(bp), it.get("seed", spec.get("seed", 31)), AV_STYLE)
+        (rd / name.replace("/", "_")).with_suffix(".jpg").write_bytes(raw)
+        lay = _layer(raw, base_raw, it.get("zone", "head"), it.get("white", False))
+        save(f"avatar/{name}", it["prompt"], "klein", _frame(lay), (AV_FRAME, AV_FRAME), False)
+        made += 1
+        print(f"✓ art/avatar/{name}.webp  {time.time()-t:.0f}s")
+    print(f"avatar batch done: {made} made")
+
+
 def poses(name, desc, a):
     """art/iso/<name>/<pose>.webp: base pose first, the rest drawn from it as a reference."""
     kind = "crop" if a.crop else "animal"
@@ -255,7 +320,7 @@ def sheet(folder, out=None):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("cmd", choices=["one", "batch", "isobatch", "poses", "sheet", "usage"])
+    ap.add_argument("cmd", choices=["one", "batch", "isobatch", "avatar", "poses", "sheet", "usage"])
     ap.add_argument("args", nargs="*")
     ap.add_argument("--model", default="klein", choices=MODELS)
     ap.add_argument("--ref"); ap.add_argument("--seed", type=int)
@@ -274,6 +339,8 @@ def main():
         a.keepbg = a.keepbg or spec.get("options", {}).get("keepbg", False)
         for name, prompt in spec["items"].items():
             make_one(name, prompt, a)
+    elif a.cmd == "avatar":
+        avatar(a.args[0], a)
     elif a.cmd == "isobatch":
         isobatch(a.args[0], a)
     elif a.cmd == "poses":

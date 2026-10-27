@@ -1,4 +1,247 @@
 {
+ "avatar/base": {
+  "file": "art/avatar/base.webp",
+  "w": 320,
+  "h": 320,
+  "prompt": "a cute chibi kid farmer character with a big round head and a small body, completely bald smooth round head with no hair, simple happy face with dot eyes and a small smile, light peach skin, wearing a plain light grey t-shirt and plain light grey shorts, small brown boots, arms relaxed at the sides, standing, body facing toward the bottom left",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-27"
+ },
+ "avatar/extra/bow": {
+  "file": "art/avatar/extra/bow.webp",
+  "w": 320,
+  "h": 320,
+  "prompt": "add a big pure white hair bow on top of the character's head",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-27"
+ },
+ "avatar/extra/glasses": {
+  "file": "art/avatar/extra/glasses.webp",
+  "w": 320,
+  "h": 320,
+  "prompt": "add round black glasses on the character's face",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-27"
+ },
+ "avatar/feet/rainboots": {
+  "file": "art/avatar/feet/rainboots.webp",
+  "w": 320,
+  "h": 320,
+  "prompt": "change the boots to tall pure white rain boots",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-27"
+ },
+ "avatar/hair/bob": {
+  "file": "art/avatar/hair/bob.webp",
+  "w": 320,
+  "h": 320,
+  "prompt": "give the character a chin-length pure white bob haircut with bangs",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-27"
+ },
+ "avatar/hair/braids": {
+  "file": "art/avatar/hair/braids.webp",
+  "w": 320,
+  "h": 320,
+  "prompt": "give the character pure white hair covering the whole top of the head with a center part, and two long braids hanging down at the sides",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-27"
+ },
+ "avatar/hair/bun": {
+  "file": "art/avatar/hair/bun.webp",
+  "w": 320,
+  "h": 320,
+  "prompt": "give the character pure white hair covering the top of the head, pulled up into one big round bun on top",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-27"
+ },
+ "avatar/hair/buzz": {
+  "file": "art/avatar/hair/buzz.webp",
+  "w": 320,
+  "h": 320,
+  "prompt": "give the character a very short pure white buzz cut",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-27"
+ },
+ "avatar/hair/curly": {
+  "file": "art/avatar/hair/curly.webp",
+  "w": 320,
+  "h": 320,
+  "prompt": "give the character a big round puff of curly pure white hair",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-27"
+ },
+ "avatar/hair/long": {
+  "file": "art/avatar/hair/long.webp",
+  "w": 320,
+  "h": 320,
+  "prompt": "give the character long straight pure white hair down past the shoulders",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-27"
+ },
+ "avatar/hair/pigtails": {
+  "file": "art/avatar/hair/pigtails.webp",
+  "w": 320,
+  "h": 320,
+  "prompt": "give the character two pigtails of pure white hair with bangs",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-27"
+ },
+ "avatar/hair/ponytail": {
+  "file": "art/avatar/hair/ponytail.webp",
+  "w": 320,
+  "h": 320,
+  "prompt": "give the character pure white hair with bangs on the forehead and one ponytail sticking out behind the head; the face stays fully visible",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-27"
+ },
+ "avatar/hair/short": {
+  "file": "art/avatar/hair/short.webp",
+  "w": 320,
+  "h": 320,
+  "prompt": "give the character short neat pure white hair",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-27"
+ },
+ "avatar/hair/spiky": {
+  "file": "art/avatar/hair/spiky.webp",
+  "w": 320,
+  "h": 320,
+  "prompt": "give the character short spiky pure white hair",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-27"
+ },
+ "avatar/hat/beanie": {
+  "file": "art/avatar/hat/beanie.webp",
+  "w": 320,
+  "h": 320,
+  "prompt": "add a pure white knitted beanie hat on the character's head",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-27"
+ },
+ "avatar/hat/bonnet": {
+  "file": "art/avatar/hat/bonnet.webp",
+  "w": 320,
+  "h": 320,
+  "prompt": "add a pure white sun bonnet on the character's head",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-27"
+ },
+ "avatar/hat/cap": {
+  "file": "art/avatar/hat/cap.webp",
+  "w": 320,
+  "h": 320,
+  "prompt": "add a pure white baseball cap on the character's head",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-27"
+ },
+ "avatar/hat/cowboy": {
+  "file": "art/avatar/hat/cowboy.webp",
+  "w": 320,
+  "h": 320,
+  "prompt": "add a brown cowboy hat on the character's head",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-27"
+ },
+ "avatar/hat/crown": {
+  "file": "art/avatar/hat/crown.webp",
+  "w": 320,
+  "h": 320,
+  "prompt": "add a small shiny gold crown on the character's head",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-27"
+ },
+ "avatar/hat/flowercrown": {
+  "file": "art/avatar/hat/flowercrown.webp",
+  "w": 320,
+  "h": 320,
+  "prompt": "add a crown of small colorful flowers on the character's head",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-27"
+ },
+ "avatar/hat/straw": {
+  "file": "art/avatar/hat/straw.webp",
+  "w": 320,
+  "h": 320,
+  "prompt": "add a round straw farmer hat on the character's head",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-27"
+ },
+ "avatar/outfit/apron": {
+  "file": "art/avatar/outfit/apron.webp",
+  "w": 320,
+  "h": 320,
+  "prompt": "put a pure white apron over the character's clothes",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-27"
+ },
+ "avatar/outfit/bandana": {
+  "file": "art/avatar/outfit/bandana.webp",
+  "w": 320,
+  "h": 320,
+  "prompt": "tie a pure white bandana around the character's neck",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-27"
+ },
+ "avatar/outfit/dress": {
+  "file": "art/avatar/outfit/dress.webp",
+  "w": 320,
+  "h": 320,
+  "prompt": "dress the character in a pure white farm dress with puffy short sleeves",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-27"
+ },
+ "avatar/outfit/overalls": {
+  "file": "art/avatar/outfit/overalls.webp",
+  "w": 320,
+  "h": 320,
+  "prompt": "dress the character in pure white denim farmer overalls: a bib on the chest, two shoulder straps over the shoulders, a front pocket and long legs down to the boots",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-27"
+ },
+ "avatar/outfit/raincoat": {
+  "file": "art/avatar/outfit/raincoat.webp",
+  "w": 320,
+  "h": 320,
+  "prompt": "dress the character in a long pure white raincoat with big buttons, covering the whole body down to the knees, both arms in white sleeves",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-27"
+ },
+ "avatar/outfit/shirt": {
+  "file": "art/avatar/outfit/shirt.webp",
+  "w": 320,
+  "h": 320,
+  "prompt": "dress the character in a pure white button-up shirt with rolled sleeves and pure white pants",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-27"
+ },
  "farm/carrot": {
   "file": "art/farm/carrot.webp",
   "w": 275,

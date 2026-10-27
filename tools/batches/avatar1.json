@@ -1,0 +1,137 @@
+{
+ "about": "Avatar builder parts (backlog #10), first set. Run: python3 tools/genart.py avatar tools/batches/avatar1.json  (skips anything already made). White parts are tinted in the game.",
+ "base": "a cute chibi kid farmer character with a big round head and a small body, completely bald smooth round head with no hair, simple happy face with dot eyes and a small smile, light peach skin, wearing a plain light grey t-shirt and plain light grey shorts, small brown boots, arms relaxed at the sides, standing, body facing toward the bottom left",
+ "seed": 31,
+ "items": {
+  "hair/pigtails": {
+   "prompt": "give the character two pigtails of pure white hair with bangs",
+   "zone": "head",
+   "white": true
+  },
+  "hair/short": {
+   "prompt": "give the character short neat pure white hair",
+   "zone": "head",
+   "white": true
+  },
+  "hair/curly": {
+   "prompt": "give the character a big round puff of curly pure white hair",
+   "zone": "head",
+   "white": true
+  },
+  "hair/ponytail": {
+   "prompt": "give the character pure white hair with bangs on the forehead and one ponytail sticking out behind the head; the face stays fully visible",
+   "zone": "head",
+   "white": true,
+   "seed": 57
+  },
+  "hair/bun": {
+   "prompt": "give the character pure white hair covering the top of the head, pulled up into one big round bun on top",
+   "zone": "head",
+   "white": true,
+   "seed": 57
+  },
+  "hair/braids": {
+   "prompt": "give the character pure white hair covering the whole top of the head with a center part, and two long braids hanging down at the sides",
+   "zone": "head",
+   "white": true,
+   "seed": 57
+  },
+  "hair/long": {
+   "prompt": "give the character long straight pure white hair down past the shoulders",
+   "zone": "head",
+   "white": true
+  },
+  "hair/spiky": {
+   "prompt": "give the character short spiky pure white hair",
+   "zone": "head",
+   "white": true
+  },
+  "hair/bob": {
+   "prompt": "give the character a chin-length pure white bob haircut with bangs",
+   "zone": "head",
+   "white": true
+  },
+  "hair/buzz": {
+   "prompt": "give the character a very short pure white buzz cut",
+   "zone": "head",
+   "white": true
+  },
+  "hat/straw": {
+   "prompt": "add a round straw farmer hat on the character's head",
+   "zone": "head"
+  },
+  "hat/cap": {
+   "prompt": "add a pure white baseball cap on the character's head",
+   "zone": "head",
+   "white": true
+  },
+  "hat/bonnet": {
+   "prompt": "add a pure white sun bonnet on the character's head",
+   "zone": "head",
+   "white": true
+  },
+  "hat/flowercrown": {
+   "prompt": "add a crown of small colorful flowers on the character's head",
+   "zone": "head"
+  },
+  "hat/beanie": {
+   "prompt": "add a pure white knitted beanie hat on the character's head",
+   "zone": "head",
+   "white": true
+  },
+  "hat/cowboy": {
+   "prompt": "add a brown cowboy hat on the character's head",
+   "zone": "head"
+  },
+  "hat/crown": {
+   "prompt": "add a small shiny gold crown on the character's head",
+   "zone": "head"
+  },
+  "outfit/overalls": {
+   "prompt": "dress the character in pure white denim farmer overalls: a bib on the chest, two shoulder straps over the shoulders, a front pocket and long legs down to the boots",
+   "zone": "torso",
+   "white": true,
+   "seed": 57
+  },
+  "outfit/dress": {
+   "prompt": "dress the character in a pure white farm dress with puffy short sleeves",
+   "zone": "torso",
+   "white": true
+  },
+  "outfit/shirt": {
+   "prompt": "dress the character in a pure white button-up shirt with rolled sleeves and pure white pants",
+   "zone": "torso",
+   "white": true
+  },
+  "outfit/apron": {
+   "prompt": "put a pure white apron over the character's clothes",
+   "zone": "torso",
+   "white": true
+  },
+  "outfit/bandana": {
+   "prompt": "tie a pure white bandana around the character's neck",
+   "zone": "torso",
+   "white": true
+  },
+  "outfit/raincoat": {
+   "prompt": "dress the character in a long pure white raincoat with big buttons, covering the whole body down to the knees, both arms in white sleeves",
+   "zone": "torso",
+   "white": true,
+   "seed": 57
+  },
+  "feet/rainboots": {
+   "prompt": "change the boots to tall pure white rain boots",
+   "zone": "feet",
+   "white": true
+  },
+  "extra/glasses": {
+   "prompt": "add round black glasses on the character's face",
+   "zone": "face"
+  },
+  "extra/bow": {
+   "prompt": "add a big pure white hair bow on top of the character's head",
+   "zone": "head",
+   "white": true
+  }
+ }
+}
