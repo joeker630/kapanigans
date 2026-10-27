@@ -767,13 +767,14 @@ Bedtime Story (#1) works, but the pictures are plain, kids can only fill in blan
 - [ ] Little players can make a whole story without reading or typing (picture choices and recorded voice)
 - [ ] At least 20 moves, path drawing, 5 feelings and 6 scene effects
 - [ ] Drafts save and reopen on any device
+- [ ] Typed and spoken words pass through the kid-safe word filter
 - [ ] Stories made from scratch send, unwrap and replay just like template stories
 - [ ] Smooth playback on the iPad and the Fire tablet
 
 **🔍 Decisions needed**
-- Should kids be able to share a story they made as a **new template** for others to fill in?
-- Should there be a "make it together" mode where two players build the same story at once (live, like Color Together)?
-- Typed words go through a simple **kid-safe word filter**?
+- ~~Share as a template~~ → decided: **no**. Stories made from scratch are gifts only.
+- ~~Make it together~~ → decided: **no**. One author per story (a grown-up can still help on the same draft).
+- ~~Kid-safe word filter~~ → decided: **yes**. Typed and voice-to-text words are checked against a kid-safe list; blocked words are swapped for a friendly word ("silly") with no scolding, and the filter also applies to typed Inbox notes.
 
 ---
 
