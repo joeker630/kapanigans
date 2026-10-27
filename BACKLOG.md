@@ -37,7 +37,7 @@ A fill-in-the-blanks (mad-libs style) bedtime story that one child makes as a **
 **🔍 Decisions needed**
 - ~~Where gifts are stored~~ → decided: Firebase (see Shared groundwork). Gifts land in the recipient's **Inbox** (#4).
 - ~~Can grown-ups send stories too?~~ → yes, already works: every persona can make and send stories.
-- Should the author be able to record their own voice instead of the built-in reader?
+- ~~Record your own voice?~~ → ✅ built: after picking moves, choose "I'll read it!" and record each page (up to 30 s). Pages you skip use the reading voice. The reader shows "🎤 read by …".
 
 ---
 
@@ -60,7 +60,7 @@ Add grown-up players to the **Who's playing?** screen.
 - [x] Bear friend and Fox friend stay available
 
 **🔍 Decisions needed**
-- Avatars: shipped with emoji (🧔 Joe, 👩 Layla, 👩‍🦰 Lisa, 🧑 Parker, 🍎 Apple G, 🧢 Uncle Jeff, 👵 Gramma Mia, 👴 Grandpa George). Swap any of them for a photo or drawing later?
+- ~~Photos instead of emoji~~ → ✅ built: Grown-ups › Photos lets you choose a photo or snap one from the live camera for each person; it replaces their emoji everywhere until custom avatars (#10) arrive.
 - Should grown-ups get a separate "grown-up level" later, such as with hints turned off or as a game host?
 
 ---
@@ -356,7 +356,7 @@ Every person (kids, friends and grown-ups) gets an **Inbox** for messages the fa
 
 **🔍 Decisions needed**
 - Should kids be able to message only family personas, or Bear friend and Fox friend too? *(For now: anyone can message anyone; "Everyone" goes to family only, not Bear or Fox friend.)*
-- Should grown-ups see every inbox (a parent view), or only their own? *(For now: only their own.)*
+- ~~Parent view~~ → ✅ built: Grown-ups › Inboxes › 👀 Open shows any person's messages without marking them read.
 
 ---
 
@@ -449,7 +449,7 @@ The read-aloud voice talks too fast and sounds a bit robotic. Make it slower and
 
 **🔍 Decisions needed**
 - ~~Preferred voice style~~ → decided: **female voice** by default (Ava, Zoe, Samantha, Allison). Male voices are left out of the automatic pick; grown-ups can still choose another voice in settings.
-- Should we do the recorded-voice option for the most common phrases now, or later?
+- ~~Recorded voices for common phrases~~ → ✅ built: Grown-ups › Voice › Family voice clips. Record "Hi Violet!", "Let's color!", "Color on your part!", "You did it together!" and more; the game plays them instead of the reading voice.
 
 ---
 
@@ -639,11 +639,13 @@ Add a button to the video chat bubble to **flip between the iPad's front and bac
 
 **🔍 Decisions needed**
 - Which Fire tablet model is it (for example Fire HD 8 or Fire HD 10)? Is it running Silk, or is Chrome installed?
-- Should there also be a quick "Show it!" button for Little players that flips to the back camera, then flips back automatically after about 20 seconds?
+- ~~"Show it!" for Little players~~ → ✅ built: big 👀 Show it! button (Violet level, devices with two cameras) flips to the back camera and back after 20 seconds.
 
 ---
 
 ## Shared groundwork (needed by #1, #3, #4, #5 and #8)
+
+- ⚠️ **One shared script:** Farmstand and the rest of the game live in the same `<script>`, so two `function` declarations with the same name silently replace each other (this broke story and inbox sending once: `sendGift`, `deliver`). Use unique names; a quick check is to list duplicate `function` names before pushing.
 
 - ✅ **Art kit: decided on Cloudflare Workers AI (free) + `tools/genart.py`.** Claude generates art on request and pushes it to `art/` in this repo (served by GitHub Pages).
   - Model: FLUX.2 klein 4B (polished 3D look, about 85 images a day free); FLUX.1 schnell for quick drafts (about 150 a day). Free allowance resets at 7 PM Central.
@@ -664,6 +666,7 @@ Add a button to the video chat bubble to **flip between the iPad's front and bac
 
 ## Done
 
+- ✅ Own-voice stories (#1), family voice clips (#7), Show it! (#12), parent inbox view (#4), photo avatars (#2)
 - ✅ One device per person (#11) and front/back camera flip (#12)
 - ✅ Release 1 (Grown-ups corner): hold-to-open grown-ups area, voice settings (#7), 4-character family codes (#6), clear any inbox
 - ✅ Release 2: usage tracking, grown-up reports dashboard and weekly Inbox report (#8)
