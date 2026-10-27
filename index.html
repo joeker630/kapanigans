@@ -521,7 +521,7 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
 .vtiles{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
 .vtiles .vtile{width:clamp(110px,17vw,190px)}
 .vtiles .vtile.mine{width:clamp(70px,10vw,110px)}
-.vid.min .vtiles{display:none}
+.vid.min .vtiles{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none} /* minimized: tiles keep playing so you still hear everyone */
 .invite{position:fixed;left:50%;top:calc(12px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:55;background:var(--ink);color:#fff;border-radius:24px;padding:14px 18px;display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center;font-family:var(--display);font-size:20px;width:min(520px,calc(100% - 32px));box-shadow:0 10px 30px rgba(0,0,0,.3)}
 
 /* landscape (computer, iPad sideways, phone sideways): tools in a slim left column, picture gets everything else */
@@ -1964,10 +1964,8 @@ function renderVideoUI(){
   box.classList.toggle("min",vid.min); box.classList.toggle("ingame",screen==="game");
   if(screen!=="game"&&box.classList.contains("dock")){box.classList.remove("dock");if(!box.dataset.dragged)box.style.left="";const tr=$("#tray");if(tr)tr.style.marginBottom=""}
   const tiles=$("#vTiles"); tiles.innerHTML="";
-  if(!vid.min){
-    for(const p of videoPeers()) if(vid.streams.has(p.peer)) tiles.append(tileFor(p,false));
-    const mine=tileFor({peer:myPeer,presence:{kid:me}},true);mine.classList.add("mine");tiles.append(mine);
-  }
+  for(const p of videoPeers()) if(vid.streams.has(p.peer)) tiles.append(tileFor(p,false));
+  if(!vid.min){const mine=tileFor({peer:myPeer,presence:{kid:me}},true);mine.classList.add("mine");tiles.append(mine)}
   $("#vMic").textContent=vid.mic?"🎤":"🔇"; $("#vMic").classList.toggle("off",!vid.mic);
   $("#vCam").classList.toggle("off",!vid.cam);
   $("#vMin").textContent=vid.min?"📹":"➖";
