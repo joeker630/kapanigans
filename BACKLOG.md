@@ -890,6 +890,7 @@ Turn photos of family members into **high-resolution cartoon characters** (in th
   - "Fighting" is always playful (karate pose, pillow fight), never hurting anyone.
 - **The first approved likeness becomes the master reference** for that person's whole sheet, so every pose stays on model. The sheet is a private page for Joe; nothing goes in this repo.
 - Joe's sheet: master portrait and waving pose done; the other 39 images are drawn after the 7 PM allowance reset on Oct 27.
+- **Where the art is (for the game):** background-free cutouts in the family's private space at `families/<code>/art/family/<person>/<name>` = `{img: "data:image/webp;base64,…", w, h, kind: "master"|"pose"|"outfit", key, style: "storybook", t}`, about 35 KB each (768px). Names: `master`, `pose_<key>` and `outfit_<key>` from the lists above (for example `pose_run`, `outfit_pirate`). The game doesn't load this yet; read one person's folder only when needed (never the whole `art` tree). Joe's master and waving pose are uploaded; the rest follow tonight.
 
 **How it works**
 1. Joe adds **2–4 clear photos** per person into this chat (face forward, good light, one person per photo, no busy background). Photos are used only during generation and never saved in the repo.
