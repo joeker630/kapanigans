@@ -1,0 +1,9 @@
+{"options": {"model": "klein"},
+ "items": {
+  "farm/hen": "a plump friendly red hen with a cream belly, big friendly eyes",
+  "farm/cow": "a happy black and white dairy cow standing, big friendly eyes",
+  "farm/pig": "a cheerful pink piglet with a curly tail, big friendly eyes",
+  "farm/sheep": "a fluffy white sheep with a smiling face and big friendly eyes",
+  "farm/pumpkin": "a big round orange pumpkin with a short curly green stem, plain vegetable",
+  "farm/carrot": "a single bright orange carrot with leafy green top, plain vegetable"
+ }}

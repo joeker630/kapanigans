@@ -1,0 +1,56 @@
+{
+ "farm/carrot": {
+  "file": "art/farm/carrot.webp",
+  "w": 275,
+  "h": 512,
+  "prompt": "a single bright orange carrot with leafy green top, plain vegetable",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-27"
+ },
+ "farm/cow": {
+  "file": "art/farm/cow.webp",
+  "w": 336,
+  "h": 512,
+  "prompt": "a happy black and white dairy cow standing",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-27"
+ },
+ "farm/hen": {
+  "file": "art/farm/hen.webp",
+  "w": 354,
+  "h": 512,
+  "prompt": "a plump friendly red hen with a warm cream belly, big friendly eyes",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-27"
+ },
+ "farm/pig": {
+  "file": "art/farm/pig.webp",
+  "w": 497,
+  "h": 512,
+  "prompt": "a cheerful pink piglet with a curly tail",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-27"
+ },
+ "farm/pumpkin": {
+  "file": "art/farm/pumpkin.webp",
+  "w": 512,
+  "h": 483,
+  "prompt": "a big round orange pumpkin with a short curly green stem, plain vegetable",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-27"
+ },
+ "farm/sheep": {
+  "file": "art/farm/sheep.webp",
+  "w": 443,
+  "h": 512,
+  "prompt": "a fluffy white sheep with a smiling face",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-27"
+ }
+}

@@ -314,6 +314,14 @@ Track how much each player uses Kapanigans and how they're doing on puzzles and 
 
 ## Shared groundwork (needed by #1, #3, #4, #5 and #8)
 
+- ✅ **Art kit: decided on Cloudflare Workers AI (free) + `tools/genart.py`.** Claude generates art on request and pushes it to `art/` in this repo (served by GitHub Pages).
+  - Model: FLUX.2 klein 4B (polished 3D look, about 85 images a day free); FLUX.1 schnell for quick drafts (about 150 a day). Free allowance resets at 7 PM Central.
+  - One fixed house style is baked into every prompt; backgrounds are removed automatically and images saved as small WebP cutouts (about 25 KB), listed in `art/manifest.json`.
+  - Why not the others: the Gemini/Nano Banana API has no free image tier; Pollinations and Hugging Face give only small one-time or tiny balances; ChatGPT has no free API.
+  - Why not Firebase Storage: it needs the paid Blaze plan. Game art lives in the repo; only images made *during play* (e.g. story pictures) go in the Realtime Database under the family's code (`--firebase CODE`).
+  - ✅ First batch: farm animals and crops (hen, cow, pig, sheep, pumpkin, carrot).
+  - Later: a small Cloudflare Worker so the game itself can generate pictures, with a kid-safe prompt wrapper.
+
 - ✅ **Saved data: decided on Firebase Realtime Database (free Spark plan).** No credit card, live updates to every device, works from GitHub Pages. Everything lives under `families/<family code>/`, so the family code is the key (no passwords).
   - Why not the others: Supabase's free plan pauses projects after a week without use, and Firebase *Storage* (for files) now needs a paid plan, so voice clips and drawings are saved as small compressed data inside the database instead.
   - ✅ Firebase project `kapanigans` is connected. Rules only allow reading and writing under `families/<code>` (codes of 6+ characters); everything else is denied.
