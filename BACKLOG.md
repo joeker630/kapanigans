@@ -263,7 +263,52 @@ The read-aloud voice talks too fast and sounds a bit robotic. Make it slower and
 
 ---
 
-## Shared groundwork (needed by #1, #3, #4 and #5)
+## 8. 🆕 Grown-up progress and usage dashboard
+
+Track how much each player uses Kapanigans and how they're doing on puzzles and tasks, so grown-ups can see where each kid is thriving or stuck.
+
+**What gets tracked (per persona)**
+- **Usage:** sessions, time played per day and week, time in each game, time of day, and which device.
+- **Farm time:** minutes used of the daily 30, and when the farm reopens.
+- **Puzzles and tasks** (Farmstand chores, Bedtime Story steps, and future puzzles), one record per attempt:
+  - Which puzzle and level (Little or Big) and the skill it practices (colors, matching, counting, adding, patterns, reading words, sorting, making change)
+  - How long it took, from showing the puzzle to solving it
+  - Wrong tries before the right answer, and whether a hint was used
+  - Finished or left unfinished
+- **Creative play:** stories made and sent, pictures colored, Fashion Show outfits and photos, and Inbox messages sent (counts only, not content).
+
+**Grown-up dashboard**
+- A **Grown-ups** button in the lobby, behind a simple grown-up check (for example "hold for 3 seconds" or a quick multiplication question), so kids don't wander in.
+- **Per kid:** a weekly summary card, such as "Quinn played 2h 10m this week, solved 46 puzzles, 89% right on first try."
+- **Skills view:** each skill shows accuracy, average solve time and its trend over time, marked as Got it ✅, Getting there 🟡 or Needs practice 🔴.
+- **Struggle spots:** puzzles with many wrong tries or slow solves, such as "Violet takes 3+ tries on counting past 4."
+- **Usage view:** a daily time chart for each game, and the times of day they usually play.
+- **Compare over time,** not between kids: each child is shown against their own past, never ranked against siblings.
+
+**Kid-facing rules**
+- Kids never see scores, accuracy or timers from this data. Their side stays all cheering and gentle hints.
+- Optional later: use the data to adjust difficulty automatically, such as easier counting when Violet is struggling, or moving Quinn to harder adding when she's acing it.
+
+**Privacy**
+- All data stays in the family's own Firebase under `families/<family code>/stats/`. No third-party analytics or trackers.
+- Grown-ups can export (CSV) or clear any kid's data.
+- Store small summary records, not recordings or drawings.
+
+**Acceptance criteria**
+- [ ] Every puzzle attempt records the skill, level, solve time, wrong tries and hint use
+- [ ] Play time is recorded per persona, per game and per day, and syncs across devices
+- [ ] A dashboard behind a grown-up check, with a weekly summary, skills view and struggle spots per kid
+- [ ] Kids see no scores or stats anywhere
+- [ ] Grown-ups can clear a kid's data
+
+**🔍 Decisions needed**
+- How long to keep detailed records: 90 days, then weekly summaries only?
+- Should grown-ups get a weekly summary sent to their Inbox (#4), or by email?
+- Turn on automatic difficulty adjustment now, or show the data first and decide later?
+
+---
+
+## Shared groundwork (needed by #1, #3, #4, #5 and #8)
 
 - ✅ **Saved data: decided on Firebase Realtime Database (free Spark plan).** No credit card, live updates to every device, works from GitHub Pages. Everything lives under `families/<family code>/`, so the family code is the key (no passwords).
   - Why not the others: Supabase's free plan pauses projects after a week without use, and Firebase *Storage* (for files) now needs a paid plan, so voice clips and drawings are saved as small compressed data inside the database instead.
