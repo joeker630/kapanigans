@@ -159,7 +159,7 @@ Building happens on empty **build lots** around the map. Paying starts a **Build
 
 ✅ Done: hen, cow, pig and sheep (stand, eat, sleep, back) · carrot and pumpkin (sprout, growing, ripe).
 
-About **45 images** left including retries, which is roughly one day of the free allowance if nothing else is using it. Make them in this order:
+About **48 images** left including retries, which is roughly one day of the free allowance if nothing else is using it. Make them in this order:
 
 *Batch A — needed for the chore puzzles (about 25)*
 - Ready to run: `python3 tools/genart.py isobatch tools/batches/farmA.json` (skips anything already made). Scheduled to run automatically at 7:05 PM Central on Oct 27.
@@ -171,8 +171,8 @@ About **45 images** left including retries, which is roughly one day of the free
 - [x] Sheared sheep (shown after wool is collected) — 1
 - [ ] Hiding spots for egg hunt: hay pile, bush — 2
 
-*Batch B — the farm itself (about 11)*
-- [ ] Buildings: red barn, chicken coop, farmhouse (door to the dressing room), farmstand stall with an awning — 4
+*Batch B — the farm itself (about 12)*
+- [ ] Buildings: red barn, chicken coop, farmhouse (door to the dressing room), farmstand stall with an awning, stable (buildable with Moolah) — 5
 - [ ] Fence: straight piece and corner (mirrored in code for other directions) — 2
 - [ ] Nature: round tree, apple tree, flower patch, rock, small pond — 5
 
@@ -181,9 +181,11 @@ About **45 images** left including retries, which is roughly one day of the free
 - [ ] Fence gate, fertilizer bag, milk jug (gallon) — 3
 - [ ] Order board, Moolah jar, Moolah coin (replaces the copper and silver coins in Batch C) — 3
 
-*Batch C — farmstand shop unlocks (about 8)*
+*Batch C — farmstand shop unlocks (about 11)*
 - [ ] Decorations to buy with coins: scarecrow, windmill, flower pot, bench, mailbox, lantern — 6
 - [ ] Coins for "make change" (Big): copper coin and silver coin, blank, with the value drawn on in code — 2
+- [ ] Moolah: a gold Moolah coin and a small coin pile (the farm money for building and Fashion Show clothes) — 2
+- [ ] Fertilizer bag (buildable/buyable) — 1
 
 *Done in code (no images):* sparkles, water drops, hearts for a happy pig, sun moving across the sky, the goodnight moon and stars, chore cooldown rings.
 *Covered elsewhere:* farmer avatars, costumes and following pets are in **#10**.
