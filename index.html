@@ -5766,17 +5766,20 @@ const GLYPHS={
   5:[[[35,10],[33,44],...arcPts(50,65,22,23,-130,150).slice(1)],[[35,10],[72,10]]], 6:[[[64,10],[34,52],...arcPts(50,68,20,22,195,555).slice(1)]],
   7:[[[24,10],[76,10],[42,90]]], 8:[arcPts(50,30,17,20,-90,-450),arcPts(50,70,22,20,-90,270)], 9:[arcPts(48,32,19,22,-10,-370),[[67,32],[64,90]]],
 };
+// 3-letter words Violet can trace, using the capital letters we have strokes for (V I O L E T A C H U)
+const TRACE_WORDS={CAT:"🐱",HAT:"🎩",HOT:"🔥",TOE:"🦶",TEA:"🍵",ICE:"🧊",OIL:"🛢️",EAT:"🍽️",HIT:"⚾",CUT:"✂️",HUT:"🛖",LIT:"🕯️",TIE:"👔",OAT:"🌾"};
 function traceTarget(api){
   if(api.store.glyph) return api.store.glyph;
-  let g; if(api.L) g=pickOne(Math.random()<.7?["V","I","O","L","E","T"]:["A","C","H","U"]);
+  let g; if(api.L) g=pickOne(Object.keys(TRACE_WORDS)); // Little traces a 3-letter word
+
   else g=Math.random()<.5?pickOne("abcdeilnoqtu".split("")):String(rint(0,20));
   return api.store.glyph=g;
 }
 TASKS.trace=api=>{
   const g=traceTarget(api), isNum=/^\d+$/.test(g), L=api.L, faint=!L&&api.round>0;
-  const what=`${isNum?"number":"letter"} ${g}`;
-  api.ask(`${faint?"Now trace it again":"Trace the "+(isNum?"number":"letter")} ${g}${faint?"!":""}`,
-    L?`Trace the letter ${g}! Follow the star.`:faint?`Great! Now trace the ${what} again, with a faint line.`:`Trace the ${what}. Follow the arrows.`);
+  const what=`${isNum?"number":"letter"} ${g}`, word=L&&TRACE_WORDS[g];
+  api.ask(word?`${word} Trace the word ${g}!`:`${faint?"Now trace it again":"Trace the "+(isNum?"number":"letter")} ${g}${faint?"!":""}`,
+    word?`Trace the word ${g.toLowerCase()}! ${g.split("").join(", ")}. Follow the star.`:L?`Trace the letter ${g}! Follow the star.`:faint?`Great! Now trace the ${what} again, with a faint line.`:`Trace the ${what}. Follow the arrows.`);
   const chars=g.split(""), low=!isNum&&g===g.toLowerCase()&&g!==g.toUpperCase();
   const boxH=low?125:100, top=low?5:0;
   // strokes in glyph-box units laid out side by side
@@ -5827,7 +5830,7 @@ TASKS.trace=api=>{
     if(best>=ci){ci=best+1;if(ci%4===0)blip(500+ci*6,.04,"triangle",.05)}
     if(ci>=s.length){
       blip(880,.12,"triangle"); si++; ci=0; active=false;
-      if(si>=cps.length){draw();setTimeout(()=>say(isNum?`${g}!`:`${g}!`),200);api.win(900);return}
+      if(si>=cps.length){draw();setTimeout(()=>say(word?`${g.split("").join(", ")}. ${g.toLowerCase()}!`:`${g}!`),200);api.win(900);return}
       const n=cps[si][0]; if(Math.hypot(p[0]-n[0],p[1]-n[1])<tol){active=true;ci=1}
     }
     draw();

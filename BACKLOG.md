@@ -192,7 +192,7 @@ Puzzle types come from the **Age-appropriate tasks** chat. That chat is building
 | Colors & shapes | Tap the red balloon; find the circle; drag balloons into the same color basket | Tap the small blue triangle (two clues); find the hexagon, octagon, trapezoid…; how many sides? |
 | Jigsaw | 9 pieces (3×3) over a faint picture | 12 pieces, no picture, pieces start turned (tap to turn) |
 | Building shapes | 2–3 shapes into dotted outlines (house, ice cream, snowman, sailboat, tree, square from two triangles) | 5 shapes into a solid silhouette (rocket, house, tree, sailboat, cat, fish), shapes start turned |
-| Tracing | Thick letter path, follow the star ⭐ | Lowercase letters and numbers 0–20 with numbered start dots and arrows, then again with a faint line |
+| Tracing | A 3-letter word (CAT, HAT, ICE, TOE…) with a picture, thick letter paths, follow the star ⭐ | Lowercase letters and numbers 0–20 with numbered start dots and arrows, then again with a faint line |
 | Patterns | AB: 🍎🍌🍎🍌🍎 ? | ABC, AABB, ABB, AAB; growing (1, 2, 3 → 4); counting by 2s, 5s and 10s |
 | Memory match | 3 pairs, face-up preview | 6 pairs, no preview |
 | Shadow match | Drag 3 farm pictures onto their shadows | 5 pictures and shadows |
