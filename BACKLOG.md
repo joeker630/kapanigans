@@ -828,6 +828,54 @@ The art for the storybooks (#13) should look like a **feature-film animated movi
 
 ---
 
+## 15. 🆕 Asset metadata: descriptions and keywords for every image
+
+Every art asset (storybook, farm, avatar and Fashion Show) gets **clear descriptions and keyword tags**, so custom stories (#13) can find and pull in the right pictures automatically, and the tags can help shape the story itself.
+
+**What each asset records** (in `art/manifest.json`, one entry per asset)
+| Field | Example (a firefighter) |
+|---|---|
+| `id` | `story/people/firefighter-1` |
+| `name` (kid-friendly, read aloud) | "Firefighter Rosa" |
+| `description` (one or two plain sentences) | "A smiling firefighter in a yellow coat and red helmet, holding a hose, ready to help." |
+| `group` | people / animals / magical / backgrounds / vehicles-props |
+| `keywords` | firefighter, fire, helper, brave, hero, rescue, job, uniform, hose, helmet |
+| `setting` (where it fits) | fire station, city, town |
+| `mood` | brave, friendly, happy |
+| `time_of_day` (backgrounds) | day / sunset / night |
+| `pairs_with` (good companions) | fire truck, dalmatian, fire station |
+| `story_roles` | helper, hero, friend |
+| `actions` (moves that suit it) | wave, walk, run, spray water |
+| `colors` (main colors) | yellow, red |
+| `level` | Little-friendly (simple, clear) or any |
+| `facing`, `size`, `cutout` | left, medium, true |
+| `quality` | approved by Joe, with the date (from the #14 audit) |
+
+**How the tags get made**
+- When an image is made, `genart.py` writes a first draft of the description and keywords from its prompt. Claude then reviews each picture and fills in or corrects the fields to match what's actually in the image.
+- A **shared word list** (a small controlled vocabulary) keeps tags consistent: always "police officer," never a mix of "cop," "policeman" and "police." Synonyms are mapped to the main word, so a search for "cop" still finds police officers.
+- Kid-friendly names and descriptions are read aloud for Little players when they browse.
+- Existing farm, avatar and clothing art is tagged too, not just the new storybook art.
+- The audit page (#14) shows each asset's tags, so Joe can fix them while approving the art.
+
+**How stories use the tags**
+- **Search in the story builder:** type or say "dragon," "night" or "police" and get matching pictures, with Little players browsing by picture categories instead.
+- **Smart suggestions:** pick a background and the builder suggests characters and props that fit (`setting` and `pairs_with`). Choosing the fire station suggests the firefighter, the fire truck and a dalmatian.
+- **Story starters from the tags:** the chosen characters' roles, moods and actions offer sentence ideas, such as "Firefighter Rosa was brave. She…", to help Big writers and the picture-sentence cards for Little players.
+- **Fitting moves:** each character's suggested moves come from its `actions` (a fish swims, a bird flies).
+- **Templates fill themselves:** fill-in-the-blank templates can pull the right art for a chosen word (picking "unicorn" brings in the unicorn picture).
+- Kid-safe: tags never include anything scary or unsuitable, and the word filter (#13) applies to searches.
+
+**Acceptance criteria**
+- [ ] Every asset in `art/manifest.json` has a name, description, group, keywords and the other fields above where they apply
+- [ ] Tags use the shared word list, and synonyms find the right assets
+- [ ] Story builder search finds assets by keyword, setting, mood and role
+- [ ] Choosing a background suggests matching characters and props
+- [ ] Existing farm, avatar and Fashion Show art is tagged too
+- [ ] Tags can be reviewed and edited on the audit page
+
+---
+
 ## Shared groundwork (needed by #1, #3, #4, #5, #8, #13 and #14)
 
 - ⚠️ **One shared script:** Farmstand and the rest of the game live in the same `<script>`, so two `function` declarations with the same name silently replace each other (this broke story and inbox sending once: `sendGift`, `deliver`). Use unique names; a quick check is to list duplicate `function` names before pushing.
