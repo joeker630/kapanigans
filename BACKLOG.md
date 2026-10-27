@@ -162,8 +162,8 @@ Every person (kids, friends and grown-ups) gets an **Inbox** for messages the fa
   - Why not the others: Supabase's free plan pauses projects after a week without use, and Firebase *Storage* (for files) now needs a paid plan, so voice clips and drawings are saved as small compressed data inside the database instead.
   - 🛠️ Waiting on Joe: create the Firebase project and send over its web config.
   - Later: consider moving live game sync from the HiveMQ relay to Firebase too, so everything uses one service.
-- 🆕 **Read-aloud helper:** one shared text-to-speech function for stories, chore instructions and Little-level labels.
-- 🆕 **Game menu:** move the "Soon" placeholder cards (Puzzle Pals, Animal Sounds, Shape Hunt) behind the new games, or replace them.
+- ✅ **Read-aloud helper:** `say()` / `sayLittle()` use the device's built-in voice. Little players already hear their tool, color, picture and reaction names; there's a 🔊 on/off button in the lobby. Ready for stories, chore instructions and inbox messages.
+- ✅ **Game menu:** the placeholder cards are replaced with Bedtime Story, Kapanigan Farmstand and Inbox (marked Soon; tapping one says "Coming soon!").
 
 ## Done
 
@@ -172,3 +172,4 @@ Every person (kids, friends and grown-ups) gets an **Inbox** for messages the fa
 - ✅ Video chat bubble when exactly 2 players are in a game
 - ✅ Home-screen icon
 - ✅ Grown-up personas (#2) and the "Who are you!? :)" welcome
+- ✅ Read-aloud helper and new game menu

@@ -86,7 +86,9 @@ h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance;l
 .game p{margin:0;font-size:14px;color:var(--ink-soft);font-weight:600}
 .game.live{border:4px solid var(--sun-deep);box-shadow:0 6px 0 var(--sun-deep)}
 .game.live:active{transform:translateY(4px);box-shadow:0 2px 0 var(--sun-deep)}
-.game.soon{opacity:.55;cursor:default}
+.game.soon{opacity:.6}
+.game.soon:active{transform:scale(.98)}
+.voicebtn{width:44px;height:44px;border-radius:50%;background:var(--paper);font-size:20px;box-shadow:0 3px 0 var(--sky-deep)}
 .tag{position:absolute;top:14px;right:14px;font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;padding:4px 10px;border-radius:999px;background:var(--sky);color:var(--ink-soft)}
 .game.live .tag{background:var(--sun);color:var(--ink)}
 .inprog{display:flex;flex-direction:column;gap:10px}
@@ -244,6 +246,7 @@ h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance;l
     <h1>Kapanigans</h1>
     <span class="status" id="status"><i></i><span>Connecting…</span></span>
     <button class="codechip" id="codeChip"></button>
+    <button class="voicebtn" id="voiceBtn" aria-label="Read aloud on or off">🔊</button>
     <button class="mechip" id="meChip"></button>
   </div>
   <div class="here" id="here"></div>
@@ -251,9 +254,9 @@ h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance;l
   <div class="section-title">Pick a game</div>
   <div class="games">
     <button class="game live" id="playColor"><span class="tag">Play</span><span class="icon">🎨</span><h3>Color Together</h3><p>Everyone colors their own part of one big picture.</p></button>
-    <div class="game soon"><span class="tag">Soon</span><span class="icon">🧩</span><h3>Puzzle Pals</h3><p>Build a picture together, piece by piece.</p></div>
-    <div class="game soon"><span class="tag">Soon</span><span class="icon">🐮</span><h3>Animal Sounds</h3><p>Find the animal that makes the sound.</p></div>
-    <div class="game soon"><span class="tag">Soon</span><span class="icon">🔺</span><h3>Shape Hunt</h3><p>Spot the shapes hiding in the scene.</p></div>
+    <button class="game soon" data-say="Bedtime Story. Coming soon!"><span class="tag">Soon</span><span class="icon">🌙</span><h3>Bedtime Story</h3><p>Make a silly story with your own characters and send it as a gift.</p></button>
+    <button class="game soon" data-say="Kapanigan Farmstand. Coming soon!"><span class="tag">Soon</span><span class="icon">🥕</span><h3>Kapanigan Farmstand</h3><p>Grow crops and care for animals together on the family farm.</p></button>
+    <button class="game soon" data-say="Inbox. Coming soon!"><span class="tag">Soon</span><span class="icon">💌</span><h3>Inbox</h3><p>Send stickers, drawings and voice notes to the family.</p></button>
   </div>
 </section>
 
@@ -360,6 +363,33 @@ function rng(seed){let a=seed>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.im
 function esc(s){return String(s).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]))}
 function kidOf(k){return KIDS[k] || KIDS.bear}
 function show(id){for(const s of ["setup","pick","lobby","game"]) $("#"+s).hidden = s!==id; screen=id; if(id!=="game") $("#vid").hidden=true}
+/* ---------------- read-aloud helper ---------------- */
+// say(text, {rate, pitch, onWord(charIndex,len), onEnd}) speaks with the device voice.
+// sayLittle(text) speaks only for Little-level players (Violet, Bear friend).
+const speech={ok:"speechSynthesis" in window,voice:null,on:load("kp.voice")!=="off",unlocked:false};
+function pickVoice(){if(!speech.ok)return;const vs=speechSynthesis.getVoices();if(!vs.length)return;
+  const pref=["Samantha","Ava","Allison","Karen","Moira","Google US English","Microsoft Aria","Microsoft Jenny"];
+  speech.voice=pref.map(n=>vs.find(v=>v.name.startsWith(n)&&/^en/i.test(v.lang))).find(Boolean)||vs.find(v=>v.lang==="en-US"&&v.localService)||vs.find(v=>/^en/i.test(v.lang))||null}
+if(speech.ok){pickVoice();speechSynthesis.addEventListener?speechSynthesis.addEventListener("voiceschanged",pickVoice):(speechSynthesis.onvoiceschanged=pickVoice)}
+// iOS only lets speech start from a tap, so unlock it on the first touch
+addEventListener("pointerdown",()=>{if(!speech.ok||speech.unlocked)return;speech.unlocked=true;const u=new SpeechSynthesisUtterance(" ");u.volume=0;speechSynthesis.speak(u)},{capture:true});
+let sayT=null;
+function say(text,o={}){
+  if(!speech.ok||!speech.on||!text) return;
+  const go=()=>{const u=new SpeechSynthesisUtterance(String(text).replace(/[\u{1F300}-\u{1FAFF}\u2600-\u27BF\uFE0F]/gu,"").trim());
+    if(speech.voice)u.voice=speech.voice; u.lang="en-US";
+    u.rate=o.rate??(lvl()==="little"?.85:.95); u.pitch=o.pitch??1.1;
+    if(o.onWord) u.onboundary=e=>{if(e.name==="word")o.onWord(e.charIndex,e.charLength||0)};
+    u.onend=()=>o.onEnd&&o.onEnd(); u.onerror=()=>o.onEnd&&o.onEnd();
+    speechSynthesis.speak(u)};
+  clearTimeout(sayT);
+  if(speechSynthesis.speaking||speechSynthesis.pending){speechSynthesis.cancel();sayT=setTimeout(go,80)} else go();
+}
+function sayLittle(text,o){if(me&&lvl()==="little")say(text,o)}
+function hush(){clearTimeout(sayT);if(speech.ok)speechSynthesis.cancel()}
+const COLOR_NAMES={"#FF3B3B":"Red","#FF8A00":"Orange","#FFD600":"Yellow","#2ECC40":"Green","#2D8CFF":"Blue","#8B5CF6":"Purple","#FF5FA2":"Pink","#8B5A2B":"Brown"};
+const REACT_WORDS={"👋":"waves hi","❤️":"sends a heart","😂":"is laughing","⭐":"sends a star"};
+
 let toastT; function toast(msg){const t=$("#toast");t.textContent=msg;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,1800)}
 function store(k,v){try{localStorage.setItem(k,v)}catch(e){}}
 function load(k){try{return localStorage.getItem(k)}catch(e){return null}}
@@ -621,7 +651,7 @@ function wireRoom(){
     if(m.sameTab||screen!=="lobby"||!m.data) return;
     const g=m.data; if(!Array.isArray(g.seats)||!PICS[g.pic]) return;
     const idx=g.seats.findIndex(s=>s.p===myPeer);
-    if(idx>=0){blip(880,.2,"triangle");enterGame(g,idx,false)}
+    if(idx>=0){blip(880,.2,"triangle");sayLittle(`Let's color ${PICS[g.pic].name}!`);enterGame(g,idx,false)}
   });
   room.on("op",m=>{
     if(m.sameTab||!game||!m.data||m.data.e!==game.e) return;
@@ -655,6 +685,7 @@ function wireRoom(){
 /* ---------------- screens ---------------- */
 function chooseKid(k){
   me=k; joinedAt=Date.now(); store("kp.kid",k);
+  say(`Hi ${kidOf(k).name}!`);
   setPresence({kid:k,at:joinedAt,scr:"lobby",g:null,seat:null,done:null});
   blip(700); goLobby();
 }
@@ -696,7 +727,7 @@ function openPics(){
       const P=buildPic(id); const tmp=document.createElement("canvas");tmp.width=W;tmp.height=H;tmp.getContext("2d").putImageData(P.art,0,0);
       const t=cv.getContext("2d");t.fillStyle="#fff";t.fillRect(0,0,320,240);t.drawImage(tmp,0,0,320,240);
       b.append(cv);const lab=document.createElement("b");lab.textContent=PICS[id].name;b.append(lab);
-      b.onclick=()=>startColoring(id);box.append(b);
+      b.onclick=()=>{sayLittle(`Let's color ${PICS[id].name}!`);startColoring(id)};box.append(b);
     }
   }
   renderWho(); $("#picSheet").hidden=false;
@@ -774,14 +805,14 @@ function lvl(){return kidOf(me).level}
 function buildTray(){
   const T=$("#tray"); const L=lvl(); T.className="tray "+L; T.innerHTML="";
   const row=()=>{const r=document.createElement("div");r.className="trow";T.append(r);return r};
-  const tbtn=(r,id,emoji,label)=>{const b=document.createElement("button");b.className="tool";b.dataset.t=id;b.innerHTML=`${emoji}<small>${label}</small>`;b.onclick=()=>{tool[L].t=id;blip(520,.06);syncTray()};r.append(b)};
+  const tbtn=(r,id,emoji,label)=>{const b=document.createElement("button");b.className="tool";b.dataset.t=id;b.innerHTML=`${emoji}<small>${label}</small>`;b.onclick=()=>{tool[L].t=id;blip(520,.06);sayLittle(label);syncTray()};r.append(b)};
   if(L==="little"){
     const r1=row();
     tbtn(r1,"crayon","🖍️","Crayon"); tbtn(r1,"rainbow","🌈","Rainbow"); tbtn(r1,"fill","🪣","Fill"); tbtn(r1,"stamp","⭐","Stickers");
     const sp=document.createElement("span");sp.className="spacer";r1.append(sp);
-    const u=document.createElement("button");u.className="tool";u.innerHTML=`↩️<small>Oops</small>`;u.onclick=undo;r1.append(u);
+    const u=document.createElement("button");u.className="tool";u.innerHTML=`↩️<small>Oops</small>`;u.onclick=()=>{sayLittle("Oops!");undo()};r1.append(u);
     const r2=row();
-    for(const col of LITTLE_COLORS){const s=document.createElement("button");s.className="sw";s.style.setProperty("--c",col);s.dataset.c=col;s.setAttribute("aria-label","color");s.onclick=()=>{tool.little.c=col;if(tool.little.t==="rainbow")tool.little.t="crayon";blip(600,.06);syncTray()};r2.append(s)}
+    for(const col of LITTLE_COLORS){const s=document.createElement("button");s.className="sw";s.style.setProperty("--c",col);s.dataset.c=col;s.setAttribute("aria-label","color");s.onclick=()=>{tool.little.c=col;if(tool.little.t==="rainbow")tool.little.t="crayon";blip(600,.06);sayLittle(COLOR_NAMES[col]);syncTray()};r2.append(s)}
   } else {
     const r1=row();
     tbtn(r1,"marker","🖊️","Marker"); tbtn(r1,"crayon","🖍️","Crayon"); tbtn(r1,"spray","💨","Spray"); tbtn(r1,"glitter","✨","Glitter"); tbtn(r1,"fill","🪣","Fill"); tbtn(r1,"stamp","⭐","Stamp"); tbtn(r1,"eraser","🧽","Eraser");
@@ -815,7 +846,7 @@ board.addEventListener("pointerdown",e=>{
   const [x,y]=toCanvas(e);
   if(!inZone(game.seat,x,y)){
     const z=$("#zones .mine"); if(z){z.classList.remove("nudge");void z.offsetWidth;z.classList.add("nudge")}
-    toast(game.seats.length>1?"Color on your part! 👉":"Color inside the picture"); blip(220,.15,"square",.06); return;
+    toast(game.seats.length>1?"Color on your part! 👉":"Color inside the picture"); sayLittle(game.seats.length>1?"Color on your part!":"Color inside the picture"); blip(220,.15,"square",.06); return;
   }
   const L=lvl(),st=tool[L]; const g=newId();
   if(st.t==="fill"){const o={i:g,g,k:"f",c:st.c,x:Math.round(x),y:Math.round(y),s:game.seat};renderOp(o);commit(o);blip(500,.18,"triangle");return}
@@ -867,6 +898,7 @@ function floatReaction(r,k){
   const K=kidOf(k); const el=document.createElement("div");el.className="floater";
   el.style.left=(10+Math.random()*75)+"%"; el.style.setProperty("--k",K.hue);
   el.innerHTML=`<span>${r}</span><b>${esc(K.name)}</b>`; $("#floaters").append(el);
+  if(k!==me) sayLittle(`${K.name} ${REACT_WORDS[r]||""}`);
   blip(r==="😂"?440:760,.15,"triangle",.1); setTimeout(()=>el.remove(),2700);
 }
 $("#reacts").addEventListener("click",e=>{const b=e.target.closest("button");if(!b||!game)return;floatReaction(b.dataset.r,me);send("react",{r:b.dataset.r,k:me,e:game.e})});
@@ -880,12 +912,14 @@ $("#doneBtn").onclick=()=>{if(!game)return;game.done=true;setPresence({done:true
 function checkParty(){if(!game||!game.done)return; if(!$("#party").hidden) updatePartyWait()}
 function showParty(){
   $("#partyImg").src=snapshot().toDataURL("image/png");
-  $("#party").hidden=false; updatePartyWait(); confetti();
+  $("#party").hidden=false; $("#party").dataset.said=""; updatePartyWait(); confetti();
 }
 function updatePartyWait(){
   const gp=gamePeers().filter(p=>!p.sameTab); const waiting=gp.filter(p=>!p.presence.done).map(p=>kidOf((game.seats[p.presence.seat]||{}).k).name);
   const w=$("#partyWait"); w.hidden=!waiting.length; w.textContent=waiting.length?`${waiting.join(" & ")} ${waiting.length>1?"are":"is"} still coloring…`:"";
-  $("#partyTitle").textContent = game.seats.length>1 ? (waiting.length?"Your part is done!":"You did it together!") : "Beautiful picture!";
+  const title = game.seats.length>1 ? (waiting.length?"Your part is done!":"You did it together!") : "Beautiful picture!";
+  if($("#partyTitle").textContent!==title||$("#party").dataset.said!==title){$("#party").dataset.said=title;say(title)}
+  $("#partyTitle").textContent = title;
   if(!waiting.length && gp.length) $("#partyImg").src=snapshot().toDataURL("image/png");
 }
 $("#keepBtn").onclick=()=>{$("#party").hidden=true;if(game){game.done=false;setPresence({done:false});renderSeats()}};
@@ -914,7 +948,11 @@ function confetti(){
 $("#grownups").innerHTML=Object.entries(KIDS).filter(([,v])=>v.grown).map(([k,v])=>`<button class="gubtn" data-kid="${k}" style="--k:${v.hue}"><span class="face">${v.face}</span>${esc(v.name)}</button>`).join("");
 document.querySelectorAll(".kid,.gubtn").forEach(b=>b.onclick=()=>chooseKid(b.dataset.kid));
 $("#meChip").onclick=()=>show("pick");
-$("#playColor").onclick=openPics;
+$("#playColor").onclick=()=>{sayLittle("Color Together");openPics()};
+document.querySelectorAll(".game.soon").forEach(b=>b.onclick=()=>{blip(330,.12,"triangle",.08);say(b.dataset.say);toast("Coming soon!")});
+function syncVoiceBtn(){const b=$("#voiceBtn");b.textContent=speech.on?"🔊":"🔇";b.hidden=!speech.ok}
+$("#voiceBtn").onclick=()=>{speech.on=!speech.on;store("kp.voice",speech.on?"on":"off");syncVoiceBtn();if(speech.on)say("Reading out loud is on");else hush()};
+syncVoiceBtn();
 $("#closeSheet").onclick=()=>$("#picSheet").hidden=true;
 $("#picSheet").addEventListener("click",e=>{if(e.target.id==="picSheet")e.target.hidden=true});
 document.addEventListener("gesturestart",e=>e.preventDefault());
