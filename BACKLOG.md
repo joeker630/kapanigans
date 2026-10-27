@@ -882,6 +882,15 @@ Turn photos of family members into **high-resolution cartoon characters** (in th
 
 **Can the current setup do it?** Yes. **FLUX.2 dev** on Cloudflare Workers AI (the #14 upgrade) accepts **reference images**, so one or more photos of a person can guide the cartoon. Cloudflare says it doesn't use what's sent to Workers AI to train models, and doesn't keep the inputs or outputs after the request is done.
 
+**✅ Decided Oct 27**
+- **Approved style: storybook film style**, made with FLUX.2 klein plus a reference image (much cheaper than FLUX.2 dev, about 1% of the cost per image, and Joe approved the look). Use it for likeness art going forward unless Joe asks otherwise.
+- **Standard character sheet per person: at least 30 poses and 10 outfits.** Each pose is in the person's default outfit; each outfit is a standing shot.
+  - Poses (30): front, three-quarter, side and back views; waving, running, jumping, sleeping, yawning, reading a story, laughing, thinking, surprised, pointing, thumbs up, hero, playful karate, pillow fight, sitting, cheering, sneaking, dancing, ready for a hug, giving a gift, cooking, high five, a little sad, peekaboo, planting, flying.
+  - Outfits (10): farmer, pajamas, astronaut, firefighter, chef, pirate, wizard, superhero, winter, beach.
+  - "Fighting" is always playful (karate pose, pillow fight), never hurting anyone.
+- **The first approved likeness becomes the master reference** for that person's whole sheet, so every pose stays on model. The sheet is a private page for Joe; nothing goes in this repo.
+- Joe's sheet: master portrait and waving pose done; the other 39 images are drawn after the 7 PM allowance reset on Oct 27.
+
 **How it works**
 1. Joe adds **2–4 clear photos** per person into this chat (face forward, good light, one person per photo, no busy background). Photos are used only during generation and never saved in the repo.
 2. `genart.py` gets a `likeness` mode: photos plus the approved style reference, with a prompt that keeps the person's recognizable features (hair, skin tone, face shape, glasses, freckles) in the cartoon style.
