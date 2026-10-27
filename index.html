@@ -1084,7 +1084,7 @@ const PICS = {
   ocean:{name:"Under the Sea", draw:artOcean},
   space:{name:"Rocket Ride", draw:artSpace},
 };
-const LITTLE_COLORS = ["#FF3B3B","#FF8A00","#FFD600","#2ECC40","#2D8CFF","#8B5CF6","#FF5FA2","#8B5A2B"];
+const LITTLE_COLORS = ["#FF3B3B","#FF8A00","#FFD600","#2ECC40","#2D8CFF","#8B5CF6","#FF5FA2","#8B5A2B","#FFFFFF","#111111"];
 const BIG_COLORS = ["#D7263D","#FF5A5F","#FF9AA2","#FF5FA2","#FF8A00","#FFB347","#FFD600","#FFF07A","#0B6E4F","#1B998B","#2ECC40","#9BE564",
   "#1D3D8F","#2D8CFF","#7FC8F8","#5B2A86","#8B5CF6","#C3A6FF","#8B5A2B","#C68B59","#F1C27D","#FFE0BD","#111111","#8A8A8A","#FFFFFF"];
 const SIZES = [8,18,34];
@@ -1205,7 +1205,7 @@ function sayLittle(text,o){if(me&&lvl()==="little")say(text,o)}
 const sharedAudio=new Audio(); sharedAudio.playsInline=true;
 const SILENT="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=";
 function hush(){sayTok++;clearTimeout(sayT);if(speech.ok)speechSynthesis.cancel();try{if(!sharedAudio.paused){sharedAudio.onended=null;sharedAudio.pause()}}catch(e){}}
-const COLOR_NAMES={"#FF3B3B":"Red","#FF8A00":"Orange","#FFD600":"Yellow","#2ECC40":"Green","#2D8CFF":"Blue","#8B5CF6":"Purple","#FF5FA2":"Pink","#8B5A2B":"Brown"};
+const COLOR_NAMES={"#FF3B3B":"Red","#FF8A00":"Orange","#FFD600":"Yellow","#2ECC40":"Green","#2D8CFF":"Blue","#8B5CF6":"Purple","#FF5FA2":"Pink","#8B5A2B":"Brown","#FFFFFF":"White","#111111":"Black"};
 const REACT_WORDS={"👋":"waves hi","❤️":"sends a heart","😂":"is laughing","⭐":"sends a star"};
 
 let toastT; function toast(msg){const t=$("#toast");t.textContent=msg;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,1800)}
@@ -1669,11 +1669,11 @@ function buildTray(){
   const tbtn=(r,id,emoji,label)=>{const b=document.createElement("button");b.className="tool";b.dataset.t=id;b.innerHTML=`${emoji}<small>${label}</small>`;b.onclick=()=>{tool[L].t=id;blip(520,.06);syncTray()};r.append(b)};
   if(L==="little"){
     const r1=row();
-    tbtn(r1,"crayon","🖍️","Crayon"); tbtn(r1,"rainbow","🌈","Rainbow"); tbtn(r1,"fill","🪣","Fill"); tbtn(r1,"stamp","⭐","Stickers");
+    tbtn(r1,"crayon","🖍️","Crayon"); tbtn(r1,"rainbow","🌈","Rainbow"); tbtn(r1,"fill","🪣","Fill"); tbtn(r1,"stamp","⭐","Stickers"); tbtn(r1,"eraser","🧽","Eraser");
     const sp=document.createElement("span");sp.className="spacer";r1.append(sp);
     const u=document.createElement("button");u.className="tool";u.innerHTML=`↩️<small>Oops</small>`;u.onclick=()=>undo();r1.append(u);
     const r2=row();
-    for(const col of LITTLE_COLORS){const s=document.createElement("button");s.className="sw";s.style.setProperty("--c",col);s.dataset.c=col;s.setAttribute("aria-label","color");s.onclick=()=>{tool.little.c=col;if(tool.little.t==="rainbow")tool.little.t="crayon";blip(600,.06);syncTray()};r2.append(s)}
+    for(const col of LITTLE_COLORS){const s=document.createElement("button");s.className="sw";s.style.setProperty("--c",col);s.dataset.c=col;s.setAttribute("aria-label","color");s.onclick=()=>{tool.little.c=col;if(tool.little.t==="rainbow"||tool.little.t==="eraser")tool.little.t="crayon";blip(600,.06);syncTray()};r2.append(s)}
   } else {
     const r1=row();
     tbtn(r1,"marker","🖊️","Marker"); tbtn(r1,"crayon","🖍️","Crayon"); tbtn(r1,"spray","💨","Spray"); tbtn(r1,"glitter","✨","Glitter"); tbtn(r1,"fill","🪣","Fill"); tbtn(r1,"stamp","⭐","Stamp"); tbtn(r1,"eraser","🧽","Eraser");
@@ -1748,8 +1748,8 @@ board.addEventListener("pointerdown",e=>{
     const o={i:g,g,k:"t",n,c:st.c,x:Math.round(x),y:Math.round(y),w,s:game.seat};renderOp(o);commit(o);blip(900,.12,"sine");return;
   }
   board.setPointerCapture(e.pointerId);
-  const brush = L==="little" ? (st.t==="rainbow"?"rainbow":"crayonBig") : st.t;
-  const w = L==="little" ? 30 : SIZES[st.size];
+  const brush = L==="little" ? (st.t==="rainbow"?"rainbow":st.t==="eraser"?"eraser":"crayonBig") : st.t;
+  const w = L==="little" ? (st.t==="eraser"?56:30) : SIZES[st.size];
   stroke={id:e.pointerId,g,b:brush,w,c:st.c,pts:[Math.round(x),Math.round(y)],chunk:[Math.round(x),Math.round(y)],d:0,chunkD:0,n:0};
   renderOp({i:g+".0",g,k:"l",b:brush,w,c:st.c,p:[stroke.pts[0],stroke.pts[1]],d:0,s:game.seat});
   flushT=setInterval(flush,70);
@@ -2379,7 +2379,7 @@ function buildPad(B,strokes){
   const r1=el("div","trow");
   const tb=(id,e,l)=>{const b=el("button","tool",`${e}<small>${l}</small>`);b.dataset.t=id;b.onclick=()=>{pad.tool=id;blip(520,.06);sync()};r1.append(b)};
   tb("pen",L==="little"?"🖍️":"🖊️",L==="little"?"Crayon":"Pen");
-  if(L!=="little") tb("erase","🧽","Eraser"); else if(pad.tool==="erase") pad.tool="pen";
+  tb("erase","🧽","Eraser");
   const oops=el("button","tool",`↩️<small>${L==="little"?"Oops":"Undo"}</small>`);oops.onclick=()=>{pad.strokes.pop();redraw()};r1.append(oops);
   const clr=el("button","tool",`🗑️<small>Clear</small>`);clr.onclick=()=>{pad.strokes.length=0;redraw()};r1.append(clr);
   tools.append(r1);
@@ -4773,7 +4773,7 @@ function shapeSvg(kind,fill,scale=1){
   return `<svg viewBox="0 0 100 100" aria-hidden="true"><g fill="${fill}" stroke="${INK}" stroke-width="${(4/scale).toFixed(1)}" stroke-linejoin="round" transform="translate(50 50) scale(${scale}) translate(-50 -50)">${SHAPES[kind]}</g></svg>`;
 }
 const BIG_COLS=[["red","#FF3B3B"],["blue","#2D8CFF"],["green","#2ECC40"],["yellow","#FFD600"],["purple","#8B5CF6"],["orange","#FF8A00"]];
-const LIT_COLS=LITTLE_COLORS.map(h=>[COLOR_NAMES[h].toLowerCase(),h]);
+const LIT_COLS=LITTLE_COLORS.filter(h=>h!=="#FFFFFF"&&h!=="#111111").map(h=>[COLOR_NAMES[h].toLowerCase(),h]);
 TASKS.color=api=>{
   const sub=api.L?order(api,["tap","shape","sort"]):order(api,["two","name","sides"]);
   ({tap:colTap,shape:colShape,sort:colSort,two:colTwo,name:colName,sides:colSides})[sub](api);
