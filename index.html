@@ -1040,7 +1040,7 @@ function rng(seed){let a=seed>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.im
 function esc(s){return String(s).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]))}
 function kidOf(k){return KIDS[k] || (k==="kapanigans"?SYS:KIDS.bear)}
 function show(id){if(screen==="reader"&&id!=="reader")hush();if(screen==="inbox"&&id!=="inbox"&&typeof stopRec==="function")stopRec();for(const s of ["setup","pick","lobby","game","story","reader","inbox","grown","farm","dress"]) $("#"+s).hidden = s!==id; if(id!=="farm"&&tk) closeTask(true); screen=id; if(typeof renderVideoUI==="function") renderVideoUI(); if(id==="pick"&&typeof syncMailBadges==="function"){syncMailBadges();renderPickClaims()}
-  if(me&&room&&id!=="game"&&id!=="setup") setPresence({scr:id});
+  if(me&&room&&id!=="game"&&id!=="setup") setPresence(id==="farm"?{scr:id}:{scr:id,act:null});
   if(typeof tickStats==="function") tickStats()}
 /* ---------------- read-aloud helper ---------------- */
 // say(text, {rate, pitch, pause, onWord(charIndex,len), onEnd}) speaks one sentence at a time with short pauses.
@@ -1949,10 +1949,11 @@ $("#vShow").onclick=()=>startShowIt();
     box.style.left=x+"px";box.style.top=y+"px";box.style.right="auto";box.style.bottom="auto";box.dataset.dragged="1";box.classList.remove("dock")});
   const end=()=>d=null; box.addEventListener("pointerup",end); box.addEventListener("pointercancel",end);})();
 /* ---------------- home screen: who's on, where they are, and how to join them ---------------- */
-const WHERE={dress:["👗","In the dressing room"],lobby:["🏠","At home"],story:["🌙","Making a bedtime story"],reader:["📖","Reading a story"],inbox:["💌","In the Inbox"],grown:["🔒","Grown-ups area"],pick:["👋","Choosing who they are"],game:["🎨","Coloring"],watch:["👀","Watching"]};
+const WHERE={dress:["👗","In the dressing room"],lobby:["🏠","At home"],story:["🌙","Making a bedtime story"],reader:["📖","Reading a story"],inbox:["💌","In the Inbox"],grown:["🔒","Grown-ups area"],pick:["👋","Choosing who they are"],game:["🎨","Coloring"],watch:["👀","Watching"],farm:["🚜","At the Farm"]};
 let peopleSig="";
 function whereOf(pr){
-  const w=WHERE[pr.scr]||["⏳","Busy"];
+  const w=WHERE[pr.scr]||["🏠","Somewhere in Kapanigans"];
+  if(pr.scr==="farm"&&pr.act) return [w[0],`At the Farm: ${pr.act}`];
   if((pr.scr==="game"||pr.scr==="watch")&&pr.g&&PICS[pr.g.pic]&&Array.isArray(pr.g.seats)){
     const others=pr.g.seats.filter((s,i)=>pr.scr==="watch"||i!==pr.seat).map(s=>kidOf(s.k).name);
     return pr.scr==="game"?[w[0],`Coloring ${PICS[pr.g.pic].name}${others.length?` with ${others.join(" & ")}`:""}`]:[w[0],`Watching ${others.join(" & ")} color`];
@@ -1962,7 +1963,7 @@ function whereOf(pr){
 function renderPeople(){
   const box=$("#people"); if(!box||!me) return;
   const list=peers().filter(p=>p.presence&&KIDS[p.presence.kid]).sort((a,b)=>(b.sameTab-a.sameTab)||((a.presence.at||0)-(b.presence.at||0)));
-  const sig=JSON.stringify([me,vid.mic,vid.cam,!!vid.local,vid.asking,vid.denied,list.map(p=>[p.peer,p.presence.kid,p.presence.scr,p.presence.g&&p.presence.g.e,p.presence.seat,p.presence.vr,p.presence.mic,p.presence.cam,vid.streams.has(p.peer)])]);
+  const sig=JSON.stringify([me,vid.mic,vid.cam,!!vid.local,vid.asking,vid.denied,list.map(p=>[p.peer,p.presence.kid,p.presence.scr,p.presence.act,p.presence.g&&p.presence.g.e,p.presence.seat,p.presence.vr,p.presence.mic,p.presence.cam,vid.streams.has(p.peer)])]);
   if(sig===peopleSig&&box.childElementCount) return; peopleSig=sig;
   box.innerHTML="";
   const head=el("div","peoplehead",`<span>Who's on</span><em>${list.length}</em>`); box.append(head);
@@ -1991,8 +1992,11 @@ function renderPeople(){
       const mySeat=g.seats.findIndex((s,i)=>s.k===me&&!held.includes(i));
       if(mySeat>=0){const b=el("button","bigbtn","↩️ Jump back in");b.onclick=()=>enterGame(g,mySeat,true);act.append(b)}
       else{const b=el("button","bigbtn","👀 Watch");b.onclick=()=>{sayLittle(`Let's watch!`);enterGame(g,-1,true)};act.append(b)}
+    } else if(pr.scr==="farm"){
+      const b=el("button","bigbtn",`🚜 Join ${esc(K.name)} at the Farm`);b.onclick=()=>{sayLittle(`Let's go to the farm!`);openFarm()};act.append(b);
     } else {
-      const b=el("button","ghost","💌 Send a note");b.onclick=()=>{sayLittle(`Send ${K.name} a note`);openInbox("what",{to:pr.kid})};act.append(b);
+      const b=el("button","bigbtn",`🎨 Color with ${esc(K.name)}`);b.onclick=()=>{sayLittle(`Color with ${K.name}!`);openPics([p.peer])};act.append(b);
+      const n=el("button","ghost","💌 Note");n.onclick=()=>{sayLittle(`Send ${K.name} a note`);openInbox("what",{to:pr.kid})};act.append(n);
     }
     grid.append(card);
   }
@@ -4296,6 +4300,7 @@ function openTask(o){
   tk=Object.assign({round:0,rounds:roundsFor(o.type,o.lvl),wrong:0,hinted:false,t0:Date.now(),fx:[],store:{},ctx:{}},o);
   const T=$("#task"); T.hidden=false; T.classList.toggle("little",o.lvl==="little"); T.classList.toggle("grown",o.lvl==="grown");
   $("#tTitle").textContent=o.title||"";
+  setPresence({act:o.title||null});
   nextRound();
 }
 function nextRound(){
@@ -4358,7 +4363,7 @@ function finishTask(){
   setTimeout(()=>{if(tk!==my)return;closeTask(false);my.onWin&&my.onWin()},my.lvl!=="little"?2400:1700);
 }
 function closeTask(quit){
-  if(!tk) return; const my=tk; tk=null;
+  if(!tk) return; const my=tk; tk=null; setPresence({act:null});
   for(const f of my.fx.splice(0)) try{f()}catch(e){}
   $("#task").hidden=true; $("#tArea").innerHTML="";
   if(quit){if(!my.statted)taskStat(false,my);if(my.cd&&!my.cdDone)cdStart(my.cd);my.onQuit&&my.onQuit()} // walking away from a grown-up game counts as a loss
