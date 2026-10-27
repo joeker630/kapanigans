@@ -135,6 +135,12 @@ A **live co-op farm** the kids share. Every farm action is done by solving a sho
   - If two or more things are under the finger, a **"Which one?"** picker shows big buttons with each one's state, read aloud.
   - Animal tap areas hug the body.
   - Animals gently keep about a tile apart, so they stack up less.
+- **Bigger farm (Oct 27):** 21 × 21 tiles (was 16 × 16; `FARM_SIZE`). Everything already built stays put; the new land is along the far edges. The fenced pasture stretches to the new edge, and there are 10 more decoration spots.
+- **Move things (Oct 27):** press and hold (about half a second) a building, a decoration or the crop field, then drag it.
+  - The footprint shows **green** where it fits and **red** where it would overlap another building, the field, a decoration or the pasture, or leave the farm.
+  - Let go to place it; a red spot snaps back. Dragging near the edge pans the view.
+  - Shared for everyone: `farm/layout/<building or "field">` = `{i,j}`, `farm/dpos/<decor key>` = `{i,j}`.
+  - Not movable yet: the pasture/fence and animals.
 - **Selling has no puzzle (Oct 27):** tap a good at the farmstand and it's sold. The money puzzle still comes up when other chores borrow it.
 - **Family Basket building (Oct 27):** a wicker crate on the farm next to the order board, with what's inside showing on top. Its menu has:
   - big **⬇️ Put in** buttons and a **Put it all in** button

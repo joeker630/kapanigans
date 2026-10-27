@@ -3379,7 +3379,7 @@ const HUNGRY=20*60e3, THIRSTY=2*60e3, OLD_RIPE=30*60e3;
 // Field spots: 3 across, one more row per field upgrade (6, 9, 12, 15, 18 plots)
 const FIELD_SPOTS=[];for(let j=9;j<15;j++)for(let i=1;i<4;i++)FIELD_SPOTS.push([i,j]);
 const plotCount=()=>6+3*Math.min(4,(F.st&&F.st.field)||0);
-const PASTURES=[{i0:7,j0:1,i1:14,j1:8},{i0:7,j0:0,i1:16,j1:9.6}];
+const PASTURES=[{i0:7,j0:1,i1:14,j1:8},{i0:7,j0:0,i1:20,j1:9.6}];
 const pasture=()=>PASTURES[Math.min(1,(F.st&&F.st.fence)||0)];
 // Buildings: fixed spots. Animal homes only appear once built.
 const STRUCT={
@@ -3396,12 +3396,13 @@ const STRUCT={
 const DECOR={flowers:{icon:"🌷",name:"flowers",price:3},sunflower:{icon:"🌻",name:"sunflowers",price:4},lantern:{icon:"🏮",name:"lantern",price:5},
   bench:{icon:"🪑",name:"bench",price:6},mailbox:{icon:"📫",name:"mailbox",price:6},tree:{icon:"🌳",name:"tree",price:8},
   beehive:{icon:"🐝",name:"beehive",price:10},pond:{icon:"🦆",name:"duck pond",price:20}};
-const DECOR_SPOTS=[[5,3],[0,8],[5,9],[0,12],[5,13],[6,0],[15,15],[9,14],[12,14],[15,13],[0,0],[3,15],[6,6],[0,3]];
+const DECOR_SPOTS=[[5,3],[0,8],[5,9],[0,12],[5,13],[6,0],[15,15],[9,14],[12,14],[15,13],[0,0],[3,15],[6,6],[0,3],[17,11],[19,13],[17,16],[20,18],[13,19],[8,18],[3,19],[11,16],[20,10],[0,17]];
 const PRICES={seed:{tomato:10,corn:15,strawberry:20},field:[15,25,40,60],fence:20,fert:3,animal:{hen:5,pig:12,sheep:15,cow:25}};
 const ORDERERS=()=>Object.keys(KIDS).filter(k=>k!==me&&k!=="bear"&&k!=="fox");
 
 const F={st:null,ref:null,code:null,local:false,anim:new Map(),sheet:null,waitT:0};
-const fm={cv:null,g:null,img:{},N:16,tw:0,th:0,ox:0,oy:0,camX:0,camY:0,drag:null,pops:[],hits:[],raf:0,last:0};
+const FARM_SIZE=21; // tiles per side (was 16)
+const fm={cv:null,g:null,img:{},N:FARM_SIZE,tw:0,th:0,ox:0,oy:0,camX:0,camY:0,drag:null,pops:[],hits:[],raf:0,last:0};
 
 /* ---- state helpers (Firebase, or in-memory with ?farmlocal for testing) ---- */
 function getPath(o,p){for(const k of p.split("/")){if(o==null)return undefined;o=o[k]}return o}
@@ -3490,14 +3491,19 @@ function farmInit(){
   // one finger drags (or taps); two fingers pinch to zoom; the mouse wheel and the ➕ ➖ buttons zoom too
   fm.ptrs=new Map();
   fm.cv.addEventListener("pointerdown",e=>{fm.ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});try{fm.cv.setPointerCapture(e.pointerId)}catch(_){}
-    if(fm.ptrs.size===2){const [a,b]=[...fm.ptrs.values()];fm.pinch={d:Math.hypot(a.x-b.x,a.y-b.y),z:fm.zoom};if(fm.drag)fm.drag.moved=true;return}
+    if(fm.ptrs.size===2){clearTimeout(fm.holdT);if(fm.moving)fmvEnd(false);const [a,b]=[...fm.ptrs.values()];fm.pinch={d:Math.hypot(a.x-b.x,a.y-b.y),z:fm.zoom};if(fm.drag)fm.drag.moved=true;return}
     fm.drag={x:e.clientX,y:e.clientY,cx:fm.camX,cy:fm.camY,moved:false,id:e.pointerId};
-    if(F.st&&!tk){fPickClose();const c=fCands(e.clientX,e.clientY);fm.press=c.list.length?{list:c.list,at:performance.now()}:null}});
+    if(F.st&&!tk){fPickClose();const c=fCands(e.clientX,e.clientY);fm.press=c.list.length?{list:c.list,at:performance.now()}:null;
+      clearTimeout(fm.holdT);const t0=c.list[0];
+      if(t0&&!c.sure&&(t0.kind==="struct"||t0.kind==="decor"||t0.kind==="plot")){const pid=e.pointerId,cx=e.clientX,cy=e.clientY;
+        fm.holdT=setTimeout(()=>{const d=fm.drag;if(d&&d.id===pid&&!d.moved&&fm.ptrs.size===1&&!tk)fmvStart(t0,pid,cx,cy)},480)}}});
   fm.cv.addEventListener("pointermove",e=>{if(fm.ptrs.has(e.pointerId))fm.ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(fm.moving&&fm.moving.id===e.pointerId){fmvDrag(e.clientX,e.clientY);return}
     if(fm.pinch&&fm.ptrs.size>=2){const [a,b]=[...fm.ptrs.values()];farmZoomTo(fm.pinch.z*Math.hypot(a.x-b.x,a.y-b.y)/Math.max(1,fm.pinch.d),(a.x+b.x)/2,(a.y+b.y)/2);return}
     const d=fm.drag;if(!d||d.id!==e.pointerId)return;const dx=e.clientX-d.x,dy=e.clientY-d.y;
-    if(!d.moved&&Math.hypot(dx,dy)<12)return;d.moved=true;fm.press=null;const k=devicePixelRatio||1;fm.camX=d.cx-dx*k;fm.camY=d.cy-dy*k;farmClamp()});
-  const up=e=>{fm.ptrs.delete(e.pointerId);if(e.type==="pointercancel")fm.press=null;if(fm.ptrs.size<2)fm.pinch=null;const d=fm.drag;if(d&&d.id===e.pointerId){fm.drag=null;if(!d.moved&&e.type==="pointerup")farmTap(e)}
+    if(!d.moved&&Math.hypot(dx,dy)<12)return;d.moved=true;fm.press=null;clearTimeout(fm.holdT);const k=devicePixelRatio||1;fm.camX=d.cx-dx*k;fm.camY=d.cy-dy*k;farmClamp()});
+  const up=e=>{clearTimeout(fm.holdT);if(fm.moving&&fm.moving.id===e.pointerId){fm.ptrs.delete(e.pointerId);fmvEnd(e.type==="pointerup");return}
+    fm.ptrs.delete(e.pointerId);if(e.type==="pointercancel")fm.press=null;if(fm.ptrs.size<2)fm.pinch=null;const d=fm.drag;if(d&&d.id===e.pointerId){fm.drag=null;if(!d.moved&&e.type==="pointerup")farmTap(e)}
     if(fm.ptrs.size===1&&!fm.drag){const [id,q]=[...fm.ptrs.entries()][0];fm.drag={x:q.x,y:q.y,cx:fm.camX,cy:fm.camY,moved:true,id}}};
   fm.cv.addEventListener("pointerup",up);fm.cv.addEventListener("pointercancel",up);
   fm.cv.addEventListener("wheel",e=>{e.preventDefault();farmZoomTo(fm.zoom*Math.exp(-e.deltaY*.0015),e.clientX,e.clientY)},{passive:false});
@@ -3508,7 +3514,7 @@ function farmInit(){
 function farmFit(){const b=$("#farmBody").getBoundingClientRect(),d=devicePixelRatio||1;
   fm.cv.width=b.width*d;fm.cv.height=b.height*d;fm.cv.style.width=b.width+"px";fm.cv.style.height=b.height+"px";
   const W=fm.cv.width,H=fm.cv.height;const portrait=H>W*1.15;fm.base=portrait?Math.max(W/5.5,2*H/(fm.N+2)):Math.min(W/FARM_VIEW,H/(FARM_VIEW/2+1.2));
-  fm.zMin=Math.min(1,Math.min(W/(fm.N+1),2*H/(fm.N/2+2)/2)/fm.base);if(!fm.zoom)fm.zoom=1;fm.zoom=Math.max(fm.zMin,Math.min(2.5,fm.zoom));fm.tw=fm.base*fm.zoom;fm.th=fm.tw/2;if(!fm.camSet){fm.camSet=true;fm.camX=fm.tw*.5;fm.camY=-fm.th*3}farmClamp()}
+  fm.zMin=Math.min(1,Math.min(W/(fm.N+1),2*H/(fm.N/2+2)/2)/fm.base);if(!fm.zoom)fm.zoom=1;fm.zoom=Math.max(fm.zMin,Math.min(2.5,fm.zoom));fm.tw=fm.base*fm.zoom;fm.th=fm.tw/2;if(!fm.camSet){fm.camSet=true;fm.camX=fm.tw*.5;fm.camY=fm.th*(12-fm.N)/2}farmClamp()}
 // zoom around a point on screen (client px), keeping that spot of the farm under the finger
 function farmZoomTo(z,cx,cy){if(!fm.base)return;z=Math.max(fm.zMin||.4,Math.min(2.5,z));if(Math.abs(z-fm.zoom)<1e-4)return;
   const r=fm.cv.getBoundingClientRect(),k=fm.cv.width/r.width,mx=(cx-r.left)*k,my=(cy-r.top)*k;
@@ -3539,6 +3545,7 @@ function animalState(a,now){const A=ANIMALS[a.k];
 /* ---- sync local animal wanderers with the shared animal list ---- */
 function fChanged(){
   if(!F.st)return;
+  applyLayout();
   const ids=Object.keys(F.st.animals||{}),now=performance.now();
   for(const id of ids)if(!F.anim.has(id)){const P=pasture(),n=F.anim.size;
     F.anim.set(id,{id,i:P.i0+1+Math.random()*(P.i1-P.i0-2),j:P.j0+1+Math.random()*(P.j1-P.j0-2),ti:0,tj:0,state:"idle",until:now+500+n*600,dir:n%2?1:-1,front:true,t:Math.random()*9,hop:0})}
@@ -3566,14 +3573,14 @@ function fPick(a,now,hungry){const r=Math.random();
    Bubbles (💧, 🥚, the food an animal wants…) are their own tap targets and always win.
    Touching shows a glow and a name tag on what you'll get; lifting does it; dragging cancels.
    If two or more things are under the finger, a small "which one?" picker comes up. */
-const fKey=t=>t.kind+":"+(t.kind==="animal"?t.ref.id:t.kind==="plot"?t.spot:t.ref);
+const fKey=t=>t.kind+":"+(t.kind==="animal"?t.ref.id:t.kind==="plot"?t.spot:t.kind==="decor"?(t.key||t.ref):t.ref);
 function fCands(cx,cy){
   const r=fm.cv.getBoundingClientRect(),d=fm.cv.width/r.width,x=(cx-r.left)*d,y=(cy-r.top)*d;
   const sx=x-fm.ox,sy=y-fm.oy,i=(sy/(fm.th/2)+sx/(fm.tw/2))/2,j=(sy/(fm.th/2)-sx/(fm.tw/2))/2;
   const hits=fm.hits.filter(h=>x>=h.x0&&x<=h.x1&&y>=h.y0&&y<=h.y1).sort((a,b)=>b.d-a.d);
   const bub=hits.find(h=>h.kind==="bubble");if(bub)return {list:[bub.target],sure:true,i,j};
   const out=[],seen=new Set(),add=t=>{const k=fKey(t);if(!seen.has(k)){seen.add(k);out.push(t)}};
-  for(const h of hits)add(h.kind==="plot"?{kind:"plot",spot:h.spot}:{kind:h.kind,ref:h.ref,p:h.p});
+  for(const h of hits)add(h.kind==="plot"?{kind:"plot",spot:h.spot}:{kind:h.kind,ref:h.ref,p:h.p,key:h.key});
   const spot=FIELD_SPOTS.findIndex(([pi,pj],n)=>n<plotCount()&&i>=pi&&i<pi+1&&j>=pj&&j<pj+1);if(spot>=0)add({kind:"plot",spot});
   return {list:out.slice(0,4),i,j};
 }
@@ -3590,7 +3597,7 @@ function fGround(t){
   if(t.kind==="animal")return [t.ref.i,t.ref.j,.5];
   if(t.kind==="plot"){const [pi,pj]=FIELD_SPOTS[t.spot];return [pi+.5,pj+.5,.55]}
   if(t.kind==="struct"){const S=STRUCT[t.ref];return [S.i+S.wi/2,S.j+S.wj/2,Math.max(S.wi,S.wj)*.75]}
-  if(t.kind==="decor"){const n=Object.entries(F.st.decor||{}).find(([,k])=>k===t.ref);const sp=n&&DECOR_SPOTS[+n[0].slice(1)];return sp?[sp[0]+.5,sp[1]+.5,.5]:[0,0,0]}
+  if(t.kind==="decor"){const key=t.key||(Object.entries(F.st.decor||{}).find(([,k])=>k===t.ref)||[])[0];const sp=key&&decorPos(key);return sp?[sp[0]+.5,sp[1]+.5,.5]:[0,0,0]}
   return [0,0,0];
 }
 // walk my farmer over first; the chore starts when they arrive
@@ -3809,7 +3816,7 @@ function storeItems(){
       buy:()=>{const id=F.ref?F.ref.child("animals").push().key:"a"+Date.now();fUpd({["animals/"+id]:{k,fed:0,ready:0}})},done:`A new ${ANIMALS[k].name} joined the farm! It's hungry.`})}
   const used=Object.keys(S.decor||{}).length,full=used>=DECOR_SPOTS.length;
   for(const [k,d] of Object.entries(DECOR))out.push({sec:"Decorations",em:d.icon,name:d.name,price:d.price,blocked:full?"There's no more room for decorations.":false,
-    buy:()=>{const free=DECOR_SPOTS.findIndex((_,n)=>!(F.st.decor||{})["d"+n]);if(free>=0)fUpd({["decor/d"+free]:k})},done:`You put a ${d.name} on the farm!`});
+    buy:()=>{const free=DECOR_SPOTS.findIndex((sp,n)=>!(F.st.decor||{})["d"+n]&&fpOk([sp[0],sp[1],1,1],null));if(free>=0)fUpd({["decor/d"+free]:k})},done:`You put a ${d.name} on the farm!`});
   return out;
 }
 function openStore(){
@@ -4030,7 +4037,7 @@ function farmStreakBonus(){if(screen==="farm"&&me){fUpd({["jars/"+me]:INC(2)});t
    Tapping a crop, animal or building walks your farmer there first; the puzzle opens when they arrive. */
 const FW_SPEED=3.2, FW_STALE=10*60e3;
 const FW={ref:null,others:{},me:null,go:null,skew:0,photoImg:{},beat:0};
-const FW_SPAWN=[3.5,3.6];
+const FW_SPAWN=[3.5,2.5];
 function fwConnect(){
   if(FW.ref){FW.ref.off();try{FW.ref.child(me||"_").onDisconnect().cancel()}catch(e){}}
   FW.ref=null;FW.others={};
@@ -4042,7 +4049,7 @@ function fwConnect(){
     try{FW.ref.child(me).onDisconnect().remove()}catch(e){}}
   fwSend();
 }
-const FARM_N_=16;
+const FARM_N_=FARM_SIZE;
 const fwNow=()=>Date.now()+FW.skew;
 function fwSend(){const m=FW.me;if(!m||!me)return;
   const rec={fi:+m.i.toFixed(2),fj:+m.j.toFixed(2),ti:+(m.walking?m.ti:m.i).toFixed(2),tj:+(m.walking?m.tj:m.j).toFixed(2),t0:fwNow(),sp:FW_SPEED,act:m.act||"",at:fwNow()};
@@ -4128,6 +4135,58 @@ function fwItems(items,dt,t){
 }
 FW.anim={};
 
+/* ---- moving things: press and hold a building, a decoration or the crop field, then drag it somewhere new ----
+   Shared for everyone: farm/layout/<building or "field"> = {i,j}; farm/dpos/<decor key> = {i,j}.
+   The footprint shows green where it fits and red where it would overlap something or leave the farm. */
+const STRUCT_HOME={};for(const [k,v] of Object.entries(STRUCT))STRUCT_HOME[k]={i:v.i,j:v.j};
+const FIELD_HOME=[1,9];let FIELD_O=FIELD_HOME.slice();
+function fieldSpotsAt(i0,j0){FIELD_SPOTS.length=0;for(let j=0;j<6;j++)for(let i=0;i<3;i++)FIELD_SPOTS.push([i0+i,j0+j])}
+const okNum=v=>typeof v==="number"&&isFinite(v);
+function applyLayout(){const L=(F.st&&F.st.layout)||{},mv=fm.moving;
+  for(const [k,v] of Object.entries(STRUCT)){const o=L[k],h=STRUCT_HOME[k];v.i=o&&okNum(o.i)?o.i:h.i;v.j=o&&okNum(o.j)?o.j:h.j}
+  const f=L.field;FIELD_O=f&&okNum(f.i)?[f.i,f.j]:FIELD_HOME.slice();
+  if(mv&&mv.kind==="struct"){STRUCT[mv.ref].i=mv.ci;STRUCT[mv.ref].j=mv.cj}
+  if(mv&&mv.kind==="field")FIELD_O=[mv.ci,mv.cj];
+  fieldSpotsAt(FIELD_O[0],FIELD_O[1])}
+function decorPos(key){const mv=fm.moving;if(mv&&mv.kind==="decor"&&mv.ref===key)return [mv.ci,mv.cj];const o=(F.st&&F.st.dpos||{})[key];return o&&okNum(o.i)?[o.i,o.j]:DECOR_SPOTS[+String(key).slice(1)]}
+const structHere=id=>!STRUCT[id].home||(F.st&&F.st.builds||{})[id];
+// footprints [i,j,wi,wj] of everything that takes up ground, except the thing being moved
+function footprints(skip){const out=[];
+  for(const id of Object.keys(STRUCT))if(structHere(id)&&skip!=="struct:"+id){const S=STRUCT[id];out.push([S.i,S.j,S.wi,S.wj])}
+  if(skip!=="field")out.push([FIELD_O[0],FIELD_O[1],3,6]);
+  for(const key of Object.keys((F.st&&F.st.decor)||{}))if(skip!=="decor:"+key){const p=decorPos(key);if(p)out.push([p[0],p[1],1,1])}
+  const P=pasture();out.push([P.i0,P.j0,P.i1-P.i0,P.j1-P.j0]);return out}
+function fpOk(r,skip){const N=fm.N,e=.04;if(r[0]<-e||r[1]<-e||r[0]+r[2]>N+e||r[1]+r[3]>N+e)return false;
+  return !footprints(skip).some(o=>r[0]<o[0]+o[2]-e&&o[0]<r[0]+r[2]-e&&r[1]<o[1]+o[3]-e&&o[1]<r[1]+r[3]-e)}
+function fmvTile(cx,cy){const r=fm.cv.getBoundingClientRect(),d=fm.cv.width/r.width,x=(cx-r.left)*d,y=(cy-r.top)*d,sx=x-fm.ox,sy=y-fm.oy;
+  return [(sy/(fm.th/2)+sx/(fm.tw/2))/2,(sy/(fm.th/2)-sx/(fm.tw/2))/2]}
+function fmvStart(t,pid,cx,cy){
+  let kind,ref,i0,j0,wi,wj,name;
+  if(t.kind==="struct"){kind="struct";ref=t.ref;const S=STRUCT[ref];[i0,j0,wi,wj]=[S.i,S.j,S.wi,S.wj];name=S.name}
+  else if(t.kind==="decor"){kind="decor";ref=t.key;if(!ref)return;const p=decorPos(ref);[i0,j0,wi,wj]=[p[0],p[1],1,1];name=(DECOR[t.ref]||{}).name||"decoration"}
+  else{kind="field";ref="field";[i0,j0,wi,wj]=[FIELD_O[0],FIELD_O[1],3,6];name="crop field"}
+  const [ti,tj]=fmvTile(cx,cy);
+  fm.moving={kind,ref,id:pid,oi:i0,oj:j0,ci:i0,cj:j0,wi,wj,gi:ti-i0,gj:tj-j0,ok:true,name,skip:kind==="field"?"field":kind+":"+ref};
+  fm.drag=null;fm.press=null;fPickClose();
+  try{navigator.vibrate&&navigator.vibrate(25)}catch(e){}blip(520,.08,"sine");setTimeout(()=>blip(780,.08,"sine"),80);
+  say(little()?`Move the ${name}! Drag it to a new spot.`:`Moving the ${name}. Drag it and let go.`);
+}
+function fmvDrag(cx,cy){const m=fm.moving,[ti,tj]=fmvTile(cx,cy),snap=m.kind==="struct"?2:1;
+  const ci=Math.round((ti-m.gi)*snap)/snap,cj=Math.round((tj-m.gj)*snap)/snap;
+  if(ci===m.ci&&cj===m.cj)return;m.ci=ci;m.cj=cj;m.ok=fpOk([ci,cj,m.wi,m.wj],m.skip);applyLayout();blip(m.ok?660:300,.03,"sine");
+  // nudge the camera when dragging near the edge
+  const r=fm.cv.getBoundingClientRect(),edge=40;let dx=0,dy=0;if(cx<r.left+edge)dx=-12;else if(cx>r.right-edge)dx=12;if(cy<r.top+edge)dy=-12;else if(cy>r.bottom-edge)dy=12;
+  if(dx||dy){const k=devicePixelRatio||1;fm.camX+=dx*k;fm.camY+=dy*k;farmClamp()}}
+function fmvEnd(drop){const m=fm.moving;if(!m)return;fm.moving=null;
+  const moved=m.ci!==m.oi||m.cj!==m.oj,ok=drop&&moved&&fpOk([m.ci,m.cj,m.wi,m.wj],m.skip);
+  if(ok){const v={i:m.ci,j:m.cj};
+    if(m.kind==="decor"){F.st.dpos=F.st.dpos||{};F.st.dpos[m.ref]=v;fUpd({["dpos/"+m.ref]:v})}
+    else{F.st.layout=F.st.layout||{};F.st.layout[m.ref]=v;fUpd({["layout/"+m.ref]:v})}
+    blip(880,.1,"triangle");say(`You moved the ${m.name}!`)}
+  else if(drop&&moved){blip(220,.15,"square");say(`The ${m.name} doesn't fit there. Try a green spot!`)}
+  applyLayout();
+}
+
 /* ---- drawing ---- */
 function fPop(w,txt){fPopAt(fIso(w.i,w.j),txt,fm.th*2.2*((ANIMALS[(F.st.animals[w.id]||{}).k]||{}).h||1))}
 function fPopAt(p,txt,up=fm.th*1.6){fm.pops.push({x:p.x,y:p.y-up,txt,t:0})}
@@ -4173,13 +4232,14 @@ function farmFrame(t){
       g.lineWidth=th*.1;for(let k=0;k<4;k++){const A=c[k],B=c[(k+1)%4],n=Math.round(Math.hypot(B.x-A.x,B.y-A.y)/fm.tw*1.4);for(let s=0;s<=n;s++){const x=A.x+(B.x-A.x)*s/n,y=A.y+(B.y-A.y)*s/n;g.beginPath();g.moveTo(x,y);g.lineTo(x,y-th*.48);g.stroke()}}}
     else{g.strokeStyle="#8A5A32";g.lineWidth=Math.max(2,th*.06);g.setLineDash([th*.25,th*.15]);g.beginPath();g.moveTo(c[0].x,c[0].y);for(const q of [c[1],c[2],c[3],c[0]])g.lineTo(q.x,q.y);g.stroke();g.setLineDash([])}}
   fHighlight(t,true);
+  if(fm.moving){const m=fm.moving;fm.g.save();fm.g.globalAlpha=.45;farmTile(m.ci,m.cj,m.ok?"#22C55E":"#EF4444",m.wi,m.wj);fm.g.restore()}
   const items=[];
   for(const [id,s] of Object.entries(STRUCT))if(!s.home||(F.st.builds||{})[id])items.push({d:s.i+s.j+s.wi+s.wj-1,draw:()=>drawStruct(id,s,t)});
-  for(const [key,k] of Object.entries(F.st.decor||{})){const sp=DECOR_SPOTS[+key.slice(1)],D=DECOR[k];if(!sp||!D)continue;
+  for(const [key,k] of Object.entries(F.st.decor||{})){const sp=decorPos(key),D=DECOR[k];if(!sp||!D)continue;
     items.push({d:sp[0]+sp[1]+1,draw:()=>{const c=fIso(sp[0]+.5,sp[1]+.5);
       if(k==="pond"){g.fillStyle="#7FC8F8";g.beginPath();g.ellipse(c.x,c.y,fm.tw*.45,th*.42,0,0,7);g.fill();g.fillStyle="#5BB0E8";g.beginPath();g.ellipse(c.x,c.y+th*.05,fm.tw*.32,th*.26,0,0,7);g.fill()}
       g.font=`${th*(k==="tree"?1.5:k==="pond"?.6:1)}px system-ui`;g.textAlign="center";g.fillText(D.icon,c.x,c.y+th*(k==="pond"?.1:.3));
-      fm.hits.push({kind:"decor",ref:k,p:c,d:sp[0]+sp[1]+1,x0:c.x-th*.6,x1:c.x+th*.6,y0:c.y-th*1.4,y1:c.y+th*.4})}})}
+      fm.hits.push({kind:"decor",ref:k,key,p:c,d:sp[0]+sp[1]+1,x0:c.x-th*.6,x1:c.x+th*.6,y0:c.y-th*1.4,y1:c.y+th*.4})}})}
   for(let n=0;n<nPlots;n++){const p=(F.st.plots||{})["p"+n];const [pi,pj]=FIELD_SPOTS[n];
     items.push({d:pi+pj+1,draw:()=>{const ps=plotState(p,now),c=fIso(pi+.5,pj+.5);
       fm.hits.push({kind:"plot",spot:n,d:pi+pj+1,x0:c.x-fm.tw*.4,x1:c.x+fm.tw*.4,y0:c.y-th*1.3,y1:c.y+th*.5});
@@ -4224,6 +4284,9 @@ function farmFrame(t){
   fwItems(items,dt,t);
   items.sort((a,b)=>a.d-b.d).forEach(it=>it.draw());
   fHighlight(t,false);
+  if(fm.moving){const m=fm.moving,gg0=fm.g,q=[fIso(m.ci,m.cj),fIso(m.ci+m.wi,m.cj),fIso(m.ci+m.wi,m.cj+m.wj),fIso(m.ci,m.cj+m.wj)];gg0.save();gg0.strokeStyle=m.ok?"#16A34A":"#DC2626";gg0.lineWidth=Math.max(3,fm.th*.1);gg0.setLineDash([fm.th*.3,fm.th*.18]);gg0.lineDashOffset=-t/40;gg0.beginPath();q.forEach((p,n)=>n?gg0.lineTo(p.x,p.y):gg0.moveTo(p.x,p.y));gg0.closePath();gg0.stroke();gg0.restore()}
+  if(fm.moving){const m=fm.moving,c=fIso(m.ci+m.wi/2,m.cj+m.wj/2),th=fm.th,txt=m.ok?`✋ ${m.name}`:"🚫 doesn't fit here",gg=fm.g;gg.font=`800 ${Math.max(13,th*.32)}px system-ui`;
+    const tw=gg.measureText(txt).width+th*.5,y=c.y+th*(m.wj+m.wi)*.25+th*.6;gg.fillStyle=m.ok?"rgba(21,128,61,.92)":"rgba(185,28,28,.92)";gg.beginPath();gg.roundRect?gg.roundRect(c.x-tw/2,y-th*.3,tw,th*.6,th*.3):gg.rect(c.x-tw/2,y-th*.3,tw,th*.6);gg.fill();gg.fillStyle="#fff";gg.textAlign="center";gg.textBaseline="middle";gg.fillText(txt,c.x,y);gg.textBaseline="alphabetic"}
   g.textAlign="center";fm.pops=fm.pops.filter(p=>(p.t+=dt)<1.2);for(const p of fm.pops){g.globalAlpha=1-p.t/1.2;g.font=`${th*.7}px system-ui`;g.fillText(p.txt,p.x,p.y-p.t*th*1.2)}g.globalAlpha=1;
   if(t-(fm.oChk||0)>5000){fm.oChk=t;ensureOrders()}
   if(t-(fm.cChk||0)>1000){fm.cChk=t;coopTick()}
@@ -5264,7 +5327,7 @@ function openFarm(){if(!me){goLobby();return}if(!fm.cv)farmInit();farmConnect();
 $("#fHome").onclick=()=>{closeSheet();hush();goLobby()};
 $("#fBack").onclick=()=>{closeSheet();hush();goLobby()};
 $("#playFarm").onclick=()=>{sayLittle("Kapanigan Farmstand");openFarm()};
-if(/[?&]farmlocal\b/.test(location.search))window.__farm={openFamBasket,sellIt,moveGoods,openBasket,farmClamp,fCands,fInfo,fGo,openTask,TASK_TYPES,F,fm,FW,openBank,bankPut,farmZoomTo,fwWalk,farmTapAt:(i,j)=>{const p=fIso(i,j),r=fm.cv.getBoundingClientRect(),d=fm.cv.width/r.width;farmTap({clientX:r.left+p.x/d,clientY:r.top+p.y/d})},CO,coopUpd,coopTick,startTeam,joinTeam,tk:()=>tk,tapPlot,tapAnimal,tapStruct,openStore,openOrders,openJar,openSell,buyIt,storeItems,deliver,sendGift,win:finishTask,quit:()=>closeTask(true)}; // testing only
+if(/[?&]farmlocal\b/.test(location.search))window.__farm={fmvStart,fmvDrag,fmvEnd,fpOk,STRUCT,FIELD_SPOTS,decorPos,openFamBasket,sellIt,moveGoods,openBasket,farmClamp,fCands,fInfo,fGo,openTask,TASK_TYPES,F,fm,FW,openBank,bankPut,farmZoomTo,fwWalk,farmTapAt:(i,j)=>{const p=fIso(i,j),r=fm.cv.getBoundingClientRect(),d=fm.cv.width/r.width;farmTap({clientX:r.left+p.x/d,clientY:r.top+p.y/d})},CO,coopUpd,coopTick,startTeam,joinTeam,tk:()=>tk,tapPlot,tapAnimal,tapStruct,openStore,openOrders,openJar,openSell,buyIt,storeItems,deliver,sendGift,win:finishTask,quit:()=>closeTask(true)}; // testing only
 })();
 </script>
 </body>
