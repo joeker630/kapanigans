@@ -4403,7 +4403,7 @@ function animalState(a,now){const A=ANIMALS[a.k];
 /* ---- sync local animal wanderers with the shared animal list ---- */
 function fChanged(){
   if(!F.st)return;
-  applyLayout();
+  applyLayout();giveStarterSeeds();
   const ids=Object.keys(F.st.animals||{}),now=performance.now();
   for(const id of ids)if(!F.anim.has(id)){const P=pasture(),n=F.anim.size;
     F.anim.set(id,{id,i:P.i0+1+Math.random()*(P.i1-P.i0-2),j:P.j0+1+Math.random()*(P.j1-P.j0-2),ti:0,tj:0,state:"idle",until:now+500+n*600,dir:n%2?1:-1,front:true,t:Math.random()*9,hop:0})}
@@ -4556,21 +4556,34 @@ function fBtn(cls,em,label,sub,onClick,disabled){const b=el("button","choice "+(
 const coins=n=>`🪙 ${n}`;
 function needMoolah(price){return `You need ${price} Moolah. You have ${myJar()}. Sell goods at the farmstand, or ask your family for a Moolah gift!`}
 
+/* ---- seeds are bought in packs at the Farm Store and used up when planting (goods/<who>/seed_<crop>) ----
+   Everyone gets a one-time starter pack (farm/starter/<who>). Packs cost less than their crops sell for. */
+const SEED_PACK={carrot:{n:3,price:1},tomato:{n:3,price:3},strawberry:{n:3,price:3},corn:{n:3,price:4},pumpkin:{n:2,price:4}};
+const STARTER_SEEDS={carrot:3,pumpkin:1};
+const mySeeds=c=>+(myGoods()["seed_"+c]||0);
+function seedsLine(g){const p=Object.keys(CROPS).filter(c=>(+g["seed_"+c]||0)>0).map(c=>`${GOODS[c].icon}×${g["seed_"+c]}`);return p.length?"🌱 Seeds: "+p.join("  "):""}
+function giveStarterSeeds(){if(!F.st||!me||(F.st.starter||{})[me]||F.givingStarter)return;F.givingStarter=true;
+  const up={["starter/"+me]:true};for(const [c,n] of Object.entries(STARTER_SEEDS))up[`goods/${me}/seed_${c}`]=INC(n);fUpd(up);
+  setTimeout(()=>{F.givingStarter=false;toast("🌱 Starter seeds: 3 carrot and 1 pumpkin!")},800)}
 function openSeeds(n){
   fSheet(little()?"🌱 Plant a seed":"🌱 Plant a seed",body=>{
     const fert=(myGoods().fert||0)>0;let useF=false;
-    const grid=el("div","choices");
-    for(const c of Object.keys(CROPS)){const G=GOODS[c];
-      if(unlocked(c))grid.append(fBtn("",G.icon,G.names,little()?"":`ready in ${Math.round(CROPS[c].grow/60e3)} min`,()=>plantIt(n,c,useF)));
-      else grid.append(fBtn("lock",G.icon,G.names,"🔒 Farm Store",null,`Buy ${G.names} seeds at the Farm Store.`))}
+    const grid=el("div","choices");let any=false;
+    for(const c of Object.keys(CROPS)){const G=GOODS[c],k=mySeeds(c);
+      if(k>0){any=true;grid.append(fBtn("",G.icon,little()?`× ${k}`:`${G.names} (${k} seed${k===1?"":"s"})`,little()?"":`ready in ${Math.round(CROPS[c].grow/60e3)} min`,()=>plantIt(n,c,useF)))}
+      else grid.append(fBtn("lock",G.icon,G.names,"no seeds",null,`You need ${G.names} seeds. Buy them at the Farm Store.`))}
     body.append(grid);
+    if(!any)body.prepend(el("p","fempty",little()?"No seeds! Buy some at the Farm Store.":"You're out of seeds. Buy seed packs at the 🔨 Farm Store."));
+    const st=el("button","ghost","🔨 Buy seeds at the Farm Store");st.onclick=()=>{closeSheet();const S=STRUCT.barn;fwWalk(S.i+S.wi/2+.3,S.j+S.wj+.45,openStore)};body.append(st);
     if(fert){const t=el("button","ghost ftoggle",`💩 Use fertilizer (${myGoods().fert} left): grows twice as fast, gives 2`);
       t.onclick=()=>{useF=!useF;t.classList.toggle("on",useF);if(useF)say("Fertilizer on!")};body.prepend(t)}
   });say(little()?"Pick a seed to plant!":"Pick a seed to plant.");
 }
 function plantIt(n,c,useF){closeSheet();
+  if(mySeeds(c)<1){say(`You need ${GOODS[c].names} seeds. Buy them at the Farm Store.`);return}
   farmDo("plant",{crop:c}).then(ok=>{if(!ok)return;
-    const go=()=>fTx("plots/p"+n,x=>{if(x&&x.crop)return;return {crop:c,planted:Date.now(),watered:0,fert:!!useF}}).then(ok=>{if(!ok)return;
+    const go=()=>fTx(`goods/${me}/seed_${c}`,v=>{if(!(v>0))return;return v-1===0?null:v-1}).then(ok=>{if(!ok){say(`You're out of ${GOODS[c].names} seeds.`);return Promise.resolve(false)}
+      return fTx("plots/p"+n,x=>{if(x&&x.crop)return;return {crop:c,planted:Date.now(),watered:0,fert:!!useF}}).then(ok=>{if(!ok)fUpd({[`goods/${me}/seed_${c}`]:INC(1)});return ok})}).then(ok=>{if(!ok)return;
       const [pi,pj]=FIELD_SPOTS[n];fPopAt(fIso(pi+.5,pj+.5),"🌱");blip(800,.12,"triangle");say(`You planted ${GOODS[c].names}! Now give them some water.`)});
     if(useF)fTx(`goods/${me}/fert`,v=>{if(!(v>0))return;return v-1}).then(ok=>{if(!ok)useF=false;go()});else go()})}
 
@@ -4613,6 +4626,7 @@ function openBasket(){
       body.append(grid);
       if(!little()){const all={};for(const k of have)all[k]=g[k];const b=el("button","ghost",tab==="family"?"Take everything":"Share everything");b.onclick=()=>moveGoods(tab==="family"?"take":"share",all);body.append(b)}}
     if(tab==="mine"&&myGoods().fert)body.append(el("p","fnote",`💩 Fertilizer: ${myGoods().fert}. Use it when you plant a seed.`));
+    if(tab==="mine"&&seedsLine(myGoods()))body.append(el("p","fnote",seedsLine(myGoods())+". Use them when you plant."));
     if(tab==="family"){const rows=Object.values(F.st.blog||{}).filter(r=>r&&KIDS[r.who]).sort((a,b)=>b.at-a.at);
       body.append(el("h3","fsec","📒 Basket log"));
       if(!rows.length)body.append(el("p","fnote","Nothing yet."));
@@ -4677,8 +4691,8 @@ function farmMail(to,from,text,emoji){if(!mail.ref||!KIDS[to]||!KIDS[from])retur
 /* ---- Farm Store ---- */
 function storeItems(){
   const S=F.st,out=[];
-  const crops=[];for(const c of ["tomato","corn","strawberry"])crops.push({sec:"Seeds",em:GOODS[c].icon,name:`${GOODS[c].names} seeds`,price:PRICES.seed[c],own:unlocked(c),
-    buy:()=>fUpd({["unlock/"+c]:true}),done:`You can plant ${GOODS[c].names} now!`});
+  const crops=[];for(const [c,P] of Object.entries(SEED_PACK))crops.push({sec:"Seeds",em:GOODS[c].icon,name:`${P.n} ${c==="corn"?"corn":GOODS[c].name} seeds`,price:P.price,sub:`you have ${mySeeds(c)}`,
+    buy:()=>fUpd({[`goods/${me}/seed_${c}`]:INC(P.n)}),done:`You got ${P.n} ${c==="corn"?"corn":GOODS[c].name} seeds! Plant them in the field.`});
   out.push(...crops);
   const f=S.field||0;out.push({sec:"Farm",em:"🟫",name:f>=4?"Field (full size)":"Bigger field (+3 plots)",price:PRICES.field[f]||0,own:f>=4,puzzle:true,buy:()=>fUpd({field:f+1}),done:"Your field is bigger! Plant more seeds."});
   out.push({sec:"Farm",em:"🪵",name:(S.fence||0)>=1?"Wooden fence (built)":"Wooden fence + bigger pasture",price:PRICES.fence,own:(S.fence||0)>=1,puzzle:true,buy:()=>fUpd({fence:1}),done:"A new fence! The animals have more room to play."});
@@ -4746,7 +4760,7 @@ function bankPut(amt){
     say(`You put ${amt} Moolah in the family bank. Thank you!`)})}
 
 /* ---- family orders ---- */
-function availGoods(){const g=Object.keys(CROPS).filter(unlocked);for(const k of ["hen","cow","sheep"])if(animalsOf(k))g.push(ANIMALS[k].good);return g}
+function availGoods(){const g=Object.keys(CROPS);for(const k of ["hen","cow","sheep"])if(animalsOf(k))g.push(ANIMALS[k].good);return g}
 function makeOrder(who){
   const L=(KIDS[who]||{}).level==="little",avail=availGoods().sort(()=>Math.random()-.5),items={};
   const kinds=L?1:Math.min(avail.length,2+(Math.random()<.4?1:0));

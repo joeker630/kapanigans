@@ -145,6 +145,11 @@ A **live co-op farm** the kids share. Every farm action is done by solving a sho
   - In each slot an animal strolls from one waypoint to the next, then grazes, stands or naps. The waypoints and the activity come from a seeded "random" based on the animal's id and the slot number.
   - Waypoints stay near each animal's own home spot in the pasture, so they spread out.
   - Every device computes the same answer and nothing extra is synced. Eating after being fed is a short local animation on top.
+- **Seeds are bought and used up (Oct 27):** seeds work like decorations, a repeat purchase at the Farm Store, instead of a one-time unlock.
+  - Packs: 3 carrot 🪙1, 3 tomato 🪙3, 3 strawberry 🪙3, 3 corn 🪙4, 2 pumpkin 🪙4. Each pack is priced below what its crops sell for.
+  - Planting uses one seed. The seed picker shows how many you have, says when you're out, and has a "Buy seeds" button that walks you to the store.
+  - Everyone gets a one-time starter pack: 3 carrot and 1 pumpkin (`farm/starter/<who>`).
+  - Seeds live in your basket (`goods/<who>/seed_<crop>`) and show under "My basket". The old crop unlocks are no longer used, and orders can ask for any crop.
 - **Selling has no puzzle (Oct 27):** tap a good at the farmstand and it's sold. The money puzzle still comes up when other chores borrow it.
 - **Family Basket building (Oct 27):** a wicker crate on the farm next to the order board, with what's inside showing on top. Its menu has:
   - big **⬇️ Put in** buttons and a **Put it all in** button
