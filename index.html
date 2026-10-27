@@ -31,6 +31,20 @@ body{position:fixed;inset:0;width:100%;max-width:100vw;overflow:hidden;padding-t
 video{max-width:100%}
 body{height:100%;margin:0}
 [hidden]{display:none!important}
+/* how-to + FAQ popup */
+.help{position:fixed;inset:0;z-index:70;background:rgba(43,33,64,.45);display:flex;align-items:center;justify-content:center;padding:max(12px,env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) max(12px,env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px))}
+.hcard{--hs:1;background:var(--paper);border-radius:28px;width:min(880px,100%);max-height:100%;overflow:hidden;display:flex;flex-direction:column;gap:calc(14px*var(--hs));padding:calc(20px*var(--hs)) calc(24px*var(--hs));box-shadow:0 8px 0 var(--sky-deep)}
+.hhead{display:flex;align-items:center;gap:12px;flex:none}.hem{font-size:calc(44px*var(--hs))}.hhead h2{flex:1;margin:0;font-family:var(--display);font-size:calc(32px*var(--hs))}
+.hbody{flex:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:calc(16px*var(--hs)) calc(28px*var(--hs))}
+.hcol h3{margin:0 0 calc(8px*var(--hs));font-size:calc(15px*var(--hs));text-transform:uppercase;letter-spacing:.06em;color:#7a6f92}
+.hcol ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:calc(10px*var(--hs))}
+.hcol li{display:flex;gap:12px;align-items:center;font-size:calc(20px*var(--hs));line-height:1.25}
+.hcol li i{font-style:normal;font-size:calc(30px*var(--hs));width:calc(40px*var(--hs));text-align:center;flex:none}
+.hcol dl{margin:0}.hcol dt{font-size:calc(18px*var(--hs));font-weight:800;margin-top:calc(10px*var(--hs))}.hcol dt:first-child{margin-top:0}
+.hcol dd{margin:2px 0 0;font-size:calc(17px*var(--hs));font-weight:600;color:#4b4063;line-height:1.3}
+#hOk{align-self:center;flex:none;font-size:calc(24px*var(--hs))}
+.hcard.little{width:min(640px,100%)}.hcard.little li{font-size:calc(26px*var(--hs))}.hcard.little li i{font-size:calc(42px*var(--hs));width:calc(54px*var(--hs))}
+
 body{
   background:var(--sky);
   background-image:radial-gradient(circle at 1px 1px, rgba(43,33,64,.07) 1.5px, transparent 0);
@@ -810,6 +824,7 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
 
 </head>
 <body>
+<div class="help" id="help" hidden></div>
 <!-- ============ FAMILY CODE (grown-ups) ============ -->
 <section class="screen" id="setup" hidden>
   <div class="setupcard">
@@ -1074,9 +1089,53 @@ function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i)
 function rng(seed){let a=seed>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 function esc(s){return String(s).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]))}
 function kidOf(k){return KIDS[k] || (k==="kapanigans"?SYS:KIDS.bear)}
-function show(id){if(screen==="reader"&&id!=="reader")hush();if(screen==="inbox"&&id!=="inbox"&&typeof stopRec==="function")stopRec();for(const s of ["setup","pick","lobby","game","story","reader","inbox","grown","farm","dress"]) $("#"+s).hidden = s!==id; if(id!=="farm"&&tk) closeTask(true); screen=id; if(typeof renderVideoUI==="function") renderVideoUI(); if(id==="pick"&&typeof syncMailBadges==="function"){syncMailBadges();renderPickClaims()}
+function show(id){const prevScr=screen;if(screen==="reader"&&id!=="reader")hush();if(screen==="inbox"&&id!=="inbox"&&typeof stopRec==="function")stopRec();for(const s of ["setup","pick","lobby","game","story","reader","inbox","grown","farm","dress"]) $("#"+s).hidden = s!==id; if(id!=="farm"&&tk) closeTask(true); screen=id; if(typeof renderVideoUI==="function") renderVideoUI(); if(id==="pick"&&typeof syncMailBadges==="function"){syncMailBadges();renderPickClaims()}
   if(me&&room&&id!=="game"&&id!=="setup") setPresence(id==="farm"?{scr:id}:{scr:id,act:null});
-  if(typeof tickStats==="function") tickStats()}
+  if(typeof tickStats==="function") tickStats();
+  if(id!==prevScr) showHelp(id); else if(!$("#help").hidden&&helpLast!==id) $("#help").hidden=true}
+/* ---------------- how-to + FAQ popup: shows every time you open a screen, one tap to close, always fits one page ---------------- */
+const HELP={
+  setup:{em:"🔑",title:"Getting started",steps:[["🔤","Type your 4-letter family code."],["🆕","No code yet? Tap New code and share it with the family."],["▶️","Tap Let's play."]],
+    faq:[["Who can join?","Anyone with the same code. Only share it with family."],["Lost the code?","Any grown-up can see it in 🔒 Grown-ups › Code."]]},
+  pick:{em:"👋",title:"Who are you?",steps:[["👆","Tap your picture."],["🧑","Grown-ups: tap your name at the bottom."],["🔁","Switch later by tapping your name at the top of Home."]],
+    faq:[["Someone is already using my name?","Tap Play here instead. The other device steps out."],["Is there a password?","No. It's just for family."]]},
+  lobby:{em:"🏠",title:"Home",steps:[["👀","Each card shows who's on and where they are."],["🙌","Tap the big button on a card to join that person."],["🎮","Pick a game at the bottom."],["🎤","Turn your mic 🎤 and camera 📷 on or off on your card."],["👗","Tap Dress up to make your farmer."]],
+    faq:[["Camera won't start?","Settings › Safari › Camera and Microphone › Allow, then reload."],["Don't see someone?","They need the same family code and a green Connected dot."],["Read-aloud too much?","Tap 🔊 at the top to turn it off."]]},
+  game:{em:"🎨",title:"Color Together",steps:[["🖍️","Pick a tool and a color."],["✏️","Color your part of the picture (it has your name)."],["👋","Tap 👋 ❤️ 😂 ⭐ to cheer each other on."],["🎉","Tap All done when you finish."]],
+    faq:[["Can't color a spot?","That part belongs to someone else."],["Made a mistake?","Tap ↩️ Undo."],["Left by accident?","On Home, tap Jump back in."],["Third person?","They can watch and cheer."]]},
+  dress:{em:"👗",title:"Dressing room",steps:[["👆","Pick a tab: skin, face, hair, hat, clothes."],["🎨","Tap a style, then a color dot."],["🎲","Tap the dice for a surprise look."],["✔️","Tap All done to save."]],
+    faq:[["Where does my look show?","Home, games, the Inbox and as your farmer on the farm."],["Other devices?","Your look is the same everywhere."]]},
+  story:{em:"🌙",title:"Bedtime Story",steps:[["💌","Pick who the story is for."],["📚","Pick a story."],["🤪","Fill in the silly words."],["✏️","Draw the characters."],["🎤","Choose who reads it: the reading voice, you, or no audio."],["📨","Send it!"]],
+    faq:[["Where does it go?","Into their 💌 Inbox as a gift."],["Too big to send?","Use shorter recordings or simpler drawings."]]},
+  reader:{em:"📖",title:"Reading a story",steps:[["➡️","Tap ➡️ for the next page, ⬅️ to go back."],["▶️","Tap ▶️ to let it read by itself, ⏸️ to stop."],["💛","At the end, say thank you."],["✖️","Tap ✖️ to close."]],
+    faq:[["No sound?","Check the volume and the silent switch, and 🔊 on Home."],["Says 'no audio'?","That one is for a grown-up to read out loud."]]},
+  inbox:{em:"💌",title:"Inbox",steps:[["📬","Tap a message to open it."],["✏️","Send something new: a sticker, drawing, voice note or words."],["👤","Pick who gets it, then send."]],
+    faq:[["Who can see it?","Only the person you send it to."],["Voice note won't record?","Allow the microphone in Settings › Safari."]]},
+  grown:{em:"🔒",title:"Grown-ups",steps:[["📊","Reports: what the kids played and learned."],["🎙️","Voice: record your voice for the game's words."],["🔑","Code: see and share the family code."],["📸","Photos and inboxes for each person."]],
+    faq:[["Can kids get in?","Only by pressing and holding the lock."],["New phone?","Open the site, type the same family code, pick your name."]]},
+  farm:{em:"🥕",title:"Farmstand",steps:[["👆","Tap a crop, animal or building. Your farmer walks there."],["🧩","Solve the little puzzle to do the chore."],["🌱","Plant, water and pick crops. Feed animals for 🥚 🥛 🧶."],["🧺","Sell at the farmstand for 🪙 Moolah. Build at the red barn."],["📋","Fill family orders on the board."],["🤏","Pinch or tap ➕ ➖ to zoom. Press and hold to move buildings."]],
+    faq:[["Is it our farm?","Yes, the whole family shares one farm."],["Did I lose anything?","Never. Plants and animals just droop until you help."],["How long?","About 30 minutes is a good farm visit."]]},
+};
+let helpLast="";
+function showHelp(id){
+  const H=HELP[id]; if(!H) return; helpLast=id;
+  const box=$("#help"); const little=typeof lvl==="function"&&lvl()==="little";
+  box.innerHTML=`<div class="hcard${little?" little":""}" role="dialog" aria-label="${esc(H.title)} help">
+    <div class="hhead"><span class="hem">${H.em}</span><h2>${esc(H.title)}</h2><button class="round" id="hSay" aria-label="Read it to me">🔊</button></div>
+    <div class="hbody"><div class="hcol"><h3>How to</h3><ol>${H.steps.map(([e,t])=>`<li><i>${e}</i><span>${esc(t)}</span></li>`).join("")}</ol></div>
+    ${little?"":`<div class="hcol"><h3>Questions</h3><dl>${H.faq.map(([q,a])=>`<dt>${esc(q)}</dt><dd>${esc(a)}</dd>`).join("")}</dl></div>`}</div>
+    <button class="bigbtn" id="hOk">Got it! 👍</button></div>`;
+  box.hidden=false; fitHelp();
+  $("#hOk").onclick=()=>{hush();box.hidden=true;blip(520,.06)};
+  $("#hSay").onclick=()=>{unlockAudio();say(H.title+". "+H.steps.map(s=>s[1]).join(" "))};
+}
+function fitHelp(){ // shrink the text until the whole card fits on one screen, no scrolling
+  const box=$("#help"); if(box.hidden) return; const c=box.querySelector(".hcard"); if(!c) return;
+  let s=1; c.style.setProperty("--hs",s);
+  while(s>.5&&(c.scrollHeight>c.clientHeight+1||c.scrollWidth>c.clientWidth+1)){s-=.04;c.style.setProperty("--hs",s.toFixed(2))}
+}
+addEventListener("resize",()=>requestAnimationFrame(fitHelp));
+
 /* ---------------- read-aloud helper ---------------- */
 // say(text, {rate, pitch, pause, onWord(charIndex,len), onEnd}) speaks one sentence at a time with short pauses.
 // sayLittle(text) speaks only for Little-level players (Violet, Bear friend).

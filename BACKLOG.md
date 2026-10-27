@@ -800,6 +800,8 @@ Bedtime Story (#1) works, but the pictures are plain, kids can only fill in blan
 
 ## Done
 
+- **How-to + FAQ popup on every screen (Oct 27):** `HELP` in index.html. Pops up every time a screen opens, one tap (Got it) to close, 🔊 reads the steps aloud, text shrinks to always fit one screen. Little level shows only the steps.
+
 - ✅ Own-voice stories (#1), family voice clips (#7), Show it! (#12), parent inbox view (#4), photo avatars (#2)
 - ✅ One device per person (#11) and front/back camera flip (#12)
 - ✅ Release 1 (Grown-ups corner): hold-to-open grown-ups area, voice settings (#7), 4-character family codes (#6), clear any inbox
