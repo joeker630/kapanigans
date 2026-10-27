@@ -233,6 +233,29 @@ h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance;l
 .jarchip{background:var(--sun);box-shadow:0 3px 0 var(--sun-deep)}
 .fzoom{position:absolute;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:8px;z-index:4}
 .paysrc button{font-size:15px}
+/* order board: a corkboard with pinned paper notes, centered on screen */
+.boardsheet{align-items:center;padding:12px;box-sizing:border-box}
+.boardsheet .inner{width:min(820px,100%);max-height:min(92%,720px);border-radius:26px;padding:14px 16px 16px;gap:10px;
+  background:radial-gradient(circle at 20% 30%,rgba(255,255,255,.12) 0 2px,transparent 3px) 0 0/22px 22px,radial-gradient(circle at 70% 60%,rgba(0,0,0,.08) 0 2px,transparent 3px) 0 0/18px 18px,#C9975F;
+  border:10px solid #8A5A32;box-shadow:0 10px 0 #6E4524,0 20px 40px rgba(43,33,64,.35)}
+.boardsheet .row h2{background:#FFFDF5;border-radius:12px;padding:4px 14px;flex:0 1 auto;font-size:24px;box-shadow:0 3px 0 rgba(0,0,0,.15);margin-right:auto}
+.obar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.olab{color:#FFF7E6;font-weight:800;font-size:15px;text-shadow:0 1px 0 rgba(0,0,0,.3)}
+.ochip{background:rgba(255,253,245,.85);border-radius:999px;padding:6px 12px;font-size:15px;font-weight:800;border:3px solid transparent}.ochip.on{background:var(--sun);border-color:var(--ink)}
+.onotes{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;padding:8px 4px 4px}
+.onote{position:relative;background:#FFFDF5;border-radius:6px;padding:20px 14px 12px;display:flex;flex-direction:column;gap:8px;box-shadow:0 6px 12px rgba(0,0,0,.25);transform:rotate(var(--tilt,0deg));min-width:0}
+.opin{position:absolute;top:-12px;left:50%;transform:translateX(-50%);font-size:26px;filter:drop-shadow(0 2px 1px rgba(0,0,0,.3))}
+.onote .ofrom{display:flex;align-items:center;gap:8px;font-size:17px;cursor:pointer}.onote .oface{font-size:30px;line-height:1}.onote img.oface{width:34px;height:34px;border-radius:50%;object-fit:cover}
+.onote .oitems{display:flex;flex-wrap:wrap;gap:8px}
+.onote .oi{display:flex;align-items:center;gap:4px;background:#F3EBDD;border-radius:12px;padding:4px 8px;flex-wrap:wrap}
+.onote .oi .oem{font-size:28px;letter-spacing:1px}.onote .oi b{font-family:var(--display);font-size:20px}.onote .oi small{flex-basis:100%;font-size:12px;color:#B45309;font-weight:800}
+.onote .oi.ok{background:#DCFCE7}.onote .oi.ok small{color:#15803D}.onote .oi i{font-style:normal;color:#15803D;font-weight:900}
+.onote .opay{font-family:var(--display);font-size:22px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}.onote .obonus{font-size:13px;background:#FFF3C4;border-radius:999px;padding:2px 8px;font-family:var(--body)}
+.odeliver{border-radius:999px;padding:9px 14px;font-family:var(--display);font-weight:800;font-size:18px;background:#E9E2D4;color:#7A6E5D}
+.odeliver.ready{background:#22C55E;color:#fff;box-shadow:0 5px 0 #15803D}.odeliver.ready:active{transform:translateY(3px);box-shadow:0 2px 0 #15803D}
+.ohint{margin:0;color:#FFF7E6;font-weight:700;font-size:14px;text-align:center;text-shadow:0 1px 0 rgba(0,0,0,.3)}
+.onone{color:#FFF7E6;text-shadow:0 1px 0 rgba(0,0,0,.3)}
+.owrite{align-self:center}
+.little .onote .oi .oem,.boardsheet .onote .oi .oem{font-size:30px}
 .fpick{position:absolute;z-index:6;background:var(--paper);border-radius:22px;padding:10px;box-shadow:0 6px 0 var(--sky-deep),0 10px 30px rgba(43,33,64,.25);display:flex;flex-direction:column;gap:6px;animation:popin .25s ease-out}
 .fpq{font-family:var(--display);font-size:18px;text-align:center}
 .fprow{display:flex;gap:8px}
@@ -244,8 +267,10 @@ h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance;l
 .lface{font-size:26px}.lwhat{flex:1;min-width:0;font-size:15px}.lwhat small{display:block;color:var(--ink-soft);font-weight:600}
 .lamt{font-family:var(--display);font-size:20px}.lamt.in{color:#15803D}.lamt.out{color:#B91C1C}
 @media (max-width:520px){#farmGoods{max-width:34vw;overflow:hidden;text-overflow:ellipsis;font-size:16px;padding:6px 10px}}
-.fsheet{z-index:43}
-.fsheet .inner{max-height:86%}
+.fsheet{z-index:43;align-items:center;padding:12px;box-sizing:border-box}
+/* every farm popup is a centered panel on any device (not a sheet from the bottom) */
+.fsheet .inner{border-radius:26px;width:min(900px,100%);max-height:min(88dvh,88vh);box-shadow:0 10px 30px rgba(43,33,64,.3);animation:popin .25s ease-out}
+
 .fbody{display:flex;flex-direction:column;gap:12px}
 .fbody .choice small{font-size:13px;color:var(--ink-soft);font-weight:700}
 .fbody .choice.off{opacity:.55}
@@ -3676,8 +3701,8 @@ function tapStruct(id){const s=STRUCT[id];blip(760,.1,"sine");
   const k=s.home;say(`The ${s.name.toLowerCase()}. It has room for ${roomFor(k)} ${roomFor(k)===1?ANIMALS[k].name:ANIMALS[k].names}.`)}
 
 /* ---- sheets ---- */
-function fSheet(title,render){
-  closeSheet();const sh=el("div","sheet fsheet"),inner=el("div","inner"),head=el("div","row"),h=el("h2",null,title),x=el("button","round","✖️"),body=el("div","fbody");
+function fSheet(title,render,cls){
+  closeSheet();const sh=el("div","sheet fsheet"+(cls?" "+cls:"")),inner=el("div","inner"),head=el("div","row"),h=el("h2",null,title),x=el("button","round","✖️"),body=el("div","fbody");
   x.setAttribute("aria-label","Close");x.onclick=closeSheet;head.append(h,x);inner.append(head,body);sh.append(inner);
   sh.addEventListener("pointerdown",e=>{if(e.target===sh)closeSheet()});document.body.append(sh);
   F.sheet={el:sh,body,render:()=>{const top=body.scrollTop;body.innerHTML="";render(body);body.scrollTop=top}};F.sheet.render();
@@ -3895,14 +3920,17 @@ function ensureOrders(){
   F.making=true;const up={};for(let n=open;n<3;n++){const id=F.ref?F.ref.child("orders").push().key:"o"+Date.now()+n;up[`orders/${me}/${id}`]=makeOrder(me)}
   up["onext/"+me]=0;fUpd(up);setTimeout(()=>F.making=false,1500);
 }
-function orderCard(id,o,who){
-  const K=kidOf(o.from),card=el("div","ordercard"),g=srcGoods(goodsSrc()),canDo=who===me&&Object.entries(o.items).every(([k,n])=>(g[k]||0)>=n);
-  const items=Object.entries(o.items).map(([k,n])=>little()?`<span class="oi">${GOODS[k].icon.repeat(Math.min(n,6))}</span>`:
-    `<span class="oi ${(g[k]||0)>=n?"ok":""}">${GOODS[k].icon} ${esc(qty(k,n))} <small>(${g[k]||0})</small></span>`).join("");
+// one order = a paper note pinned to the board
+function orderCard(id,o,who,n=0){
+  const K=kidOf(o.from),card=el("div","onote"),g=srcGoods(goodsSrc()),canDo=who===me&&Object.entries(o.items).every(([k,c])=>(g[k]||0)>=c);
+  card.style.setProperty("--tilt",[-2,1.5,-1,2][n%4]+"deg");
   const late=o.by&&Date.now()>o.by;
-  card.innerHTML=`<div class="ofrom"><span class="oface">${K.face}</span><b>${esc(K.name)}</b>${o.custom?" ✏️":""}</div><div class="oitems">${items}</div>
-    <div class="opay">${coins(o.pay)}${o.by&&!late?` <span class="obonus">+${o.bonus} by ${new Date(o.by).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}</span>`:""}</div>`;
-  if(who===me){const b=el("button","bigbtn"+(canDo?"":" off"),canDo?"Deliver!":little()?"🧺 Need more":"Not enough yet");
+  const items=Object.entries(o.items).map(([k,c])=>{const have=g[k]||0,ok=have>=c;
+    return little()?`<span class="oi${ok?" ok":""}"><span class="oem">${GOODS[k].icon.repeat(Math.min(c,4))}</span>${c>4?`<b>×${c}</b>`:""}${ok?`<i>✓</i>`:""}</span>`
+      :`<span class="oi${ok?" ok":""}"><span class="oem">${GOODS[k].icon}</span><b>×${c}</b><small>${ok?"✓ got it":`need ${c-have} more`}</small></span>`}).join("");
+  card.innerHTML=`<span class="opin">📌</span><div class="ofrom"><span class="oface">${faceHTML(K,"oface")}</span><b>${esc(K.name)}</b>${o.custom?"<small>✏️</small>":""}</div>
+    <div class="oitems">${items}</div><div class="opay">${coins(o.pay)}${o.by&&!late?` <span class="obonus">⏰ +${o.bonus} by ${new Date(o.by).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}</span>`:""}</div>`;
+  if(who===me){const b=el("button","odeliver"+(canDo?" ready":""),canDo?"✅ Deliver!":little()?"🧺 Need more":"Not yet");
     b.onclick=()=>canDo?deliver(id,o):say(`${K.name} wants ${listText(o.items)}.`);card.append(b)}
   card.querySelector(".ofrom").onclick=()=>say(`${K.name} wants ${listText(o.items)}.`);
   return card;
@@ -3910,12 +3938,17 @@ function orderCard(id,o,who){
 function openOrders(){
   fSheet("📋 Order board",body=>{
     const mine=Object.entries(((F.st.orders||{})[me])||{}).sort((a,b)=>a[1].at-b[1].at);
-    body.append(el("p","fnote",little()?"Bring your family what they want!":"Fill an order to earn more Moolah than selling, and get a thank-you in your Inbox."));
-    srcSwitch(body,"Use goods from:");
-    if(!mine.length)body.append(el("p","fempty","No orders right now. New ones come soon!"));
-    const wrap=el("div","orders");for(const [id,o] of mine)wrap.append(orderCard(id,o,me));body.append(wrap);
-    if(kidOf(me).grown){const b=el("button","ghost","✏️ Write an order for a kid");b.onclick=writeOrder;body.append(b)}
-  });
+    // compact "use goods from" switch
+    const top=el("div","obar"),src=goodsSrc();
+    top.append(el("span","olab",little()?"From:":"Use goods from:"));
+    for(const [k,l] of [["mine",`🧺 Mine ${goodsCount(myGoods())}`],["family",`👨‍👩‍👧 Family ${goodsCount(famGoods())}`]]){const b=el("button","ochip"+(src===k?" on":""),l);
+      b.onclick=()=>{F.goodsSrc=k;F.sheet.render();say(k==="family"?"Using the family basket.":"Using your basket.")};top.append(b)}
+    body.append(top);
+    if(!mine.length)body.append(el("p","fempty onone","No orders right now. New ones come soon!"));
+    const wrap=el("div","onotes");mine.forEach(([id,o],n)=>wrap.append(orderCard(id,o,me,n)));body.append(wrap);
+    if(!little())body.append(el("p","ohint","Orders pay more than selling, and you get a thank-you in your Inbox."));
+    if(kidOf(me).grown){const b=el("button","ghost owrite","✏️ Write an order for a kid");b.onclick=writeOrder;body.append(b)}
+  },"boardsheet");
   const mine=Object.values(((F.st.orders||{})[me])||{});
   if(mine.length&&little()){const o=mine[0];say(`${kidOf(o.from).name} wants ${listText(o.items)}.`)}else say(little()?"The order board!":"");
 }
