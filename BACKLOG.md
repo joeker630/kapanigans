@@ -323,7 +323,7 @@ About **48 images** left including retries, which is roughly one day of the free
 - Can a grown-up grant extra time or reset a player's cooldown (for a sick day or a road trip)?
 - Should the 24 hours run from when the time ran out (as written), or should the farm reopen every morning at a set time (for example 7 AM), which is easier for little ones to understand?
 - ~~Moolah wallet~~ → decided: **one jar per person**, anyone can **gift** Moolah to anyone, plus a shared **Farm Family Bank** with a ledger.
-- Should kids be able to spend from the Family Bank on their own, or only grown-ups (or kids up to a limit)? Today anyone can, and the ledger shows it.
+- ~~Family Bank spending~~ → decided: **anyone can spend, no limit**; the ledger shows who spent what.
 - Should Little players spend Moolah on their own, or does a grown-up approve big purchases?
 - Can grown-ups give Moolah as a reward (for example from the grown-ups corner)?
 - Can family members other than the 8 grown-ups place orders (Bear friend, Fox friend)?
