@@ -2182,9 +2182,10 @@ function renderStory(){
   else if(sStep==="voice"){
     B.append(el("h2",null,"Who reads the story?"));
     const row=el("div","bigchoices");
-    const a=el("button","scard",`<span class="em">🔊</span><h3>The reading voice</h3><p>Kapanigans reads it out loud.</p>`);a.onclick=()=>{draft.voice=null;sGo("ready");say("Your story is ready!")};
-    const b=el("button","scard",`<span class="em">🎤</span><h3>I'll read it!</h3><p>Record yourself reading each page.</p>`);b.onclick=()=>{draft.voice=draft.voice||{};draft.vi=0;sGo("record")};
-    row.append(a,b);B.append(row);
+    const a=el("button","scard",`<span class="em">🔊</span><h3>The reading voice</h3><p>Kapanigans reads it out loud.</p>`);a.onclick=()=>{draft.voice=null;draft.silent=false;sGo("ready");say("Your story is ready!")};
+    const b=el("button","scard",`<span class="em">🎤</span><h3>I'll read it!</h3><p>Record yourself reading each page.</p>`);b.onclick=()=>{draft.voice=draft.voice||{};draft.silent=false;draft.vi=0;sGo("record")};
+    const c=el("button","scard",`<span class="em">🤫</span><h3>No audio reading</h3><p>Just the words and pictures. Someone reads it out loud in person.</p>`);c.onclick=()=>{draft.voice=null;draft.silent=true;sGo("ready");hush()};
+    row.append(a,b,c);B.append(row);
   }
   else if(sStep==="record"){
     const i=draft.vi||0, P=S.pages[i], key="p"+i;
@@ -2294,7 +2295,7 @@ function charFigure(g,i){
   }
   const d=el("div","emc");d.textContent=S.cast[i].from?((g.words[S.cast[i].from]||{}).e||"⭐"):S.cast[i].emoji;return d;
 }
-function draftGift(){const g={id:null,to:draft.to,from:me,story:draft.story,words:draft.words,chars:STORIES[draft.story].cast.map((_,i)=>draft.chars[i]||{s:[],a:"bob"}),at:Date.now()};if(draft.voice&&Object.keys(draft.voice).length)g.voice=draft.voice;return g}
+function draftGift(){const g={id:null,to:draft.to,from:me,story:draft.story,words:draft.words,chars:STORIES[draft.story].cast.map((_,i)=>draft.chars[i]||{s:[],a:"bob"}),at:Date.now()};if(draft.silent)g.silent=true;else if(draft.voice&&Object.keys(draft.voice).length)g.voice=draft.voice;return g}
 function sendStoryGift(){
   if(!mail.ref){toast("Can't send right now. Check the Wi-Fi.");say("Hmm, I can't send it right now.");return}
   const g=draftGift(); delete g.id;
@@ -2309,10 +2310,10 @@ const rd={g:null,msg:null,ret:"lobby",page:0,auto:false,preview:false,wordSpans:
 (()=>{const s=$("#rStars");for(let i=0;i<60;i++){const st=document.createElement("i");st.style.left=Math.random()*100+"%";st.style.top=Math.random()*70+"%";st.style.animationDelay=(Math.random()*3)+"s";if(Math.random()<.2){st.style.width=st.style.height="4px"}s.append(st)}})();
 function openReader(g,o={}){
   if(screen!=="reader") rd.ret=o.ret||screen; if(o.preview) rd.msg=null; unlockAudio(); rd.vurls={};
-  rd.g=g; rd.page=0; rd.preview=!!o.preview; rd.auto=lvl()==="little";
-  show("reader"); $("#rTitle").textContent=STORIES[g.story].title+(g.voice?` · 🎤 read by ${nameOf(g.from)}`:""); $("#rEnd").hidden=true; syncAuto();
+  rd.g=g; rd.page=0; rd.preview=!!o.preview; rd.auto=lvl()==="little"&&!g.silent;
+  show("reader"); $("#rTitle").textContent=STORIES[g.story].title+(g.voice?` · 🎤 read by ${nameOf(g.from)}`:g.silent?" · 🤫 no audio":""); $("#rEnd").hidden=true; syncAuto();
   keepAwake();
-  if(o.gift){$("#rUnwrapMsg").textContent=`A story from ${nameOf(g.from)}! Tap to open`;$("#rUnwrap").hidden=false;$("#rUnwrap").classList.remove("pop");say(`A story from ${nameOf(g.from)}! Tap to open.`)}
+  if(o.gift){$("#rUnwrapMsg").textContent=`A story from ${nameOf(g.from)}! Tap to open`;$("#rUnwrap").hidden=false;$("#rUnwrap").classList.remove("pop");if(!g.silent)say(`A story from ${nameOf(g.from)}! Tap to open.`)}
   else {$("#rUnwrap").hidden=true; renderPage()}
 }
 $("#rOpen").onclick=()=>{unlockAudio();const u=$("#rUnwrap");u.classList.add("pop");tada();setTimeout(()=>{u.hidden=true;markRead(rd.msg);renderPage()},600)};
@@ -2354,6 +2355,7 @@ function readPage(text){
     rd.vurls=rd.vurls||{}; const k=rd.g.id+":"+rd.page; if(!rd.vurls[k])rd.vurls[k]=clipToUrl(rec);
     playUrl(rd.vurls[k],go); return;
   }
+  if(rd.g.silent){if(rd.auto)rd.timer=setTimeout(nextPage,Math.max(6000,text.length*90));return}
   const mark=i=>spans.forEach((s,j)=>s.el.classList.toggle("now",j===i));
   const after=()=>{mark(-1);if(rd.auto&&screen==="reader")rd.timer=setTimeout(nextPage,2200)};
   if(!speech.ok||!speech.on){if(rd.auto)rd.timer=setTimeout(nextPage,Math.max(4000,text.length*70));return}
@@ -2365,7 +2367,7 @@ function showEnd(){
   const fromOther=!rd.preview&&g.from!==me&&g.id; if(!rd.preview) bump("storiesRead");
   $("#rThanks").hidden=!fromOther;
   $("#rEndMsg").textContent=fromOther?`Tap to say thank you to ${nameOf(g.from)}`:"Sweet dreams!";
-  if(fromOther) say(`The end. Say thank you to ${nameOf(g.from)}!`); else sayClip("the_end","The end. Sweet dreams!");
+  if(g.silent){} else if(fromOther) say(`The end. Say thank you to ${nameOf(g.from)}!`); else sayClip("the_end","The end. Sweet dreams!");
 }
 $("#rNext").onclick=()=>{blip(520,.06);nextPage()};
 $("#rPrev").onclick=()=>{clearTimeout(rd.timer);if(rd.page>0){rd.page--;renderPage()}};
@@ -2503,6 +2505,7 @@ function normGift(raw,m){
   g.words=g.words&&typeof g.words==="object"?g.words:{};
   g.chars=Array.isArray(g.chars)?g.chars.map(c=>c&&typeof c==="object"?{s:Array.isArray(c.s)?c.s.filter(s=>s&&Array.isArray(s.p)):[],a:c.a}:{s:[],a:"bob"}):[];
   if(raw.voice&&typeof raw.voice==="object"){const v={};for(const [k,x] of Object.entries(raw.voice))if(/^p\d$/.test(k)&&x&&typeof x.data==="string")v[k]={mime:String(x.mime||"audio/mp4"),data:x.data};g.voice=Object.keys(v).length?v:null}else g.voice=null;
+  g.silent=raw.silent===true&&!g.voice;
   return validGift(g)?g:null;
 }
 async function openStoryMsg(m){
