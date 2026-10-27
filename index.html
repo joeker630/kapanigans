@@ -25,6 +25,7 @@
 }
 *,*::before,*::after{box-sizing:border-box}
 html{height:100%;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html,body{overflow-x:hidden;overscroll-behavior:none;max-width:100vw}html{touch-action:pan-y}
 body{height:100%;margin:0}
 [hidden]{display:none!important}
 body{
@@ -1038,6 +1039,10 @@ const KIDS = {
   unclejeff:{name:"Uncle Jeff", level:"big", face:"🧢", hue:"#4D7C0F", grown:true},
   grammamia:{name:"Gramma Mia", level:"big", face:"👵", hue:"#9333EA", grown:true},
   grandpageorge:{name:"Grandpa George", level:"big", face:"👴", hue:"#475569", grown:true},
+  oma:{name:"Oma", level:"big", face:"👵🏼", hue:"#BE185D", grown:true},
+  auntmimi:{name:"Aunt Mimi", level:"big", face:"💁‍♀️", hue:"#0891B2", grown:true},
+  unclehammy:{name:"Uncle Hammy", level:"big", face:"🤠", hue:"#A16207", grown:true},
+  auntsara:{name:"Aunt Sara", level:"big", face:"👩‍🦱", hue:"#6D28D9", grown:true},
 };
 const PICS = {
   house:{name:"Sunny House", draw:artHouse},
@@ -1771,6 +1776,8 @@ document.addEventListener("touchmove",e=>{if(e.touches&&e.touches.length>1)e.pre
 (()=>{const vp=document.querySelector('meta[name="viewport"]'),vv=window.visualViewport;if(!vp||!vv)return;const base=vp.content;let t=0;
   const unzoom=()=>{if(vv.scale>1.01){vp.content=base.replace("maximum-scale=1","maximum-scale=1.01");setTimeout(()=>{vp.content=base;window.scrollTo(0,0)},80)}};
   vv.addEventListener("resize",()=>{clearTimeout(t);t=setTimeout(unzoom,500)})})();
+// lock sideways: iPad Safari can still pan the page left/right (rubber band, rotation, keyboard), so snap it back
+(()=>{const fix=()=>{if(window.scrollX||document.documentElement.scrollLeft||document.body.scrollLeft){window.scrollTo(0,window.scrollY);document.documentElement.scrollLeft=0;document.body.scrollLeft=0}};addEventListener("scroll",fix,{passive:true});addEventListener("resize",()=>setTimeout(fix,50));addEventListener("orientationchange",()=>setTimeout(fix,300));document.addEventListener("focusout",()=>setTimeout(fix,100))})();
 
 const saved=load("kp.kid");
 if(saved&&KIDS[saved]) me=saved;

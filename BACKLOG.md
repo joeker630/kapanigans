@@ -45,7 +45,7 @@ A fill-in-the-blanks (mad-libs style) bedtime story that one child makes as a **
 
 Add grown-up players to the **Who's playing?** screen.
 
-**Names:** Joe, Layla, Lisa, Parker, Apple G, Uncle Jeff, Gramma Mia, Grandpa George
+**Names:** Joe, Layla, Lisa, Parker, Apple G, Uncle Jeff, Gramma Mia, Grandpa George, Oma, Aunt Mimi, Uncle Hammy, Aunt Sara
 
 **Details**
 - All grown-ups get **Big (Quinn level)** tools for now.
