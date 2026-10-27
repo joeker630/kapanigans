@@ -67,11 +67,93 @@ Add grown-up players to the **Who's playing?** screen.
 
 ## 3. 🛠️ New game: Kapanigan Farmstand
 
-**✅ Playable so far (v1, on this device only, nothing saved yet)**
-- An isometric farm field: the hen, cow, pig and sheep wander, graze and nap on their own, with walk (waddle, front and back views), eat and sleep animations.
-- Tap an animal to feed it (corn or grass); tap a sleeping animal to wake it; tap the grass to call the nearest animal over.
-- Carrot and pumpkin plots grow from sprout to growing to ripe (about 36 seconds); tap a sparkly ripe crop to pick it into the basket.
-- Still to build: chore puzzles by level, co-op play, saving the farm in Firebase, and the 30-minute play limit.
+A **live co-op farm** the kids share. Every farm action is done by solving a short, age-appropriate puzzle. Goods are sold at the farmstand for **Moolah**, which buys farm upgrades and new clothes for Fashion Show (#5). Family members place **orders** sized to each kid's age.
+
+**The loop:** puzzle → farm action → goods → sell or fill an order → Moolah → build the farm or buy clothes → bigger farm, more chores.
+
+### ✅ Built so far
+- **v1 field:** an isometric farm where the hen, cow, pig and sheep wander, graze and nap, with walk (front and back), eat and sleep animations. Tapping an animal feeds it, tapping a sleeping one wakes it, and tapping the grass calls the nearest animal over. Carrot and pumpkin plots grow from sprout to ripe in about 36 seconds, and a ripe one can be tapped into the basket. Runs on this device only; nothing is saved yet.
+- **v1.1 (Oct 27):**
+  - The map is **16 × 16 tiles** (was 8 × 8). About 9 tiles fit across an iPad, and the farm fills the height of an upright phone. Drag to look around.
+  - Animals stay inside a fenced **pasture** (a dashed line until fence art exists). Crops are in their own **field**.
+  - Animals walk at about a third of the old speed, take short strolls, and spend most of their time grazing (6–10 s) and napping (12–20 s).
+- **Ready to use:** `logAttempt()` for the grown-up dashboard (#8), `say()` / `sayLittle()` read-aloud, Firebase under `families/<code>/`, and `tools/genart.py` for isometric art.
+
+### 🧩 Every action is a puzzle
+Puzzle types come from the **Age-appropriate tasks** chat. That chat is building them into the Farmstand as a reusable puzzle engine. **Its output defines the final puzzle behind each action.** The table below is the starting mapping, and any puzzle type can be swapped in. Each action has a **main puzzle** and draws from the others now and then so it doesn't get stale.
+
+| Farm action | Main puzzle type | Little (Violet, 3–4) | Big (Quinn, 5–7) |
+|---|---|---|---|
+| 🌱 Plant crops | Patterns | Red-blue-red-blue… which seed comes next? | ABC / AABB rows, growing patterns |
+| 💧 Water crops | Colors & shapes | Tap the watering can that matches the color dot | Sort by two attributes ("big blue cans"), or count the drops: "this plant needs 7" |
+| 🧺 Harvest crops | Counting | Tap all 5 carrots; each tap counts out loud | Count 10–20, or add and take away ("3 carrots + 2 carrots") |
+| 🌽 Feed animals | Letters & words | Find the letter on the food sack (C for corn) | Read the word (HAY, CORN, SLOP) or spell it with letter tiles |
+| 🥚 Collect eggs | Memory match | 6 cards (3 pairs), with a face-up preview | 12–16 cards, no preview |
+| 🥛 Milk the cow | Jigsaw | 4–6 big pieces with a faint outline | 12–20 pieces, no outline, some rotated |
+| 🧶 Shear the sheep | Tracing | Trace a thick dotted letter from her name, following the star | Thin path with stroke-order arrows, lowercase and 0–20, then without dots |
+| 🔨 Build (fence, stable) | Building shapes | Drag 2–3 pieces into a silhouette | Tangram, 4–7 pieces, rotation allowed |
+| 💰 Sell at the farmstand | Counting money | Tap one coin per item ("3 carrots, tap 3 coins") | Add up prices, then make change up to 20 |
+
+**Rules for every puzzle** (from the Age-appropriate tasks chat):
+- **Little:** no fail state. A wrong tap wiggles and stays put. Every prompt is spoken, and a puzzle is done in under a minute.
+- **Big:** may show a star rating or a short streak of up to 5, and still never punishes a wrong answer.
+- Every attempt calls `logAttempt({puzzle, skill, ms, wrong, hint, done})`.
+- **Co-op:** each kid solves their own tier of the same chore. For example, Violet places 4 big jigsaw pieces and Quinn places 12 small ones to finish one milk pail.
+
+### 🥕 Goods
+| Source | Good | Notes |
+|---|---|---|
+| Hen | 🥚 eggs | white or brown (Quinn sorts them) |
+| Cow | 🥛 milk, sold by the gallon | |
+| Sheep | 🧶 wool | sheep shows as sheared until it regrows |
+| Pig | ❤️ happiness | no goods; a happy pig gives a small Moolah tip at the stand |
+| Crops | 🥕 carrots, 🍅 tomatoes, 🌽 corn, 🎃 pumpkins, 🍓 strawberries | |
+
+### 💰 Moolah
+- Earned by **selling goods at the farmstand** (the "Sell" puzzle) and by **filling family orders** (pays more, plus a bonus).
+- Prices are whole numbers small enough for Quinn's change-making. For example, a carrot is 1, an egg 1, a tomato 2, wool 3, milk 3 per gallon, and a pumpkin 5.
+- Spent in two stores:
+  - **🏗️ Farm Store** (in the barn): build and upgrade the farm.
+  - **👗 Closet Store** (in the farmhouse): new clothes for **Fashion Show (#5)** and the farmer avatar (#10).
+- Little sees Moolah as a jar of coins, with no numbers needed. Big sees the number.
+
+### 🏗️ Build the farm (Farm Store)
+Building happens on empty **build lots** around the map. Paying starts a **Build puzzle** (tangram).
+
+| Item | What it does |
+|---|---|
+| 🪵 Fences | Must enclose a pen before a new animal can move in. Placed piece by piece on the grid. |
+| 🐄 Stable / 🐔 coop / 🐑 sheep shed | Each holds more animals of that kind, so goods are collected faster |
+| 🐣 New animals | More hens, a second cow, and so on. Needs room in a pen and a building. |
+| 🌱 New field plots and seeds | More plots; tomato, corn and strawberry seeds unlock here |
+| 💩 Fertilizer | Use on a plot to make the next crop grow faster or give double |
+| 💧 Water trough / well | Watering puzzles give extra water |
+| 🌻 Decorations | Scarecrow, windmill, flower pots, bench, mailbox, lantern |
+
+- Each build makes the farm visibly bigger. The map can grow past 16 × 16 later.
+- Builds are **shared**: everyone's Moolah can go toward one build together (see decisions).
+
+### 👗 Closet Store → Fashion Show
+- Sells pieces from the white clothing library (#9) and avatar extras (#10): hats, boots, dresses, capes and costumes.
+- What's bought shows up in the Fashion Show dressing screen and the farmer dressing room. Items not bought yet show with a 🔒 and their price.
+- Depends on the shared dress-up engine (#9 and #10). Until then the store can sell from a small starter set.
+
+### 📋 Family orders (challenges)
+- An **order board** at the farmstand shows requests from family members, each with their avatar. For example: "Gramma Mia wants 1 gallon of milk and 2 carrots."
+- Filling an order: gather the goods (by doing chores), then tap **Deliver**. Pays more Moolah than selling, and sends a **thank-you to the kid's Inbox (#4)** from that family member.
+- **Scaled to the player's age:**
+
+| | Little (Violet) | Big (Quinn) |
+|---|---|---|
+| Kinds of goods | 1 | 2–4 |
+| How many of each | 1–3 | up to 10 (later "half a dozen eggs") |
+| How it's shown | pictures only, read aloud | written words and numbers |
+| Extra | none | some orders have a "by dinner" goal for bonus Moolah; missing it never fails the order |
+| Example | "Grandpa wants 🥕🥕" | "Apple G wants 2 gallons of milk, 6 eggs and 3 pumpkins" |
+
+- Each kid gets their own orders. **Co-op orders** need both kids' goods, such as Violet's eggs plus Quinn's milk.
+- New orders appear each visit (about 3 per kid), so the board is fresh but finishable within the 30 minutes.
+- Grown-ups can **write a custom order** from the grown-ups corner, for example "Daddy wants 1 pumpkin for Halloween."
 
 **🎨 Farm art still needed** (isometric sprite style, `art/iso/farm/`, made with `tools/genart.py`)
 
@@ -93,6 +175,11 @@ About **45 images** left including retries, which is roughly one day of the free
 - [ ] Fence: straight piece and corner (mirrored in code for other directions) — 2
 - [ ] Nature: round tree, apple tree, flower patch, rock, small pond — 5
 
+*Batch B2 — new for building and orders (about 9)*
+- [ ] Stable, sheep shed, water trough or well — 3
+- [ ] Fence gate, fertilizer bag, milk jug (gallon) — 3
+- [ ] Order board, Moolah jar, Moolah coin (replaces the copper and silver coins in Batch C) — 3
+
 *Batch C — farmstand shop unlocks (about 8)*
 - [ ] Decorations to buy with coins: scarecrow, windmill, flower pot, bench, mailbox, lantern — 6
 - [ ] Coins for "make change" (Big): copper coin and silver coin, blank, with the value drawn on in code — 2
@@ -103,37 +190,13 @@ About **45 images** left including retries, which is roughly one day of the free
 
 **⚠️ Art style check before #10 starts:** #10 says to use the chunky 3D hen (`art/farm/hen.webp`) as the style reference, but the farm now uses the flatter **isometric sprite** style (`art/iso/farm/`). Avatars walking on the farm should match the isometric animals, so #10 should use an isometric animal (for example `art/iso/farm/hen/stand.webp`) as its reference.
 
-A **live co-op farm** that the kids share. They grow crops and raise animals together, and each chore is a short, age-appropriate learning puzzle.
-
-**The farm**
-- One shared farm per family code. Everyone sees the same farm live, with each player's finger marker, like Color Together.
-- **Crops:** carrots, tomatoes, corn, pumpkins and strawberries. Plant → water → grow → harvest.
-- **Animals:** chickens (eggs), a cow (milk), a sheep (wool) and a pig (happiness). Feed → care → collect.
-- Things grow over real time (minutes to hours), so the kids come back later to check on the farm.
-- A **farmstand** where harvested goods get "sold" for coins to buy new seeds, animals and decorations.
-
-**Chore puzzles by level**
-
-| Chore | Little (age 3) | Big (age 6) |
-|---|---|---|
-| Water | Tap the matching color watering can | Count the drops: "This plant needs 7" |
-| Plant | Drag the seed to the matching picture | Plant in a pattern (ABAB rows) |
-| Harvest | Count up to 5 carrots with taps | Simple adding: "3 carrots + 2 carrots" |
-| Feed animals | Match the animal to its food | Read the word: "HAY", "CORN" or "SLOP" |
-| Collect eggs | Find the hidden eggs (tap) | Sort eggs by size or color |
-| Sell at farmstand | Tap the coin to pay | Make change with coins up to 20¢ |
-
-**Co-op moments**
-- Some jobs need two players at once. For example, one holds the bucket while the other milks, or one plants while the other waters.
-- A shared goal board, such as "Fill the farmstand with 10 pumpkins by Saturday," with a celebration when it's done.
-
 **🧑‍🌾 Farmer avatars (customizable)**
 - Each player walks around the farm as their own **farmer avatar**, visible to everyone in the game. It replaces the plain finger marker, and each avatar's name floats above it.
 - **Customize from a dressing room** before entering the farm (and anytime from the farmhouse):
   - **Little:** big picture choices for hair, skin tone, a hat (straw hat, cap, bonnet, flower crown), overalls or a dress, boots, and a color for each. Every choice is read aloud.
   - **Big:** more options for each part (hairstyles, glasses, freckles, bandanas, aprons, gloves), patterns, and color schemes.
   - **Grown-ups** get Big options.
-- **Unlocks from playing:** coins from the farmstand buy extra items, such as a cowboy hat, rain boots, a pumpkin costume or a pet that follows you (a dog, cat or duckling).
+- **Unlocks from playing:** Moolah from the farmstand buys extra items in the Closet Store, such as a cowboy hat, rain boots, a pumpkin costume or a pet that follows you (a dog, cat or duckling).
 - Avatars do small animations: walk, wave, cheer when a chore puzzle is solved, and yawn as the 30 minutes wind down.
 - The look is saved per persona (in Firebase), so it's the same on every device.
 - **Shares a dress-up system with Fashion Show (#5).** Body parts, clothing layers and recoloring are built once and used by both games, and as each player's avatar everywhere in Kapanigans.
@@ -152,12 +215,18 @@ A **live co-op farm** that the kids share. They grow crops and raise animals tog
 - Grown-ups can see everyone's remaining farm time. Whether grown-ups can grant extra time is still an open question below.
 
 **Acceptance criteria**
-- [ ] A shared farm view that stays in sync across devices
-- [ ] At least 3 crops and 2 animals at launch
-- [ ] Each player can customize a farmer avatar that everyone sees on the farm, and it's remembered across devices
-- [ ] Every chore has a Little and a Big puzzle version
-- [ ] Farm progress is saved and still there the next day
+- [x] A bigger farm (16 × 16) to explore by dragging, with calmer, slower animals
+- [ ] Every farm action (plant, water, harvest, feed, collect eggs, milk, shear, build, sell) opens a puzzle, with a Little and a Big version
+- [ ] Puzzle types and rules match the Age-appropriate tasks puzzle engine
 - [ ] Gentle failure only: wrong answers get a "try again" with a hint, never a penalty or a dead plant
+- [ ] Goods can be sold at the farmstand for Moolah
+- [ ] Moolah buys fences, buildings, animals, plots, seeds, fertilizer and decorations, and each shows up on the farm
+- [ ] Moolah buys clothes in the Closet Store, and they appear in Fashion Show and the farmer dressing room
+- [ ] An order board with family-member orders sized for Little and Big, paying Moolah and sending a thank-you to the Inbox
+- [ ] Grown-ups can write a custom order
+- [ ] A shared farm view that stays in sync across devices
+- [ ] Farm, Moolah, goods and orders are saved in Firebase and still there the next day
+- [ ] Each player can customize a farmer avatar that everyone sees on the farm, and it's remembered across devices
 - [ ] Each player's farm time stops at 30 minutes and reopens 24 hours later, on any device
 - [ ] Puzzle cooldowns are tuned so finishing all available chores takes about 30 minutes
 - [ ] A 5-minute "sleepy animals" warning and a goodnight screen with a countdown
@@ -171,6 +240,21 @@ A **live co-op farm** that the kids share. They grow crops and raise animals tog
 - ~~Dressing room and farm time~~ → decided: **no**. Time in the dressing room doesn't count toward the 30 minutes.
 - Can a grown-up grant extra time or reset a player's cooldown (for a sick day or a road trip)?
 - Should the 24 hours run from when the time ran out (as written), or should the farm reopen every morning at a set time (for example 7 AM), which is easier for little ones to understand?
+- **Moolah: one family wallet or one per kid?** Suggestion: each kid has their own jar (orders and clothes are personal), and builds can take Moolah from several kids at once.
+- Should Little players spend Moolah on their own, or does a grown-up approve big purchases?
+- Can grown-ups give Moolah as a reward (for example from the grown-ups corner)?
+- Can family members other than the 8 grown-ups place orders (Bear friend, Fox friend)?
+- Should an unfinished order stay on the board until it's done, or be replaced after a few days?
+
+
+### 🗺️ Build order
+1. ✅ **v1.1:** bigger map, panning, slower animals, pasture and field.
+2. **Puzzle engine wired to actions:** the Age-appropriate tasks chat's work. Tapping a crop or animal opens its puzzle; solving it does the action.
+3. **Goods and the farmstand:** collect all goods, the Sell puzzle, Moolah.
+4. **Farm Store and building:** build lots, fences, stables and coops, new animals, fertilizer and seeds. Needs Batch B and B2 art.
+5. **Family orders:** the order board, sizing by age, Inbox thank-yous, custom orders from grown-ups.
+6. **Save and share:** Firebase farm state, live co-op on one farm, the 30-minute limit with cooldowns.
+7. **Closet Store:** after the dress-up engine and clothing art (#9, #10).
 
 ---
 
@@ -215,6 +299,7 @@ Kids design outfits for a "model," then watch the model walk an animated runway,
 **Designing the outfit (by level)**
 - **Little (Violet):** drag and drop ready-made pieces onto the model: tops, bottoms, dresses, shoes, hats, bags and accessories (crowns, sunglasses, capes). Tap a piece to change its color from a few big color dots. Every piece and color name is read aloud.
 - **Big (Quinn):** pick from more advanced templates (for example a ball gown, a superhero suit, a rock star outfit or a sports uniform) and customize each part: sleeves, length, collar and pattern (stripes, polka dots, stars, hearts). Choose from named color schemes (Ocean, Sunset, Candy, Forest, Galaxy) or pick each color separately. Can also draw a design onto the fabric with the Color Together tools.
+- **Clothes come from the Farmstand:** a starter wardrobe is free; more pieces are bought with Moolah in the Farmstand's Closet Store (#3). Pieces not owned yet show with a 🔒 and their price.
 - **Models:** a handful of friendly characters to dress (kid, animal and robot models), plus each player's own persona avatar.
 
 **The runway**
