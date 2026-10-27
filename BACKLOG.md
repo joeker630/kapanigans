@@ -132,7 +132,7 @@ A **live co-op farm** that the kids share. They grow crops and raise animals tog
 - ~~Daily play limit~~ → decided: 30 minutes per player, then a 24-hour rest (see above).
 - Do grown-ups follow the same 30-minute limit, or are they exempt?
 - ~~Avatar everywhere?~~ → decided: **yes**. The custom avatar replaces the emoji avatar in the lobby, the "Who are you!? :)" screen, seat chips and all games (including as a model option in Fashion Show).
-- Does customizing the avatar count toward the 30 minutes of farm time? (Suggested: no, the dressing room doesn't use farm time.)
+- ~~Dressing room and farm time~~ → decided: **no**. Time in the dressing room doesn't count toward the 30 minutes.
 - Can a grown-up grant extra time or reset a player's cooldown (for a sick day or a road trip)?
 - Should the 24 hours run from when the time ran out (as written), or should the farm reopen every morning at a set time (for example 7 AM), which is easier for little ones to understand?
 
