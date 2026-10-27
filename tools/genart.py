@@ -114,6 +114,9 @@ def generate(prompt, model="klein", ref=None, seed=None, style=None):
                 sys.exit(f"Free daily limit reached (resets 7pm Central). {msg}")
             if attempt == 2: sys.exit(f"Cloudflare error {e.code}: {msg}")
             time.sleep(3)
+        except (urllib.error.URLError, TimeoutError, ConnectionError) as e:
+            if attempt == 2: sys.exit(f"Cloudflare didn't answer after 3 tries: {e}")
+            time.sleep(5)
     if not d.get("success"):
         sys.exit(f"Cloudflare error: {d.get('errors')}")
     log_usage(cost)
