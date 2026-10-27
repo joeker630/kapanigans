@@ -34,13 +34,13 @@ A fill-in-the-blanks (mad-libs style) bedtime story that one child makes as a **
 - [ ] A "Gift shelf" where each child can rewatch stories they've received
 
 **🔍 Decisions needed**
-- **Where gifts are stored:** the relay service only passes messages along; it doesn't reliably keep them. To deliver a gift to a sleeping iPad we need storage, such as a free Firebase or Supabase project, or keeping gifts on the relay as retained messages (simple, but not guaranteed to last).
+- ~~Where gifts are stored~~ → decided: Firebase (see Shared groundwork). Gifts land in the recipient's **Inbox** (#4).
 - Can grown-ups send stories too, for example Gramma Mia sending one to Violet?
 - Should the author be able to record their own voice instead of the built-in reader?
 
 ---
 
-## 2. 🆕 New persona: Grown Ups
+## 2. ✅ New persona: Grown Ups
 
 Add grown-up players to the **Who's playing?** screen.
 
@@ -54,12 +54,12 @@ Add grown-up players to the **Who's playing?** screen.
 - Video chat rule stays the same: it turns on when exactly 2 players are in a game, including a grown-up and a kid. This lets Gramma Mia color with Violet over video.
 
 **Acceptance criteria**
-- [ ] All 8 grown-ups are selectable and remembered per device, like the kids
-- [ ] Grown-ups get Quinn-level tools in Color Together
-- [ ] Bear friend and Fox friend stay available
+- [x] All 8 grown-ups are selectable and remembered per device, like the kids
+- [x] Grown-ups get Quinn-level tools in Color Together
+- [x] Bear friend and Fox friend stay available
 
 **🔍 Decisions needed**
-- Avatars: emoji (for example 🧔 Joe, 👵 Gramma Mia, 🍎 Apple G), or a photo or drawing for each person?
+- Avatars: shipped with emoji (🧔 Joe, 👩 Layla, 👩‍🦰 Lisa, 🧑 Parker, 🍎 Apple G, 🧢 Uncle Jeff, 👵 Gramma Mia, 👴 Grandpa George). Swap any of them for a photo or drawing later?
 - Should grown-ups get a separate "grown-up level" later, such as with hints turned off or as a game host?
 
 ---
@@ -98,15 +98,51 @@ A **live co-op farm** that the kids share. They grow crops and raise animals tog
 - [ ] Gentle failure only: wrong answers get a "try again" with a hint, never a penalty or a dead plant
 
 **🔍 Decisions needed**
-- **Saving the farm:** same storage question as the bedtime stories. A living farm has to be stored somewhere besides the devices.
+- ~~Saving the farm~~ → decided: Firebase (see Shared groundwork).
 - Should crops be able to wilt if nobody visits, or stay safe forever (kinder for little ones)?
 - Is there a daily play limit or bedtime cutoff for the farm?
 
 ---
 
-## Shared groundwork (needed by #1 and #3)
+## 4. 🆕 Inbox for every persona
 
-- 🔍 **Saved data:** choose a storage service for gifts and farm progress. The relay service only passes messages along, so it can't store them.
+Every person (kids, friends and grown-ups) gets an **Inbox** for messages the family sends each other. No passwords: it's all family, and the family code is the only key.
+
+**Welcome**
+- ✅ First open asks **"Who are you!? :)"** and remembers the answer on that device. Tap your name chip in the lobby to switch.
+
+**Sending**
+- Tap **Send a message**, then pick who it's for (one person or "Everyone").
+- What you can send, by level:
+  - **Little:** a sticker or emoji, a quick drawing, or a short voice message (hold the big mic button)
+  - **Big and grown-ups:** all of the above, plus typed text and quick phrases ("Good night!", "I love you", "Come play!")
+- Bedtime Story gifts (#1) and finished Color Together pictures can be sent to an inbox too.
+
+**Receiving**
+- A mailbox on the lobby screen with a badge count of unread messages
+- A happy chime and a bouncing envelope when something new arrives while the app is open
+- Opening a message reads it aloud for Little readers
+- Reply with one tap (heart, hug, or "send one back")
+- Messages stay until you delete them; grown-ups can clear any inbox
+
+**Acceptance criteria**
+- [ ] A message sent to a device that's asleep or closed is waiting in the inbox when it's next opened
+- [ ] Unread badge on the lobby mailbox and on each person in the "Who are you?" screen
+- [ ] Violet can send and open messages without reading anything
+- [ ] Voice messages up to 30 seconds
+
+**🔍 Decisions needed**
+- Should kids be able to message only family personas, or Bear friend and Fox friend too?
+- Should grown-ups see every inbox (a parent view), or only their own?
+
+---
+
+## Shared groundwork (needed by #1, #3 and #4)
+
+- ✅ **Saved data: decided on Firebase Realtime Database (free Spark plan).** No credit card, live updates to every device, works from GitHub Pages. Everything lives under `families/<family code>/`, so the family code is the key (no passwords).
+  - Why not the others: Supabase's free plan pauses projects after a week without use, and Firebase *Storage* (for files) now needs a paid plan, so voice clips and drawings are saved as small compressed data inside the database instead.
+  - 🛠️ Waiting on Joe: create the Firebase project and send over its web config.
+  - Later: consider moving live game sync from the HiveMQ relay to Firebase too, so everything uses one service.
 - 🆕 **Read-aloud helper:** one shared text-to-speech function for stories, chore instructions and Little-level labels.
 - 🆕 **Game menu:** move the "Soon" placeholder cards (Puzzle Pals, Animal Sounds, Shape Hunt) behind the new games, or replace them.
 
@@ -116,3 +152,4 @@ A **live co-op farm** that the kids share. They grow crops and raise animals tog
 - ✅ Family code sync over the relay service (same one as the 31 game)
 - ✅ Video chat bubble when exactly 2 players are in a game
 - ✅ Home-screen icon
+- ✅ Grown-up personas (#2) and the "Who are you!? :)" welcome

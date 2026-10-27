@@ -41,7 +41,14 @@ button:focus-visible{outline:4px solid var(--ink);outline-offset:3px}
 h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance;letter-spacing:.01em}
 
 /* ---------- Who's playing ---------- */
-#pick{justify-content:center;align-items:center;gap:28px;padding-block:24px;overflow:auto}
+#pick{align-items:center;gap:24px;padding-block:24px;overflow:auto}
+#pick>:first-child{margin-top:auto}#pick>:last-child{margin-bottom:auto}
+.grownups{width:100%;max-width:900px;display:flex;flex-direction:column;align-items:center;gap:10px}
+.grownups h2{font-size:22px;color:var(--ink-soft)}
+.gu{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.gubtn{display:flex;align-items:center;gap:6px;background:var(--paper);border:3px solid var(--k);border-radius:999px;padding:6px 16px 6px 8px;font-size:16px;font-weight:800;box-shadow:0 4px 0 var(--k)}
+.gubtn .face{font-size:28px}
+.gubtn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--k)}
 #pick h1{font-size:clamp(34px,7vw,64px);text-align:center;line-height:1}
 #pick h1 .wave{display:inline-block;animation:wave 2.4s ease-in-out infinite;transform-origin:70% 70%}
 @keyframes wave{0%,60%,100%{transform:rotate(0)}10%,30%{transform:rotate(16deg)}20%,40%{transform:rotate(-8deg)}}
@@ -221,13 +228,14 @@ h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance;l
 
 <!-- ============ WHO'S PLAYING ============ -->
 <section class="screen" id="pick">
-  <h1>Who's playing? <span class="wave">👋</span></h1>
+  <h1>Who are you!? <span class="wave">:)</span></h1>
   <div class="kids">
     <button class="kid" data-kid="violet" style="--k:var(--violet)"><span class="face">🦄</span><span class="nm">Violet</span><span class="lvl">Little artist · big crayons</span></button>
     <button class="kid" data-kid="quinn" style="--k:var(--quinn)"><span class="face">🦖</span><span class="nm">Quinn</span><span class="lvl">Big artist · all the tools</span></button>
     <button class="kid small" data-kid="bear" style="--k:var(--bear)"><span class="face">🐻</span><span class="nm">Bear friend</span><span class="lvl">Little artist tools</span></button>
     <button class="kid small" data-kid="fox" style="--k:var(--fox)"><span class="face">🦊</span><span class="nm">Fox friend</span><span class="lvl">Big artist tools</span></button>
   </div>
+  <div class="grownups"><h2>Grown ups</h2><div class="gu" id="grownups"></div></div>
 </section>
 
 <!-- ============ LOBBY ============ -->
@@ -314,6 +322,14 @@ const KIDS = {
   quinn:{name:"Quinn", level:"big", face:"🦖", hue:"#00A88F"},
   bear:{name:"Bear friend", level:"little", face:"🐻", hue:"#F59E0B"},
   fox:{name:"Fox friend", level:"big", face:"🦊", hue:"#E5484D"},
+  joe:{name:"Joe", level:"big", face:"🧔", hue:"#2563EB", grown:true},
+  layla:{name:"Layla", level:"big", face:"👩", hue:"#DB2777", grown:true},
+  lisa:{name:"Lisa", level:"big", face:"👩‍🦰", hue:"#C2410C", grown:true},
+  parker:{name:"Parker", level:"big", face:"🧑", hue:"#0F766E", grown:true},
+  appleg:{name:"Apple G", level:"big", face:"🍎", hue:"#B91C1C", grown:true},
+  unclejeff:{name:"Uncle Jeff", level:"big", face:"🧢", hue:"#4D7C0F", grown:true},
+  grammamia:{name:"Gramma Mia", level:"big", face:"👵", hue:"#9333EA", grown:true},
+  grandpageorge:{name:"Grandpa George", level:"big", face:"👴", hue:"#475569", grown:true},
 };
 const PICS = {
   house:{name:"Sunny House", draw:artHouse},
@@ -877,7 +893,7 @@ $("#partyHome").onclick=leaveGame;
 $("#homeBtn").onclick=leaveGame;
 $("#saveBtn").onclick=async()=>{
   const cv=snapshot(); const blob=await new Promise(r=>cv.toBlob(r,"image/png"));
-  const names=game?game.seats.map(s=>kidOf(s.k).name.split(" ")[0].toLowerCase()).join("and"):"our";
+  const names=game?game.seats.map(s=>KIDS[s.k]?s.k:"friend").join("and"):"our";
   const filename=`${names}picture.png`;
   try{const file=new File([blob],filename,{type:"image/png"});
     if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:"Our Kapanigans picture"});return}
@@ -895,7 +911,8 @@ function confetti(){
 }
 
 /* ---------------- wiring ---------------- */
-document.querySelectorAll(".kid").forEach(b=>b.onclick=()=>chooseKid(b.dataset.kid));
+$("#grownups").innerHTML=Object.entries(KIDS).filter(([,v])=>v.grown).map(([k,v])=>`<button class="gubtn" data-kid="${k}" style="--k:${v.hue}"><span class="face">${v.face}</span>${esc(v.name)}</button>`).join("");
+document.querySelectorAll(".kid,.gubtn").forEach(b=>b.onclick=()=>chooseKid(b.dataset.kid));
 $("#meChip").onclick=()=>show("pick");
 $("#playColor").onclick=openPics;
 $("#closeSheet").onclick=()=>$("#picSheet").hidden=true;
