@@ -1762,6 +1762,7 @@ function fitBoard(){ requestAnimationFrame(fitTray);
 }
 new ResizeObserver(()=>{if(screen==="game")fitBoard()}).observe($("#stage"));
 // more cameras make the docked video taller: keep the tools above it and re-fit Violet's tray
+new ResizeObserver(()=>requestAnimationFrame(vidReserve)).observe($("#vid"));
 new ResizeObserver(()=>{const vb=$("#vid"),tray=$("#tray");if(screen!=="game"||!vb||!vb.classList.contains("dock"))return;
   tray.style.marginBottom=(vb.getBoundingClientRect().height+10)+"px";requestAnimationFrame(fitTray)}).observe($("#vid"));
 
@@ -2189,6 +2190,15 @@ function tileFor(p,mine){
   if(!micOn) t.append(el("span","vmute","🔇"));
   return t;
 }
+// keep a column on the right for the video bubble, so screens, farm puzzles and the farm itself never sit under it
+function vidReserve(){
+  const box=$("#vid"); if(!box) return; const on=!box.hidden&&!box.dataset.dragged&&innerWidth>=600&&!box.classList.contains("dock");
+  const w=on?Math.round(box.getBoundingClientRect().width+28):0;
+  for(const id of ["dress","story","inbox","grown"]){const sc=$("#"+id);if(sc)sc.style.paddingRight=(on&&id===screen)?w+"px":""}
+  const T=$("#task"); if(T) T.style.paddingRight=(on&&!T.hidden)?w+"px":"";
+  const F=$("#farmBody"); if(F){const want=(on&&screen==="farm")?`calc(100% - ${w-14}px)`:""; if(F.style.width!==want){F.style.width=want; if(screen==="farm"&&typeof farmFit==="function"&&typeof fm!=="undefined"&&fm.cv) requestAnimationFrame(farmFit)}}
+}
+addEventListener("resize",()=>requestAnimationFrame(vidReserve));
 /* floating bubble everywhere except the home screen (which shows the people cards) */
 function renderVideoUI(){
   if(screen==="lobby"&&typeof renderPeople==="function") renderPeople();
@@ -2207,8 +2217,7 @@ function renderVideoUI(){
   $("#vFlip").hidden=!(vid.local&&(vid.cams||[]).length>1); syncShowIt();
   if(screen==="game") requestAnimationFrame(fitBoard);
   // keep menus and buttons out from under the bubble on wide screens
-  requestAnimationFrame(()=>{for(const id of ["dress","story","inbox","grown"]){const sc=$("#"+id);if(!sc)continue;
-    sc.style.paddingRight=(id===screen&&!box.hidden&&!box.dataset.dragged&&innerWidth>700)?`${Math.round(box.getBoundingClientRect().width+28)}px`:""}});
+  requestAnimationFrame(vidReserve);
   requestAnimationFrame(()=>{const r=box.getBoundingClientRect();if(r.right>innerWidth+2||r.bottom>innerHeight+2||r.left<-2||r.top<-2){delete box.dataset.dragged;box.style.left="";box.style.top="";box.style.right="";box.style.bottom="";if(screen==="game")fitBoard()}});
 }
 $("#vMic").onclick=()=>setMic(!vid.mic);
@@ -5277,7 +5286,7 @@ function puzzleBonus(my){return Math.max(0,((PUZZLE_SIZE[my.lvl]||PUZZLE_SIZE.bi
 function openTask(o){
   if(tk) closeTask(false);
   tk=Object.assign({round:0,rounds:roundsFor(o.type,o.lvl),wrong:0,hinted:false,t0:Date.now(),fx:[],store:{},ctx:{}},o);
-  const T=$("#task"); T.hidden=false; T.classList.toggle("little",o.lvl==="little"); T.classList.toggle("grown",o.lvl==="grown");
+  const T=$("#task"); T.hidden=false; if(typeof vidReserve==="function") vidReserve(); T.classList.toggle("little",o.lvl==="little"); T.classList.toggle("grown",o.lvl==="grown");
   $("#tTitle").textContent=o.title||"";
   setPresence({act:o.title||null});
   nextRound();
