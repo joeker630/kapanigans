@@ -24,8 +24,11 @@
   color-scheme:light;
 }
 *,*::before,*::after{box-sizing:border-box}
-html{height:100%;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-html,body{overflow-x:hidden;overscroll-behavior:none;max-width:100vw}html{touch-action:pan-y}
+html{height:100%;overflow:hidden;overscroll-behavior:none}
+/* the page itself never moves: body is pinned to the screen and each screen scrolls up and down inside it, never sideways */
+body{position:fixed;inset:0;width:100%;max-width:100vw;overflow:hidden;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.screen{max-width:100%;overflow-x:hidden}
+video{max-width:100%}
 body{height:100%;margin:0}
 [hidden]{display:none!important}
 body{
@@ -44,7 +47,7 @@ button:focus-visible{outline:4px solid var(--ink);outline-offset:3px}
 h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance;letter-spacing:.01em}
 
 /* ---------- Who's playing ---------- */
-#pick{align-items:center;gap:24px;padding-block:24px;overflow:auto}
+#pick{align-items:center;gap:24px;padding-block:24px;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 #pick>:first-child{margin-top:auto}#pick>:last-child{margin-bottom:auto}
 .grownups{width:100%;max-width:900px;display:flex;flex-direction:column;align-items:center;gap:10px}
 .grownups h2{font-size:22px;color:var(--ink-soft)}
@@ -66,7 +69,7 @@ h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance;l
 .kid.small .nm{font-size:clamp(18px,3.4vw,24px)}
 
 /* ---------- Lobby ---------- */
-#lobby{padding-block:14px;gap:16px;overflow:auto}
+#lobby{padding-block:14px;gap:16px;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 .topbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .topbar h1{font-size:clamp(26px,4.6vw,40px);flex:1;min-width:0}
 .mechip{display:flex;align-items:center;gap:8px;background:var(--paper);border-radius:999px;padding:6px 14px 6px 8px;border:3px solid var(--k)}
@@ -183,7 +186,7 @@ h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance;l
 .waiting{font-size:15px;color:var(--ink-soft);text-align:center}
 
 /* family code setup */
-#setup{justify-content:center;align-items:center;padding-block:24px;overflow:auto}
+#setup{justify-content:center;align-items:center;padding-block:24px;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 .setupcard{background:var(--paper);border-radius:30px;padding:28px 24px;max-width:520px;width:100%;display:flex;flex-direction:column;gap:14px;box-shadow:0 8px 0 var(--sky-deep)}
 .setupcard h1{font-size:clamp(36px,8vw,56px);line-height:1}
 .setupcard h1 span{color:var(--quinn)}
@@ -219,7 +222,7 @@ h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance;l
 .giftnew b{color:var(--starlite)}
 @keyframes jiggle{0%,70%,100%{transform:rotate(0)}75%{transform:rotate(-12deg)}85%{transform:rotate(10deg)}95%{transform:rotate(-4deg)}}
 
-#story{padding-block:12px;gap:12px;overflow:auto;background:transparent}
+#story{padding-block:12px;gap:12px;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;background:transparent}
 .shead{display:flex;align-items:center;gap:10px}
 .shead h1{font-size:clamp(24px,4.4vw,36px);flex:1;min-width:0}
 .sbody{display:flex;flex-direction:column;align-items:center;gap:16px;flex:1;padding-bottom:16px}
@@ -400,7 +403,7 @@ h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance;l
 @media (max-height:560px){.rchar{width:min(30vh,26vw)}.rtext{font-size:18px;padding:8px 14px}.rnav .arrow{width:48px;height:48px;font-size:22px}}
 
 /* ---------- Inbox ---------- */
-#inbox{padding-block:12px;gap:12px;overflow:auto}
+#inbox{padding-block:12px;gap:12px;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 .mailbtn{position:relative}
 .mailbtn.bounce{animation:mbounce .9s}
 @keyframes mbounce{0%,100%{transform:translateY(0)}20%{transform:translateY(-12px) rotate(-8deg)}40%{transform:translateY(0)}60%{transform:translateY(-6px) rotate(6deg)}}
@@ -438,7 +441,7 @@ h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance;l
 .longcode #codeIn{margin-top:8px}
 
 /* ---------- grown-ups ---------- */
-#grown{padding-block:12px;gap:12px;overflow:auto}
+#grown{padding-block:12px;gap:12px;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 .gtabs{display:flex;gap:8px;flex-wrap:wrap}
 .gtabs button{background:var(--paper);border-radius:999px;padding:8px 16px;font-weight:800;box-shadow:0 3px 0 var(--sky-deep)}
 .gtabs button.on{background:var(--ink);color:#fff}
@@ -536,7 +539,7 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
 .showit.on{background:var(--fox);color:#fff}
 .vbtns .showit{width:auto;border-radius:999px;padding:0 12px;font-weight:900;font-size:15px;background:var(--sun)}
 /* dressing room */
-#dress{padding-block:12px;gap:12px;overflow:auto}
+#dress{padding-block:12px;gap:12px;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 .dwrap{display:grid;grid-template-columns:minmax(220px,340px) minmax(0,1fr);gap:18px;align-items:start}
 .dleft{display:flex;flex-direction:column;align-items:center;gap:10px;background:var(--paper);border-radius:28px;padding:16px;box-shadow:0 6px 0 var(--sky-deep);position:sticky;top:0}
 .dprev{width:100%;max-width:300px;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 50% 40%,#fff,var(--sky));overflow:hidden;animation:dbob 2.6s ease-in-out infinite}
