@@ -190,6 +190,9 @@ Puzzle types come from the **Age-appropriate tasks** chat. That chat is building
 | Tracing | Thick letter path, follow the star ⭐ | Lowercase letters and numbers 0–20 with numbered start dots and arrows, then again with a faint line |
 | Patterns | AB: 🍎🍌🍎🍌🍎 ? | ABC, AABB, ABB, AAB; growing (1, 2, 3 → 4); counting by 2s, 5s and 10s |
 | Memory match | 3 pairs, face-up preview | 6 pairs, no preview |
+| Shadow match | Drag 3 farm pictures onto their shadows | 5 pictures and shadows |
+| Big, bigger, biggest | Put 3 sizes in order into size-shaped spots | 5 sizes into same-size spots; sometimes biggest to smallest |
+| Numbers in order | Tap 1 to 5, scattered around the screen | Tap 1 to 10 |
 
 - Counting, letters, colors and patterns are 2 quick rounds for Little and 3 for Big. Every prompt is spoken, with a 🔊 button to repeat it. After two wrong tries the right answer glows (Little and Big).
 - ✅ **Counting money (Sell), Oct 27:** a 9th puzzle type, `money`, set as the main puzzle for Sell (`FARM_ACTIONS.sell="money"`). It uses the real sale and the Moolah prices.

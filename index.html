@@ -955,6 +955,16 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
 .cdcard p{margin:0}.cdcard b{font-family:var(--display);font-size:22px}
 .cdring{--p:0deg;width:110px;height:110px;border-radius:50%;background:conic-gradient(var(--quinn) var(--p),#E6E0F0 0);display:grid;place-items:center}
 .cdring span{width:84px;height:84px;border-radius:50%;background:var(--paper);display:grid;place-items:center;font-family:var(--display);font-size:24px}
+.shadowslot{position:absolute;display:grid;place-items:center;line-height:1;border-radius:22px;background:rgba(255,255,255,.55);border:3px dashed rgba(43,33,64,.18)}
+.shadowslot span{filter:brightness(0);opacity:.55}
+.shadowslot.glow,.sizeslot.glow{animation:hintp 1s ease-in-out infinite;border-color:var(--sun-deep)}
+.shadowpc,.sizepc{display:grid;place-items:center;line-height:1;cursor:grab;filter:drop-shadow(0 4px 6px rgba(43,33,64,.25))}
+.sizeslot{position:absolute;border:4px dashed rgba(43,33,64,.25);border-radius:20px;background:rgba(255,255,255,.55)}
+.sizeslot.filled{border-color:#2ECC40;background:#E9FBEA}
+.sizearrow{position:absolute;left:0;right:0;text-align:center;font-family:var(--display);font-size:30px;color:var(--ink-soft)}
+.numbtn{border-radius:50%!important;background:var(--k)!important;color:#fff;font-family:var(--display);box-shadow:0 5px 0 rgba(43,33,64,.25);width:1.5em!important;height:1.5em!important;font-size:calc(var(--fs)*.8)!important}
+.numbtn.got{background:#2ECC40!important;opacity:.55}
+.numbtn.glow{animation:hintp 1s ease-in-out infinite}
 </style>
 
 </head>
@@ -5217,9 +5227,9 @@ function showCooldown(title,key){
 if(/[?&]farmlocal\b/.test(location.search))window.__puzzles={farmPuzzle,cdLeft,farmCooldown};
 
 /* ---- tasks ---- */
-const TASK_TYPES=["count","letters","color","jigsaw","build","trace","pattern","memory","money"];
-const SKILL={money:"counting money",count:"counting",letters:"letters",color:"colors and shapes",jigsaw:"puzzles",build:"building shapes",trace:"tracing",pattern:"patterns",memory:"memory"};
-const PUZZLE_NAMES={money:"counting money",count:"counting",letters:"letters and words",color:"colors and shapes",jigsaw:"jigsaw puzzle",build:"building shapes",trace:"tracing",pattern:"what comes next",memory:"memory match"};
+const TASK_TYPES=["count","letters","color","jigsaw","build","trace","pattern","memory","money","shadow","size","numorder"];
+const SKILL={shadow:"shape matching",size:"comparing sizes",numorder:"number order",money:"counting money",count:"counting",letters:"letters",color:"colors and shapes",jigsaw:"puzzles",build:"building shapes",trace:"tracing",pattern:"patterns",memory:"memory"};
+const PUZZLE_NAMES={shadow:"shadow match",size:"big, bigger, biggest",numorder:"numbers in order",money:"counting money",count:"counting",letters:"letters and words",color:"colors and shapes",jigsaw:"jigsaw puzzle",build:"building shapes",trace:"tracing",pattern:"what comes next",memory:"memory match"};
 const PRAISE=["Great job!","You did it!","Yay!","Super!","Awesome!","Nice work!","Woo hoo!"];
 const NUMW=["zero","one","two","three","four","five","six","seven","eight","nine","ten","eleven","twelve","thirteen","fourteen","fifteen","sixteen","seventeen","eighteen","nineteen","twenty"];
 const rint=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
@@ -5238,7 +5248,7 @@ var tk=null; // var, not let: show() looks at it and can run before this line
 // One problem per puzzle, then back to the farm (several rounds in a row made the farm feel like homework).
 function roundsFor(type,L){return 1}
 // Longer puzzles pay more: a Moolah bonus on top of the chore's normal reward (0, +1 or +2).
-const PUZZLE_SIZE={big:{count:1,letters:1,color:1,pattern:1,money:1,memory:2,trace:2,build:3,jigsaw:3},little:{count:1,letters:1,color:1,pattern:1,money:1,memory:2,trace:2,build:2,jigsaw:2}};
+const PUZZLE_SIZE={big:{shadow:1,size:1,numorder:1,count:1,letters:1,color:1,pattern:1,money:1,memory:2,trace:2,build:3,jigsaw:3},little:{shadow:1,size:1,numorder:1,count:1,letters:1,color:1,pattern:1,money:1,memory:2,trace:2,build:2,jigsaw:2}};
 PUZZLE_SIZE.grown={sudoku:3,wordle:2,blackjack:2,mines:2,jam:2};
 function puzzleBonus(my){return Math.max(0,((PUZZLE_SIZE[my.lvl]||PUZZLE_SIZE.big)[my.type]||1)-1)}
 function openTask(o){
@@ -5851,6 +5861,80 @@ function patSkip(api){
   const q=patLine(api,seq.map(x=>({html:`<span style="font-family:var(--display)">${x}</span>`})));
   numOpts(api,ans,[ans+1,ans-1,ans+st,ans+2],{onRight:()=>{q.className="pc";q.innerHTML=`<span style="font-family:var(--display)">${ans}</span>`;say(`${ans}! We count by ${NUMW[st]}s.`)},wait:2400,quiet:true});
 }
+
+/* ---- 9. shadow match: drag each picture onto its shadow ---- */
+const SHADOW_ITEMS=[["cow","🐮"],["pig","🐷"],["hen","🐔"],["sheep","🐑"],["horse","🐴"],["bunny","🐰"],["duck","🦆"],["dog","🐶"],["cat","🐱"],["tractor","🚜"],
+  ["apple","🍎"],["carrot","🥕"],["pumpkin","🎃"],["corn","🌽"],["sunflower","🌻"],["goat","🐐"],["turkey","🦃"],["chick","🐤"],["mouse","🐭"],["frog","🐸"]];
+TASKS.shadow=api=>{
+  const L=api.L, n=L?3:5, items=shuffle(SHADOW_ITEMS).slice(0,n);
+  api.ask("Match each one to its shadow!",L?"Drag each one to its shadow!":"Drag each picture onto its shadow!");
+  const S=mkStage(api), land=S.LW/S.LH>=1.15, sz=Math.min(L?220:170,(S.LW-60)/n*.9,S.LH*.36);
+  // shadows across the top, pictures mixed up across the bottom
+  const spread=k=>(S.LW/n)*(k+.5), topY=S.LH*.28, botY=S.LH*.74;
+  const order=shuffle(items.map((_,k)=>k)); let done=0;
+  const shadows=items.map(([name,em],k)=>{const x=spread(order[k]);
+    const d=el("div","shadowslot",`<span>${em}</span>`);Object.assign(d.style,{left:(x-sz/2)+"px",top:(topY-sz/2)+"px",width:sz+"px",height:sz+"px",fontSize:sz*.72+"px"});
+    S.inner.append(d);return {name,x,y:topY,filled:false}});
+  items.forEach(([name,em],k)=>{
+    const pc={el:el("div","dpiece shadowpc",em),w:sz,h:sz,r:0,home:[spread(k),botY]}; pc.el.style.fontSize=sz*.72+"px";
+    pc.el.dataset.target=`${shadows[k].x},${shadows[k].y}`;
+    [pc.x,pc.y]=pc.home; S.inner.append(pc.el); placePiece(pc);
+    draggable(S,pc,{onTap:()=>say(name),onDrop:()=>{
+      const hit=shadows.find(s=>!s.filled&&Math.hypot(pc.x-s.x,pc.y-s.y)<sz*.55);
+      if(!hit)return;
+      if(hit===shadows[k]){hit.filled=true;pc.set=true;pc.el.classList.add("set");pc.x=hit.x;pc.y=hit.y;pc.el.style.zIndex=1;placePiece(pc);blip(640+done*70,.12,"triangle");say(name);
+        if(++done===n)api.win(700)}
+      else{api.miss(null,L?"Not that one. Try another shadow!":`That's not the ${name}'s shadow.`);[pc.x,pc.y]=pc.home;placePiece(pc)}}});
+  });
+  api.hint(()=>{const k=shadows.findIndex(s=>!s.filled);if(k>=0)S.inner.querySelectorAll(".shadowslot")[k].classList.add("glow")});
+};
+
+/* ---- 10. big, bigger, biggest: put them in order of size ---- */
+const SIZE_ITEMS=[["pumpkin","pumpkins","🎃"],["chick","chicks","🐤"],["apple","apples","🍎"],["pig","pigs","🐷"],["egg","eggs","🥚"],["sunflower","sunflowers","🌻"],["carrot","carrots","🥕"],["sheep","sheep","🐑"]];
+TASKS.size=api=>{
+  const L=api.L, n=L?3:5, [one,many,em]=pickOne(SIZE_ITEMS), down=!L&&Math.random()<.4; // Big sometimes goes biggest to smallest
+  api.ask(down?"Biggest to smallest!":"Smallest to biggest!",down?`Put the ${many} in order, from the biggest to the smallest.`:`Put the ${many} in order, from the smallest to the biggest.`);
+  const S=mkStage(api), maxS=Math.min(L?250:190,(S.LW-60)/n*.95,S.LH*.36), sizes=[...Array(n)].map((_,k)=>maxS*(L?[.42,.68,1][k]:.4+.15*k));
+  const slotSz=k=>sizes[down?n-1-k:k], slotY=S.LH*.3, step=(S.LW-40)/n; let next=0;
+  const slots=[...Array(n)].map((_,k)=>{const x=20+step*(k+.5),s=L?slotSz(k):maxS;
+    const d=el("div","sizeslot");Object.assign(d.style,{left:(x-s/2)+"px",top:(slotY+maxS/2-s)+"px",width:s+"px",height:s+"px"});S.inner.append(d);
+    return {x,y:slotY+maxS/2-s/2,el:d}});
+  S.inner.insertAdjacentHTML("beforeend",`<div class="sizearrow" style="top:${slotY+maxS/2+14}px">${down?"biggest ➜ smallest":"smallest ➜ biggest"}</div>`);
+  const bottom=shuffle([...Array(n).keys()]);
+  sizes.forEach((s,k)=>{ // k = size rank (0 smallest)
+    const want=down?n-1-k:k, pc={el:el("div","dpiece sizepc",em),w:s,h:s,r:0,home:[20+step*(bottom.indexOf(k)+.5),S.LH*.78]};
+    pc.el.style.fontSize=s*.85+"px"; pc.el.dataset.target=`${slots[want].x},${slots[want].y}`;
+    [pc.x,pc.y]=pc.home; S.inner.append(pc.el); placePiece(pc);
+    draggable(S,pc,{onTap:()=>say(k===0?"small":k===n-1?"big":"medium"),onDrop:()=>{
+      const si=slots.findIndex(sl=>Math.abs(pc.x-sl.x)<step*.5&&pc.y<S.LH*.6);
+      if(si<0)return;
+      if(slots[si].filled)return;
+      if(si===want){slots[si].filled=true;pc.set=true;pc.el.classList.add("set");pc.x=slots[si].x;pc.y=slots[si].y;pc.el.style.zIndex=1;placePiece(pc);slots[si].el.classList.add("filled");next++;
+        blip(500+next*90,.12,"triangle");if(next===n){setTimeout(()=>say(down?"Biggest to smallest!":"Smallest to biggest!"),300);api.win(1500,true)}}
+      else{api.miss(null,L?"Hmm, try another spot!":"Not that spot. Compare the sizes!");[pc.x,pc.y]=pc.home;placePiece(pc)}}});
+  });
+  api.hint(()=>{const s=slots.find(x=>!x.filled);if(s)s.el.classList.add("glow")});
+};
+
+/* ---- 11. tap the numbers in order (Little 1–5, Big 1–10), mixed up on the screen ---- */
+TASKS.numorder=api=>{
+  const L=api.L, n=L?5:10; let next=1;
+  api.ask(`Tap the numbers from 1 to ${n}!`,`Tap the numbers in order, from one to ${NUMW[n]}! Start with one.`);
+  const f=el("div","field numfield"); api.area.append(f);
+  const r=f.getBoundingClientRect(), w=Math.max(240,r.width), h=Math.max(200,r.height);
+  const cols=Math.max(2,Math.round(Math.sqrt(n*1.6*w/h))), rows=Math.ceil(n*1.6/cols), cw=w/cols, ch=h/rows;
+  f.style.setProperty("--fs",clamp(Math.min(cw,ch)*.55,34,L?120:90)+"px");
+  const cells=shuffle([...Array(cols*rows).keys()]).slice(0,n), btns={};
+  cells.forEach((cell,i)=>{const v=i+1,c=cell%cols,rr=Math.floor(cell/cols);
+    const b=el("button","ci numbtn",String(v));b.style.left=((c+.5+(Math.random()-.5)*.3)*cw/w*100)+"%";b.style.top=((rr+.5+(Math.random()-.5)*.3)*ch/h*100)+"%";
+    b.style.setProperty("--k",pickOne(["#FF3B3B","#FF8A00","#2ECC40","#2D8CFF","#8B5CF6","#FF5FA2"]));btns[v]=b;
+    b.onclick=()=>{if(!api.live()||b.classList.contains("got"))return;
+      if(v===next){b.classList.add("got");b.dataset.n="✓";blip(440+next*60,.12,"triangle");say(NUMW[v]);next++;api.hint(()=>btns[next]&&btns[next].classList.add("glow"));
+        if(next>n){setTimeout(()=>say(L?"One, two, three, four, five!":"You counted to ten!"),500);api.win(1800,true)}}
+      else api.miss(b,`That's ${NUMW[v]}. Find ${NUMW[next]}!`)};
+    f.append(b)});
+  api.hint(()=>btns[next]&&btns[next].classList.add("glow"));
+};
 
 /* ---- 8. memory match ---- */
 const MEM_EMS=["🐮","🐷","🐔","🐑","🐴","🐰","🐶","🐱","🐸","🦆","🌻","🍎","🥕","🌽","🍓","🎃","🥚","🐝","🦋","🐞"];
