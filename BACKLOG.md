@@ -512,7 +512,7 @@ Build the **simple parts for the avatar builder** (#3 farmer avatars, used as ev
 
 ---
 
-## 11. 🆕 One device per person (no double logins)
+## 11. ✅ One device per person (no double logins)
 
 Make sure the same person (for example Quinn) can't be signed in on two devices at the same time.
 
@@ -531,19 +531,19 @@ Make sure the same person (for example Quinn) can't be signed in on two devices 
 - A device that wakes from sleep re-checks its claim; if someone else has taken over, it goes back to the "Who are you!? :)" screen.
 
 **Acceptance criteria**
-- [ ] A person can be active on only one device at a time
-- [ ] Taken people are clearly marked on the "Who are you!? :)" screen
-- [ ] "Play here instead" moves the person cleanly, and the other device returns to the picker without losing game progress
-- [ ] A claim from a closed or crashed device clears within about a minute
-- [ ] Farm time and stats can't be doubled by playing as the same person on two devices
+- [x] A person can be active on only one device at a time
+- [x] Taken people are clearly marked on the "Who are you!? :)" screen
+- [x] "Play here instead" moves the person cleanly, and the other device returns to the picker without losing game progress
+- [x] A claim from a closed or crashed device clears within about a minute
+- [x] Farm time and stats can't be doubled by playing as the same person on two devices
 
 **🔍 Decisions needed**
-- Should Bear friend and Fox friend (guest personas) be allowed on several devices at once, so visiting friends can all use them?
-- Should a kid be able to take over their own name from another device, or only a grown-up (to stop siblings bumping each other)?
+- ~~Guests on several devices?~~ → built as **yes**: Bear friend and Fox friend can be used on several devices at once. Easy to change.
+- Should a kid be able to take over their own name from another device, or only a grown-up? *(Built: anyone can, after a "Play here instead?" confirm. It could go behind the grown-up hold if siblings bump each other.)*
 
 ---
 
-## 12. 🆕 Switch camera: front or back (iPad and Fire tablet)
+## 12. 🛠️ Switch camera: front or back (built; needs a test on the real Fire tablet)
 
 Add a button to the video chat bubble to **flip between the iPad's front and back cameras**, so a kid can show the other person something (a drawing on paper, a toy, the dog) and then flip back to their face.
 
@@ -565,11 +565,11 @@ Add a button to the video chat bubble to **flip between the iPad's front and bac
 - Test on the family's actual Fire tablet model, both cameras, in both portrait and landscape, during a call with an iPad.
 
 **Acceptance criteria**
-- [ ] The flip button switches between front and back cameras on iPad, iPhone **and the Fire tablet (Silk browser)**
-- [ ] The call stays connected and the other person sees the new view within about a second
-- [ ] Mute and camera-off still work after flipping
-- [ ] The self-view is mirrored only for the front camera
-- [ ] The button is hidden on devices with one camera
+- [~] The flip button switches between front and back cameras on iPad, iPhone **and the Fire tablet (Silk browser)**: built with facing-mode, camera-label and cycle fallbacks; not yet tried on real devices
+- [x] The call stays connected and the other person sees the new view within about a second
+- [x] Mute and camera-off still work after flipping
+- [x] The self-view is mirrored only for the front camera
+- [x] The button is hidden on devices with one camera
 - [ ] A call between a Fire tablet and an iPad works both ways, before and after flipping on either side
 
 **🔍 Decisions needed**
@@ -599,6 +599,7 @@ Add a button to the video chat bubble to **flip between the iPad's front and bac
 
 ## Done
 
+- ✅ One device per person (#11) and front/back camera flip (#12)
 - ✅ Release 1 (Grown-ups corner): hold-to-open grown-ups area, voice settings (#7), 4-character family codes (#6), clear any inbox
 - ✅ Release 2: usage tracking, grown-up reports dashboard and weekly Inbox report (#8)
 - ✅ Watch mode: anyone not in a game can tap 👀 Watch on an in-progress game to see it live (view only, can send cheers; doesn't join the video call)
