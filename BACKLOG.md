@@ -312,6 +312,81 @@ Track how much each player uses Kapanigans and how they're doing on puzzles and 
 
 ---
 
+## 9. 🆕 Fashion Show art: blank (white) clothing library
+
+Build a library of **white, colorable clothing pieces** for Fashion Show (#5), so Violet and Quinn add all the color themselves.
+
+**The pieces (first set: about 40)**
+| Group | Pieces |
+|---|---|
+| Tops | T-shirt, long-sleeve shirt, tank top, blouse with puffy sleeves, hoodie, sweater, jacket, vest |
+| Bottoms | Jeans, leggings, shorts, skirt, tutu, overalls, sweatpants |
+| Dresses | Party dress, ball gown, sundress, princess dress, nightgown |
+| Outerwear and costumes | Raincoat, cape, superhero suit, lab coat, rock star jacket |
+| Shoes | Sneakers, boots, sandals, ballet slippers, rain boots, high-tops |
+| Hats and accessories | Crown, sun hat, beanie, baseball cap, bow, sunglasses, scarf, handbag, necklace |
+
+**How they're made**
+- Generated with the art kit (`tools/genart.py`, FLUX.2 klein) in the same house style as the farm animals, but **pure white with soft grey shading**, so a color tint looks natural with the folds and shadows kept.
+- Every piece is drawn **front-facing, flat, on its own**, at the same scale, matching one standard model body (a "mannequin" template made first), so pieces line up on any model.
+- Each piece in `art/manifest.json` gets fit info: which body slot it goes on (top, bottom, dress, shoes, head, neck, hand), plus an offset and scale so it snaps on correctly.
+- **Coloring:** the game tints the white piece to any color. For Quinn, patterns (stripes, dots, stars, hearts) and color schemes are drawn on top and clipped to the piece's outline, and she can draw on it directly.
+- A separate small detail layer (buttons, zippers, laces) stays uncolored where it looks better that way.
+
+**Plan**
+1. Make the mannequin template (front view, arms slightly out) and confirm it looks right on the runway.
+2. Generate the first set over about 2 days within the free daily allowance (about 85 images a day), including retries for pieces that don't come out clean.
+3. A contact sheet (`genart.py sheet fashion`) for Joe to approve, then wire the pieces into the dressing screen.
+
+**Acceptance criteria**
+- [ ] At least 6 pieces in each group, all white with shading, as clean cutouts
+- [ ] Every piece lines up on the mannequin without manual fixing in the game
+- [ ] Any piece can be tinted to any color and still looks shaded, not flat
+- [ ] Patterns stay inside the piece's outline
+- [ ] Each piece is a small WebP (under about 40 KB)
+
+**🔍 Decisions needed**
+- Anything to add or drop from the first set? (for example sports jerseys, swimsuits, or holiday costumes)
+
+---
+
+## 10. 🆕 Avatar builder art (farm style)
+
+Build the **simple parts for the avatar builder** (#3 farmer avatars, used as every player's avatar across Kapanigans) in the **same chunky 3D style as the farm animals** (`art/farm/`).
+
+**The parts (first set)**
+| Group | Parts |
+|---|---|
+| Body and face | A round, friendly base body in 6 skin tones; 6 face expressions (happy, big smile, surprised, sleepy, silly, wink) |
+| Hair | About 10 styles (short, curly, pigtails, ponytail, bun, braids, long, spiky, bob, buzz), made **white** so any hair color can be applied |
+| Hats | Straw hat, ball cap, bonnet, flower crown, beanie, cowboy hat, crown |
+| Farm clothes | Overalls, farm dress, plaid shirt, apron, bandana, gloves, boots, rain boots (white for coloring, like #9) |
+| Extras | Glasses, freckles, rosy cheeks, bow |
+| Unlockables | Pumpkin costume, chicken costume, a pet dog, cat and duckling that follow you |
+
+**How they're made**
+- Same art kit and house style as the farm animals. The farm hen is used as the **style reference** (`--ref art/farm/hen.webp`), so the avatars look like they belong on the farm.
+- Same layering approach as #9: one base body that every part fits on, parts listed in the manifest with their slot, offset and scale, and white parts tinted in the game.
+- **Little-friendly:** big, simple shapes that still read clearly when small, such as on a seat chip or the lobby.
+- Extra poses for the base body (walk, wave, cheer, yawn) are animated in code by moving the parts, not drawn separately.
+
+**Shared work with #9**
+- One dress-up engine, built once: slots, layering, tinting, patterns and saving each look per persona.
+- Avatar parts and Fashion Show clothes can mix: a Fashion Show piece can be worn by your avatar, and your avatar can walk the runway.
+
+**Acceptance criteria**
+- [ ] Every part matches the farm animals' style side by side on a contact sheet
+- [ ] At least 6 skin tones, 10 hairstyles, 6 hats and 6 outfits at launch
+- [ ] Hair and clothes can be tinted to any color
+- [ ] An avatar stays readable at small sizes (seat chips, lobby)
+- [ ] Each person's avatar shows up the same on every device
+
+**🔍 Decisions needed**
+- Should the base body be a kid-shaped person for everyone, or let grown-ups pick a taller grown-up body?
+- Should animal avatars be an option too (for example dressing up as the pig or the cow)?
+
+---
+
 ## Shared groundwork (needed by #1, #3, #4, #5 and #8)
 
 - ✅ **Art kit: decided on Cloudflare Workers AI (free) + `tools/genart.py`.** Claude generates art on request and pushes it to `art/` in this repo (served by GitHub Pages).
