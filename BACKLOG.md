@@ -73,6 +73,36 @@ Add grown-up players to the **Who's playing?** screen.
 - Carrot and pumpkin plots grow from sprout to growing to ripe (about 36 seconds); tap a sparkly ripe crop to pick it into the basket.
 - Still to build: chore puzzles by level, co-op play, saving the farm in Firebase, and the 30-minute play limit.
 
+**🎨 Farm art still needed** (isometric sprite style, `art/iso/farm/`, made with `tools/genart.py`)
+
+✅ Done: hen, cow, pig and sheep (stand, eat, sleep, back) · carrot and pumpkin (sprout, growing, ripe).
+
+About **45 images** left including retries, which is roughly one day of the free allowance if nothing else is using it. Make them in this order:
+
+*Batch A — needed for the chore puzzles (about 25)*
+- [ ] Crops, growing + ripe (the carrot sprout is reused for every crop): tomato, corn, strawberry — 6
+- [ ] Seed packets, one per crop (Plant puzzle: match seed to picture): carrot, tomato, corn, pumpkin, strawberry — 5
+- [ ] Animal goods to collect: white egg, brown egg (sizes and colors done in code for the sorting puzzle), milk pail, ball of wool — 4
+- [ ] Animal food (Feed puzzle: match the animal to its food; Big reads HAY / CORN / SLOP): hay bale, corn pile, slop bucket, chicken feed scoop — 4
+- [ ] Tools: watering can in **white** so the game can tint it (Little's "tap the matching color" puzzle), empty bucket (co-op milking), harvest basket — 3
+- [ ] Sheared sheep (shown after wool is collected) — 1
+- [ ] Hiding spots for egg hunt: hay pile, bush — 2
+
+*Batch B — the farm itself (about 11)*
+- [ ] Buildings: red barn, chicken coop, farmhouse (door to the dressing room), farmstand stall with an awning — 4
+- [ ] Fence: straight piece and corner (mirrored in code for other directions) — 2
+- [ ] Nature: round tree, apple tree, flower patch, rock, small pond — 5
+
+*Batch C — farmstand shop unlocks (about 8)*
+- [ ] Decorations to buy with coins: scarecrow, windmill, flower pot, bench, mailbox, lantern — 6
+- [ ] Coins for "make change" (Big): copper coin and silver coin, blank, with the value drawn on in code — 2
+
+*Done in code (no images):* sparkles, water drops, hearts for a happy pig, sun moving across the sky, the goodnight moon and stars, chore cooldown rings.
+*Covered elsewhere:* farmer avatars, costumes and following pets are in **#10**.
+*Only if decided:* wilted crop stages, if crops can wilt (see decisions below) — 5 more images.
+
+**⚠️ Art style check before #10 starts:** #10 says to use the chunky 3D hen (`art/farm/hen.webp`) as the style reference, but the farm now uses the flatter **isometric sprite** style (`art/iso/farm/`). Avatars walking on the farm should match the isometric animals, so #10 should use an isometric animal (for example `art/iso/farm/hen/stand.webp`) as its reference.
+
 A **live co-op farm** that the kids share. They grow crops and raise animals together, and each chore is a short, age-appropriate learning puzzle.
 
 **The farm**
@@ -403,6 +433,7 @@ Build the **simple parts for the avatar builder** (#3 farmer avatars, used as ev
   - Why not Firebase Storage: it needs the paid Blaze plan. Game art lives in the repo; only images made *during play* (e.g. story pictures) go in the Realtime Database under the family's code (`--firebase CODE`).
   - ✅ First batch: farm animals and crops (hen, cow, pig, sheep, pumpkin, carrot).
   - ✅ Isometric animation sprites (`art/iso/farm/`): stand, eat, sleep and back views for each animal, and sprout/growing/ripe for each crop. Made with `genart.py poses`: the first pose is generated, the rest are edits of it so the animal stays the same. Motion (waddle, peck, breathing, Z's) is done in code.
+  - ⚠️ **The free allowance (about 85 images a day) is shared by every chat using the Cloudflare token**, but `genart.py usage` only counts images made in that chat's own workspace, so it can overstate what's left. When the allowance runs out the script stops with "Free daily limit reached (resets 7pm Central)" and nothing is lost. To avoid two chats competing, let one chat do art at a time, and do big batches right after 7 PM Central.
   - Later: a small Cloudflare Worker so the game itself can generate pictures, with a kid-safe prompt wrapper.
 
 - ✅ **Saved data: decided on Firebase Realtime Database (free Spark plan).** No credit card, live updates to every device, works from GitHub Pages. Everything lives under `families/<family code>/`, so the family code is the key (no passwords).
