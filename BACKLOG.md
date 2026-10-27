@@ -90,17 +90,36 @@ A **live co-op farm** that the kids share. They grow crops and raise animals tog
 - Some jobs need two players at once. For example, one holds the bucket while the other milks, or one plants while the other waters.
 - A shared goal board, such as "Fill the farmstand with 10 pumpkins by Saturday," with a celebration when it's done.
 
+**⏱️ 30-minute play limit (per player)**
+- The farm is designed so a full visit takes **no more than 30 minutes**. Each player gets **30 minutes of farm time**; once it's used, the farm is closed to that player for **24 hours** from that moment.
+- Time is tracked per persona (Violet, Quinn, Joe…), not per device, and saved in Firebase. Switching iPads doesn't reset it.
+- Only active farm time counts: the clock pauses when the app is closed, the iPad sleeps, or the player leaves the farm for the lobby or another game.
+- **Cooldown timers on the puzzles set the pace.** After a chore puzzle is solved, that spot rests (for example, a watered plant "drinks" for 3 minutes and a fed chicken naps for 5). The cooldowns are tuned so that doing every available chore fills about 30 minutes, which makes the limit feel like a natural end to the visit rather than a sudden cutoff.
+- **Winding down, not a hard stop:**
+  - The sun moves across the farm sky as the player's time is used; sunset means time's nearly up.
+  - At 5 minutes left: "The animals are getting sleepy!" No new chores start, but the current puzzle can be finished.
+  - At 0: a goodnight scene ("See you tomorrow!") with a countdown to when the farm opens again, shown as a picture for Little players (the moon going around).
+- The rest of Kapanigans (Color Together, Bedtime Stories, Inbox) stays available while the farm is resting.
+- In co-op chores, each player's own clock runs separately. If one player runs out mid-game, the other can keep going.
+- Grown-ups can see everyone's remaining farm time. Whether grown-ups can grant extra time is still an open question below.
+
 **Acceptance criteria**
 - [ ] A shared farm view that stays in sync across devices
 - [ ] At least 3 crops and 2 animals at launch
 - [ ] Every chore has a Little and a Big puzzle version
 - [ ] Farm progress is saved and still there the next day
 - [ ] Gentle failure only: wrong answers get a "try again" with a hint, never a penalty or a dead plant
+- [ ] Each player's farm time stops at 30 minutes and reopens 24 hours later, on any device
+- [ ] Puzzle cooldowns are tuned so finishing all available chores takes about 30 minutes
+- [ ] A 5-minute "sleepy animals" warning and a goodnight screen with a countdown
 
 **🔍 Decisions needed**
 - ~~Saving the farm~~ → decided: Firebase (see Shared groundwork).
 - Should crops be able to wilt if nobody visits, or stay safe forever (kinder for little ones)?
-- Is there a daily play limit or bedtime cutoff for the farm?
+- ~~Daily play limit~~ → decided: 30 minutes per player, then a 24-hour rest (see above).
+- Do grown-ups follow the same 30-minute limit, or are they exempt?
+- Can a grown-up grant extra time or reset a player's cooldown (for a sick day or a road trip)?
+- Should the 24 hours run from when the time ran out (as written), or should the farm reopen every morning at a set time (for example 7 AM), which is easier for little ones to understand?
 
 ---
 
