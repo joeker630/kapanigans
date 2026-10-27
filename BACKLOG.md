@@ -346,7 +346,7 @@ Build a library of **white, colorable clothing pieces** for Fashion Show (#5), s
 - [ ] Each piece is a small WebP (under about 40 KB)
 
 **🔍 Decisions needed**
-- Anything to add or drop from the first set? (for example sports jerseys, swimsuits, or holiday costumes)
+- ~~First set contents~~ → decided: go with the set above; nothing to add for now.
 
 ---
 
@@ -382,8 +382,8 @@ Build the **simple parts for the avatar builder** (#3 farmer avatars, used as ev
 - [ ] Each person's avatar shows up the same on every device
 
 **🔍 Decisions needed**
-- Should the base body be a kid-shaped person for everyone, or let grown-ups pick a taller grown-up body?
-- Should animal avatars be an option too (for example dressing up as the pig or the cow)?
+- ~~Body size~~ → decided: **everyone is the same size**, kids and grown-ups use the same base body.
+- ~~Animal avatars~~ → decided: **humans only**. Costumes (pumpkin, chicken) are worn by the human avatar, and pets just follow along.
 
 ---
 
