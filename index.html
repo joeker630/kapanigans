@@ -220,6 +220,12 @@ h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance;l
 .shead h1{font-size:clamp(24px,4.4vw,36px);flex:1;min-width:0}
 .sbody{display:flex;flex-direction:column;align-items:center;gap:16px;flex:1;padding-bottom:16px}
 .sbody h2{font-size:clamp(26px,5vw,42px);text-align:center}
+#farm .shead{padding-top:8px}
+#farm .shead h1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:520px){#farm .shead h1{font-size:0}#farm .shead h1::first-letter{font-size:30px}}
+#farmBody{flex:1;min-height:0;position:relative;width:100%}
+#farmCv{position:absolute;inset:0;touch-action:none}
+.basket{background:var(--paper);border-radius:999px;padding:6px 16px;font-size:20px;box-shadow:0 3px 0 var(--sky-deep);white-space:nowrap}
 .sbody .sub{color:var(--ink-soft);font-weight:600;text-align:center;margin:-8px 0 0}
 .choices{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;width:100%;max-width:900px}
 .choice{background:var(--paper);border-radius:24px;padding:14px 8px;display:flex;flex-direction:column;align-items:center;gap:4px;box-shadow:0 5px 0 var(--sky-deep);border:4px solid transparent;font-size:16px;font-weight:800}
@@ -484,7 +490,7 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
   <div class="games">
     <button class="game live" id="playColor"><span class="tag">Play</span><span class="icon">🎨</span><h3>Color Together</h3><p>Everyone colors their own part of one big picture.</p></button>
     <button class="game live" id="playStory"><span class="tag">Play</span><span class="icon">🌙</span><h3>Bedtime Story</h3><p>Make a silly story with your own characters and send it as a gift.</p></button>
-    <button class="game soon" data-say="Kapanigan Farmstand. Coming soon!"><span class="tag">Soon</span><span class="icon">🥕</span><h3>Kapanigan Farmstand</h3><p>Grow crops and care for animals together on the family farm.</p></button>
+    <button class="game live" id="playFarm"><span class="tag">Play</span><span class="icon">🥕</span><h3>Kapanigan Farmstand</h3><p>Feed the animals and pick crops on the family farm.</p></button>
     <button class="game live" id="playInbox"><span class="tag">Play</span><span class="icon">💌</span><h3>Inbox</h3><p>Send stickers, drawings and voice notes to the family.</p></button>
   </div>
 </section>
@@ -554,6 +560,17 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
     <button class="round" id="iHome" aria-label="Home">🏠</button>
   </div>
   <div class="sbody" id="iBody"></div>
+</section>
+
+<!-- ============ FARMSTAND ============ -->
+<section class="screen" id="farm" hidden>
+  <div class="shead">
+    <button class="round" id="fBack" aria-label="Back">⬅️</button>
+    <h1>🥕 Farmstand</h1>
+    <span class="basket" id="farmBasket"></span>
+    <button class="round" id="fHome" aria-label="Home">🏠</button>
+  </div>
+  <div id="farmBody"><canvas id="farmCv"></canvas></div>
 </section>
 
 <!-- ============ BEDTIME STORY: make ============ -->
@@ -659,7 +676,7 @@ function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i)
 function rng(seed){let a=seed>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 function esc(s){return String(s).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]))}
 function kidOf(k){return KIDS[k] || (k==="kapanigans"?SYS:KIDS.bear)}
-function show(id){if(screen==="reader"&&id!=="reader")hush();if(screen==="inbox"&&id!=="inbox"&&typeof stopRec==="function")stopRec();for(const s of ["setup","pick","lobby","game","story","reader","inbox","grown"]) $("#"+s).hidden = s!==id; screen=id; if(id!=="game") $("#vid").hidden=true; if(id==="pick"&&typeof syncMailBadges==="function") syncMailBadges();
+function show(id){if(screen==="reader"&&id!=="reader")hush();if(screen==="inbox"&&id!=="inbox"&&typeof stopRec==="function")stopRec();for(const s of ["setup","pick","lobby","game","story","reader","inbox","grown","farm"]) $("#"+s).hidden = s!==id; screen=id; if(id!=="game") $("#vid").hidden=true; if(id==="pick"&&typeof syncMailBadges==="function") syncMailBadges();
   if(me&&room&&id!=="game"&&id!=="setup") setPresence({scr:id==="lobby"?"lobby":"busy"});
   if(typeof tickStats==="function") tickStats()}
 /* ---------------- read-aloud helper ---------------- */
@@ -2377,6 +2394,96 @@ if(savedCode.length>=4){
   if(me) bump("sessions");
   if(me) goLobby(); else show("pick");
 } else { show("setup"); }
+/* ============ FARMSTAND (v1: animated field, local only) ============ */
+const FARM_ART="art/iso/farm/";
+const FARM_ANIMALS=[{k:"hen",name:"hen",h:.9,food:"corn"},{k:"cow",name:"cow",h:1.25,food:"grass"},{k:"pig",name:"pig",h:1.05,food:"corn"},{k:"sheep",name:"sheep",h:1.05,food:"grass"}];
+const FARM_CROPS={carrot:{name:"carrot",icon:"🥕"},pumpkin:{name:"pumpkin",icon:"🎃"}};
+const FARM_GROW=[0,18000,36000]; // ms to reach sprout, growing, ripe
+const fm={cv:null,g:null,img:{},N:8,tw:0,th:0,ox:0,oy:0,animals:[],plots:[],basket:{carrot:0,pumpkin:0},pops:[],raf:0,last:0};
+function farmImg(p){if(!fm.img[p]){const i=new Image();i.src=FARM_ART+p+".webp";fm.img[p]=i}return fm.img[p]}
+function farmInit(){
+  fm.cv=$("#farmCv");fm.g=fm.cv.getContext("2d");
+  for(const a of FARM_ANIMALS)for(const p of ["stand","eat","sleep","back"])farmImg(a.k+"/"+p);
+  for(const c in FARM_CROPS)for(const p of ["sprout","growing","ripe"])farmImg(c+"/"+p);
+  const now=performance.now();
+  fm.animals=FARM_ANIMALS.map((a,n)=>({...a,i:3+n%2*2+.5,j:2+Math.floor(n/2)*3+.5,ti:0,tj:0,state:"idle",until:now+500+n*700,dir:n%2?1:-1,front:true,t:Math.random()*9,hop:0}));
+  fm.plots=[];for(let i=0;i<3;i++)for(let j=0;j<2;j++)fm.plots.push({i,j,crop:j?"pumpkin":"carrot",born:now-Math.random()*20000});
+  new ResizeObserver(farmFit).observe($("#farmBody"));
+  fm.cv.addEventListener("pointerdown",farmTap);
+}
+function farmFit(){const b=$("#farmBody").getBoundingClientRect(),d=devicePixelRatio||1;
+  fm.cv.width=b.width*d;fm.cv.height=b.height*d;fm.cv.style.width=b.width+"px";fm.cv.style.height=b.height+"px";
+  const W=fm.cv.width,H=fm.cv.height;const portrait=H>W*1.15;fm.tw=Math.min(W/(fm.N*(portrait?.72:1)+.6),H/(fm.N/2+2.2));fm.th=fm.tw/2;fm.ox=W/2;fm.oy=(H-fm.N*fm.th)/2+fm.th*.4}
+const fIso=(i,j)=>({x:fm.ox+(i-j)*fm.tw/2,y:fm.oy+(i+j)*fm.th/2});
+const fInPlots=(i,j)=>i<3.2&&j<2.2;
+function fStage(p,now){const t=now-p.born;return t>=FARM_GROW[2]?"ripe":t>=FARM_GROW[1]?"growing":"sprout"}
+function fPick(a,now){const r=Math.random();
+  if(r<.6){let i,j;do{i=.5+Math.random()*(fm.N-1);j=.5+Math.random()*(fm.N-1)}while(fInPlots(i,j)||Math.abs(i-j)>fm.N*.55);a.ti=i;a.tj=j;a.state="walk"}
+  else if(r<.85){a.state="eat";a.until=now+3500}else{a.state="sleep";a.until=now+8000}}
+function farmTap(e){
+  const r=fm.cv.getBoundingClientRect(),d=fm.cv.width/r.width,x=(e.clientX-r.left)*d,y=(e.clientY-r.top)*d,now=performance.now();
+  // animals first (front-most wins)
+  const hit=[...fm.animals].sort((a,b)=>(b.i+b.j)-(a.i+a.j)).find(a=>{const p=fIso(a.i,a.j),H=fm.th*2.2*a.h;return Math.abs(x-p.x)<H*.5&&y<p.y+fm.th*.3&&y>p.y-H});
+  if(hit){
+    if(hit.state==="sleep"){hit.state="idle";hit.until=now+1500;hit.hop=1;say(`The ${hit.name} woke up!`);fPop(hit,"❗")}
+    else{hit.state="eat";hit.until=now+4000;hit.hop=1;say(`The ${hit.name} is eating ${hit.food}. Yum!`);fPop(hit,hit.food==="corn"?"🌽":"🌿")}
+    blip(700,.12,"sine");return}
+  const sx=x-fm.ox,sy=y-fm.oy,i=(sy/(fm.th/2)+sx/(fm.tw/2))/2,j=(sy/(fm.th/2)-sx/(fm.tw/2))/2;
+  const plot=fm.plots.find(p=>i>=p.i&&i<p.i+1&&j>=p.j&&j<p.j+1);
+  if(plot){const st=fStage(plot,now),c=FARM_CROPS[plot.crop];
+    if(st==="ripe"){fm.basket[plot.crop]++;plot.born=now;say(`You picked a ${c.name}!`);fPopAt(fIso(plot.i+.5,plot.j+.5),c.icon);blip(900,.15,"triangle");farmBasket()}
+    else say(st==="sprout"?`A little ${c.name} sprout. It needs time to grow.`:`The ${c.name} is growing. Almost ready!`);return}
+  if(i>0&&j>0&&i<fm.N&&j<fm.N){ // call the nearest awake animal over
+    const a=fm.animals.filter(a=>a.state!=="sleep").sort((p,q)=>Math.hypot(p.i-i,p.j-j)-Math.hypot(q.i-i,q.j-j))[0];
+    if(a&&!fInPlots(i,j)){a.ti=i;a.tj=j;a.state="walk";sayLittle(`Here, ${a.name}!`)}}
+}
+function fPop(a,txt){fPopAt(fIso(a.i,a.j),txt,fm.th*2.2*a.h)}
+function fPopAt(p,txt,up=fm.th*1.6){fm.pops.push({x:p.x,y:p.y-up,txt,t:0})}
+function farmBasket(){$("#farmBasket").textContent=Object.entries(fm.basket).map(([k,v])=>FARM_CROPS[k].icon+" "+v).join("   ")}
+function farmTile(i,j,fill){const g=fm.g,a=fIso(i,j),b=fIso(i+1,j),c=fIso(i+1,j+1),d=fIso(i,j+1);g.beginPath();g.moveTo(a.x,a.y);g.lineTo(b.x,b.y);g.lineTo(c.x,c.y);g.lineTo(d.x,d.y);g.closePath();g.fillStyle=fill;g.fill()}
+function farmFrame(now){
+  if(screen!=="farm"){fm.raf=0;return}
+  const dt=Math.min(.05,(now-fm.last)/1000);fm.last=now;const g=fm.g,W=fm.cv.width,H=fm.cv.height,N=fm.N,th=fm.th;
+  g.clearRect(0,0,W,H);
+  const l=fIso(0,N),m=fIso(N,N),r=fIso(N,0),dep=th*.45;
+  g.fillStyle="#B98A5A";g.beginPath();g.moveTo(l.x,l.y);g.lineTo(m.x,m.y);g.lineTo(m.x,m.y+dep);g.lineTo(l.x,l.y+dep);g.fill();
+  g.fillStyle="#A07447";g.beginPath();g.moveTo(m.x,m.y);g.lineTo(r.x,r.y);g.lineTo(r.x,r.y+dep);g.lineTo(m.x,m.y+dep);g.fill();
+  for(let i=0;i<N;i++)for(let j=0;j<N;j++)farmTile(i,j,fInPlots(i+.5,j+.5)?((i+j)%2?"#9C6B43":"#A8774D"):((i+j)%2?"#8FD16A":"#9BDB76"));
+  // things to draw, back to front
+  const items=[];
+  for(const p of fm.plots)items.push({d:p.i+p.j+1,draw:()=>{const st=fStage(p,now),im=fm.img[p.crop+"/"+st];if(!im.complete||!im.naturalWidth)return;
+    const c=fIso(p.i+.5,p.j+.5),w=fm.tw*.8,h=w*im.naturalHeight/im.naturalWidth,sw=st==="ripe"?Math.sin(now/400+p.i)*.03:Math.sin(now/600+p.i+p.j)*.05;
+    g.save();g.translate(c.x,c.y+th*.42);g.rotate(sw);g.drawImage(im,-w/2,-h,w,h);g.restore();
+    if(st==="ripe"){g.globalAlpha=.5+.5*Math.sin(now/250);g.font=`${th*.5}px system-ui`;g.textAlign="center";g.fillText("✨",c.x+w*.35,c.y-h*.6);g.globalAlpha=1}}});
+  for(const a of fm.animals){
+    a.t+=dt;a.hop=Math.max(0,a.hop-dt*3);
+    if(a.state==="walk"){const di=a.ti-a.i,dj=a.tj-a.j,d=Math.hypot(di,dj);
+      if(d<.05){a.state="idle";a.until=now+1000+Math.random()*1500}
+      else{const s=Math.min(d,1.3*dt);a.i+=di/d*s;a.j+=dj/d*s;const sx=di-dj,sy=di+dj;a.front=sy>=-.02;if(Math.abs(sx)>.01)a.dir=sx>0?1:-1}}
+    else if(now>a.until){if(a.state==="idle")fPick(a,now);else{a.state="idle";a.until=now+800}}
+    items.push({d:a.i+a.j,draw:()=>{
+      const pose=a.state==="walk"?(a.front?"stand":"back"):a.state==="eat"?"eat":a.state==="sleep"?"sleep":"stand";
+      const im=fm.img[a.k+"/"+pose];if(!im.complete||!im.naturalWidth)return;
+      const p=fIso(a.i,a.j),H=th*2.2*a.h*(pose==="sleep"?.8:1),w=H*im.naturalWidth/im.naturalHeight;
+      let bob=-a.hop*th*.6,rot=0,sc=1;
+      if(a.state==="walk"){bob-=Math.abs(Math.sin(a.t*10))*th*.12;rot=Math.sin(a.t*10)*.08}
+      if(a.state==="eat")bob+=Math.max(0,Math.sin(a.t*8))*th*.06;
+      if(a.state==="sleep")sc=1+Math.sin(a.t*2.2)*.03;
+      if(a.state==="idle")sc=1+Math.sin(a.t*3)*.012;
+      g.fillStyle="rgba(0,0,0,.18)";g.beginPath();g.ellipse(p.x,p.y,w*.32,th*.22,0,0,7);g.fill();
+      g.save();g.translate(p.x,p.y+th*.1+bob);g.rotate(rot);const flip=pose==="back"?(a.dir<0?-1:1):(a.dir>0?-1:1);g.scale(flip*sc,sc);
+      g.drawImage(im,-w/2,-H,w,H);g.restore();
+      if(a.state==="sleep"){g.fillStyle="#3A4A5A";g.textAlign="left";for(let k=0;k<3;k++){const q=(a.t*.5+k/3)%1;g.globalAlpha=1-q;g.font=`900 ${th*(.28+k*.08)}px system-ui`;g.fillText("z",p.x+w*.3+q*th*.4,p.y-H*.8-q*th*.8)}g.globalAlpha=1}}});
+  }
+  items.sort((a,b)=>a.d-b.d).forEach(it=>it.draw());
+  g.textAlign="center";fm.pops=fm.pops.filter(p=>(p.t+=dt)<1.2);for(const p of fm.pops){g.globalAlpha=1-p.t/1.2;g.font=`${th*.7}px system-ui`;g.fillText(p.txt,p.x,p.y-p.t*th*1.2)}g.globalAlpha=1;
+  fm.raf=requestAnimationFrame(farmFrame);
+}
+function openFarm(){if(!fm.cv)farmInit();show("farm");farmBasket();farmFit();fm.last=performance.now();if(!fm.raf)fm.raf=requestAnimationFrame(farmFrame);
+  sayLittle("Tap an animal to feed it. Tap a sparkly crop to pick it!")}
+$("#playFarm").onclick=()=>{sayLittle("Kapanigan Farmstand");openFarm()};
+$("#fHome").onclick=()=>{hush();goLobby()};
+$("#fBack").onclick=()=>{hush();goLobby()};
 })();
 </script>
 </body>

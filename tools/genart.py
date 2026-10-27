@@ -8,6 +8,8 @@ Credentials (never committed):
 Usage:
   python3 tools/genart.py one farm/chicken "a plump red hen"
   python3 tools/genart.py batch tools/batches/farm1.json
+  python3 tools/genart.py poses farm/hen "a plump red hen with a cream belly"   # stand/eat/sleep/back
+  python3 tools/genart.py poses farm/carrot "a carrot plant" --crop           # sprout/growing/ripe
   python3 tools/genart.py sheet farm            # contact sheet of art/farm
   python3 tools/genart.py usage                 # rough free-tier budget left today
 
@@ -30,6 +32,23 @@ STYLE = ("cute chunky 3D cartoon style like a premium kids' game, soft rounded s
          "smooth clay-like materials, bright friendly saturated colors, gentle soft lighting, "
          "centered, whole subject in frame, "
          "plain solid flat light grey background, no text, no letters, no logo, no border")
+
+# Simplified isometric sprites for things that move around the farm.
+ISO = ("simple clean isometric game sprite, viewed from above at a 3/4 isometric angle, "
+       "chunky simplified shapes, flat soft shading with few details, bright friendly colors, "
+       "whole subject in frame, plain solid flat light grey background, no shadow, no text")
+SAME = ", keep the exact same character, colors, proportions and style as the reference image"
+ANIMAL_POSES = {
+    "stand": "{d}, standing, body facing toward the bottom left",
+    "eat":   "Edit the reference image: the animal lowers its head all the way down so its mouth touches the grass, eating, body still facing the bottom left" + SAME,
+    "sleep": "Edit the reference image: the animal lies down flat on its belly on the ground with its legs folded and tucked under its body, head resting low, eyes closed, sleeping" + SAME,
+    "back":  "Edit the reference image: turn the animal around 180 degrees so it faces away from the viewer toward the top right; show its rear, tail and back, the face is hidden, walking away" + SAME,
+}
+CROP_STAGES = {
+    "ripe":    "{d}, fully grown and ripe, growing in a small mound of brown soil",
+    "sprout":  "a tiny green sprout with two small leaves poking out of the same small mound of brown soil" + SAME,
+    "growing": "the same plant half grown, young and green, not ripe yet, in the same small mound of brown soil" + SAME,
+}
 
 MODELS = {
     "klein":   ("@cf/black-forest-labs/flux-2-klein-4b", 105),   # neurons per 1024px image (approx)
@@ -57,11 +76,11 @@ def multipart(fields, files):
     return out.getvalue(), f"multipart/form-data; boundary={b}"
 
 
-def generate(prompt, model="klein", ref=None, seed=None):
+def generate(prompt, model="klein", ref=None, seed=None, style=None):
     tok, acct = creds()
     mid, cost = MODELS[model]
     url = f"https://api.cloudflare.com/client/v4/accounts/{acct}/ai/run/{mid}"
-    full = f"{prompt}. {STYLE}"
+    full = f"{prompt}. {style or STYLE}"
     if model == "schnell":
         body = {"prompt": full, "steps": 4}
         if seed is not None: body["seed"] = seed
@@ -116,10 +135,20 @@ def cutout(raw, keepbg=False, size=512):
         # Background always touches the edge; refill enclosed "holes" (e.g. a light belly).
         import numpy as np
         from scipy.ndimage import binary_fill_holes
+        from scipy.ndimage import label, binary_dilation
         a = np.array(im.getchannel("A"))
-        solid = binary_fill_holes(a > 128)
-        a = np.where(solid & (a < 255), 255, a).astype("uint8")
         rgb = np.array(Image.open(io.BytesIO(raw)).convert("RGB"))
+        # The prompt asks for a flat background: anything edge-connected and close to the
+        # border colour is background; everything else is solid (fixes see-through white fur).
+        border = np.concatenate([rgb[0], rgb[-1], rgb[:, 0], rgb[:, -1]])
+        bgc = np.median(border, axis=0)
+        near = np.abs(rgb.astype(int) - bgc).max(axis=2) < 16
+        lab, _ = label(near)
+        edge_ids = set(np.unique(np.concatenate([lab[0], lab[-1], lab[:, 0], lab[:, -1]]))) - {0}
+        bg = np.isin(lab, list(edge_ids))
+        fg = binary_fill_holes((a > 128) | (~bg & (a > 8)))
+        rim = binary_dilation(fg, iterations=2) & ~fg
+        a = np.where(fg, 255, np.where(rim, a, 0)).astype("uint8")
         im = Image.fromarray(np.dstack([rgb, a]), "RGBA")
         bbox = im.getchannel("A").point(lambda a: 255 if a > 8 else 0).getbbox()
         if bbox:
@@ -159,6 +188,26 @@ def make_one(name, prompt, a):
     print(f"✓ {p.relative_to(ROOT)}  {dims[0]}x{dims[1]}  {len(webp)//1024}KB  {time.time()-t:.0f}s")
 
 
+def poses(name, desc, a):
+    """art/iso/<name>/<pose>.webp: base pose first, the rest drawn from it as a reference."""
+    kind = "crop" if a.crop else "animal"
+    table = CROP_STAGES if a.crop else ANIMAL_POSES
+    rawdir = CFG / "raw" / name; rawdir.mkdir(parents=True, exist_ok=True)
+    base = next(iter(table))
+    only = set(a.only.split(",")) if a.only else set(table)
+    for pose, tmpl in table.items():
+        if pose not in only: continue
+        t = time.time()
+        prompt = tmpl.format(d=desc)
+        ref = None if pose == base else str(rawdir / f"{base}.jpg")
+        if ref and not Path(ref).exists(): sys.exit(f"make the {base} pose first")
+        raw = generate(prompt, "klein", ref, a.seed, ISO)
+        (rawdir / f"{pose}.jpg").write_bytes(raw)
+        webp, dims = cutout(raw, False, 256)
+        save(f"iso/{name}/{pose}", prompt, "klein", webp, dims, False)
+        print(f"✓ art/iso/{name}/{pose}.webp  {dims[0]}x{dims[1]}  {len(webp)//1024}KB  {time.time()-t:.0f}s")
+
+
 def sheet(folder, out=None):
     from PIL import Image, ImageDraw
     files = sorted((ART / folder).rglob("*.webp")) if folder else sorted(ART.rglob("*.webp"))
@@ -178,13 +227,15 @@ def sheet(folder, out=None):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("cmd", choices=["one", "batch", "sheet", "usage"])
+    ap.add_argument("cmd", choices=["one", "batch", "poses", "sheet", "usage"])
     ap.add_argument("args", nargs="*")
     ap.add_argument("--model", default="klein", choices=MODELS)
     ap.add_argument("--ref"); ap.add_argument("--seed", type=int)
     ap.add_argument("--keepbg", action="store_true"); ap.add_argument("--size", type=int, default=512)
     ap.add_argument("--firebase", metavar="FAMILYCODE")
     ap.add_argument("--out")
+    ap.add_argument("--crop", action="store_true", help="poses: growth stages instead of animal poses")
+    ap.add_argument("--only", help="poses: comma list, e.g. back,sleep")
     a = ap.parse_args()
     if a.cmd == "one":
         make_one(a.args[0], a.args[1], a)
@@ -195,6 +246,8 @@ def main():
         a.keepbg = a.keepbg or spec.get("options", {}).get("keepbg", False)
         for name, prompt in spec["items"].items():
             make_one(name, prompt, a)
+    elif a.cmd == "poses":
+        poses(a.args[0], a.args[1], a)
     elif a.cmd == "sheet":
         sheet(a.args[0] if a.args else "", a.out)
     elif a.cmd == "usage":

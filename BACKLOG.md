@@ -65,7 +65,13 @@ Add grown-up players to the **Who's playing?** screen.
 
 ---
 
-## 3. 🆕 New game: Kapanigan Farmstand
+## 3. 🛠️ New game: Kapanigan Farmstand
+
+**✅ Playable so far (v1, on this device only, nothing saved yet)**
+- An isometric farm field: the hen, cow, pig and sheep wander, graze and nap on their own, with walk (waddle, front and back views), eat and sleep animations.
+- Tap an animal to feed it (corn or grass); tap a sleeping animal to wake it; tap the grass to call the nearest animal over.
+- Carrot and pumpkin plots grow from sprout to growing to ripe (about 36 seconds); tap a sparkly ripe crop to pick it into the basket.
+- Still to build: chore puzzles by level, co-op play, saving the farm in Firebase, and the 30-minute play limit.
 
 A **live co-op farm** that the kids share. They grow crops and raise animals together, and each chore is a short, age-appropriate learning puzzle.
 
@@ -396,6 +402,7 @@ Build the **simple parts for the avatar builder** (#3 farmer avatars, used as ev
   - Why not the others: the Gemini/Nano Banana API has no free image tier; Pollinations and Hugging Face give only small one-time or tiny balances; ChatGPT has no free API.
   - Why not Firebase Storage: it needs the paid Blaze plan. Game art lives in the repo; only images made *during play* (e.g. story pictures) go in the Realtime Database under the family's code (`--firebase CODE`).
   - ✅ First batch: farm animals and crops (hen, cow, pig, sheep, pumpkin, carrot).
+  - ✅ Isometric animation sprites (`art/iso/farm/`): stand, eat, sleep and back views for each animal, and sprout/growing/ripe for each crop. Made with `genart.py poses`: the first pose is generated, the rest are edits of it so the animal stays the same. Motion (waddle, peck, breathing, Z's) is done in code.
   - Later: a small Cloudflare Worker so the game itself can generate pictures, with a kid-safe prompt wrapper.
 
 - ✅ **Saved data: decided on Firebase Realtime Database (free Spark plan).** No credit card, live updates to every device, works from GitHub Pages. Everything lives under `families/<family code>/`, so the family code is the key (no passwords).
