@@ -91,6 +91,17 @@ A **live co-op farm** that the kids share. They grow crops and raise animals tog
 - Some jobs need two players at once. For example, one holds the bucket while the other milks, or one plants while the other waters.
 - A shared goal board, such as "Fill the farmstand with 10 pumpkins by Saturday," with a celebration when it's done.
 
+**🧑‍🌾 Farmer avatars (customizable)**
+- Each player walks around the farm as their own **farmer avatar**, visible to everyone in the game. It replaces the plain finger marker, and each avatar's name floats above it.
+- **Customize from a dressing room** before entering the farm (and anytime from the farmhouse):
+  - **Little:** big picture choices for hair, skin tone, a hat (straw hat, cap, bonnet, flower crown), overalls or a dress, boots, and a color for each. Every choice is read aloud.
+  - **Big:** more options for each part (hairstyles, glasses, freckles, bandanas, aprons, gloves), patterns, and color schemes.
+  - **Grown-ups** get Big options.
+- **Unlocks from playing:** coins from the farmstand buy extra items, such as a cowboy hat, rain boots, a pumpkin costume or a pet that follows you (a dog, cat or duckling).
+- Avatars do small animations: walk, wave, cheer when a chore puzzle is solved, and yawn as the 30 minutes wind down.
+- The look is saved per persona (in Firebase), so it's the same on every device.
+- **Shares a dress-up system with Fashion Show (#5).** Body parts, clothing layers and recoloring are built once and used by both games, and possibly as the avatar in the lobby too.
+
 **⏱️ 30-minute play limit (per player)**
 - The farm is designed so a full visit takes **no more than 30 minutes**. Each player gets **30 minutes of farm time**; once it's used, the farm is closed to that player for **24 hours** from that moment.
 - Time is tracked per persona (Violet, Quinn, Joe…), not per device, and saved in Firebase. Switching iPads doesn't reset it.
@@ -107,6 +118,7 @@ A **live co-op farm** that the kids share. They grow crops and raise animals tog
 **Acceptance criteria**
 - [ ] A shared farm view that stays in sync across devices
 - [ ] At least 3 crops and 2 animals at launch
+- [ ] Each player can customize a farmer avatar that everyone sees on the farm, and it's remembered across devices
 - [ ] Every chore has a Little and a Big puzzle version
 - [ ] Farm progress is saved and still there the next day
 - [ ] Gentle failure only: wrong answers get a "try again" with a hint, never a penalty or a dead plant
@@ -119,6 +131,8 @@ A **live co-op farm** that the kids share. They grow crops and raise animals tog
 - Should crops be able to wilt if nobody visits, or stay safe forever (kinder for little ones)?
 - ~~Daily play limit~~ → decided: 30 minutes per player, then a 24-hour rest (see above).
 - Do grown-ups follow the same 30-minute limit, or are they exempt?
+- Should the custom farmer avatar also replace the emoji avatar in the lobby and other games?
+- Does customizing the avatar count toward the 30 minutes of farm time? (Suggested: no, the dressing room doesn't use farm time.)
 - Can a grown-up grant extra time or reset a player's cooldown (for a sick day or a road trip)?
 - Should the 24 hours run from when the time ran out (as written), or should the farm reopen every morning at a set time (for example 7 AM), which is easier for little ones to understand?
 
