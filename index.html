@@ -3698,6 +3698,23 @@ function farmHeader(){
 }
 
 /* ---- wandering ---- */
+/* ---- animals move on a shared schedule, so every device sees the same animal in the same place ----
+   Time is cut into 18-second slots on the server clock. In each slot an animal strolls from one waypoint to the next
+   (both picked by a seeded "random" from the animal's id and the slot number), then grazes, stands or naps there.
+   Waypoints stay near the animal's own home spot in the pasture, so animals spread out instead of piling up.
+   Nothing is sent over the network: every device works out the same answer from the same clock and farm data. */
+const ANIM_SLOT=18000;
+function animRand(id,slot,k){let h=2166136261;const str=id+"|"+slot+"|"+k;for(let n=0;n<str.length;n++){h^=str.charCodeAt(n);h=Math.imul(h,16777619)}h^=h>>>13;h=Math.imul(h,1274126177);h^=h>>>16;return (h>>>0)/4294967296}
+function animHome(id){const ids=Object.keys((F.st&&F.st.animals)||{}).sort(),n=Math.max(0,ids.indexOf(id)),M=Math.max(1,ids.length),P=pasture();
+  const w=P.i1-P.i0-2,h=P.j1-P.j0-2,cols=Math.max(1,Math.round(Math.sqrt(M*w/h))),rows=Math.ceil(M/cols);
+  return [P.i0+1+(n%cols+.5)*w/cols,P.j0+1+(Math.floor(n/cols)+.5)*h/rows]}
+function animWay(id,slot){const [hi,hj]=animHome(id),P=pasture(),r=Math.sqrt(animRand(id,slot,1))*1.8,a=animRand(id,slot,2)*Math.PI*2;
+  return [Math.max(P.i0+.7,Math.min(P.i1-.7,hi+Math.cos(a)*r)),Math.max(P.j0+.7,Math.min(P.j1-.7,hj+Math.sin(a)*r))]}
+function animAt(id,now,speed){
+  const slot=Math.floor(now/ANIM_SLOT),u=now-slot*ANIM_SLOT,A=animWay(id,slot),B=animWay(id,slot+1),di=B[0]-A[0],dj=B[1]-A[1],d=Math.hypot(di,dj),walk=d/speed*1000;
+  const sx=di-dj,sy=di+dj,front=sy>=-.02,dir=sx>0?1:-1;
+  if(d>.05&&u<walk){const k=u/walk;return {i:A[0]+di*k,j:A[1]+dj*k,state:"walk",front,dir}}
+  const r=animRand(id,slot,3);return {i:B[0],j:B[1],state:r<.6?"eat":r<.85?"idle":"sleep",front,dir}}
 function fPick(a,now,hungry){const r=Math.random();
   if(r<(hungry?.2:.45)){const P=pasture();let i,j,n=0;do{i=a.i+(Math.random()-.5)*5;j=a.j+(Math.random()-.5)*5}while(!inPasture(i,j)&&++n<20);
     if(n<20){a.ti=i;a.tj=j;a.state="walk"}else{a.state="idle";a.until=now+2000}}
@@ -3740,7 +3757,7 @@ function fGround(t){
 // walk my farmer over first; the chore starts when they arrive
 function fGo(t){
   fPickClose();
-  if(t.kind==="animal"){const w=t.ref;w.held=performance.now()+15000;w.state="idle";const [si,sj]=fwStandBy(w.i,w.j,.9);
+  if(t.kind==="animal"){const w=t.ref;const [si,sj]=fwStandBy(w.i,w.j,.9);
     return fwWalk(si,sj,()=>{w.held=0;FW.me.dir=w.i-w.j>FW.me.i-FW.me.j?1:-1;tapAnimal(w)})}
   if(t.kind==="plot"){const [pi,pj]=FIELD_SPOTS[t.spot],[si,sj]=fwStandBy(pi+.5,pj+.5,.75);return fwWalk(si,sj,()=>tapPlot(t.spot))}
   if(t.kind==="struct"){const S=STRUCT[t.ref];return fwWalk(S.i+S.wi/2+.3,S.j+S.wj+.45,()=>tapStruct(t.ref))}
@@ -3778,10 +3795,10 @@ function fHighlight(t,ground){
 }
 function tapAnimal(w){
   const a=F.st.animals[w.id];if(!a)return;const A=ANIMALS[a.k],now=Date.now(),s=animalState(a,now);w.hop=1;
-  if(w.state==="sleep"){w.state="idle";w.until=performance.now()+1500}
+  if(w.state==="sleep"){w.over={state:"idle",until:performance.now()+3000}}
   if(s==="hungry")return farmDo("feed",{animal:a.k,item:A.food}).then(ok=>{if(!ok)return;
     fTx("animals/"+w.id,x=>{if(!x)return;x.fed=Date.now();if(A.good&&!(x.ready>Date.now()))x.ready=Date.now()+A.make;return x}).then(ok=>{if(!ok)return;
-      w.state="eat";w.until=performance.now()+5000;fPop(w,A.foodIcon);blip(700,.12,"sine");
+      w.over={state:"eat",until:performance.now()+5000};fPop(w,A.foodIcon);blip(700,.12,"sine");
       if(a.k==="pig"){fUpd({["jars/"+me]:INC(1)});fPop(w,"❤️");setTimeout(()=>fPop(w,"🪙"),400);say("The pig is so happy! It gave you 1 Moolah.")}
       else say(little()?`Yum! The ${A.name} ate the ${A.food}.`:`The ${A.name} ate the ${A.food}. Come back soon to ${A.verb}!`)})});
   if(s==="ready")return farmDo(A.act,{animal:a.k,good:A.good,count:1}).then(ok=>{if(!ok)return;
@@ -4414,16 +4431,10 @@ function farmDraw(t){
       if(ps.st==="thirsty")fBub(c.x,c.y-th*1.2,"💧",t,n,{kind:"plot",spot:n});
       else if(stage==="ripe"){g.globalAlpha=.5+.5*Math.sin(t/250);g.font=`${th*.5}px system-ui`;g.textAlign="center";g.fillText("✨",c.x+fm.tw*.3,c.y-th);g.globalAlpha=1}
       if(p.fert&&stage!=="ripe"){g.font=`${th*.32}px system-ui`;g.textAlign="center";g.fillText("💩",c.x-fm.tw*.32,c.y+th*.3)}}})}
-  {const arr=[...F.anim.values()];for(let x=0;x<arr.length;x++)for(let y=x+1;y<arr.length;y++){const A=arr[x],B=arr[y],di=A.i-B.i,dj=A.j-B.j,dd=Math.hypot(di,dj)||.01;
-      if(dd<1.15){const k=(1.15-dd)*dt*1.6;if(!(A.held>t)){A.i+=di/dd*k;A.j+=dj/dd*k}if(!(B.held>t)){B.i-=di/dd*k;B.j-=dj/dd*k}}}
-    const P=pasture();for(const A of arr){A.i=Math.max(P.i0+.5,Math.min(P.i1-.5,A.i));A.j=Math.max(P.j0+.5,Math.min(P.j1-.5,A.j))}}
   for(const w of F.anim.values()){const a=(F.st.animals||{})[w.id];if(!a||!ANIMALS[a.k])continue;const A=ANIMALS[a.k],as=animalState(a,now),hungry=as==="hungry";
     w.t+=dt;w.hop=Math.max(0,w.hop-dt*3);
-    if(w.held&&t<w.held){w.state=w.state==="eat"?"eat":"idle";w.until=w.held}
-    else if(w.state==="walk"){const di=w.ti-w.i,dj=w.tj-w.j,d=Math.hypot(di,dj);
-      if(d<.05){w.state="idle";w.until=t+2500+Math.random()*3500}
-      else{const s=Math.min(d,(hungry?.25:.45)*dt);w.i+=di/d*s;w.j+=dj/d*s;const sx=di-dj,sy=di+dj;w.front=sy>=-.02;if(Math.abs(sx)>.01)w.dir=sx>0?1:-1}}
-    else if(t>w.until){if(w.state==="idle")fPick(w,t,hungry);else{w.state="idle";w.until=t+800}}
+    {const P=animAt(w.id,fwNow(),hungry?.25:.45);w.i=P.i;w.j=P.j;w.front=P.front;w.dir=P.dir;
+      w.state=w.over&&t<w.over.until?w.over.state:(hungry&&P.state==="eat"?"idle":P.state)} // a short local animation (eating after being fed) can play on top
     items.push({d:w.i+w.j,draw:()=>{
       let pose=w.state==="walk"?(w.front?"stand":"back"):w.state==="eat"?"eat":w.state==="sleep"?"sleep":"stand";
       const sheared=a.k==="sheep"&&a.shorn&&!(a.ready&&now>=a.ready);if(sheared&&pose!=="sleep")pose="sheared";
@@ -5487,7 +5498,7 @@ function openFarm(){if(!me){goLobby();return}if(!fm.cv)farmInit();farmConnect();
 $("#fHome").onclick=()=>{closeSheet();hush();goLobby()};
 $("#fBack").onclick=()=>{closeSheet();hush();goLobby()};
 $("#playFarm").onclick=()=>{sayLittle("Kapanigan Farmstand");openFarm()};
-if(/[?&]farmlocal\b/.test(location.search))window.__farm={fmvStart,fmvDrag,fmvEnd,fpOk,STRUCT,FIELD_SPOTS,decorPos,openFamBasket,sellIt,moveGoods,openBasket,farmClamp,fCands,fInfo,fGo,openTask,TASK_TYPES,F,fm,FW,openBank,bankPut,farmZoomTo,fwWalk,farmTapAt:(i,j)=>{const p=fIso(i,j),r=fm.cv.getBoundingClientRect(),d=fm.cv.width/r.width;farmTap({clientX:r.left+p.x/d,clientY:r.top+p.y/d})},CO,coopUpd,coopTick,startTeam,joinTeam,tk:()=>tk,tapPlot,tapAnimal,tapStruct,openStore,openOrders,openJar,openSell,buyIt,storeItems,deliver,sendGift,win:finishTask,quit:()=>closeTask(true)}; // testing only
+if(/[?&]farmlocal\b/.test(location.search))window.__farm={animAt,fwNow,fmvStart,fmvDrag,fmvEnd,fpOk,STRUCT,FIELD_SPOTS,decorPos,openFamBasket,sellIt,moveGoods,openBasket,farmClamp,fCands,fInfo,fGo,openTask,TASK_TYPES,F,fm,FW,openBank,bankPut,farmZoomTo,fwWalk,farmTapAt:(i,j)=>{const p=fIso(i,j),r=fm.cv.getBoundingClientRect(),d=fm.cv.width/r.width;farmTap({clientX:r.left+p.x/d,clientY:r.top+p.y/d})},CO,coopUpd,coopTick,startTeam,joinTeam,tk:()=>tk,tapPlot,tapAnimal,tapStruct,openStore,openOrders,openJar,openSell,buyIt,storeItems,deliver,sendGift,win:finishTask,quit:()=>closeTask(true)}; // testing only
 })();
 </script>
 </body>

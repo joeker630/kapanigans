@@ -141,6 +141,10 @@ A **live co-op farm** the kids share. Every farm action is done by solving a sho
   - Let go to place it; a red spot snaps back. Dragging near the edge pans the view.
   - Shared for everyone: `farm/layout/<building or "field">` = `{i,j}`, `farm/dpos/<decor key>` = `{i,j}`.
   - Not movable yet: the pasture/fence and animals.
+- **Animals in the same place on every device (Oct 27):** animal movement now follows a shared, clock-based schedule (`animAt()`). Time is cut into 18-second slots on the server clock.
+  - In each slot an animal strolls from one waypoint to the next, then grazes, stands or naps. The waypoints and the activity come from a seeded "random" based on the animal's id and the slot number.
+  - Waypoints stay near each animal's own home spot in the pasture, so they spread out.
+  - Every device computes the same answer and nothing extra is synced. Eating after being fed is a short local animation on top.
 - **Selling has no puzzle (Oct 27):** tap a good at the farmstand and it's sold. The money puzzle still comes up when other chores borrow it.
 - **Family Basket building (Oct 27):** a wicker crate on the farm next to the order board, with what's inside showing on top. Its menu has:
   - big **⬇️ Put in** buttons and a **Put it all in** button
