@@ -3541,7 +3541,7 @@ function farmInit(){
     if(fm.moving&&fm.moving.id===e.pointerId){fmvDrag(e.clientX,e.clientY);return}
     if(fm.pinch&&fm.ptrs.size>=2){const [a,b]=[...fm.ptrs.values()];farmZoomTo(fm.pinch.z*Math.hypot(a.x-b.x,a.y-b.y)/Math.max(1,fm.pinch.d),(a.x+b.x)/2,(a.y+b.y)/2);return}
     const d=fm.drag;if(!d||d.id!==e.pointerId)return;const dx=e.clientX-d.x,dy=e.clientY-d.y;
-    if(!d.moved&&Math.hypot(dx,dy)<12)return;d.moved=true;fm.press=null;clearTimeout(fm.holdT);const k=devicePixelRatio||1;fm.camX=d.cx-dx*k;fm.camY=d.cy-dy*k;farmClamp()});
+    if(!d.moved&&Math.hypot(dx,dy)<12)return;d.moved=true;fm.press=null;clearTimeout(fm.holdT);const k=farmScale();fm.camX=d.cx-dx*k;fm.camY=d.cy-dy*k;farmClamp()});
   const up=e=>{clearTimeout(fm.holdT);if(fm.moving&&fm.moving.id===e.pointerId){fm.ptrs.delete(e.pointerId);fmvEnd(e.type==="pointerup");return}
     fm.ptrs.delete(e.pointerId);if(e.type==="pointercancel")fm.press=null;if(fm.ptrs.size<2)fm.pinch=null;const d=fm.drag;if(d&&d.id===e.pointerId){fm.drag=null;if(!d.moved&&e.type==="pointerup")farmTap(e)}
     if(fm.ptrs.size===1&&!fm.drag){const [id,q]=[...fm.ptrs.entries()][0];fm.drag={x:q.x,y:q.y,cx:fm.camX,cy:fm.camY,moved:true,id}}};
@@ -3551,8 +3551,15 @@ function farmInit(){
   $("#fZoomOut").onclick=()=>{const r=fm.cv.getBoundingClientRect();farmZoomTo(fm.zoom/1.3,r.left+r.width/2,r.top+r.height/2);blip(500,.05)};
   $("#farmJar").onclick=openJar;$("#farmGoods").onclick=openBasket;$("#fTeam").onclick=openTeam;
 }
-function farmFit(){const b=$("#farmBody").getBoundingClientRect(),d=devicePixelRatio||1;
-  fm.cv.width=b.width*d;fm.cv.height=b.height*d;fm.cv.style.width=b.width+"px";fm.cv.style.height=b.height+"px";
+// Canvas size: never shrunk to 0 while the farm is hidden, only re-allocated when the size really changes, and at most
+// 2x the screen's pixels. iPhone/iPad Safari caps total canvas memory; every resize leaves an old buffer behind until
+// it's cleaned up, and once the cap is hit new drawing silently shows nothing (the "farm didn't render" bug).
+function farmScale(){return Math.min(2,devicePixelRatio||1)}
+function farmFit(){const b=$("#farmBody").getBoundingClientRect(),d=farmScale();
+  if(b.width<20||b.height<20)return; // hidden or mid-layout: keep the current canvas
+  const cw=Math.round(b.width*d),ch=Math.round(b.height*d);
+  if(fm.cv.width!==cw||fm.cv.height!==ch){fm.cv.width=cw;fm.cv.height=ch}
+  fm.cv.style.width=b.width+"px";fm.cv.style.height=b.height+"px";
   const W=fm.cv.width,H=fm.cv.height;const portrait=H>W*1.15;fm.base=portrait?Math.max(W/5.5,2*H/(fm.N+2)):Math.min(W/FARM_VIEW,H/(FARM_VIEW/2+1.2));
   fm.zMin=Math.min(1,Math.min(W/(fm.N+1),2*H/(fm.N/2+2)/2)/fm.base);if(!fm.zoom)fm.zoom=1;fm.zoom=Math.max(fm.zMin,Math.min(2.5,fm.zoom));fm.tw=fm.base*fm.zoom;fm.th=fm.tw/2;if(!fm.camSet){fm.camSet=true;fm.camX=fm.tw*.5;fm.camY=fm.th*(12-fm.N)/2}farmClamp()}
 // zoom around a point on screen (client px), keeping that spot of the farm under the finger
@@ -4224,7 +4231,7 @@ function fmvDrag(cx,cy){const m=fm.moving,[ti,tj]=fmvTile(cx,cy),snap=m.kind==="
   if(ci===m.ci&&cj===m.cj)return;m.ci=ci;m.cj=cj;m.ok=fpOk([ci,cj,m.wi,m.wj],m.skip);applyLayout();blip(m.ok?660:300,.03,"sine");
   // nudge the camera when dragging near the edge
   const r=fm.cv.getBoundingClientRect(),edge=40;let dx=0,dy=0;if(cx<r.left+edge)dx=-12;else if(cx>r.right-edge)dx=12;if(cy<r.top+edge)dy=-12;else if(cy>r.bottom-edge)dy=12;
-  if(dx||dy){const k=devicePixelRatio||1;fm.camX+=dx*k;fm.camY+=dy*k;farmClamp()}}
+  if(dx||dy){const k=farmScale();fm.camX+=dx*k;fm.camY+=dy*k;farmClamp()}}
 function fmvEnd(drop){const m=fm.moving;if(!m)return;fm.moving=null;
   const moved=m.ci!==m.oi||m.cj!==m.oj,ok=drop&&moved&&fpOk([m.ci,m.cj,m.wi,m.wj],m.skip);
   if(ok){const v={i:m.ci,j:m.cj};
@@ -4433,7 +4440,7 @@ function openTask(o){
 function nextRound(){
   if(!tk) return;
   for(const f of tk.fx.splice(0)) try{f()}catch(e){}
-  const A=$("#tArea"); A.innerHTML=""; $("#tPrompt").textContent="";
+  const A=$("#tArea"); freeCanvases(A); A.innerHTML=""; $("#tPrompt").textContent="";
   $("#tDots").innerHTML=tk.rounds>1?Array.from({length:tk.rounds},(_,i)=>`<i class="${i<=tk.round?"on":""}"></i>`).join(""):"";
   tk.miss=0; tk.hintFn=null; tk.won=false;
   TASKS[tk.type](taskApi(A));
@@ -4489,10 +4496,12 @@ function finishTask(){
   $("#tArea").append(el("div","tdone",`<span class="em">🎉</span><h2>${esc(msg)}</h2>${extra}${my.reward?`<p>${esc(my.reward)}</p>`:""}`));
   setTimeout(()=>{if(tk!==my)return;closeTask(false);my.onWin&&my.onWin()},my.lvl!=="little"?2400:1700);
 }
+// iPhone/iPad Safari only frees canvas memory reliably when a canvas is shrunk to 0 before it's thrown away
+function freeCanvases(root){if(root)for(const c of root.querySelectorAll("canvas")){try{c.width=0;c.height=0}catch(e){}}}
 function closeTask(quit){
   if(!tk) return; const my=tk; tk=null; setPresence({act:null});
   for(const f of my.fx.splice(0)) try{f()}catch(e){}
-  $("#task").hidden=true; $("#tArea").innerHTML="";
+  $("#task").hidden=true; freeCanvases($("#tArea")); $("#tArea").innerHTML="";
   if(quit){if(!my.statted)taskStat(false,my);if(my.cd&&!my.cdDone)cdStart(my.cd);my.onQuit&&my.onQuit()} // walking away from a grown-up game counts as a loss
 }
 function taskStat(done,my){
@@ -5383,7 +5392,7 @@ function buildCoopJigsaw(api,key){
   CO.listeners.add(sync);api.after(()=>CO.listeners.delete(sync));sync();
 }
 
-function openFarm(){if(!me){goLobby();return}if(!fm.cv)farmInit();farmConnect();fwConnect();show("farm");farmHeader();farmFit();fm.last=performance.now();if(!fm.raf)fm.raf=requestAnimationFrame(farmFrame);
+function openFarm(){if(!me){goLobby();return}if(!fm.cv)farmInit();farmConnect();fwConnect();show("farm");farmHeader();farmFit();requestAnimationFrame(()=>{if(screen==="farm")farmFit()});fm.last=performance.now();if(!fm.raf)fm.raf=requestAnimationFrame(farmFrame);
   sayLittle("Tap where you want to go! Tap the bubbles to help the animals and plants.")}
 $("#fHome").onclick=()=>{closeSheet();hush();goLobby()};
 $("#fBack").onclick=()=>{closeSheet();hush();goLobby()};
