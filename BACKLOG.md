@@ -1002,6 +1002,63 @@ Turn photos of family members into **high-resolution cartoon characters** (in th
 
 ---
 
+## 18. 🆕 New game: Capture the Flag (with Jeppson's poops)
+
+A quick, silly **team Capture the Flag** game. Grab the other team's flag and bring it back to your base, while dodging **Jeppson's poops** (#17), which slow you down. **Computer players** fill the teams, so it works with just one kid.
+
+**How it plays**
+- Two teams, **Red** and **Blue**, each with a base and a flag on opposite sides of a top-down field (the farm, a backyard or a park).
+- Move your avatar (#10) by dragging a finger or using a big on-screen joystick.
+- **Grab** the other team's flag by running into it, then carry it back to your own base to score.
+- **Tagging:** touch an opponent on your side of the field to tag them. A tagged player is sent back to their base (no "out," just a quick respawn). Carrying a flag when tagged drops it on the spot, and touching your own dropped flag returns it home.
+- **First to 3 captures wins**, or the most captures after **3 minutes**. A round should never feel long.
+
+**🐶💩 Jeppson and his poops**
+- Jeppson (#17) runs around the field and leaves poops as he goes, a few at the start and more during the round (no more than about 8 at once).
+- **Stepping in a poop slows you down** for about 3 seconds, with a "squish!" sound, stink lines and brown footprints. It doesn't knock you out.
+- Poops fade away after about 30 seconds, so the field doesn't fill up.
+- Optional fun: tap Jeppson to make him chase the nearest opponent for a moment.
+
+**🚩 Carrying the flag slows you down**
+- The flag carrier moves at about **75% speed**, so the other team has a fair chance to catch them. Carrier + poop stacks (slowest of all), so dodging poops on the way home matters.
+- The flag is shown waving above the carrier, and the base glows to show where to go.
+
+**🤖 Computer players**
+- Bots fill empty spots so every game has full teams (for example 3 vs 3), whether 1, 2, 3 or 4 real players join.
+- Bot jobs: some **defend** the flag, some **go for** the other flag, and some chase flag carriers. They mostly avoid poops, but not always.
+- **Difficulty set by the player's level:** easy bots for Little (slow, sometimes wander, often miss tags), medium for Big, and harder for grown-ups. In a mixed game, each team's bots adjust so the teams stay fair.
+- Bots have fun names and looks (Bear friend, Fox friend, and silly farm-hand bots) so kids know who's a computer.
+
+**By level**
+- **Little (Violet):** tap where you want to go and your avatar walks there. A big glowing arrow points to the flag and back home. Friendlier rules: tags just bounce you back a few steps, and the opposing bots move slowly. Everything is read aloud ("You got the flag! Go home!").
+- **Big (Quinn) and grown-ups:** joystick or drag control, full tagging rules, faster bots and a sprint button with a short cooldown.
+
+**Multiplayer**
+- Up to 4 real players, live across devices like Color Together (synced through Firebase), on the same or different teams. Bots fill the rest.
+- Pick teams in the lobby or let the game balance them.
+- Play time and results go into the stats (#8): rounds played, captures, tags, and poops stepped in.
+
+**Gentle rules**
+- No elimination and no lost Moolah. Everyone stays in the game the whole round.
+- A cheerful end screen for both teams ("Red wins! Great running, Blue!") and Jeppson doing a happy wiggle.
+
+**Acceptance criteria**
+- [ ] Two teams with bases and flags; carrying a flag home scores a capture
+- [ ] Tagging sends players back to base and drops a carried flag
+- [ ] Jeppson runs around leaving poops that slow players for about 3 seconds and fade after about 30 seconds
+- [ ] Flag carriers move at about 75% speed, and slowdowns stack with poop
+- [ ] Bots fill empty spots, with defend, attack and chase roles and difficulty set by level
+- [ ] Little players can play without reading (tap to move, arrows, read-aloud)
+- [ ] Up to 4 real players stay in sync across devices, including the Fire tablet
+- [ ] Rounds end at 3 captures or 3 minutes, with a happy ending for both teams
+
+**🔍 Decisions needed**
+- Which field first: the farm (reusing Farmstand art), a backyard, or a park?
+- Team size: 3 vs 3, or 4 vs 4?
+- Should Capture the Flag use farm time (#3's 30-minute limit), or be a separate game with no limit?
+
+---
+
 ## Shared groundwork (needed by #1, #3, #4, #5, #8, #13 and #14)
 
 - ⚠️ **One shared script:** Farmstand and the rest of the game live in the same `<script>`, so two `function` declarations with the same name silently replace each other (this broke story and inbox sending once: `sendGift`, `deliver`). Use unique names; a quick check is to list duplicate `function` names before pushing.
