@@ -1098,6 +1098,25 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
 .pptile{border:0;padding:0;background:#FFF8E7;border-radius:10px;width:var(--t);height:var(--t);display:block}
 .pptile svg{display:block;width:100%;height:100%}
 .ppend{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;font-weight:900;text-align:center;width:64px}
+.alwrap{display:flex;flex-direction:column;align-items:center;gap:16px;width:100%}
+.alanis{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
+.alani{background:var(--paper);border-radius:22px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:10px;box-shadow:0 4px 0 rgba(0,0,0,.08);width:var(--cw);box-sizing:border-box}
+.alpic{border:0;background:#FFF8E7;border-radius:16px;width:100%;aspect-ratio:1;font-size:var(--ef);display:grid;place-items:center;cursor:pointer;padding:0;line-height:1;position:relative}
+.alpic svg{width:82%;height:82%}
+.alsay{position:absolute;right:5px;bottom:5px;font-size:13px;background:#fff;border-radius:999px;width:24px;height:24px;display:grid;place-items:center}
+.alslots{display:flex;align-items:center;gap:4px;justify-content:center;width:100%}
+.alls{font:inherit;font-weight:900;font-size:var(--lf);width:var(--ls);height:var(--ls);flex:none;border-radius:12px;border:3px dashed #C9C0DC;background:#fff;color:#2B2140;padding:0;cursor:pointer;box-sizing:border-box}
+.alls.on{border:3px solid #E0A800;box-shadow:0 0 0 5px rgba(255,200,61,.45)}
+.alls.ok{border:3px solid #00A88F;background:#E3F7F2;cursor:default;box-shadow:none}
+.alls.miss{border:3px solid #C2410C;background:#FDECE3;color:#C2410C}
+.almid{flex:1;min-width:0;text-align:center;color:#5E5577;font-size:12px;letter-spacing:1px;white-space:nowrap;overflow:hidden;line-height:1.1}
+.albank{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
+.alkb{display:flex;flex-direction:column;gap:6px;align-items:center;width:100%;max-width:640px}
+.alkb div{display:flex;gap:5px;justify-content:center;width:100%}
+.allt{font:inherit;font-weight:900;font-size:var(--bf);min-width:var(--bs);height:var(--bs);border:0;border-radius:16px;background:#FFC83D;box-shadow:0 5px 0 #E0A800;color:#2B2140;cursor:pointer;padding:0 4px}
+.alkb .allt{flex:1;min-width:0;max-width:58px;border-radius:10px;background:#fff;box-shadow:0 3px 0 #C9C0DC}
+.allt.used{visibility:hidden}
+.allt.glow{outline:5px solid #00A88F;outline-offset:2px}
 </style>
 
 </head>
@@ -7007,6 +7026,101 @@ TASKS.pipes=api=>{
   if(sid){const sync=()=>{if(!api.live())return;const s=CO.sess[sid];if(!s)return;drawRows();if(s.status==="done"){api.win(500);return}if(mineDone)check()};
     CO.listeners.add(sync);api.after(()=>CO.listeners.delete(sync))}
   draw();
+};
+
+/* ================= TEAM CHORE: ANIMAL LETTERS (abcteam) =================
+   Match animal pictures to their letters. Violet (Little): 2 common animals, first letter from 3 tiles.
+   Quinn (Big): 3 more exotic animals, first letter from 6 tiles. Grown-ups: 5 animals (2–3 tricky ones like pterodactyl),
+   first AND last letter on an A–Z keyboard; 3 wrong letters or 60 seconds loses. Tap a picture to hear its name.
+   Shared progress: coop/<sid>/prog/<who> = {pct, done}, same as Water the field. */
+Object.assign(COOP_CHORES,{abc:{type:"abcteam",title:"🔤 Animal letters together",em:"🔤",verb:"match the animal letters",find:()=>"farm",none:"",pic:"",
+  finish:s=>{const up={};for(const w of s.order||Object.keys(s.members||{}))up["jars/"+w]=INC(2);fUpd(up)}}});
+PUZZLE_NAMES.abcteam="animal letters"; SKILL.abcteam="letters";
+const AL_PTERO=`<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M50 50 L4 26 Q18 46 24 62 Q38 58 50 64 Q62 58 76 62 Q82 46 96 26 Z" fill="#C08552" stroke="#6E4325" stroke-width="3" stroke-linejoin="round"/><path d="M50 50 L4 26M50 50 L96 26" stroke="#6E4325" stroke-width="4" stroke-linecap="round"/><ellipse cx="50" cy="60" rx="8" ry="15" fill="#9C6640"/><path d="M46 74l-4 9M54 74l4 9" stroke="#6E4325" stroke-width="3" stroke-linecap="round"/><path d="M45 36 L24 26 L46 42 Z" fill="#E5484D" stroke="#6E4325" stroke-width="2" stroke-linejoin="round"/><circle cx="50" cy="40" r="8" fill="#9C6640"/><path d="M55 37 L86 41 L55 45 Z" fill="#E8B04A" stroke="#6E4325" stroke-width="2" stroke-linejoin="round"/><circle cx="51" cy="38" r="2.2" fill="#2B2140"/></svg>`;
+const AL_AN={
+  little:[["dog","🐶"],["cat","🐱"],["cow","🐮"],["pig","🐷"],["duck","🦆"],["fish","🐟"],["bee","🐝"],["frog","🐸"],["horse","🐴"],["sheep","🐑"],["bear","🐻"],["lion","🦁"],["mouse","🐭"],["owl","🦉"],["goat","🐐"],["ant","🐜"]],
+  big:[["zebra","🦓"],["kangaroo","🦘"],["koala","🐨"],["penguin","🐧"],["octopus","🐙"],["flamingo","🦩"],["hippo","🦛"],["sloth","🦥"],["peacock","🦚"],["camel","🐫"],["elephant","🐘"],["gorilla","🦍"],["llama","🦙"],["otter","🦦"],["dolphin","🐬"],["panda","🐼"],["parrot","🦜"],["hedgehog","🦔"],["lobster","🦞"],["shark","🦈"],["tiger","🐯"],["turtle","🐢"]],
+  hard:[["pterodactyl",AL_PTERO],["pterodactyl",AL_PTERO],["giraffe","🦒"],["crocodile","🐊"],["rhinoceros","🦏"],["hippopotamus","🦛"],["tyrannosaurus","🦖"],["mosquito","🦟"],["orangutan","🦧"],["scorpion","🦂"],["mammoth","🦣"],["cockroach","🪳"]],
+  grown:[["kangaroo","🦘"],["octopus","🐙"],["flamingo","🦩"],["llama","🦙"],["hedgehog","🦔"],["peacock","🦚"],["squid","🦑"],["dodo","🦤"],["bison","🦬"],["beaver","🦫"],["caterpillar","🐛"],["raccoon","🦝"],["skunk","🦨"],["badger","🦡"],["whale","🐳"],["lobster","🦞"],["koala","🐨"],["zebra","🦓"]],
+};
+const AL_SECS=60, AL_MAXW=3;
+TASKS.abcteam=api=>{
+  const grown=isGrown(), L=api.L, lv=grown?"grown":L?"little":"big", n=L?2:grown?5:3;
+  const sid=api.ctx.coop&&api.ctx.coop.sid, S0=sid&&CO.sess[sid];
+  const order=S0?(S0.order||Object.keys(S0.members||{})):[me], others=order.filter(w=>w!==me), names=others.map(w=>kidOf(w).name);
+  // choose animals: kids get different first letters; grown-ups get 2–3 tricky ones
+  let pick=[];
+  if(grown){const seen=new Set(),hardN=rint(2,3);for(const a of shuffle(AL_AN.hard)){if(pick.length>=hardN)break;if(!seen.has(a[0])){seen.add(a[0]);pick.push(a)}}
+    for(const a of shuffle(AL_AN.grown)){if(pick.length>=n)break;if(!seen.has(a[0])){seen.add(a[0]);pick.push(a)}}pick=shuffle(pick)}
+  else{const firsts=new Set();for(const a of shuffle(AL_AN[lv])){if(pick.length>=n)break;if(!firsts.has(a[0][0])){firsts.add(a[0][0]);pick.push(a)}}}
+  const withWho=names.length?` with ${names.join(" and ")}`:"";
+  api.ask(L?"Tap the letter each animal starts with!":grown?"First and last letter of each animal. Tap 🔊 to hear its name.":"Find the first letter of each animal.",
+    L?`Let's match animal letters${withWho}! Tap the letter each animal starts with.`:`Match the animal letters${withWho}! Find the first letter of each animal.`);
+  const sz={little:{cw:230,ef:140,ls:96,lf:58,bs:112,bf:64},big:{cw:200,ef:112,ls:84,lf:50,bs:90,bf:52},grown:{cw:170,ef:80,ls:46,lf:28,bs:52,bf:24}}[lv];
+  const wrap=el("div","alwrap"), anis=el("div","alanis"), bankEl=el("div",grown?"alkb":"albank"), rowsEl=el("div","taprows");
+  const slots=[], tiles=[];
+  pick.forEach(([w,pic])=>{
+    const c=el("div","alani"), b=el("button","alpic",(pic.startsWith("<svg")?pic:`<span aria-hidden="true">${pic}</span>`)+`<span class="alsay" aria-hidden="true">🔊</span>`);
+    b.setAttribute("aria-label","Hear the animal's name");b.onclick=()=>say(w);
+    const row=el("div","alslots");
+    const mk=(pos,ans)=>{const s=el("button","alls");s.setAttribute("aria-label",`${pos} letter`);const o={w,pos,ans,el:s,filled:false};s.onclick=()=>{if(!o.filled&&api.live()&&!mineDone){act(o);say(w)}};slots.push(o);return s};
+    row.append(mk("first",w[0].toUpperCase()));
+    if(grown) row.append(el("span","almid","·".repeat(w.length-2)),mk("last",w.at(-1).toUpperCase()));
+    c.append(b,row);anis.append(c)});
+  const tile=ch=>{const t=el("button","allt",ch);t.setAttribute("aria-label","Letter "+ch);t.onclick=()=>press(ch,t);tiles.push(t);return t};
+  if(grown) ["QWERTYUIOP","ASDFGHJKL","ZXCVBNM"].forEach(r=>{const d=el("div");[...r].forEach(ch=>d.append(tile(ch)));bankEl.append(d)});
+  else{const need=pick.map(([w])=>w[0].toUpperCase()), pool=shuffle([..."ABCDEFGHIJKLMNOPRSTUWZ"].filter(ch=>!need.includes(ch)));
+    shuffle([...need,...pool.slice(0,(L?3:6)-need.length)]).forEach(ch=>bankEl.append(tile(ch)))}
+  wrap.append(anis,bankEl,rowsEl);api.area.append(wrap);
+  // size the cards so everything fits the screen
+  adFit(api,wrap,r=>{
+    const W=r.width-16, H=r.height-(order.length>1?order.length*46+16:0)-(grown?3*(sz.bs+6)+40:sz.bs+40)-24;
+    let best=null;
+    for(let p=Math.min(n,grown?5:n);p>=(grown?2:n);p--){const rowsN=Math.ceil(n/p);
+      const cw=Math.min(sz.cw,(W-(p-1)*12)/p,(H-(rowsN-1)*12)/rowsN-sz.ls-30);
+      if(!best||cw>best.cw)best={p,cw}}
+    const k=Math.max(.55,Math.min(1,best.cw/sz.cw)), cw=Math.max(90,Math.floor(best.cw));
+    wrap.style.setProperty("--cw",cw+"px");wrap.style.setProperty("--ef",Math.round(sz.ef*k)+"px");
+    wrap.style.setProperty("--ls",Math.round(sz.ls*Math.max(k,.8))+"px");wrap.style.setProperty("--lf",Math.round(sz.lf*Math.max(k,.8))+"px");
+    const bs=grown?sz.bs:Math.min(sz.bs,Math.floor((W-12*2)/3));wrap.style.setProperty("--bs",bs+"px");wrap.style.setProperty("--bf",Math.round(sz.bf*bs/sz.bs)+"px");
+    anis.style.maxWidth=(best.p*cw+(best.p-1)*12)+"px"});
+  const progOf=w=>{if(w===me)return mineDone?1:api.store.pct||0;const s=CO.sess[sid];const p=s&&s.prog&&s.prog[w];return p?(p.done?1:+p.pct||0):0};
+  const drawRows=()=>{if(order.length<2){rowsEl.hidden=true;return}rowsEl.innerHTML="";
+    for(const w of order){const v=progOf(w),K=kidOf(w);const r=el("div","taprow"+(w===me?" me":""),`<span class="who">${faceHTML(K)} ${esc(w===me?"You":K.name)}</span><span class="bar"><i style="width:${Math.round(v*100)}%"></i></span><span class="n">${v>=1?"✅":Math.round(v*100)+"%"}</span>`);
+      r.style.setProperty("--k",K.hue);rowsEl.append(r)}};
+  let cur=null, mineDone=false, wrong=0, stopClock=null;
+  function act(o){cur=o;slots.forEach(s=>s.el.classList.toggle("on",s===o));tiles.forEach(t=>t.classList.remove("glow"));
+    api.hint(()=>{const g=tiles.find(x=>x.textContent===o.ans);if(g)g.classList.add("glow")})}
+  function next(){const o=slots.find(s=>!s.filled);if(o)act(o);else{cur=null;slots.forEach(s=>s.el.classList.remove("on"))}}
+  const answers=()=>pick.map(([w])=>`${w[0].toUpperCase()+w.slice(1)}: ${w[0].toUpperCase()}…${w.at(-1).toUpperCase()}`).join(", ");
+  const reveal=()=>slots.forEach(s=>{if(!s.filled){s.el.textContent=s.ans;s.el.classList.add("miss")}});
+  function press(ch,t){
+    if(!api.live()||mineDone||!cur)return;const o=cur;
+    if(ch===o.ans){o.filled=true;o.el.textContent=ch;o.el.classList.remove("on");o.el.classList.add("ok");tiles.forEach(x=>x.classList.remove("glow"));
+      blip(700+slots.filter(s=>s.filled).length*60,.08,"triangle");
+      if(!grown){t.classList.add("used");say(L?`${ch} is for ${o.w}!`:`${o.w} starts with ${ch}!`)}
+      api.store.pct=slots.filter(s=>s.filled).length/slots.length;
+      if(sid)coopUpd({[`${sid}/prog/${me}/pct`]:api.store.pct});
+      next();
+      if(api.store.pct>=1){mineDone=true;if(stopClock)stopClock();
+        if(sid){coopUpd({[`${sid}/prog/${me}/done`]:true});if(others.length&&!others.every(w=>progOf(w)>=1))api.ask("All matched! Waiting for your team…",`Great job! Let's wait for ${names.join(" and ")}.`);check()}
+        else api.win(700)}
+      drawRows();return}
+    if(grown){wrong++;t.classList.remove("wig");void t.offsetWidth;t.classList.add("wig");blip(200,.18,"sine",.1);drawStatus();
+      if(wrong>=AL_MAXW)api.lose(`Three wrong letters. The answers were ${answers()}.`,reveal);return}
+    api.miss(t,L?`Hmm. ${o.w}. Try again!`:`Not ${ch}. Say it slowly: ${o.w}.`);
+  }
+  let left=AL_SECS;
+  const drawStatus=()=>adStatus(api,`<span class="jamclock${left<=10?" low":""}">⏱️ ${left}s</span> <span class="adsm">wrong letters: ${wrong} of ${AL_MAXW}</span>`);
+  // grown-ups race a clock; running out loses (and leaves the team chore)
+  if(grown){drawStatus();
+    const tm=setInterval(()=>{if(!api.live()||mineDone)return clearInterval(tm);left--;drawStatus();
+      if(left<=0){clearInterval(tm);api.lose(`Time ran out. The answers were ${answers()}.`,reveal)}},1000);
+    stopClock=()=>clearInterval(tm);api.after(stopClock)}
+  const check=()=>{const s=CO.sess[sid];if(!s)return;if(order.every(w=>progOf(w)>=1))coopComplete(sid)};
+  if(sid){const sync=()=>{if(!api.live())return;const s=CO.sess[sid];if(!s)return;drawRows();if(s.status==="done"){api.win(500);return}if(mineDone)check()};
+    CO.listeners.add(sync);api.after(()=>CO.listeners.delete(sync))}
+  drawRows();next();
 };
 
 function openFarm(){if(!me){goLobby();return}if(!fm.cv)farmInit();farmConnect();fwConnect();show("farm");farmHeader();farmFit();requestAnimationFrame(()=>{if(screen==="farm")farmFit()});fm.last=performance.now();if(!fm.raf)fm.raf=requestAnimationFrame(farmFrame);
