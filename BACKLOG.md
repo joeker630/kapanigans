@@ -1073,7 +1073,7 @@ A quick, silly **team Capture the Flag** game. Grab the other team's flag and br
 
 ---
 
-## 19. 🛠️ New game: Snake Race (competitive multiplayer snake) (built Oct 27 as a local preview, not pushed)
+## 19. 🛠️ New game: Snake Race (competitive multiplayer snake) (live as Beta Version, Oct 27)
 
 A live **multiplayer snake** game: every player steers their own snake around one shared field, eating snacks to grow longer. **You can't hit anyone else's tail**: running into another snake's body ends your run, so you have to steer around each other and try to box others in.
 

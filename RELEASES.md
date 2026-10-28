@@ -4,6 +4,17 @@ Newest first. Each release has kid-friendly notes (shown to everyone in the game
 
 ---
 
+## 1.1: Snake Race (Beta) 🐍
+**October 27, 2026**
+
+### For everyone
+- 🐍 **Snake Race (Beta):** steer your snake anywhere on a big dark field full of glowing candy and fruit, and grow the longest snake before time runs out. Hold your finger where you want to go, hold ⚡ to boost, and grab glowing boxes for 🧲 magnet, ⚡ speed, ✖️3 snacks and ⭐ go-through-snakes. Bump into another snake and half of you spills out; solve a quick puzzle to get back in! Computer snakes fill in when there aren't 4 players.
+
+### For grown-ups
+- 🐍 Snake Race respawn puzzles: kids get the quick puzzle types; grown-ups get blackjack or minesweeper, and go back in automatically after losing two in a row. Reports now count snake races, snacks, crashes and longest snake.
+
+---
+
 ## 1.0: Welcome to Kapanigans! 🎉
 **October 27, 2026**: everything built so far, made in one day.
 
