@@ -377,6 +377,24 @@
   "cutout": true,
   "made": "2026-10-27"
  },
+ "iso/farm/corn/growing": {
+  "file": "art/iso/farm/corn/growing.webp",
+  "w": 144,
+  "h": 256,
+  "prompt": "the same plant half grown, young and green, not ripe yet, in the same small mound of brown soil, keep the exact same character, colors, proportions and style as the reference image",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-28"
+ },
+ "iso/farm/corn/ripe": {
+  "file": "art/iso/farm/corn/ripe.webp",
+  "w": 148,
+  "h": 256,
+  "prompt": "a tall corn stalk with long green leaves and one big yellow ear of corn, fully grown and ripe, growing in a small mound of brown soil",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-28"
+ },
  "iso/farm/cow/back": {
   "file": "art/iso/farm/cow/back.webp",
   "w": 216,
@@ -413,6 +431,78 @@
   "cutout": true,
   "made": "2026-10-27"
  },
+ "iso/farm/food/corn": {
+  "file": "art/iso/farm/food/corn.webp",
+  "w": 256,
+  "h": 214,
+  "prompt": "a small pile of yellow corn cobs",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-28"
+ },
+ "iso/farm/food/feed": {
+  "file": "art/iso/farm/food/feed.webp",
+  "w": 256,
+  "h": 228,
+  "prompt": "a small scoop full of chicken feed seeds and grains",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-28"
+ },
+ "iso/farm/food/hay": {
+  "file": "art/iso/farm/food/hay.webp",
+  "w": 256,
+  "h": 237,
+  "prompt": "a small rectangular golden hay bale tied with string",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-28"
+ },
+ "iso/farm/food/slop": {
+  "file": "art/iso/farm/food/slop.webp",
+  "w": 233,
+  "h": 256,
+  "prompt": "a wooden bucket full of brown pig slop with apple cores and vegetable scraps",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-28"
+ },
+ "iso/farm/goods/egg_brown": {
+  "file": "art/iso/farm/goods/egg_brown.webp",
+  "w": 223,
+  "h": 256,
+  "prompt": "a single smooth light brown chicken egg lying on its side",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-28"
+ },
+ "iso/farm/goods/egg_white": {
+  "file": "art/iso/farm/goods/egg_white.webp",
+  "w": 229,
+  "h": 256,
+  "prompt": "a single smooth white chicken egg lying on its side",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-28"
+ },
+ "iso/farm/goods/milk": {
+  "file": "art/iso/farm/goods/milk.webp",
+  "w": 213,
+  "h": 256,
+  "prompt": "a shiny metal milk pail full of white milk",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-28"
+ },
+ "iso/farm/goods/wool": {
+  "file": "art/iso/farm/goods/wool.webp",
+  "w": 213,
+  "h": 256,
+  "prompt": "a big soft round ball of fluffy white wool",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-28"
+ },
  "iso/farm/hen/back": {
   "file": "art/iso/farm/hen/back.webp",
   "w": 201,
@@ -448,6 +538,24 @@
   "model": "klein",
   "cutout": true,
   "made": "2026-10-27"
+ },
+ "iso/farm/hide/bush": {
+  "file": "art/iso/farm/hide/bush.webp",
+  "w": 256,
+  "h": 242,
+  "prompt": "a round leafy green bush",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-28"
+ },
+ "iso/farm/hide/haypile": {
+  "file": "art/iso/farm/hide/haypile.webp",
+  "w": 256,
+  "h": 200,
+  "prompt": "a loose messy pile of golden hay on the ground",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-28"
  },
  "iso/farm/pig/back": {
   "file": "art/iso/farm/pig/back.webp",
@@ -512,6 +620,51 @@
   "cutout": true,
   "made": "2026-10-27"
  },
+ "iso/farm/seeds/carrot": {
+  "file": "art/iso/farm/seeds/carrot.webp",
+  "w": 222,
+  "h": 256,
+  "prompt": "a small paper seed packet with a big picture of an orange carrot printed on the front, no words",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-28"
+ },
+ "iso/farm/seeds/corn": {
+  "file": "art/iso/farm/seeds/corn.webp",
+  "w": 256,
+  "h": 255,
+  "prompt": "a small paper seed packet with a big picture of a yellow ear of corn printed on the front, no words",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-28"
+ },
+ "iso/farm/seeds/pumpkin": {
+  "file": "art/iso/farm/seeds/pumpkin.webp",
+  "w": 238,
+  "h": 256,
+  "prompt": "a small paper seed packet with a big picture of an orange pumpkin printed on the front, no words",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-28"
+ },
+ "iso/farm/seeds/strawberry": {
+  "file": "art/iso/farm/seeds/strawberry.webp",
+  "w": 256,
+  "h": 208,
+  "prompt": "a small paper seed packet with a big picture of a red strawberry printed on the front, no words",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-28"
+ },
+ "iso/farm/seeds/tomato": {
+  "file": "art/iso/farm/seeds/tomato.webp",
+  "w": 256,
+  "h": 227,
+  "prompt": "a small paper seed packet with a big picture of a red tomato printed on the front, no words",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-28"
+ },
  "iso/farm/sheep/back": {
   "file": "art/iso/farm/sheep/back.webp",
   "w": 241,
@@ -556,5 +709,68 @@
   "model": "klein",
   "cutout": true,
   "made": "2026-10-27"
+ },
+ "iso/farm/strawberry/growing": {
+  "file": "art/iso/farm/strawberry/growing.webp",
+  "w": 234,
+  "h": 256,
+  "prompt": "the same plant half grown, young and green, not ripe yet, in the same small mound of brown soil, keep the exact same character, colors, proportions and style as the reference image",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-28"
+ },
+ "iso/farm/strawberry/ripe": {
+  "file": "art/iso/farm/strawberry/ripe.webp",
+  "w": 239,
+  "h": 256,
+  "prompt": "a low strawberry plant with three big red strawberries, fully grown and ripe, growing in a small mound of brown soil",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-28"
+ },
+ "iso/farm/tomato/growing": {
+  "file": "art/iso/farm/tomato/growing.webp",
+  "w": 238,
+  "h": 256,
+  "prompt": "the same plant half grown, young and green, not ripe yet, in the same small mound of brown soil, keep the exact same character, colors, proportions and style as the reference image",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-28"
+ },
+ "iso/farm/tomato/ripe": {
+  "file": "art/iso/farm/tomato/ripe.webp",
+  "w": 241,
+  "h": 256,
+  "prompt": "a bushy tomato plant with round shiny red tomatoes, fully grown and ripe, growing in a small mound of brown soil",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-28"
+ },
+ "iso/farm/tools/basket": {
+  "file": "art/iso/farm/tools/basket.webp",
+  "w": 256,
+  "h": 251,
+  "prompt": "an empty woven wicker harvest basket with a handle",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-28"
+ },
+ "iso/farm/tools/bucket": {
+  "file": "art/iso/farm/tools/bucket.webp",
+  "w": 199,
+  "h": 256,
+  "prompt": "an empty shiny metal bucket with a handle",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-28"
+ },
+ "iso/farm/tools/wateringcan": {
+  "file": "art/iso/farm/tools/wateringcan.webp",
+  "w": 256,
+  "h": 180,
+  "prompt": "a plain watering can painted solid pure white all over, white body and white spout",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-28"
  }
 }

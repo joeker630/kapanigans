@@ -294,14 +294,14 @@ Building happens on empty **build lots** around the map. Paying starts a **Build
 About **48 images** left including retries, which is roughly one day of the free allowance if nothing else is using it. Make them in this order:
 
 *Batch A — needed for the chore puzzles (about 25)*
-- Ready to run: `python3 tools/genart.py isobatch tools/batches/farmA.json` (skips anything already made). The scheduled run at 7:05 PM Central on Oct 27 made nothing: Cloudflare still said the free daily limit was used up (tried 7:05–7:17 PM). Needs another run after the next reset.
-- [ ] Crops, growing + ripe (the carrot sprout is reused for every crop): tomato, corn, strawberry — 6
-- [ ] Seed packets, one per crop (Plant puzzle: match seed to picture): carrot, tomato, corn, pumpkin, strawberry — 5
-- [ ] Animal goods to collect: white egg, brown egg (sizes and colors done in code for the sorting puzzle), milk pail, ball of wool — 4
-- [ ] Animal food (Feed puzzle: match the animal to its food; Big reads HAY / CORN / SLOP): hay bale, corn pile, slop bucket, chicken feed scoop — 4
-- [ ] Tools: watering can in **white** so the game can tint it (Little's "tap the matching color" puzzle), empty bucket (co-op milking), harvest basket — 3
+- ✅ Made Oct 28 (24 sprites in `art/iso/farm/`: crops, seeds, goods, food, tools, hiding spots). Re-run anytime with `python3 tools/genart.py isobatch tools/batches/farmA.json` (skips what exists).
+- [x] Crops, growing + ripe (the carrot sprout is reused for every crop): tomato, corn, strawberry — 6
+- [x] Seed packets, one per crop (Plant puzzle: match seed to picture): carrot, tomato, corn, pumpkin, strawberry — 5
+- [x] Animal goods to collect: white egg, brown egg (sizes and colors done in code for the sorting puzzle), milk pail, ball of wool — 4
+- [x] Animal food (Feed puzzle: match the animal to its food; Big reads HAY / CORN / SLOP): hay bale, corn pile, slop bucket, chicken feed scoop — 4
+- [x] Tools: watering can in **white** so the game can tint it (Little's "tap the matching color" puzzle), empty bucket (co-op milking), harvest basket — 3
 - [x] Sheared sheep (shown after wool is collected) — 1
-- [ ] Hiding spots for egg hunt: hay pile, bush — 2
+- [x] Hiding spots for egg hunt: hay pile, bush — 2
 
 *Batch B — the farm itself (about 12)*
 - [ ] Buildings: red barn, chicken coop, farmhouse (door to the dressing room), farmstand stall with an awning, stable (buildable with Moolah) — 5
