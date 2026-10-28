@@ -4,6 +4,21 @@ Newest first. Each release has kid-friendly notes (shown to everyone in the game
 
 ---
 
+## 1.9: Write it, and the pictures appear ✨
+**October 28, 2026**
+
+### For everyone
+- ✨ **Write my story:** in Bedtime Story › Make a story, pick **✨ Write my story**, choose a theme (Bedtime, Space adventure, Under the sea, Fairy tale castle, Forest friends and more), then type or 🎙️ tell your story. Tap **Make my pictures** and Kapanigans turns it into pages with places, characters, moves and feelings that match your words.
+- 🧔 **Family in the pictures:** write a family name (tap it under "Who's in it?") and their cartoon shows up in a pose that fits, like Joe running, waving or reading a story.
+- 🔄 **Try another:** on the "Here's your story!" screen, tap a picture to see it move, 🔄 for a different place, 🎲 for new moves, or ✏️ to change anything on that page.
+- 🧩 **Build it page by page** is still there for making every page yourself.
+
+### For grown-ups
+- The story engine runs on the device with no internet: blank lines (📄 New page) start a new page, otherwise one or two sentences make a page (12 at most). It matches about 200 words to pictures, places, moves and feelings, and keeps the same friends on the next page when nobody new is named.
+- Changing the words or theme and tapping Make my pictures again redraws the pages (hand edits on those pages are replaced). Drafts remember the words and theme.
+
+---
+
 ## 1.8: Family cartoons in stories 🧔
 **October 28, 2026**
 

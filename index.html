@@ -128,6 +128,24 @@ select,input,textarea{font-size:max(16px,1em)}
 .cegrid.fam button.miss .cthumb{opacity:.25}
 .famsets h4 small{font-weight:800;color:#9a91b0}
 .famswap{background:var(--sky);border-radius:14px;padding:6px 10px}
+/* write my story + the engine's pictures */
+.cwtop{display:flex;flex-direction:column;gap:8px;width:100%;max-width:900px}
+.cwtheme{display:flex;align-items:center;gap:10px;font-family:var(--display);font-size:20px}
+.cwtheme select{font:inherit;font-size:20px;padding:8px 12px;border-radius:14px;border:3px solid var(--sky-deep);background:var(--paper);color:var(--ink);flex:1;max-width:420px}
+.cwnames{align-items:center}.cwlbl{font-weight:800;font-size:14px;color:#6b6283;margin-right:2px}
+#sBody .cwnames .chip,#sBody .cwtools+.cechips .chip{background:var(--paper);box-shadow:0 3px 0 var(--sky-deep)}
+.cwtext{min-height:200px;font-size:20px;line-height:1.45}
+#sBody>.spellwrap,#sBody>.cwtext,#sBody>.spellrow,#sBody>.cwtools,#sBody>.cwhint{width:100%;max-width:900px}
+#sBody>.cwtools .ctool{background:var(--paper);box-shadow:0 3px 0 var(--sky-deep)}#sBody>.cwtools .ctool.on{background:#E5484D;color:#fff}
+.cwhint{text-align:center}
+.bigbtn:disabled{opacity:.5}
+.sgpages{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:14px;width:100%;max-width:1200px}
+.sgcard{position:relative;background:var(--paper);border-radius:20px;padding:8px;box-shadow:0 4px 0 var(--sky-deep);display:flex;flex-direction:column;gap:6px}
+.sgcard .cstage{width:100%;cursor:pointer;box-shadow:none;border-radius:14px}
+.sgnum{position:absolute;left:14px;top:14px;z-index:5;background:var(--sun);color:var(--ink);font-family:var(--display);font-size:16px;min-width:28px;height:28px;border-radius:999px;display:grid;place-items:center;box-shadow:0 2px 0 var(--sun-deep)}
+.sgtext{margin:2px 4px;font-family:"Andika","Nunito",var(--body);font-size:16px;line-height:1.35;flex:1}
+.sgtools{display:flex;gap:6px}.sgtools .ctool{flex:1;min-height:48px;font-size:20px}
+.sgbot{flex-wrap:wrap}
 .famswap summary{font-weight:800;font-size:15px;cursor:pointer;padding:4px 0}
 .ced.little .cegrid{grid-template-columns:repeat(auto-fill,minmax(80px,1fr))}
 .ced.little .cegrid button{font-size:40px;min-height:76px}
@@ -1597,7 +1615,7 @@ addEventListener("resize",()=>requestAnimationFrame(fitHelp));
    "## 1.0: Title" starts a release; "### For everyone" / "### For grown-ups" / any other "###" section follow.
    Grown-up sections ("For grown-ups", "How long it took…") are hidden from the kids.
    Bump APP_VERSION together with a new RELEASES.md entry. */
-const APP_VERSION="1.8";
+const APP_VERSION="1.9";
 const WN={rel:null,loading:null};
 function wnGrownOnly(h){return /grown/i.test(h)}
 function wnParse(md){
@@ -2886,8 +2904,9 @@ function sGo(step){sStep=step;renderStory();$("#sBody").scrollTop=0;window.scrol
 $("#sHome").onclick=()=>{hush();if(csIsCustom())csSaveNow();draft=null;goLobby()};
 $("#sBack").onclick=()=>{
   hush();
-  if(csIsCustom()&&sStep==="cedit"){csSaveNow();if(draft.sel>=0){draft.sel=-1;draft.pathMode=false;return renderStory()}return draft.fromHome?sGo("home"):sGo("pick")}
-  const back={home:null,shelf:"home",to:"home",pick:"to",blank:"pick",draw:"blank",wiggle:"draw",voice:"wiggle",record:"voice",ready:csIsCustom()?"cfinish":"voice",cfinish:"cedit",sent:null}[sStep];
+  if(csIsCustom()&&sStep==="cedit"){csSaveNow();if(draft.sel>=0){draft.sel=-1;draft.pathMode=false;return renderStory()}return draft.src&&draft.builtFrom?sGo("csuggest"):draft.fromHome?sGo("home"):sGo("pick")}
+  const back={home:null,shelf:"home",to:"home",pick:"to",blank:"pick",draw:"blank",wiggle:"draw",voice:"wiggle",record:"voice",ready:csIsCustom()?"cfinish":"voice",cfinish:csIsCustom()&&draft.builtFrom?"csuggest":"cedit",cwrite:draft&&draft.fromHome?"home":"pick",csuggest:"cwrite",sent:null}[sStep];
+  if(csIsCustom()&&(sStep==="cwrite"||sStep==="csuggest"))csSaveNow();
   if(sStep==="record"&&draft.vi>0){draft.vi--;return renderStory()}
   if(sStep==="blank"&&draft.bi>0){draft.bi--;return renderStory()}
   if(sStep==="draw"&&draft.ci>0){draft.ci--;return renderStory()}
@@ -2937,8 +2956,10 @@ function renderStory(){
   else if(sStep==="pick"){
     B.append(el("h2",null,"Pick a story"));
     const grid=el("div","storycards");
-    {const c=el("button","scard own",`<span class="em">✨</span><h3>My own story</h3><p>Make every page yourself: places, characters, moves and words.</p>`);
-      c.onclick=()=>{const to=draft.to;draft=csNewDraft(to);sayLittle("My own story!");sGo("cedit");setTimeout(()=>sayLittle("Pick a place for your first page"),900)};grid.append(c)}
+    {const c=el("button","scard own",`<span class="em">✨</span><h3>Write my story</h3><p>Pick a theme, write or tell your story, and Kapanigans picks the pictures and moves.</p>`);
+      c.onclick=()=>{const to=draft.to;draft=csNewDraft(to);draft.theme="bedtime";sayLittle("Write my story!");sGo("cwrite");setTimeout(()=>sayLittle(lvl()==="little"?"Tap the microphone and tell your story":"Pick a theme, then write your story"),900)};grid.append(c)}
+    {const c=el("button","scard own2",`<span class="em">🧩</span><h3>Build it page by page</h3><p>Make every page yourself: places, characters, moves and words.</p>`);
+      c.onclick=()=>{const to=draft.to;draft=csNewDraft(to);sayLittle("Build it page by page!");sGo("cedit");setTimeout(()=>sayLittle("Pick a place for your first page"),900)};grid.append(c)}
     for(const [id,st] of Object.entries(STORIES)){
       const b=el("button","scard",`<span class="em">${st.cover}</span><h3>${esc(st.title)}</h3><p>${esc(st.blurb)}</p>`);
       b.onclick=()=>{if(draft.story!==id){draft.words={};draft.chars=[]}draft.story=id;draft.bi=0;draft.ci=0;sayLittle(st.title);sGo("blank");setTimeout(()=>say(BLANKS[STORIES[id].blanks[0]].ask),900)};
@@ -2971,6 +2992,8 @@ function renderStory(){
   else if(sStep==="draw") renderDraw(B,S);
   else if(sStep==="cedit") csRenderEdit(B);
   else if(sStep==="cfinish") csRenderFinish(B);
+  else if(sStep==="cwrite") csRenderWrite(B);
+  else if(sStep==="csuggest") csRenderSuggest(B);
   else if(sStep==="wiggle"){
     B.append(el("h2",null,"How do they move?"));
     const wrap=el("div","wiggles");
@@ -3289,7 +3312,7 @@ const CS_DOES=[["🤗","hugged"],["🎈","played with"],["🔎","found"],["❤�
 /* ---- spelling helper for Big writers (backlog #13): wavy underline + tap a suggestion to fix it ----
    words/spell.txt = about 39,000 common English words, most common first (kid-safe filtered), loaded only when needed. */
 const spell={rank:null,loading:null,ok:new Set((load("kp.spellOk")||"").split("|").filter(Boolean))};
-const SPELL_EXTRA="snuggly snuggle snuggled ladybug ladybugs yawned yawning yawny giggly giggled giggling sparkly twinkly sleepyhead bedtime goodnight lullaby lullabies teddy teddies unicorn unicorns mermaid mermaids pegasus gnome gnomes jeppson corgi corgis moolah kapanigans farmstand kitty kitties bunny bunnies puppy puppies doggy froggy piggy duckling ducklings hedgehog hedgehogs octopus dinosaur dinosaurs dino dinos superhero superheroes spaceship rocketship playdate playground pajamas jammies boo booboo uh oh yay yummy yum hooray whee whoosh boing zoom zzz mommy daddy mama papa grandma grandpa nana papa granny auntie uncle sis bro okay ok hi bye".split(" ");
+const SPELL_EXTRA="moonlit hooted hooting starlit sparkled zoomed whooshed snuggly snuggle snuggled ladybug ladybugs yawned yawning yawny giggly giggled giggling sparkly twinkly sleepyhead bedtime goodnight lullaby lullabies teddy teddies unicorn unicorns mermaid mermaids pegasus gnome gnomes jeppson corgi corgis moolah kapanigans farmstand kitty kitties bunny bunnies puppy puppies doggy froggy piggy duckling ducklings hedgehog hedgehogs octopus dinosaur dinosaurs dino dinos superhero superheroes spaceship rocketship playdate playground pajamas jammies boo booboo uh oh yay yummy yum hooray whee whoosh boing zoom zzz mommy daddy mama papa grandma grandpa nana papa granny auntie uncle sis bro okay ok hi bye".split(" ");
 function spellLoad(){
   if(spell.rank) return Promise.resolve(spell.rank); if(spell.loading) return spell.loading;
   spell.loading=fetch("words/spell.txt").then(r=>r.ok?r.text():"").then(t=>{const m=new Map();t.split("\n").forEach((w,i)=>{w=w.trim();if(w&&!m.has(w))m.set(w,i)});
@@ -3382,7 +3405,7 @@ function csSave(){clearTimeout(csSaveT);csSaveT=setTimeout(csSaveNow,1200)}
 function csSaveNow(){
   clearTimeout(csSaveT); if(!csIsCustom()||!mail.ref||!draft.owner) return;
   const d={id:draft.id,owner:draft.owner,to:draft.to,title:kidSafe(draft.title).slice(0,60),cover:draft.cover||"",readBy:draft.readBy||"",at:Date.now(),
-    coverS:draft.coverS||null,useDrawn:!!(draft.useDrawn&&draft.coverS),
+    coverS:draft.coverS||null,useDrawn:!!(draft.useDrawn&&draft.coverS),src:draft.src?kidSafe(draft.src).slice(0,3000):null,theme:draft.theme||null,builtFrom:draft.builtFrom||null,
     pages:draft.pages.map(p=>Object.assign({sc:p.sc,fx:p.fx,t:p.t||"",items:p.items.map(csCleanItem)},p.v?{v:p.v}:{}))};
   const clean=JSON.parse(JSON.stringify(d));
   mail.ref.child(`drafts/${draft.owner}/${draft.id}`).set(clean).catch(()=>{});
@@ -3407,7 +3430,8 @@ async function csOpenDraft(owner,id){
   draft=Object.assign(csNewDraft(KIDS[v.to]?v.to:null),{id,owner,title:n.title==="A story"?"":n.title,cover:v.cover||"",readBy:v.readBy||"",pages:n.pages,fromHome:true});
   (v.pages||[]).forEach((p,i)=>{if(p&&p.v&&typeof p.v.data==="string"&&draft.pages[i])draft.pages[i].v={mime:String(p.v.mime||"audio/mp4"),data:p.v.data}});
   {const cs=Array.isArray(v.coverS)?v.coverS.filter(x=>x&&Array.isArray(x.p)&&x.p.length<=3000).slice(0,200):[];if(cs.length){draft.coverS=cs;draft.coverImg=coverPic(cs);draft.useDrawn=v.useDrawn===true&&!!draft.coverImg}}
-  if(!draft.to){sGo("to");return} sGo("cedit");
+  if(typeof v.src==="string"&&v.src){draft.src=v.src.slice(0,3000);draft.theme=CS_THEME[v.theme]?v.theme:"bedtime";if(typeof v.builtFrom==="string")draft.builtFrom=v.builtFrom}
+  if(!draft.to){sGo("to");return} sGo(draft.src?(draft.builtFrom?"csuggest":"cwrite"):"cedit");
 }
 
 /* ---- validating what arrives (gifts and drafts) ---- */
@@ -3867,6 +3891,274 @@ function csDrawSheet(onDone,title,start){
   const no=el("button","ghost","Cancel");no.onclick=()=>{sh.hidden=true;sh.innerHTML=""};
   const ok=el("button","bigbtn","Add it ✔️");ok.onclick=()=>{if(!strokes.length){say("Draw something first!");return}sh.hidden=true;sh.innerHTML="";onDone(thin(strokes))};
   row.append(no,ok); B.append(row); requestAnimationFrame(fitPad); sayLittle(title||"Draw your character!");
+}
+
+/* ================= STORY ENGINE: write the story, get the pictures =================
+   Pick a theme, type (or say) the story, and the engine reads it: it splits it into pages, then for each page picks a scene,
+   the characters and things the words mention (family cartoons in a matching pose, avatars, or picture-library emoji),
+   a move and a feeling for each from the verbs nearby, and a scene effect. All on the device, no internet needed.
+   Everything it picks can be changed on the review screen or in the page editor. */
+const CS_THEMES=[
+  ["bedtime","🌙","Bedtime",{sc:"bedroom",fx:"stars",mascot:["🧸","teddy"],ph:"Once upon a time, a little teddy bear couldn't fall asleep…"}],
+  ["space","🚀","Space adventure",{sc:"space",fx:"stars",mascot:["🚀","rocket"],ph:"One night, a rocket zoomed up to the moon…"}],
+  ["ocean","🐠","Under the sea",{sc:"ocean",fx:"bubbles",mascot:["🐟","fish"],ph:"Deep in the ocean, a little fish found a shiny shell…"}],
+  ["castle","🏰","Fairy tale castle",{sc:"castle",fx:"sparkles",mascot:["👸","princess"],ph:"In a faraway castle lived a princess and a friendly dragon…"}],
+  ["forest","🦉","Forest friends",{sc:"forest",fx:"fireflies",mascot:["🦉","owl"],ph:"In the moonlit forest, a fox and an owl went for a walk…"}],
+  ["farm","🐮","On the farm",{sc:"farm",fx:"fireflies",mascot:["🐮","cow"],ph:"On the farm, the cow and the pig were getting sleepy…"}],
+  ["jungle","🦖","Jungle and dinosaurs",{sc:"jungle",fx:"leaves",mascot:["🦖","dinosaur"],ph:"A baby dinosaur stomped through the jungle…"}],
+  ["snow","⛄","Snowy day",{sc:"snow",fx:"snow",mascot:["⛄","snowman"],ph:"It snowed all day, so we built a snowman…"}],
+  ["candy","🍭","Candy land",{sc:"candy",fx:"hearts",mascot:["🍭","lollipop"],ph:"In candy land, the cookies were having a party…"}],
+  ["beach","🏖️","Beach day",{sc:"beach",fx:"none",mascot:["🐚","shell"],ph:"We went to the beach and found a crab…"}],
+  ["sky","🦄","Magic in the clouds",{sc:"clouds",fx:"sparkles",mascot:["🦄","unicorn"],ph:"A unicorn flew over the rainbow…"}],
+  ["family","🏡","A day with family",{sc:"meadow",fx:"none",mascot:["🌼","flower"],ph:"Today we went to the park together…"}],
+];
+const CS_THEME=Object.fromEntries(CS_THEMES.map(t=>[t[0],Object.assign({e:t[1],n:t[2]},t[3])]));
+// words that point at a scene (stems; a word matches if it starts with one)
+const CS_SCENE_WORDS={ // places: these change the scene
+  bedroom:"bed bedroom pillow blanket room crib nursery bedtime goodnight tuck",
+  night:"night dark dream moonlight wish",
+  forest:"forest wood woods tree camp campfire",
+  castle:"castle tower kingdom throne palace",
+  ocean:"ocean sea underwater reef coral",
+  space:"space planet galaxy orbit spaceship",
+  clouds:"cloud clouds sky heaven",
+  farm:"farm barn field tractor hay",
+  beach:"beach sand sandcastle shore sunset",
+  snow:"snow snowy winter igloo ice",
+  candy:"candy candyland sweets",
+  jungle:"jungle vine rainforest",
+  meadow:"meadow garden park picnic grass playground",
+};
+const CS_SCENE_HINTS={ // characters that hint at a scene, only for the first page (or when nothing else says where)
+  forest:"owl fox deer squirrel hedgehog",castle:"king queen princess prince knight dragon",ocean:"fish whale dolphin octopus mermaid shark",
+  space:"rocket astronaut alien moon",clouds:"unicorn pegasus rainbow",farm:"cow pig sheep hen chicken horse farmer",beach:"crab shell",
+  snow:"snowman penguin",candy:"cake cookie lollipop cupcake",jungle:"monkey tiger lion elephant dinosaur parrot giraffe",meadow:"flower butterfly"};
+const CS_FX_WORDS={snow:"snow snowflake",rain:"rain storm puddle umbrella",stars:"star twinkle",shooting:"wish shooting",fireflies:"firefly fireflies glow",bubbles:"bubble underwater",leaves:"leaf leaves autumn wind breeze",hearts:"love heart hug kiss",sparkles:"magic sparkle wand fairy spell glitter"};
+// words for the picture library (extra names for the same emoji)
+const CS_SYN={"🐶":"dog doggy doggie puppy pup","🐱":"cat kitty kitten","🐰":"bunny rabbit","🐻":"bear","🦊":"fox","🐸":"frog toad","🦉":"owl","🐘":"elephant","🦁":"lion","🐯":"tiger","🐵":"monkey","🐼":"panda","🐧":"penguin","🐢":"turtle","🐬":"dolphin","🐳":"whale","🐙":"octopus","🐝":"bee","🦋":"butterfly","🐞":"ladybug","🐔":"hen chicken","🐮":"cow","🐷":"pig piggy","🐑":"sheep lamb","🦆":"duck duckling","🐟":"fish","🐿️":"squirrel","🦔":"hedgehog","🦄":"unicorn","🐉":"dragon","🦖":"dinosaur dino trex","🧚":"fairy","🧜‍♀️":"mermaid","🧙":"wizard witch","👸":"princess queen","🤴":"prince king knight","🦸":"superhero hero","🤖":"robot","👻":"ghost","👽":"alien","🧞":"genie","🧒":"kid child","👧":"girl sister","👦":"boy brother","👶":"baby","👩":"mom mommy mama mother","👨":"dad daddy papa father","👵":"grandma granny nana","👴":"grandpa grandpa","🧑‍🚀":"astronaut","🧑‍🚒":"firefighter fireman","👮":"police officer","🧑‍⚕️":"doctor nurse","🧑‍🍳":"chef baker","🧑‍🌾":"farmer","🧑‍🏫":"teacher","🧑‍🎨":"artist painter","🌙":"moon","⭐":"star","☀️":"sun","🌈":"rainbow","☁️":"cloud","🚀":"rocket spaceship","🛸":"ufo saucer","⛵":"boat ship sail","🚂":"train","🚒":"firetruck","🚓":"police-car","🎈":"balloon","🧸":"teddy teddy-bear","🎁":"present gift","🍰":"cake","🍪":"cookie","🍕":"pizza","🍦":"icecream ice-cream","👑":"crown","🪄":"wand","💎":"treasure jewel gem diamond","📚":"book","🌳":"tree","🌷":"flower","🍄":"mushroom","🏠":"house cottage","🏰":"castle","🪁":"kite","⚽":"ball","🛏️":"bed","⛄":"snowman","🐚":"shell","🦀":"crab","🍭":"lollipop candy","🐕":"jeppson corgi"};
+const CS_SKY=new Set(["🌙","⭐","☀️","🌈","☁️","🚀","🛸","🎈","🪁","🦋","🐝","🧚","👻"]);
+const CS_CAST_KIND=new Set(["animals","magic","people"]);
+// verbs → moves, feelings and family-cartoon poses
+const CS_VERBS=[
+  ["run ran race raced zoom zoomed chase chased hurry hurried dash","run","pose_run"],
+  ["walk walked went go goes going stroll wander marched march","walk","pose_front"],
+  ["fly flew flying soar soared flap glide","fly","pose_jump"],
+  ["swim swam swimming dive dove splash","swim","pose_front"],
+  ["jump jumped leap leapt hop hopped","hop","pose_jump"],
+  ["dance danced dancing twirl twirled","twirl","pose_dance"],
+  ["spin spun","spin","pose_dance"],
+  ["wave waved hello hi bye goodbye","wave","pose_wave"],
+  ["sleep slept asleep snore snored nap napped tired sleepy dream dreamed goodnight bedtime","sleepy","pose_sleep"],
+  ["yawn yawned","sleepy","pose_yawn"],
+  ["float floated drift drifted","float","pose_front"],
+  ["bounce bounced","bounce","pose_jump"],
+  ["shiver shivered freezing","shiver","pose_surprised"],
+  ["grow grew bigger","grow","pose_hero"],
+  ["shrink shrank tiny","shrink","pose_front"],
+  ["peek peeked hide hid hiding","peek","pose_sneak"],
+  ["appear appeared pop popped","pop","pose_surprised"],
+  ["disappear disappeared vanish vanished","fade","pose_front"],
+  ["sparkle sparkled glow glowed magic","sparkle","pose_hero"],
+  ["tiptoe tiptoed sneak sneaked snuck quiet quietly","tiptoe","pose_sneak"],
+  ["laugh laughed giggle giggled","wiggle","pose_laugh"],
+  ["cheer cheered hooray yay","jump","pose_cheer"],
+  ["hug hugged cuddle cuddled snuggle snuggled","bob","pose_hug"],
+  ["read reading story book","bob","pose_story"],
+  ["cook cooked bake baked","bob","pose_cook"],
+  ["think thought wonder wondered","bob","pose_think"],
+  ["point pointed look looked","bob","pose_point"],
+  ["gave give gift present","bob","pose_gift"],
+  ["fight pillow","wiggle","pose_pillowfight"],
+  ["karate kick chop","wiggle","pose_karate"],
+  ["sit sat","bob","pose_sit"],
+  ["save saved rescue rescued brave","bob","pose_hero"],
+];
+const CS_FEEL_WORDS={happy:"happy glad smile smiled joy fun laugh giggle yay hooray",sad:"sad cry cried tears lonely upset",surprised:"surprise surprised wow suddenly oh amazing",scared:"scared afraid spooky scary nervous frightened",love:"love loved hug hugged kiss kissed cuddle snuggle"};
+const csWordList=s=>s.split(/\s+/).filter(Boolean);
+const CS_LEX=(()=>{ // word → [emoji, name, group]
+  const m=new Map();
+  for(const [grp,list] of Object.entries(CS_LIB)) for(const [e,n] of list){const w=n.toLowerCase();if(!w.includes(" "))m.set(w,[e,n,grp]);else m.set(w.replace(/ /g,"-"),[e,n,grp])}
+  for(const [e,ws] of Object.entries(CS_SYN)){let grp="things",nm=null;for(const [g,list] of Object.entries(CS_LIB)){const f=list.find(x=>x[0]===e);if(f){grp=g;nm=f[1];break}}
+    for(const w of csWordList(ws)){const n=w==="jeppson"?"Jeppson":(nm||w.replace(/-/g," "));if(!m.has(w)||w==="jeppson")m.set(w,[e,n,e==="🐕"||e==="🦀"?"animals":e==="⛄"?"magic":grp])}}
+  return m})();
+const CS_VERB_LEX=(()=>{const m=new Map();for(const [ws,mv,pose] of CS_VERBS)for(const w of csWordList(ws))m.set(w,[mv,pose]);return m})();
+function csStem(w){w=w.toLowerCase().replace(/[’']s$/,"").replace(/[’']/g,"");return w}
+function csSingular(w){if(w.length>4&&w.endsWith("ies"))return w.slice(0,-3)+"y";if(w.length>3&&/(ch|sh|x|ss)es$/.test(w))return w.slice(0,-2);if(w.length>3&&w.endsWith("s")&&!w.endsWith("ss"))return w.slice(0,-1);return w}
+// split the story into pages: blank lines start a new page; otherwise one or two sentences per page (12 pages at most)
+function csSplitPages(text){
+  const clean=String(text||"").replace(/\r/g,"").trim(); if(!clean) return [];
+  let paras=clean.split(/\n\s*\n+/).map(p=>p.replace(/\s*\n\s*/g," ").trim()).filter(Boolean);
+  if(paras.length===1){
+    const sents=(paras[0].match(/[^.!?…]+(?:[.!?…]+["”’)]*|$)/g)||[paras[0]]).map(x=>x.trim()).filter(Boolean);
+    paras=[];let cur="";
+    for(const s of sents){if(cur&&(cur.length+s.length>150||/[.!?]["”]?$/.test(cur)&&cur.length>=55)){paras.push(cur);cur=s}else cur=(cur?cur+" ":"")+s}
+    if(cur)paras.push(cur);
+  }
+  while(paras.length>CS_MAX_PAGES){let best=0,bl=1e9;for(let i=0;i<paras.length-1;i++){const l=paras[i].length+paras[i+1].length;if(l<bl){bl=l;best=i}}paras.splice(best,2,paras[best]+" "+paras[best+1])}
+  return paras.map(p=>p.slice(0,400));
+}
+// read one page of text into tokens with positions
+function csTokens(t){const out=[];for(const m of String(t).matchAll(/[A-Za-z][A-Za-z’'-]*/g))out.push({w:m[0],lw:csStem(m[0]),i:m.index,cap:/^[A-Z]/.test(m[0])});return out}
+// the family members a page names: [{who, i}] (names, "Uncle Jeff", plus "me"/"I" when it's the author's own story)
+function csFindPeople(t,toks){
+  const out=[];
+  for(const [k,K] of Object.entries(KIDS)){if(k==="bear"||k==="fox")continue;
+    const re=new RegExp("\\b"+K.name.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"\\b","g");
+    for(const m of String(t).matchAll(re)){out.push({who:k,i:m.index,len:K.name.length});break}}
+  return out;
+}
+function csScoreScenes(toks,hints){
+  const sc={};for(const [s,ws] of Object.entries(hints?CS_SCENE_HINTS:CS_SCENE_WORDS)){let n=0;const stems=csWordList(ws);for(const t of toks){const w=csSingular(t.lw);if(stems.some(x=>w===x||(x.length>4&&w.startsWith(x))))n++}if(n)sc[s]=n}
+  return sc;
+}
+function csPickFx(toks,sc,theme){
+  for(const [fx,ws] of Object.entries(CS_FX_WORDS)){const st=csWordList(ws);if(toks.some(t=>st.includes(t.lw)||st.includes(csSingular(t.lw))))return fx}
+  return (CS_SCENES[sc]||{}).fx||theme.fx||"none";
+}
+function csFeelFor(toks){for(const [fe,ws] of Object.entries(CS_FEEL_WORDS)){const st=csWordList(ws);if(toks.some(t=>st.includes(t.lw)))return fe}return""}
+// the move (and family pose) for a character: the first verb after it in the sentence, or the nearest verb before it
+function csVerbFor(toks,at,text){
+  let best=null,bd=1e9,lo=-1,hi=1e9;
+  if(text){const before=text.slice(0,at),m=before.match(/.*[.!?…]/s);lo=m?m[0].length:-1;const r=text.slice(at).search(/[.!?…]/);hi=r<0?1e9:at+r} // only verbs in the same sentence
+  for(const t of toks){if(t.i<lo||t.i>hi)continue;const v=CS_VERB_LEX.get(t.lw)||CS_VERB_LEX.get(csSingular(t.lw));if(!v)continue;const d=t.i>=at?t.i-at:(at-t.i)*2+40;if(d<bd){bd=d;best=v}}
+  return best;
+}
+// build every page from the story text. old: the previous pages, so a rebuild keeps scenes the author changed by hand
+function csEngine(text,themeKey,opt={}){
+  const theme=CS_THEME[themeKey]||CS_THEME.bedtime, chunks=csSplitPages(text), pages=[];
+  let prevSc=theme.sc, carry=[];
+  const famKeys=w=>csFam.keys.get(w)||[];
+  chunks.forEach((t,pi)=>{
+    const tx=t, toks=csTokens(t), found=[]; // {i, item}
+    // family members first (they win over a library word in the same spot)
+    for(const p of csFindPeople(t,toks)){
+      const K=KIDS[p.who], ks=famKeys(p.who), v=csVerbFor(toks,p.i+p.len,t);
+      let it;
+      if(ks.length){let key=ks.includes("master")?"master":ks[0];if(v&&ks.includes(v[1]))key=v[1];else if(v&&v[0]!=="bob"){const alt=["pose_front","pose_threequarter"].find(x=>ks.includes(x));if(alt)key=alt}
+        it={k:"fam",who:p.who,key,h:.55}}
+      else if(K.look) it={k:"av",who:p.who,h:.45};
+      else it={k:"e",e:K.grown?"🧑":"🧒",nm:K.name,h:.36};
+      it.mv=v?v[0]:"bob"; found.push({i:p.i,len:p.len,it,cast:true,key:"p:"+p.who});
+    }
+    // picture-library words (with "the big red dragon" style adjectives skipped)
+    for(let j=0;j<toks.length;j++){
+      const t=toks[j]; if(found.some(f=>f.len&&t.i>=f.i&&t.i<f.i+f.len)) continue;
+      const two=j+1<toks.length?t.lw+"-"+toks[j+1].lw:null;
+      const h2=two&&CS_LEX.get(two); let hit=h2||CS_LEX.get(t.lw)||CS_LEX.get(csSingular(t.lw)); if(!hit) continue; if(h2) j++;
+      const [e,nm,grp]=hit, key="e:"+e; if(found.some(f=>f.key===key)) continue;
+      const cast=CS_CAST_KIND.has(grp)||e==="🐕";
+      const v=cast?csVerbFor(toks,t.i+t.w.length,tx):null;
+      const it={k:"e",e,nm:nm==="Jeppson"?"Jeppson":nm,h:cast?.36:(CS_SKY.has(e)?.16:.2)};
+      it.mv=cast?(v?v[0]:"bob"):(CS_SKY.has(e)?(e==="🚀"||e==="🎈"?"float":e==="⭐"?"sparkle":"none"):"none");
+      found.push({i:t.i,it,cast,key});
+    }
+    // nobody named on this page: keep the last page's main characters (a story usually follows the same friends)
+    let cast=found.filter(f=>f.cast);
+    if(!cast.length&&carry.length){carry.forEach(c=>{const it=Object.assign({},c.it);const zz=toks.map(t=>CS_VERB_LEX.get(t.lw)).find(x=>x&&x[0]==="sleepy");const v=zz||csVerbFor(toks,0);it.mv=v?v[0]:(it.mv==="sleepy"?"sleepy":"bob");if(it.k==="fam"){const ks=famKeys(it.who);if(v&&ks.includes(v[1]))it.key=v[1]}found.push({i:9999,it,cast:true,key:c.key})});cast=found.filter(f=>f.cast)}
+    if(!found.length&&pi===0) found.push({i:0,it:{k:"e",e:theme.mascot[0],nm:theme.mascot[1],h:.34,mv:"bob"},cast:true,key:"e:"+theme.mascot[0]});
+    if(cast.length) carry=cast.slice(0,2);
+    // scene
+    let scores=csScoreScenes(toks); if(!Object.keys(scores).length&&pi===0) scores=csScoreScenes(toks,true); let sc=prevSc;
+    const ranked=Object.entries(scores).sort((a,b)=>b[1]-a[1]||(a[0]===theme.sc?-1:b[0]===theme.sc?1:0));
+    if(ranked.length) sc=ranked[0][0]==="night"&&prevSc!=="bedroom"&&prevSc!=="night"&&scores[prevSc]?prevSc:ranked[0][0];
+    if(pi===0&&!ranked.length) sc=theme.sc;
+    if(ranked.length&&ranked[0][0]==="night"&&pi===0&&theme.sc!=="bedroom") sc=theme.sc==="night"?"night":(CS_SCENES[theme.sc].fx==="stars"||["forest","farm","space"].includes(theme.sc)?theme.sc:"night");
+    if(!CS_SCENES[sc]) sc="night";
+    prevSc=sc;
+    // place them: characters along the ground facing each other, sky things up high, other things small near the front
+    const feel=csFeelFor(toks);
+    const cs=found.filter(f=>f.cast).sort((a,b)=>a.i-b.i).slice(0,4), things=found.filter(f=>!f.cast&&!(CS_SCENES[sc].deco||[]).some(d=>d[0]===f.it.e||(d[0]==="🌲"&&f.it.e==="🌳"))).sort((a,b)=>a.i-b.i).slice(0,CS_MAX_ITEMS-cs.length>2?2:CS_MAX_ITEMS-cs.length);
+    const xs=[[.5],[.3,.7],[.2,.5,.8],[.15,.38,.62,.85]][Math.max(0,cs.length-1)]||[];
+    const items=[];
+    cs.forEach((f,j)=>{const it=Object.assign({x:xs[j],y:.95,f:cs.length>1&&j===cs.length-1&&f.it.k==="e",fe:j===0?feel:"",at:"now"},f.it);
+      if(cs.length>2)it.h=Math.min(it.h,it.k==="fam"?.46:.3);
+      if(["walk","run","fly","swim"].includes(it.mv)&&cs.length>1&&j>0) it.mv=j%2?"hop":"bob"; // only one character crosses the page
+      if(it.mv==="fly")it.y=.7; if(it.mv==="swim")it.y=.75;
+      items.push(it)});
+    things.forEach((f,j)=>{const sky=CS_SKY.has(f.it.e);items.push(Object.assign({x:sky?(j%2?.22:.78):(j%2?.08:.92),y:sky?.32:.97,f:false,fe:"",at:"now"},f.it))});
+    pages.push({sc,fx:csPickFx(toks,sc,theme),t,items:items.map(csCleanItem).filter(Boolean),alts:[...new Set([...ranked.map(r=>r[0]),theme.sc,prevSc,"night"])].filter(s=>CS_SCENES[s])});
+  });
+  return pages;
+}
+
+/* ---- step 1: theme + write the story ---- */
+function csRenderWrite(B){
+  const L=lvl(); if(!draft.theme) draft.theme="bedtime"; const th=CS_THEME[draft.theme];
+  B.append(el("h2",null,L==="little"?"Tell your story!":"Write your story"));
+  const top=el("div","cwtop");
+  const lab=el("label","cwtheme",`<span>Theme</span>`); const sel=el("select"); sel.setAttribute("aria-label","Story theme");
+  for(const [k,e,n] of CS_THEMES){const o=el("option",null,`${e} ${esc(n)}`);o.value=k;if(k===draft.theme)o.selected=true;sel.append(o)}
+  sel.onchange=()=>{draft.theme=sel.value;ta.placeholder=CS_THEME[sel.value].ph;csSave();sayLittle(CS_THEME[sel.value].n);syncGo()};
+  lab.append(sel); top.append(lab);
+  // family members the engine can draw (cartoons or avatars): tap to add their name
+  const names=el("div","cechips cwnames"); top.append(names);
+  const fill=()=>{names.innerHTML="";const have=new Set((csFam.people||[]).map(p=>p[0]));
+    const ks=Object.keys(KIDS).filter(k=>k!=="bear"&&k!=="fox"&&(have.has(k)||KIDS[k].look));
+    if(!ks.length)return; names.append(el("span","cwlbl","Who's in it?"));
+    for(const k of ks){const c=el("button","chip",`${have.has(k)?"🖼️":esc(KIDS[k].face)} ${esc(KIDS[k].name)}`);c.onclick=()=>{insert(KIDS[k].name+" ");sayLittle(KIDS[k].name)};names.append(c)}};
+  csFamPeople().then(()=>{if(names.isConnected)fill()}); fill();
+  B.append(top);
+  const ta=el("textarea","cetextarea cwtext"); ta.maxLength=3000; ta.rows=9; ta.placeholder=th.ph; ta.value=draft.src||"";
+  const insert=s=>{const a=ta.selectionStart??ta.value.length,b=ta.selectionEnd??a;ta.value=(ta.value.slice(0,a)+s+ta.value.slice(b)).slice(0,3000);ta.focus();try{ta.selectionStart=ta.selectionEnd=a+s.length}catch(e){}save()};
+  const save=()=>{draft.src=ta.value;csSave();syncGo();if(spCheck)spCheck()};
+  ta.oninput=()=>{draft.src=ta.value;csSave();syncGo()}; ta.onblur=()=>{const s=kidSafe(ta.value);if(s!==ta.value){ta.value=s;draft.src=s;csSave()}};
+  B.append(ta);
+  let spCheck=null; if(L!=="little"){const row=el("div","spellrow");B.append(row);spCheck=spellAttach(ta,row,v=>{draft.src=v;csSave()})}
+  const tools=el("div","cerow cwtools");
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(SR){const d=el("button","ctool"+(L==="little"?" wide":""),`🎙️<small>${L==="little"?"Tell it":"Say it"}</small>`);d.onclick=()=>{try{const sr=new SR();sr.lang="en-US";sr.interimResults=false;sr.continuous=false;d.classList.add("on");d.querySelector("small").textContent="Listening…";
+    sr.onresult=e=>{let t=kidSafe(e.results[0][0].transcript||"").trim();if(!t)return;t=t.charAt(0).toUpperCase()+t.slice(1);if(!/[.!?]$/.test(t))t+=".";const v=ta.value.trim();ta.value=((v?v+" ":"")+t).slice(0,3000);save()};
+    sr.onend=()=>{d.classList.remove("on");d.querySelector("small").textContent=L==="little"?"Tell it":"Say it"};sr.onerror=sr.onend;sr.start()}catch(e){toast("Talking to type isn't available here.")}};tools.append(d)}
+  const hear=el("button","ctool","🔊<small>Hear it</small>");hear.onclick=()=>say(kidSafe(ta.value)||"Your story is empty.");tools.append(hear);
+  const np=el("button","ctool","📄<small>New page</small>");np.onclick=()=>{const v=ta.value.replace(/\s+$/,"");ta.value=v+(v?"\n\n":"");ta.focus();save()};tools.append(np);
+  B.append(tools);
+  if(L!=="little"){const chips=el("div","cechips");for(const s of CS_STARTERS){const c=el("button","chip",esc(s));c.onclick=()=>{const v=ta.value.replace(/\s+$/,"");const sep=!v?"":/[.!?]$/.test(v)?" ":" ";ta.value=(v+sep+s+(/[.!?]$/.test(s)?"":" ")).slice(0,3000);ta.focus();save()};chips.append(c)}B.append(chips)}
+  B.append(el("p","note cwhint",L==="little"?"Tap 🎙️ and tell your story. Then tap the big button and Kapanigans draws the pictures!":"Each sentence or two becomes a page (tap 📄 New page to choose yourself). Then Kapanigans picks the places, characters and moves. You can change anything after."));
+  const row=el("div","rowbtns");
+  const own=el("button","ghost","🧩 Build pages myself");own.onclick=()=>{draft.src=ta.value;csSaveNow();draft.pi=0;sGo("cedit")};
+  const go=el("button","bigbtn","✨ Make my pictures");
+  const syncGo=()=>{const has=!!ta.value.trim();go.disabled=!has;go.textContent=draft.builtFrom&&draft.builtFrom===ta.value+"|"+draft.theme?"See my pictures ➡️":"✨ Make my pictures"};
+  go.onclick=async()=>{const text=kidSafe(ta.value).trim();if(!text){say("Type your story first!");return}
+    const sig=ta.value+"|"+draft.theme; if(draft.builtFrom===sig){sGo("csuggest");return}
+    go.disabled=true;go.textContent="✨ Drawing…";
+    await Promise.race([csFamPeople(),new Promise(r=>setTimeout(r,2500))]);
+    const pages=csEngine(text,draft.theme);
+    if(!pages.length){go.disabled=false;syncGo();return}
+    draft.pages=pages; draft.pi=0; draft.sel=-1; draft.src=ta.value; draft.builtFrom=sig;
+    csSaveNow(); tada(); sGo("csuggest"); say(`Here's your story! ${pages.length} page${pages.length>1?"s":""}.`)};
+  row.append(own,go); B.append(row); syncGo();
+}
+
+/* ---- step 2: the engine's pictures, page by page ---- */
+const CS_SHUFFLE_MOVES=["bob","hop","wiggle","bounce","twirl","wave","jump","float","sparkle","tiptoe","walk"];
+function csRenderSuggest(B){
+  B.append(el("h2",null,"Here's your story!"));
+  B.append(el("p","sub",lvl()==="little"?"Tap a picture to see it move.":"Tap a picture to see it move. 🔄 tries another place, 🎲 new moves, ✏️ changes anything on that page."));
+  const grid=el("div","sgpages"); B.append(grid);
+  const stages=[];
+  draft.pages.forEach((p,i)=>{
+    const card=el("div","sgcard"); const num=el("span","sgnum",String(i+1));
+    const stage=el("div","cstage sg"); card.append(stage,num);
+    const txt=el("p","sgtext",esc(p.t||"(no words on this page)")); card.append(txt);
+    const tools=el("div","sgtools");
+    const alt=el("button","ctool",`🔄<small>Place</small>`); alt.setAttribute("aria-label","Try another place");
+    alt.onclick=()=>{const order=[...new Set([...(p.alts||[]),...Object.keys(CS_SCENES)])];const n=order[(order.indexOf(p.sc)+1)%order.length];const was=CS_SCENES[p.sc].fx;p.sc=n;if(!p.fx||p.fx===was)p.fx=CS_SCENES[n].fx;csSave();build(true);sayLittle(CS_SCENES[n].n)};
+    const mv=el("button","ctool",`🎲<small>Moves</small>`); mv.setAttribute("aria-label","Try new moves");
+    mv.onclick=()=>{p.items.forEach(it=>{if(it.h<.25&&!["sparkle","float"].includes(it.mv))return;const opts=CS_SHUFFLE_MOVES.filter(m=>m!==it.mv);it.mv=opts[Math.floor(Math.random()*opts.length)]});csSave();build(true)};
+    const ed=el("button","ctool",`✏️<small>Edit</small>`); ed.setAttribute("aria-label","Edit this page");
+    ed.onclick=()=>{draft.pi=i;draft.sel=-1;draft.tab="add";csSaveNow();sGo("cedit")};
+    tools.append(alt,mv,ed); card.append(tools); grid.append(card);
+    let tm=null;
+    const build=(play)=>{clearTimeout(tm);csBuildStage(stage,p);if(play){csPlayStage(stage,p,{timers:[]});tm=setTimeout(()=>{if(stage.isConnected)csBuildStage(stage,p)},5000)}};
+    stage.onclick=()=>{unlockAudio();build(true);if(p.t&&lvl()==="little")say(p.t)};
+    stages.push(()=>build(false));
+  });
+  const row=el("div","rowbtns sgbot");
+  const back=el("button","ghost","✏️ Change my words");back.onclick=()=>sGo("cwrite");
+  const tune=el("button","ghost","🎨 Fine-tune pages");tune.onclick=()=>{draft.pi=0;draft.sel=-1;sGo("cedit")};
+  const nx=el("button","bigbtn","Looks good! ➡️");nx.onclick=()=>{csSaveNow();sGo("cfinish");say(lvl()==="little"?"What should we call your story?":"Name your story")};
+  row.append(back,tune,nx); B.append(row);
+  requestAnimationFrame(()=>{grid.querySelectorAll(".cstage.sg").forEach(st=>{const w=st.parentElement.clientWidth;st.style.width=w+"px";st.style.height=Math.round(w/CS_ASPECT)+"px"});stages.forEach(f=>f())});
 }
 
 /* ---- finishing: title, cover, who reads ---- */

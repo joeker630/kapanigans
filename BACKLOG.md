@@ -776,6 +776,12 @@ Add a button to the video chat bubble to **flip between the iPad's front and bac
 - **Drawn cover:** ✏️ Draw a cover on the finish step; saved as a small JPEG (`coverImg`) on the message, the gift and the draft index, with the strokes in the draft (`coverS`) so it can be redrawn. Older app versions fall back to the cover emoji.
 - Not yet: generated art (A, #14, #15) and the night-light dim at "The end."
 
+**✅ Built Oct 28 (1.9): Write my story (story engine)**
+- New main path: Make a story › who it's for › **✨ Write my story** → theme drop-down (12 themes, each with a default scene, effect, mascot and placeholder idea) → type, 🎙️ talk-to-type, starters, spelling helper, "Who's in it?" name chips → **Make my pictures** → "Here's your story!" review (tap to play, 🔄 place, 🎲 moves, ✏️ edit page) → fine-tune in the page editor or go to name and cover. 🧩 Build it page by page stays as the second choice.
+- `csEngine(text, theme)`: page split (blank lines, else about 1–2 sentences, max 12); scene from place words (character hints only on page 1), carried forward otherwise; effect from weather and magic words; characters from family names (cartoon pose matched to the verb in the same sentence, e.g. run → `pose_run`, read → `pose_story`; then avatar; then 🧒/🧑), library words and synonyms (`CS_SYN`) and Jeppson; moves and feelings from verbs in the same sentence; friends carried to the next page when nobody is named; things the scene already draws are skipped.
+- Drafts save `src`, `theme` and `builtFrom` and reopen on the review screen.
+- Next ideas: use the #15 asset tags once the storybook library exists (the engine's word lists can seed the shared word list); smarter pronouns (she/he/they → the last named character).
+
 Bedtime Story (#1) works, but the pictures are plain, kids can only fill in blanks in 3 templates, and there are only 6 simple moves. This upgrade makes it look like a real picture book, lets kids **write a whole story from scratch**, and adds many more animations.
 
 **A. Better graphics**
