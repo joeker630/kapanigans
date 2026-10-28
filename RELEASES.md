@@ -4,6 +4,15 @@ Newest first. Each release has kid-friendly notes (shown to everyone in the game
 
 ---
 
+## 1.5: Everyone's usage for Joe 📊
+**October 28, 2026**
+
+### For grown-ups
+- 📊 **Joe sees everyone:** in 🔒 Grown-ups › Reports, Joe now has an **Everyone** view (each person's time played in the last 7 days, times played, days, most-played game and when they last played) plus a full report for each grown-up as well as the kids. Other grown-ups still see the kids' reports.
+- ⏱️ Reports now also count time in Capture the Flag, the dressing room and the Grown-ups area.
+
+---
+
 ## 1.4: Ask for help on the farm ❗
 **October 27, 2026**: night update.
 

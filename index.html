@@ -527,6 +527,12 @@ h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance;l
 .taprow .who{display:flex;align-items:center;gap:6px;font-weight:800}.taprow .who .facepic,.taprow .who .avatarpic{width:28px;height:28px}
 .taprow .bar{height:14px;border-radius:999px;background:#EEE8F8;overflow:hidden}.taprow .bar i{display:block;height:100%;background:var(--k);transition:width .2s}
 .taprow .n{font-weight:800;text-align:right}
+.grownpick{margin-top:6px}.plabel{font-weight:800;color:#6b6283;font-size:14px;align-self:center;margin-right:4px}
+table.everyone{width:100%;border-collapse:collapse;font-size:14px}table.everyone th{text-align:left;color:#7a6f92;font-size:12px;text-transform:uppercase;padding:6px}
+table.everyone td{padding:7px 6px;border-top:1px solid #EEE8F8;vertical-align:middle}table.everyone tr[data-k]{cursor:pointer}table.everyone tr[data-k]:active{background:var(--sky)}
+table.everyone .facepic,table.everyone .avatarpic,table.everyone .em{width:26px;height:26px;vertical-align:middle}
+.ebar{height:8px;border-radius:99px;background:#EEE8F8;overflow:hidden;margin-bottom:3px;min-width:60px}.ebar i{display:block;height:100%;background:var(--k)}
+.kidtag{background:var(--sky);border-radius:99px;padding:1px 6px;font-size:11px;color:#5b5175}
 .sentbox{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
 .sentbox .gift{font-size:110px;animation:fly 1.6s ease-in forwards}
 @keyframes fly{0%{transform:scale(.6)}30%{transform:scale(1.15) rotate(-6deg)}60%{transform:scale(1) rotate(4deg)}100%{transform:translateY(-30vh) scale(.4);opacity:0}}
@@ -1501,7 +1507,7 @@ addEventListener("resize",()=>requestAnimationFrame(fitHelp));
    "## 1.0: Title" starts a release; "### For everyone" / "### For grown-ups" / any other "###" section follow.
    Grown-up sections ("For grown-ups", "How long it took…") are hidden from the kids.
    Bump APP_VERSION together with a new RELEASES.md entry. */
-const APP_VERSION="1.4";
+const APP_VERSION="1.5";
 const WN={rel:null,loading:null};
 function wnGrownOnly(h){return /grown/i.test(h)}
 function wnParse(md){
@@ -3945,8 +3951,8 @@ document.addEventListener("visibilitychange",()=>{
    families/<CODE>/reports/lastWeek              = monday of the last week a report was sent
    Kids never see any of this. Only counts and times are stored, never drawings, messages or recordings. */
 const SYS={name:"Kapanigans",face:"📊",hue:"#5E5577"};
-const GAME_NAMES={snake:"Snake Race",color:"Color Together",watch:"Watching",story:"Bedtime Story",inbox:"Inbox",farm:"Farmstand",lobby:"Menus"};
-const GAME_COLORS={snake:"#65A30D",color:"#7C4DFF",watch:"#C3A6FF",story:"#25306B",inbox:"#E5484D",farm:"#2ECC40",lobby:"#B9DCFB"};
+const GAME_NAMES={snake:"Snake Race",ctf:"Capture the Flag",color:"Color Together",watch:"Watching",story:"Bedtime Story",inbox:"Inbox",farm:"Farmstand",dress:"Dressing room",grown:"Grown-ups area",lobby:"Menus"};
+const GAME_COLORS={snake:"#65A30D",ctf:"#DC2626",dress:"#DB2777",grown:"#64748B",color:"#7C4DFF",watch:"#C3A6FF",story:"#25306B",inbox:"#E5484D",farm:"#2ECC40",lobby:"#B9DCFB"};
 const COUNT_NAMES={sessions:"Times played",snakeRounds:"Snake races",snakeSnacks:"Snake snacks eaten",snakeLongest:"Longest snake",snakeCrashes:"Snake crashes",colorGames:"Coloring games",picturesDone:"Pictures finished",watched:"Games watched",storiesSent:"Stories made",storiesRead:"Stories read",messagesSent:"Messages sent"};
 const DEV=(()=>{let d=load("kp.dev");if(!d){d=Math.random().toString(36).slice(2,8);store("kp.dev",d)}return d})();
 const DEV_LABEL=/iPad/.test(navigator.userAgent)||(/Macintosh/.test(navigator.userAgent)&&navigator.maxTouchPoints>1)?"iPad":/iPhone/.test(navigator.userAgent)?"iPhone":/Android/.test(navigator.userAgent)?"Android":"Computer";
@@ -3959,7 +3965,7 @@ const stat={acc:{},hours:{},kid:null,last:Date.now(),lastFlush:Date.now(),hidden
 function activity(){
   if(document.visibilityState!=="visible"||!me) return null;
   if(screen==="game") return game&&game.watch?"watch":"color";
-  return {story:"story",reader:"story",inbox:"inbox",lobby:"lobby",farm:"farm",snake:"snake"}[screen]||null;
+  return {story:"story",reader:"story",inbox:"inbox",lobby:"lobby",farm:"farm",snake:"snake",ctf:"ctf",dress:"dress",grown:"grown"}[screen]||null;
 }
 function tickStats(){
   const now=Date.now(), dt=Math.min(now-stat.last,15000); stat.last=now;
@@ -4210,15 +4216,36 @@ function armed(key,btn,label,action){ // two taps to confirm
 }
 
 /* ---- Reports ---- */
+// Joe sees everyone's usage (kids and grown-ups); other grown-ups see the kids
+const STATS_ALL=["joe"];
 function gReports(B){
-  const kids=KID_KEYS();
+  const all=STATS_ALL.includes(me), kids=KID_KEYS(), grown=Object.keys(KIDS).filter(k=>KIDS[k].grown);
+  if(!all&&(gKid==="all"||(KIDS[gKid]&&KIDS[gKid].grown)))gKid=kids[0];
   const pick=el("div","kidpick");
-  for(const k of kids){const K=KIDS[k];const b=el("button","pal"+(k===gKid?" on":""),`${faceHTML(K)}${esc(K.name)}`);b.style.setProperty("--k",K.hue);b.onclick=()=>{gKid=k;renderGrown()};pick.append(b)}
+  const add=(k,label)=>{const b=el("button","pal"+(k===gKid?" on":""),label);b.onclick=()=>{gKid=k;renderGrown()};pick.append(b);return b};
+  if(all) add("all","👨‍👩‍👧‍👦 Everyone").style.setProperty("--k","var(--sun-deep)");
+  for(const k of kids){const K=KIDS[k];add(k,`${faceHTML(K)}${esc(K.name)}`).style.setProperty("--k",K.hue)}
   B.append(pick);
+  if(all){const p2=el("div","kidpick grownpick");p2.append(el("span","plabel","Grown-ups:"));for(const k of grown){const K=KIDS[k];const b=el("button","pal"+(k===gKid?" on":""),`${faceHTML(K)}${esc(K.name)}`);b.style.setProperty("--k",K.hue);b.onclick=()=>{gKid=k;renderGrown()};p2.append(b)}B.append(p2)}
   if(!mail.ref){B.append(el("p","empty","Reports need the internet. Check the Wi-Fi."));return}
+  if(gKid==="all"){const box=el("div","rep");box.append(el("p","empty","Loading everyone…"));B.append(box);flushStats();
+    setTimeout(()=>Promise.all(Object.keys(KIDS).map(k=>loadStats(k).then(d=>[k,d]))).then(list=>{if(gTab!=="reports"||gKid!=="all")return;drawEveryone(box,list)}),400);return}
   const box=el("div","rep");box.append(el("p","empty","Loading…"));B.append(box);
   const who=gKid; flushStats();
   setTimeout(()=>loadStats(who).then(d=>{if(gTab!=="reports"||gKid!==who)return;rollup(who,d);drawReport(box,who,d)}),400);
+}
+// one table: everyone's last 7 days, busiest first
+function drawEveryone(box,list){
+  box.innerHTML=""; const today=startOfToday(), now=Date.now();
+  const rows=list.map(([k,d])=>{const w=sumDays(d.days,today-6*DAY,now);let last=0;for(const key of Object.keys(d.days||{})){const dd=d.days[key];const ms=Object.values((dd&&dd.ms)||{}).reduce((a,v)=>a+(+v||0),0);if(ms>0)last=Math.max(last,keyTime(key))}
+    const top=Object.entries(w.ms||{}).filter(([g])=>g!=="lobby").sort((a,b)=>b[1]-a[1])[0];return {k,w,last,top}}).sort((a,b)=>(b.w.total-a.w.total)||(b.last-a.last));
+  const total=rows.reduce((a,r)=>a+r.w.total,0);
+  const card=el("div","rcard");card.append(el("h4",null,`Everyone, last 7 days · ${fmtDur(total)} in all`));
+  const t=el("table","everyone");t.innerHTML=`<tr><th>Who</th><th>Time played</th><th>Times</th><th>Days</th><th>Most played</th><th>Last played</th></tr>`+
+    rows.map(r=>{const K=KIDS[r.k],ago=r.last?Math.round((today-r.last)/DAY):null;
+      return `<tr data-k="${r.k}" style="--k:${K.hue}"><td>${faceHTML(K)} <b>${esc(K.name)}</b>${K.grown?"":' <small class="kidtag">kid</small>'}</td><td><div class="ebar"><i style="width:${total?Math.max(2,r.w.total/rows[0].w.total*100):0}%"></i></div>${fmtDur(r.w.total)}</td><td>${r.w.counts.sessions||0}</td><td>${r.w.daysPlayed}/7</td><td>${r.top?esc(GAME_NAMES[r.top[0]]||r.top[0]):"–"}</td><td>${r.last?(ago<=0?"today":ago===1?"yesterday":ago+" days ago"):"never"}</td></tr>`}).join("");
+  t.querySelectorAll("tr[data-k]").forEach(tr=>tr.onclick=()=>{gKid=tr.dataset.k;renderGrown()});
+  card.append(t);card.append(el("p","note","Tap anyone for their full report."));box.append(card);
 }
 function drawReport(box,who,d){
   box.innerHTML=""; const K=kidOf(who), today=startOfToday(), now=Date.now();
@@ -4228,7 +4255,7 @@ function drawReport(box,who,d){
   // summary card
   const diff=w.total-prev.total;
   const card=el("div","rcard summary");card.style.setProperty("--k",K.hue);
-  card.innerHTML=`<div class="rtitle">${faceHTML(K)}<div><h3>${esc(K.name)}, last 7 days</h3><small>Compared with ${esc(K.name)}'s week before, never with other kids</small></div></div>
+  card.innerHTML=`<div class="rtitle">${faceHTML(K)}<div><h3>${esc(K.name)}, last 7 days</h3><small>Compared with ${esc(K.name)}'s week before${K.grown?"":", never with other kids"}</small></div></div>
     <div class="kpis">
       <div><b>${fmtDur(w.total)}</b><span>played${prev.total?` · <em class="${diff>=0?"up":"down"}">${diff>=0?"▲":"▼"} ${fmtDur(Math.abs(diff))}</em>`:""}</span></div>
       <div><b>${w.counts.sessions||0}</b><span>times played</span></div>
@@ -4238,7 +4265,7 @@ function drawReport(box,who,d){
   box.append(card);
   // usage chart: last 14 days stacked by game
   const chart=el("div","rcard");chart.append(el("h4",null,"Time played, last 14 days"));
-  const games=["color","watch","story","inbox","farm","snake","lobby"]; const cols=[];let max=0;
+  const games=["color","watch","story","inbox","farm","snake","ctf","dress","grown","lobby"]; const cols=[];let max=0;
   for(let i=13;i>=0;i--){const t=today-i*DAY,dd=(d.days||{})[dayKey(t)]||{},ms=dd.ms||{};let tot=0;for(const g of games)tot+=+ms[g]||0;max=Math.max(max,tot);cols.push({t,ms,tot})}
   const Wd=560,Hd=170,pad=28,bw=(Wd-pad)/14*0.7,step=(Wd-pad)/14, topMin=Math.max(10,Math.ceil(max/60000/10)*10);
   let svg=`<svg viewBox="0 0 ${Wd} ${Hd+26}" class="chart" role="img" aria-label="Minutes played per day">`;
@@ -4282,7 +4309,7 @@ function drawReport(box,who,d){
   box.append(el("p","note","Kids never see any of this. Only times and counts are stored, never drawings, messages or recordings. Detailed records older than 90 days are rolled into weekly summaries."));
 }
 function exportCsv(who,d){
-  const games=["color","watch","story","inbox","farm","snake","lobby"], cnt=Object.keys(COUNT_NAMES);
+  const games=["color","watch","story","inbox","farm","snake","ctf","dress","grown","lobby"], cnt=Object.keys(COUNT_NAMES);
   const rows=[["date","person",...games.map(g=>g+"_minutes"),...cnt].join(",")];
   for(const k of Object.keys(d.days||{}).sort()){const x=d.days[k]||{};rows.push([k,who,...games.map(g=>((+((x.ms||{})[g])||0)/60000).toFixed(1)),...cnt.map(c=>(x.counts||{})[c]||0)].join(","))}
   rows.push("","week_of,person,"+games.map(g=>g+"_minutes").join(",")+","+cnt.join(","));
