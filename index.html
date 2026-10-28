@@ -157,7 +157,7 @@ select,input,textarea{font-size:max(16px,1em)}
 
 /* how-to + FAQ popup */
 .help{position:fixed;inset:0;z-index:70;background:rgba(43,33,64,.45);display:flex;align-items:center;justify-content:center;padding:max(12px,env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) max(12px,env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px))}
-.hcard{--hs:1;background:var(--paper);border-radius:28px;width:min(880px,100%);max-height:100%;overflow:hidden;display:flex;flex-direction:column;gap:calc(14px*var(--hs));padding:calc(20px*var(--hs)) calc(24px*var(--hs));box-shadow:0 8px 0 var(--sky-deep)}
+.hcard{--hs:1;background:var(--paper);border-radius:28px;width:min(660px,100%);max-height:100%;overflow:hidden;position:relative;display:flex;flex-direction:column;gap:calc(14px*var(--hs));padding:calc(20px*var(--hs)) calc(24px*var(--hs));box-shadow:0 8px 0 var(--sky-deep)}
 .hhead{display:flex;align-items:center;gap:12px;flex:none}.hem{font-size:calc(44px*var(--hs))}.hhead h2{flex:1;margin:0;font-family:var(--display);font-size:calc(32px*var(--hs))}
 .hbody{flex:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:calc(16px*var(--hs)) calc(28px*var(--hs))}
 .hcol h3{margin:0 0 calc(8px*var(--hs));font-size:calc(15px*var(--hs));text-transform:uppercase;letter-spacing:.06em;color:#7a6f92}
@@ -167,7 +167,8 @@ select,input,textarea{font-size:max(16px,1em)}
 .hcol dl{margin:0}.hcol dt{font-size:calc(18px*var(--hs));font-weight:800;margin-top:calc(10px*var(--hs))}.hcol dt:first-child{margin-top:0}
 .hcol dd{margin:2px 0 0;font-size:calc(17px*var(--hs));font-weight:600;color:#4b4063;line-height:1.3}
 #hOk{align-self:center;flex:none;font-size:calc(24px*var(--hs))}
-.hcard.little{width:min(640px,100%)}.hcard.little li{font-size:calc(26px*var(--hs))}.hcard.little li i{font-size:calc(42px*var(--hs));width:calc(54px*var(--hs))}
+.hcard.little{width:min(480px,100%)}
+.hclose{width:calc(44px*var(--hs))!important;height:calc(44px*var(--hs))!important;font-size:calc(20px*var(--hs))!important;flex:none}.hcard.little li{font-size:calc(26px*var(--hs))}.hcard.little li i{font-size:calc(42px*var(--hs));width:calc(54px*var(--hs))}
 
 body{
   background:var(--sky);
@@ -1275,18 +1276,19 @@ function showHelp(id){
   const H=HELP[id]; if(!H) return; helpLast=id;
   const box=$("#help"); const little=typeof lvl==="function"&&lvl()==="little";
   box.innerHTML=`<div class="hcard${little?" little":""}" role="dialog" aria-label="${esc(H.title)} help">
-    <div class="hhead"><span class="hem">${H.em}</span><h2>${esc(H.title)}</h2><button class="round" id="hSay" aria-label="Read it to me">🔊</button></div>
+    <div class="hhead"><span class="hem">${H.em}</span><h2>${esc(H.title)}</h2><button class="round hclose" id="hSay" aria-label="Read it to me">🔊</button><button class="round hclose" id="hX" aria-label="Close">✖️</button></div>
     <div class="hbody"><div class="hcol"><h3>How to</h3><ol>${H.steps.map(([e,t])=>`<li><i>${e}</i><span>${esc(t)}</span></li>`).join("")}</ol></div>
     ${little?"":`<div class="hcol"><h3>Questions</h3><dl>${H.faq.map(([q,a])=>`<dt>${esc(q)}</dt><dd>${esc(a)}</dd>`).join("")}</dl></div>`}</div>
     <button class="bigbtn" id="hOk">Got it! 👍</button></div>`;
   box.hidden=false; fitHelp();
-  $("#hOk").onclick=()=>{hush();box.hidden=true;blip(520,.06)};
+  const close=()=>{hush();box.hidden=true;blip(520,.06)};
+  $("#hOk").onclick=close; $("#hX").onclick=close; box.onclick=e=>{if(e.target===box)close()}; // ✖️, Got it, or tap outside
   $("#hSay").onclick=()=>{unlockAudio();say(H.title+". "+H.steps.map(s=>s[1]).join(" "))};
 }
 function fitHelp(){ // shrink the text until the whole card fits on one screen, no scrolling
   const box=$("#help"); if(box.hidden) return; const c=box.querySelector(".hcard"); if(!c) return;
-  let s=1; c.style.setProperty("--hs",s);
-  while(s>.5&&(c.scrollHeight>c.clientHeight+1||c.scrollWidth>c.clientWidth+1)){s-=.04;c.style.setProperty("--hs",s.toFixed(2))}
+  let s=.75; c.style.setProperty("--hs",s); // 25% smaller than before; shrinks further if the screen is small
+  while(s>.4&&(c.scrollHeight>c.clientHeight+1||c.scrollWidth>c.clientWidth+1)){s-=.04;c.style.setProperty("--hs",s.toFixed(2))}
 }
 addEventListener("resize",()=>requestAnimationFrame(fitHelp));
 
