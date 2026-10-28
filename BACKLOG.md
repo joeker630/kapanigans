@@ -1167,7 +1167,7 @@ Show **release notes** inside Kapanigans so everyone knows what changed: a frien
 - [ ] Grown-up-only notes are hidden from kids
 
 **🔍 Decisions needed**
-- Should the first release notes cover everything already built (Color Together, Bedtime Story, Farmstand, Inbox, avatars and so on) as a "Welcome to Kapanigans" page, or just start from the next update?
+- ~~First release notes~~ → decided: **1.0 "Welcome to Kapanigans" covers everything built so far**, plus a grown-ups-only table of approximate prompt time per chat (from message send times). Drafted in `RELEASES.md`.
 - Should Joe approve the notes before each release goes live, or should Claude publish them with the release and Joe edit afterward?
 
 ---
