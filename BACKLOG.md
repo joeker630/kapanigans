@@ -1073,7 +1073,7 @@ A quick, silly **team Capture the Flag** game. Grab the other team's flag and br
 
 ---
 
-## 19. 🆕 New game: Snake Race (competitive multiplayer snake)
+## 19. 🛠️ New game: Snake Race (competitive multiplayer snake) (built Oct 27 as a local preview, not pushed)
 
 A live **multiplayer snake** game: every player steers their own snake around one shared field, eating snacks to grow longer. **You can't hit anyone else's tail**: running into another snake's body ends your run, so you have to steer around each other and try to box others in.
 
@@ -1127,10 +1127,13 @@ A live **multiplayer snake** game: every player steers their own snake around on
 - [ ] Swipe and button controls both work on iPad, iPhone and the Fire tablet
 - [ ] Smooth movement with no visible lag between devices
 
-**🔍 Decisions needed**
-- Hitting **your own** tail: crash (classic) or pass through (easier)?
-- Field edges: wrap around, or walls that crash you?
-- Should the winner be the longest snake at the end, or whoever ate the most snacks in total?
+**✅ Decisions (Oct 27)**
+- Your own tail: pass through.
+- Field edges: walls bonk you for everyone (you turn instead of crashing).
+- Winner: the longest snake at the end.
+- Crashing **halves your snake**; the lost half becomes sparkle snacks, and you come back at half length (at least 3) after the respawn puzzle.
+
+**Built (local preview, v2 snake.io style, Oct 27)**: rebuilt after Joe found the grid version too fast and asked to copy snake.io. Free 360° steering (finger or mouse points the way, arrow keys too), a big scrolling field with a camera that follows you and zooms out as you grow, a minimap and a live leaderboard. Snakes get longer and fatter as they eat. About 450 colored pellets plus fruit; hold ⚡ Boost to go faster at the cost of size. Boost boxes: 🧲 magnet, ⚡ speed, ✖️3 triple snacks, ⭐ go through snakes. Bumps are credited to whoever you ran into. Slower speeds than v1, slowest for Little. Pellet spots come from the round's seed, so they need no syncing. Each device moves its own snake; the host runs the computer snakes. Respawn puzzles and stats are unchanged. Jeppson waits on #17.
 
 ---
 

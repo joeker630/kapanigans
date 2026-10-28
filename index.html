@@ -1020,6 +1020,36 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
 .ctfend .tbtns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 #ctf.little .ctfbanner div{font-size:28px}
 @media (max-height:520px){.ctfbanner{top:4px}.ctfbanner div,#ctf.little .ctfbanner div{font-size:15px;padding:4px 12px;border-radius:12px}.ctfbanner div.big{font-size:30px}.ctfflags{font-size:12px;padding-bottom:2px}.ctfscore{font-size:20px}}
+
+/* ---------- Snake Race ---------- */
+#snake{padding-block:8px;gap:6px}
+.sntime{font-weight:900;font-size:22px;background:var(--paper);border-radius:999px;padding:6px 14px;box-shadow:0 3px 0 var(--sky-deep);font-variant-numeric:tabular-nums}
+.sntime.low{background:#FFD6D6;color:#B91C1C}
+#snField{position:relative;flex:1;min-height:0;border-radius:18px;overflow:hidden;box-shadow:0 4px 0 var(--sky-deep);touch-action:none;user-select:none;-webkit-user-select:none;background:#3F7D2C}
+#snCv{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+#snField.bonk{animation:snbonk .25s}
+@keyframes snbonk{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.snboard{position:absolute;top:8px;right:8px;display:flex;flex-direction:column;gap:4px;pointer-events:none}
+.snlb{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.88);border-left:5px solid var(--k);border-radius:10px;padding:2px 10px 2px 4px;font-size:15px;min-width:130px}
+.snlb .rk{font-weight:900;width:14px;text-align:center;opacity:.6}.snlb b{flex:1;font-weight:800}
+.snlb img,.snlb .em{width:26px;height:26px;border-radius:50%;object-fit:cover;display:grid;place-items:center;font-size:18px;background:#fff}
+.snlb .mass{font-weight:900;font-variant-numeric:tabular-nums}.snlb.me{background:#FFF7CC}.snlb.out{opacity:.6}
+.snmini{position:absolute;left:8px;bottom:8px;width:150px;height:100px;border-radius:10px;border:2px solid rgba(255,255,255,.7);pointer-events:none}
+.snfxs{position:absolute;top:8px;left:8px;display:flex;gap:6px;pointer-events:none}
+.snfx{background:#fff;border:3px solid #FFB020;border-radius:10px;padding:2px 8px;font-size:20px;font-weight:900;animation:snpulse 1s infinite}
+@keyframes snpulse{50%{transform:scale(1.08)}}
+.sntip{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:rgba(43,33,64,.8);color:#fff;font-weight:800;padding:8px 16px;border-radius:999px;pointer-events:none;white-space:nowrap}
+#snake.little .sntip{font-size:20px}
+.snboost{position:absolute;right:14px;bottom:14px;width:84px;height:84px;border-radius:50%;background:rgba(255,255,255,.9);box-shadow:0 4px 0 var(--sky-deep);font-size:32px;display:grid;place-content:center;line-height:1;touch-action:none}
+.snboost small{font-size:12px;font-weight:900}.snboost.on{background:var(--sun);transform:scale(.94)}
+.sncrash{position:absolute;inset:0;display:grid;place-content:center;gap:12px;text-align:center;background:rgba(255,255,255,.55)}.sncrash b{font-size:36px}
+.snover{position:fixed;inset:0;z-index:40;background:rgba(43,33,64,.45);display:grid;place-items:center}
+.sncard{background:var(--paper);border-radius:24px;padding:20px;width:min(440px,92vw);max-height:90vh;overflow:auto;text-align:center}
+.snrow{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:16px;border:3px solid var(--k);margin:8px 0;background:#fff}
+.snrow.me{background:#FFF7CC}.snrow .medal{font-size:30px}
+.snrow img,.snrow .em{width:44px;height:44px;border-radius:50%;font-size:30px;display:grid;place-items:center}
+.snrow b{flex:1;text-align:left;font-size:20px}.snrow .len{font-weight:800;display:flex;flex-direction:column;align-items:flex-end}.snrow small{font-weight:600;opacity:.7}
+@media (max-width:600px){.snmini{width:110px;height:74px}.snlb{min-width:0;font-size:13px}.snlb b{display:none}}
 </style>
 
 </head>
@@ -1076,6 +1106,7 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
     <button class="game live" id="playStory"><span class="tag">Play</span><span class="icon">🌙</span><h3>Bedtime Story</h3><p>Make a silly story with your own characters and send it as a gift.</p></button>
     <button class="game live" id="playFarm"><span class="tag">Play</span><span class="icon">🥕</span><h3>Kapanigan Farmstand</h3><p>Feed the animals and pick crops on the family farm.</p></button>
     <button class="game live" id="playCtf"><span class="tag beta">Beta Version</span><span class="icon">🚩</span><h3>Capture the Flag</h3><p>Grab the other team's flag. Watch out for Jeppson's poops!</p></button>
+    <button class="game live" id="playSnake"><span class="tag beta">Beta Version</span><span class="icon">🐍</span><h3>Snake Race</h3><p>Eat snacks to grow the longest snake. Don't bump the others!</p></button>
     <button class="game live" id="playInbox"><span class="tag">Play</span><span class="icon">💌</span><h3>Inbox</h3><p>Send stickers, drawings and voice notes to the family.</p></button>
   </div>
 </section>
@@ -1164,6 +1195,20 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
     <button class="round" id="iHome" aria-label="Home">🏠</button>
   </div>
   <div class="sbody" id="iBody"></div>
+</section>
+
+<!-- ============ SNAKE RACE ============ -->
+<section class="screen" id="snake" hidden>
+  <div class="shead"><button class="round" id="snHome" aria-label="Home">🏠</button><h1>🐍 Snake Race</h1><span class="sntime" id="snTime"></span></div>
+  <div id="snField"><canvas id="snCv"></canvas>
+    <div class="snboard" id="snBoard"></div>
+    <canvas class="snmini" id="snMini" width="150" height="100"></canvas>
+    <div class="snfxs" id="snFx"></div>
+    <div class="sntip" id="snTip">👆 Hold your finger where you want to go</div>
+    <button class="snboost" id="snBoost">⚡<small>Boost</small></button>
+    <div class="sncrash" id="snCrash" hidden><b>💥 Crash!</b><button class="bigbtn" id="snCrashBtn">🧩 Get back in</button></div>
+  </div>
+  <div class="snover" id="snOver" hidden><div class="sncard"><h2 id="snWinner"></h2><div id="snPodium"></div><div class="rowbtns"><button class="bigbtn" id="snAgain">🔁 Play again</button><button class="ghost" id="snOverHome">🏠 Home</button></div></div></div>
 </section>
 
 <!-- ============ FARMSTAND ============ -->
@@ -1304,7 +1349,7 @@ function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i)
 function rng(seed){let a=seed>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 function esc(s){return String(s).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]))}
 function kidOf(k){return KIDS[k] || (k==="kapanigans"?SYS:KIDS.bear)}
-function show(id){const prevScr=screen;if(screen==="reader"&&id!=="reader")hush();if(screen==="inbox"&&id!=="inbox"&&typeof stopRec==="function")stopRec();for(const s of ["setup","pick","lobby","game","story","reader","inbox","grown","farm","dress","ctf"]) $("#"+s).hidden = s!==id; if(id!=="farm"&&id!=="ctf"&&tk) closeTask(true); screen=id; if(typeof renderVideoUI==="function") renderVideoUI(); if(id==="pick"&&typeof syncMailBadges==="function"){syncMailBadges();renderPickClaims()}
+function show(id){const prevScr=screen;if(screen==="reader"&&id!=="reader")hush();if(screen==="inbox"&&id!=="inbox"&&typeof stopRec==="function")stopRec();if(prevScr==="snake"&&id!=="snake"&&typeof snLeave==="function")snLeave(); for(const s of ["setup","pick","lobby","game","story","reader","inbox","grown","farm","dress","ctf","snake"]) $("#"+s).hidden = s!==id; if(id!=="farm"&&id!=="ctf"&&tk) closeTask(true); screen=id; if(typeof renderVideoUI==="function") renderVideoUI(); if(id==="pick"&&typeof syncMailBadges==="function"){syncMailBadges();renderPickClaims()}
   if(me&&room&&id!=="game"&&id!=="setup") setPresence(id==="farm"?{scr:id}:{scr:id,act:null});
   if(typeof tickStats==="function") tickStats();
   if(id!==prevScr) showHelp(id); else if(!$("#help").hidden&&helpLast!==id) $("#help").hidden=true}
@@ -1330,6 +1375,8 @@ const HELP={
     faq:[["Can kids get in?","Only by pressing and holding the lock."],["New phone?","Open the site, type the same family code, pick your name."]]},
   ctf:{em:"🚩",title:"Capture the Flag",steps:[["👆","Tap where you want to go. You walk there and stop."],["🧭","Arrows at the edge point to flags you can't see."],["🚩","Grab the red flag and bring it home to your blue base."],["👋","Touch the other team on YOUR side to tag them."],["🧩","Tagged? Solve a quick puzzle to get back in."],["💩","Dodge Jeppson's poops. They slow you down!"],["🐶","Tap Jeppson to send him after the other team."]],
     faq:[["Power-ups?","💨 Zoomies make you fast. 🥾 Rain boots stop poop squishes. 🦴 Treat toss sends Jeppson to the other side."],["How do we win?","Most captures when the 3-minute timer runs out."],["Who are the others?","Computer friends. Your teammate is on Blue with you."]]},
+  snake:{em:"🐍",title:"Snake Race",steps:[["👆","Hold your finger where you want your snake to go."],["🍬","Eat the snacks to grow longer and fatter."],["🚫","Don't run into other snakes. Your own body is OK."],["💥","Crash? Half your snake spills out. Solve a puzzle to get back in."],["🎁","Boxes: 🧲 magnet, ⚡ speed, ✖️3 triple snacks, ⭐ go through snakes."],["🏆","Longest snake when time runs out wins."]],
+    faq:[["Walls?","They just bonk you back."],["⚡ Boost?","Hold it to go faster. It uses up a little of your snake."],["Not enough players?","Computer snakes fill in."]]},
   farm:{em:"🥕",title:"Farmstand",steps:[["👆","Tap a crop, animal or building. Your farmer walks there."],["🧩","Solve the little puzzle to do the chore."],["🌱","Plant, water and pick crops. Feed animals for 🥚 🥛 🧶."],["🧺","Sell at the farmstand for 🪙 Moolah. Build at the red barn."],["📋","Fill family orders on the board."],["🤏","Pinch or tap ➕ ➖ to zoom. Press and hold to move buildings."]],
     faq:[["Is it our farm?","Yes, the whole family shares one farm."],["Did I lose anything?","Never. Plants and animals just droop until you help."],["How long?","About 30 minutes is a good farm visit."]]},
 };
@@ -1823,6 +1870,7 @@ function wireRoom(){
     if(screen==="lobby"){blip(880,.2,"triangle");sayClipLittle("lets_color",`Let's color ${PICS[g.pic].name}!`);enterGame(g,idx,false)}
     else if(me&&!["setup","pick"].includes(screen)) showInvite(g,idx,m.peer);
   });
+  room.on("snake",m=>snOnStart(m));
   room.on("react",m=>{
     if(!m.data||!KIDS[m.data.k]||typeof m.data.r!=="string") return;
     if(!["👋","❤️","😂","⭐"].includes(m.data.r)) return;
@@ -2430,7 +2478,7 @@ function tileFor(p,mine){
 function vidReserve(){
   const box=$("#vid"); if(!box) return; const on=!box.hidden&&!box.dataset.dragged&&innerWidth>=600&&!box.classList.contains("dock");
   const w=on?Math.round(box.getBoundingClientRect().width+28):0;
-  for(const id of ["dress","story","inbox","grown"]){const sc=$("#"+id);if(sc)sc.style.paddingRight=(on&&id===screen)?w+"px":""}
+  for(const id of ["dress","story","inbox","grown","snake"]){const sc=$("#"+id);if(sc)sc.style.paddingRight=(on&&id===screen)?w+"px":""}
   const T=$("#task"); if(T) T.style.paddingRight=(on&&!T.hidden)?w+"px":"";
   const F=$("#farmBody"); if(F){const want=(on&&screen==="farm")?`calc(100% - ${w-14}px)`:""; if(F.style.width!==want){F.style.width=want; if(screen==="farm"&&typeof farmFit==="function"&&typeof fm!=="undefined"&&fm.cv) requestAnimationFrame(farmFit)}}
 }
@@ -2441,7 +2489,7 @@ function renderVideoUI(){
   const box=$("#vid"); if(!box) return;
   // always visible: everywhere except the home screen, which shows everyone's video on the people cards
   const show=screen!=="lobby"&&!!(vid.local||vid.streams.size);
-  box.hidden=!show; if(!show){if(screen==="game")requestAnimationFrame(fitBoard);for(const id of ["dress","story","inbox","grown"]){const sc=$("#"+id);if(sc)sc.style.paddingRight=""}return}
+  box.hidden=!show; if(!show){if(screen==="game")requestAnimationFrame(fitBoard);for(const id of ["dress","story","inbox","grown","snake"]){const sc=$("#"+id);if(sc)sc.style.paddingRight=""}return}
   box.classList.toggle("min",vid.min); box.classList.toggle("ingame",screen==="game"); box.classList.toggle("many",videoPeers().filter(p=>vid.streams.has(p.peer)).length>=2);
   if(screen!=="game"&&box.classList.contains("dock")){box.classList.remove("dock");if(!box.dataset.dragged)box.style.left="";const tr=$("#tray");if(tr)tr.style.marginBottom=""}
   const tiles=$("#vTiles"); tiles.innerHTML="";
@@ -2470,7 +2518,7 @@ $("#vShow").onclick=()=>startShowIt();
     box.style.left=x+"px";box.style.top=y+"px";box.style.right="auto";box.style.bottom="auto";box.dataset.dragged="1";box.classList.remove("dock")});
   const end=()=>d=null; box.addEventListener("pointerup",end); box.addEventListener("pointercancel",end);})();
 /* ---------------- home screen: who's on, where they are, and how to join them ---------------- */
-const WHERE={dress:["👗","In the dressing room"],lobby:["🏠","At home"],story:["🌙","Making a bedtime story"],reader:["📖","Reading a story"],inbox:["💌","In the Inbox"],grown:["🔒","Grown-ups area"],pick:["👋","Choosing who they are"],game:["🎨","Coloring"],watch:["👀","Watching"],farm:["🚜","At the Farm"]};
+const WHERE={dress:["👗","In the dressing room"],lobby:["🏠","At home"],story:["🌙","Making a bedtime story"],reader:["📖","Reading a story"],inbox:["💌","In the Inbox"],grown:["🔒","Grown-ups area"],pick:["👋","Choosing who they are"],game:["🎨","Coloring"],watch:["👀","Watching"],farm:["🚜","At the Farm"],snake:["🐍","In a Snake Race"]};
 let peopleSig="";
 function whereOf(pr){
   const w=WHERE[pr.scr]||["🏠","Somewhere in Kapanigans"];
@@ -2515,6 +2563,8 @@ function renderPeople(){
       const mySeat=g.seats.findIndex((s,i)=>s.k===me&&!held.includes(i));
       if(mySeat>=0){const b=el("button","bigbtn","↩️ Jump back in");b.onclick=()=>enterGame(g,mySeat,true);act.append(b)}
       else{const b=el("button","bigbtn","👀 Watch");b.onclick=()=>{sayLittle(`Let's watch!`);enterGame(g,-1,true)};act.append(b)}
+    } else if(pr.scr==="snake"&&pr.sg){
+      const b=el("button","bigbtn","🐍 Join the race");b.onclick=()=>{sayLittle("Snake race!");joinSnake(pr.sg)};act.append(b);
     } else if(pr.scr==="farm"){
       const b=el("button","bigbtn",`🚜 Join ${esc(K.name)} at the Farm`);b.onclick=()=>{sayLittle(`Let's go to the farm!`);openFarm()};act.append(b);
     } else {
@@ -3802,9 +3852,9 @@ document.addEventListener("visibilitychange",()=>{
    families/<CODE>/reports/lastWeek              = monday of the last week a report was sent
    Kids never see any of this. Only counts and times are stored, never drawings, messages or recordings. */
 const SYS={name:"Kapanigans",face:"📊",hue:"#5E5577"};
-const GAME_NAMES={color:"Color Together",watch:"Watching",story:"Bedtime Story",inbox:"Inbox",farm:"Farmstand",lobby:"Menus"};
-const GAME_COLORS={color:"#7C4DFF",watch:"#C3A6FF",story:"#25306B",inbox:"#E5484D",farm:"#2ECC40",lobby:"#B9DCFB"};
-const COUNT_NAMES={sessions:"Times played",colorGames:"Coloring games",picturesDone:"Pictures finished",watched:"Games watched",storiesSent:"Stories made",storiesRead:"Stories read",messagesSent:"Messages sent"};
+const GAME_NAMES={snake:"Snake Race",color:"Color Together",watch:"Watching",story:"Bedtime Story",inbox:"Inbox",farm:"Farmstand",lobby:"Menus"};
+const GAME_COLORS={snake:"#65A30D",color:"#7C4DFF",watch:"#C3A6FF",story:"#25306B",inbox:"#E5484D",farm:"#2ECC40",lobby:"#B9DCFB"};
+const COUNT_NAMES={sessions:"Times played",snakeRounds:"Snake races",snakeSnacks:"Snake snacks eaten",snakeLongest:"Longest snake",snakeCrashes:"Snake crashes",colorGames:"Coloring games",picturesDone:"Pictures finished",watched:"Games watched",storiesSent:"Stories made",storiesRead:"Stories read",messagesSent:"Messages sent"};
 const DEV=(()=>{let d=load("kp.dev");if(!d){d=Math.random().toString(36).slice(2,8);store("kp.dev",d)}return d})();
 const DEV_LABEL=/iPad/.test(navigator.userAgent)||(/Macintosh/.test(navigator.userAgent)&&navigator.maxTouchPoints>1)?"iPad":/iPhone/.test(navigator.userAgent)?"iPhone":/Android/.test(navigator.userAgent)?"Android":"Computer";
 const DAY=86400000;
@@ -3816,7 +3866,7 @@ const stat={acc:{},hours:{},kid:null,last:Date.now(),lastFlush:Date.now(),hidden
 function activity(){
   if(document.visibilityState!=="visible"||!me) return null;
   if(screen==="game") return game&&game.watch?"watch":"color";
-  return {story:"story",reader:"story",inbox:"inbox",lobby:"lobby",farm:"farm"}[screen]||null;
+  return {story:"story",reader:"story",inbox:"inbox",lobby:"lobby",farm:"farm",snake:"snake"}[screen]||null;
 }
 function tickStats(){
   const now=Date.now(), dt=Math.min(now-stat.last,15000); stat.last=now;
@@ -3984,7 +4034,7 @@ function drawReport(box,who,d){
   box.append(card);
   // usage chart: last 14 days stacked by game
   const chart=el("div","rcard");chart.append(el("h4",null,"Time played, last 14 days"));
-  const games=["color","watch","story","inbox","farm","lobby"]; const cols=[];let max=0;
+  const games=["color","watch","story","inbox","farm","snake","lobby"]; const cols=[];let max=0;
   for(let i=13;i>=0;i--){const t=today-i*DAY,dd=(d.days||{})[dayKey(t)]||{},ms=dd.ms||{};let tot=0;for(const g of games)tot+=+ms[g]||0;max=Math.max(max,tot);cols.push({t,ms,tot})}
   const Wd=560,Hd=170,pad=28,bw=(Wd-pad)/14*0.7,step=(Wd-pad)/14, topMin=Math.max(10,Math.ceil(max/60000/10)*10);
   let svg=`<svg viewBox="0 0 ${Wd} ${Hd+26}" class="chart" role="img" aria-label="Minutes played per day">`;
@@ -4028,7 +4078,7 @@ function drawReport(box,who,d){
   box.append(el("p","note","Kids never see any of this. Only times and counts are stored, never drawings, messages or recordings. Detailed records older than 90 days are rolled into weekly summaries."));
 }
 function exportCsv(who,d){
-  const games=["color","watch","story","inbox","farm","lobby"], cnt=Object.keys(COUNT_NAMES);
+  const games=["color","watch","story","inbox","farm","snake","lobby"], cnt=Object.keys(COUNT_NAMES);
   const rows=[["date","person",...games.map(g=>g+"_minutes"),...cnt].join(",")];
   for(const k of Object.keys(d.days||{}).sort()){const x=d.days[k]||{};rows.push([k,who,...games.map(g=>((+((x.ms||{})[g])||0)/60000).toFixed(1)),...cnt.map(c=>(x.counts||{})[c]||0)].join(","))}
   rows.push("","week_of,person,"+games.map(g=>g+"_minutes").join(",")+","+cnt.join(","));
@@ -5553,6 +5603,7 @@ function taskApi(A){
       if(reveal) try{reveal()}catch(e){}
       blip(160,.35,"sawtooth",.1);
       if(my.cd) cdStart(my.cd); my.cdDone=true;
+      if(my.onLose){A.append(el("div","tdone lost peek",`<div class="lostcard"><h2>😵 You lost</h2><p>${esc(reason)}</p><p>Here comes another one…</p></div>`));setTimeout(()=>{if(tk===my){closeTask(false);my.onLose()}},2200);return}
       const d=el("div","tdone lost peek",`<div class="lostcard"><h2>😵 You lost</h2><p>${esc(reason)}</p>${my.cd?`<p class="cdnote">⏳ This chore rests for ${Math.round(LOSE_COOLDOWN_MS/60000)} minutes before you can try again.</p>`:""}<div class="tbtns"></div></div>`);
       const back=el("button","bigbtn",my.chore==="ctf"?(typeof C!=="undefined"&&C&&C.me.losses>=1?"Back in the game":"New puzzle"):"Back to the farm");
       back.onclick=()=>{if(tk===my)closeTask(true)};
@@ -5586,12 +5637,12 @@ function finishTask(){
     extra=`<div class="tstars">${"⭐".repeat(st)}<span class="dim">${"⭐".repeat(3-st)}</span></div>`+
       `<div class="tstreak">${[0,1,2,3,4].map(i=>`<i class="${i<sk.n?"on":""}">🔥</i>`).join("")}</div>`+
       (sk.full?`<p class="tbonus">5 in a row!${typeof farmStreakBonus==="function"&&screen==="farm"?" +2 🪙":""}</p>`:`<p class="tsmall">${sk.n} in a row</p>`);
-    if(sk.full){setTimeout(()=>{if(tk===my)say("Five in a row! Super farmer!")},1100);if(typeof farmStreakBonus==="function")farmStreakBonus()}
+    if(sk.full){setTimeout(()=>{if(tk===my)say("Five in a row! Super farmer!")},1100);if(typeof farmStreakBonus==="function"&&screen==="farm")farmStreakBonus()}
   }
   const bonus=screen==="farm"&&typeof farmPuzzleBonus==="function"?puzzleBonus(my):0;
   if(bonus){farmPuzzleBonus(bonus);extra+=`<p class="tbonus">Big puzzle bonus +${bonus} 🪙</p>`}
   $("#tArea").append(el("div","tdone",`<span class="em">🎉</span><h2>${esc(msg)}</h2>${extra}${my.reward?`<p>${esc(my.reward)}</p>`:""}`));
-  setTimeout(()=>{if(tk!==my)return;closeTask(false);my.onWin&&my.onWin()},my.lvl!=="little"?2400:1700);
+  setTimeout(()=>{if(tk!==my)return;closeTask(false);my.onWin&&my.onWin()},my.fast?1100:my.lvl!=="little"?2400:1700);
 }
 // iPhone/iPad Safari only frees canvas memory reliably when a canvas is shrunk to 0 before it's thrown away
 function freeCanvases(root){if(root)for(const c of root.querySelectorAll("canvas")){try{c.width=0;c.height=0}catch(e){}}}
@@ -6571,6 +6622,461 @@ function openFarm(){if(!me){goLobby();return}if(!fm.cv)farmInit();farmConnect();
 $("#fHome").onclick=()=>{closeSheet();hush();goLobby()};
 $("#fBack").onclick=()=>{closeSheet();hush();goLobby()};
 $("#playFarm").onclick=()=>{sayLittle("Kapanigan Farmstand");openFarm()};
+
+/* ================= SNAKE RACE (backlog #19, snake.io style) =================
+   Steer anywhere (no grid) around a big scrolling field full of pellets; snakes get longer and fatter as they eat.
+   Run into another snake's body and you crash; two heads bumping crash both. Your own body is safe to cross.
+   Crashing halves your snake (the lost half spills out as big pellets) and you solve a quick age-appropriate puzzle to
+   come back at half size. Walls bonk you back in. The longest snake when the timer runs out wins.
+   Each device moves its own snake (no steering lag); the first player still here (the "host") runs the computer snakes.
+   Pellets need no syncing: every pellet's spot comes from the round's seed plus how many times it has been eaten, so
+   every device works out the same field; eating one is shared by listing it in your snake's update.
+   families/<CODE>/snake/<e>/meta   {at,end,seed,seats:[{k,p}|{bot:name,lvl}]}  (end is in server time)
+   families/<CODE>/snake/<e>/s/<i>  {x,y,g,m,p:[x,y,...],a,safe,kl,sc,cr,by,ko,fx,e:["id.gen",...],n}  one snake per seat */
+const SW={w:2400,h:1600}, SN_ROUND=150000, SN_SAFE=3000, SN_SPACE=5, SN_PUB=100, SN_START=10;
+const SN_ORBS=420, SN_FRUITS=30, SN_CUBES=5;
+const SN_SPEED={little:70,big:95,grown:110}, SN_BOTSPEED={little:58,big:82,grown:98}, SN_TURN={little:2.8,big:3.4,grown:3.8};
+const SN_FOOD=[["🍎","apple"],["🥕","carrot"],["🫐","blueberries"],["🍓","strawberry"],["🌽","corn"],["🍐","pear"]];
+const SN_CUBE={mag:{em:"🧲",name:"magnet",ms:10000},spd:{em:"⚡",name:"speed",ms:8000},x3:{em:"✖️3",name:"triple snacks",ms:10000},star:{em:"⭐",name:"star",ms:6000}};
+const SN_ORBCOL=["#FF5A5F","#FFB020","#FFE14D","#4ADE80","#38BDF8","#A78BFA","#F472B6","#FFFFFF"];
+const SN_BOTS=[{name:"Wiggles",face:"🐛",hue:"#65A30D"},{name:"Noodle",face:"🐍",hue:"#0EA5E9"},{name:"Zippy",face:"🦎",hue:"#F97316"}];
+const SN_KID_PUZZLES=["count","letters","color","pattern","money","shadow","size","numorder"]; // the quick ones (about 10-20 s)
+const SN_GROWN_PUZZLES=["blackjack","mines"];
+const snHalf=m=>Math.max(SN_START,Math.ceil((m||SN_START)/2)); // size you keep after a crash
+const snRad=m=>Math.min(30,8+Math.sqrt(m||SN_START)*1.15);   // fatter as you grow
+const snLen=m=>50+(m||SN_START)*5;                             // body length in field units
+const SNK={e:null,seat:-1,meta:null,s:{},refs:[],raf:0,gen:{},drops:{},gone:new Set(),over:false,host:false,absent:{},enteredAt:0,
+  botDead:{},pc:[],off:0,mine:null,best:0,snacks:0,crashes:0,cv:null,cx:null,mm:null,img:{},boost:false,steer:null,keys:{},pubAt:0,cam:null,bonkAt:0};
+function snRef(p){return mail.ref?mail.ref.child("snake/"+SNK.e+(p?"/"+p:"")):null}
+function snNow(){return Date.now()+SNK.off}
+function snLvl(k){const K=KIDS[k];return !K?"big":K.grown?"grown":K.level}
+function snMyLvl(){return snLvl(me)}
+function snSeatInfo(i){const st=SNK.meta&&SNK.meta.seats&&SNK.meta.seats[i];if(!st)return null;
+  if(st.bot){const B=SN_BOTS.find(b=>b.name===st.bot)||SN_BOTS[0];return {bot:true,name:B.name,face:B.face,hue:B.hue,lvl:st.lvl||"big"}}
+  const K=kidOf(st.k);return {bot:false,k:st.k,p:st.p,name:K.name,face:K.face,hue:K.hue,head:K.avatarHead||null,lvl:snLvl(st.k)}}
+function snBotLevel(seats){const l=seats.filter(s=>s&&!s.bot).map(s=>snLvl(s.k));return l.includes("little")?"little":l.length&&l.every(x=>x==="grown")?"grown":"big"}
+const snDist2=(ax,ay,bx,by)=>(ax-bx)*(ax-bx)+(ay-by)*(ay-by);
+const snAngTo=(ax,ay,bx,by)=>Math.atan2(by-ay,bx-ax);
+function snWrapA(a){while(a>Math.PI)a-=2*Math.PI;while(a<-Math.PI)a+=2*Math.PI;return a}
+
+/* ---- the pellet field: same on every device ---- */
+function snPellet(i){
+  const g=SNK.gen[i]||0, hit=SNK.pc[i]; if(hit&&hit.g===g) return hit; return SNK.pc[i]=snMakePellet(i,g);
+}
+function snMakePellet(i,g){
+  const r=rng(hash(SNK.meta.seed+":"+i+":"+g)), m=60;
+  const x=m+r()*(SW.w-2*m), y=m+r()*(SW.h-2*m);
+  if(i<SN_ORBS) return {id:i,g,x,y,t:"o",v:1,c:SN_ORBCOL[(r()*SN_ORBCOL.length)|0],r:3.5+r()*2.5};
+  if(i<SN_ORBS+SN_FRUITS) return {id:i,g,x,y,t:"f",v:3,k:(r()*SN_FOOD.length)|0};
+  return {id:i,g,x,y,t:"c",v:0,k:Object.keys(SN_CUBE)[(r()*4)|0]};
+}
+function snEatId(id){ // "12.3" = pellet 12, generation 3; "d..." = a spilled pellet
+  if(id[0]==="d"){SNK.gone.add(id);return}
+  const [i,g]=id.split(".").map(Number); if(!(i>=0)) return; if((SNK.gen[i]||0)<=g) SNK.gen[i]=g+1;
+}
+function snSpill(seat,cr,pts,from){ // a crashed snake's lost half becomes big pellets (same ids on every device)
+  const out=[];
+  for(let k=from;k<pts.length;k+=3){const id=`d${seat}_${cr}_${k}`;if(SNK.gone.has(id))continue;SNK.drops[id]={id,x:pts[k][0],y:pts[k][1],t:"d",v:2,c:snSeatInfo(seat)?snSeatInfo(seat).hue:"#fff"}}
+  return out;
+}
+
+/* ---- starting, joining, leaving ---- */
+const SN_SPOTS=[[.18,.22,0],[.82,.78,Math.PI],[.82,.22,Math.PI/2],[.18,.78,-Math.PI/2]];
+function snFresh(i,m,at){const [fx,fy,a]=SN_SPOTS[i%4],x=fx*SW.w,y=fy*SW.h;
+  return {x,y,g:a,m,p:snLine(x,y,a,m),a:1,safe:at+3000+SN_SAFE,sc:0,cr:0,ko:0,n:0}}
+function snLine(x,y,a,m){const p=[],n=Math.ceil(snLen(m)/(SN_SPACE*2));for(let k=0;k<n;k++)p.push(Math.round(x-Math.cos(a)*k*SN_SPACE*2),Math.round(y-Math.sin(a)*k*SN_SPACE*2));return p}
+function startSnake(seatsIn){
+  if(!mail.ref){toast("Not connected yet. Try again in a moment.");return}
+  const humans=(seatsIn||lobbyPlayers().slice(0,4).map(p=>({k:p.presence.kid,p:p.peer}))).filter(h=>h.k!==me&&h.p!==myPeer);
+  humans.unshift({k:me,p:myPeer}); // we're seat 0 and host
+  const seats=humans.slice(0,4), bl=snBotLevel(seats); let b=0;
+  while(seats.length<4) seats.push({bot:SN_BOTS[b++].name,lvl:bl});
+  const e=Date.now().toString(36)+uid, at=snNow(), up={};
+  up[`snake/${e}/meta`]={at,end:at+SN_ROUND+3000,seed:Math.random().toString(36).slice(2,10),seats};
+  seats.forEach((s,i)=>{up[`snake/${e}/s/${i}`]=snFresh(i,SN_START,at)});
+  mail.ref.update(up).catch(()=>{});
+  mail.ref.child("snake").once("value").then(s=>{const v=s.val()||{},old=snNow()-30*60e3,del={};for(const k in v){const m=v[k]&&v[k].meta;if(!m||!(m.at>old))del[k]=null}if(Object.keys(del).length)mail.ref.child("snake").update(del).catch(()=>{})}).catch(()=>{});
+  send("snake",{e,seats:seats.map(s=>s.bot?{bot:1}:{k:s.k,p:s.p})});
+  enterSnake(e,0);
+}
+function enterSnake(e,seat){
+  snLeave(true); hush();
+  Object.assign(SNK,{e,seat,meta:null,s:{},gen:{},pc:[],drops:{},gone:new Set(),over:false,host:false,absent:{},enteredAt:Date.now(),botDead:{},
+    mine:null,best:0,snacks:0,crashes:0,started:false,boost:false,steer:null,keys:{},pubAt:0,cam:null,hudSig:""});
+  if(seat>=0) bump("snakeRounds");
+  show("snake"); snSetup(); setPresence({scr:"snake",sg:e,act:null});
+  const r=snRef(); if(!r) return;
+  mail.db.ref(".info/serverTimeOffset").once("value").then(s=>{SNK.off=s.val()||0}).catch(()=>{});
+  const on=(ref,ev,fn)=>{ref.on(ev,fn,()=>{});SNK.refs.push(()=>ref.off(ev,fn))};
+  on(r.child("meta"),"value",s=>{if(SNK.e!==e)return;const m=s.val();if(!m||!Array.isArray(m.seats))return;SNK.meta=m;snHud(true)});
+  const sUpd=s=>{if(SNK.e!==e)return;const i=+s.key,v=s.val();if(!v)return;
+    if(Array.isArray(v.e)) for(const id of v.e) snEatId(String(id));
+    const O=SNK.s[i]; if(i===SNK.seat&&O&&O.own&&(v.n||0)<=O.n) return; // our own snake: we're ahead of the server
+    const I=snSeatInfo(i); if(SNK.host&&I&&I.bot&&SNK.s[i]&&SNK.s[i].own) return;
+    snTake(i,v)};
+  on(r.child("s"),"child_added",sUpd); on(r.child("s"),"child_changed",sUpd);
+  SNK.last=performance.now(); if(!SNK.raf) SNK.raf=requestAnimationFrame(snFrame);
+  sayLittle("Snake race! Hold your finger where you want to go. Eat the snacks to grow!");
+}
+function snPts(flat){const p=[];if(Array.isArray(flat))for(let k=0;k+1<flat.length;k+=2)p.push([flat[k],flat[k+1]]);return p}
+function snTake(i,v){ // an update for someone else's snake
+  const old=SNK.s[i], pts=snPts(v.p), now=performance.now();
+  if(old&&old.a&&!v.a) snOnCrash(i,v,pts);
+  SNK.s[i]=Object.assign({},v,{pts,prev:old&&old.a&&v.a?old.pts:pts,at:now,iv:old&&old.at?clamp(now-old.at,60,400):SN_PUB});
+}
+function snLeave(silent){
+  for(const f of SNK.refs.splice(0)) try{f()}catch(e){}
+  if(SNK.e&&SNK.seat>=0&&mail.ref&&!SNK.over){const M=SNK.s[SNK.seat];snRef("s/"+SNK.seat).update({a:0,gone:1,n:(M&&M.n||0)+1}).catch(()=>{})}
+  if(tk&&tk.chore==="snake") closeTask(false);
+  SNK.e=null; SNK.seat=-1; SNK.mine=null; SNK.host=false;
+  if(SNK.raf){cancelAnimationFrame(SNK.raf);SNK.raf=0}
+  const o=$("#snOver"); if(o) o.hidden=true;
+}
+function snGoHome(){snLeave();goLobby()}
+function snOnStart(m){ // someone started a race with us
+  if(m.sameTab||!m.data||typeof m.data.e!=="string"||!Array.isArray(m.data.seats)) return;
+  const idx=m.data.seats.findIndex(s=>s&&s.p===myPeer); if(idx<0||!me) return;
+  if(screen==="lobby"||(screen==="snake"&&(SNK.over||!SNK.e))){blip(880,.2,"triangle");enterSnake(m.data.e,idx);return}
+  if(["setup","pick"].includes(screen)) return;
+  const starter=peers().find(p=>p.peer===m.peer), who=starter&&starter.presence?kidOf(starter.presence.kid).name:"Someone";
+  $("#inviteMsg").textContent=`🐍 ${who} wants a Snake Race with you!`;
+  $("#invite").hidden=false; blip(660,.15,"triangle",.12); setTimeout(()=>blip(880,.2,"triangle",.12),150);
+  sayClip("invite_snake",`${who} wants a snake race with you!`);
+  $("#inviteJoin").onclick=()=>{$("#invite").hidden=true;if(game&&game.refs)game.refs.forEach(r=>r.off());game=null;enterSnake(m.data.e,idx)};
+  $("#inviteNo").onclick=()=>{$("#invite").hidden=true};
+  clearTimeout(inviteT); inviteT=setTimeout(()=>{$("#invite").hidden=true},60000);
+}
+function joinSnake(e){ // from someone's card on Home: take back our own seat, or a computer snake's
+  if(!mail.ref) return;
+  const held=new Set(peers().filter(q=>q.presence&&q.presence.scr==="snake"&&q.presence.sg===e).map(q=>q.peer)); let got=-1;
+  mail.ref.child(`snake/${e}/meta`).transaction(m=>{
+    if(!m||!Array.isArray(m.seats)) return m; got=-1;
+    let i=m.seats.findIndex(s=>s&&!s.bot&&s.k===me&&!held.has(s.p));
+    if(i<0) i=m.seats.findIndex(s=>!s||s.bot||!held.has(s.p));
+    if(i<0) return; m.seats[i]={k:me,p:myPeer}; got=i; return m;
+  }).then(r=>{
+    if(!r.committed||got<0){toast("The race is full (4 snakes).");return}
+    const m=r.snapshot.val(); if(!m||m.end<snNow()){toast("That race just ended.");return}
+    const x=rint(200,SW.w-200),y=rint(200,SW.h-200),a=snAngTo(x,y,SW.w/2,SW.h/2);
+    mail.ref.child(`snake/${e}/s/${got}`).set({x,y,g:a,m:SN_START,p:snLine(x,y,a,SN_START),a:1,safe:snNow()+SN_SAFE,sc:0,cr:0,ko:0,n:Date.now()}).catch(()=>{});
+    enterSnake(e,got);
+  }).catch(()=>toast("Couldn't join. Try again."));
+}
+
+/* ---- our own snake (and, on the host, the computer snakes): free movement ---- */
+function snOwn(i){ // the copy of seat i we move ourselves, built from the last update
+  const S=SNK.s[i]; if(!S) return null; if(S.own) return S;
+  const pts=S.pts&&S.pts.length?S.pts:[[S.x,S.y]], trail=[];
+  for(let k=0;k<pts.length;k++){trail.push(pts[k]);if(k+1<pts.length)trail.push([(pts[k][0]+pts[k+1][0])/2,(pts[k][1]+pts[k+1][1])/2])}
+  const O=Object.assign({},S,{own:true,trail,tgt:S.g||0,acc:0,bonks:snLvl((snSeatInfo(i)||{}).k)==="little"?3:0,fx:S.fx||{},e:[],n:i===SNK.seat?Math.max(S.n||0,Date.now()):(S.n||0)});
+  SNK.s[i]=O; return O;
+}
+function snPub(i,S,force){
+  const now=performance.now(); if(!force&&now-(S.pubAt||0)<SN_PUB) return; S.pubAt=now;
+  if(!SNK.e||!mail.ref) return; S.n=(S.n||0)+1;
+  const p=[];for(let k=0;k<S.trail.length;k+=2)p.push(Math.round(S.trail[k][0]),Math.round(S.trail[k][1]));
+  snRef("s/"+i).set({x:Math.round(S.x),y:Math.round(S.y),g:+S.g.toFixed(2),m:S.m,p,a:S.a?1:0,safe:S.safe||0,kl:S.kl||null,sc:S.sc||0,cr:S.cr||0,by:S.by==null?null:S.by,ko:S.ko||0,
+    fx:S.fx&&Object.keys(S.fx).length?S.fx:null,e:(S.e||[]).slice(-40),n:S.n,gone:null}).catch(()=>{});
+  S.pts=snPts(p);
+}
+function snOthers(i){ // bodies that can crash seat i
+  const out=[], now=snNow();
+  for(let k=0;k<4;k++){if(k===i)continue;const S=SNK.s[k];if(!S||!S.a||(S.safe||0)>now)continue;
+    const pts=S.own?S.trail.filter((_,j)=>j%2===0):S.pts; if(pts&&pts.length) out.push({k,pts,r:snRad(S.m),star:S.fx&&S.fx.star>now})}
+  return out;
+}
+function snMove(i,S,dt,o){ // returns {crash, by, bonk, ate}
+  const now=snNow(), L=o.lvl, res={};
+  const fast=S.fx&&S.fx.spd>now, boosting=o.boost&&S.m>SN_START;
+  let sp=(o.bot?SN_BOTSPEED:SN_SPEED)[L]||90; if(fast) sp*=1.45; if(boosting) sp*=1.7;
+  const turn=(SN_TURN[L]||3.4)*(boosting?.8:1)*dt, d=snWrapA(S.tgt-S.g);
+  S.g=snWrapA(S.g+clamp(d,-turn,turn));
+  S.x+=Math.cos(S.g)*sp*dt; S.y+=Math.sin(S.g)*sp*dt;
+  const r=snRad(S.m);
+  // walls: bonk back in
+  let bonk=false;
+  if(S.x<r){S.x=r;S.g=Math.PI-S.g;bonk=true} else if(S.x>SW.w-r){S.x=SW.w-r;S.g=Math.PI-S.g;bonk=true}
+  if(S.y<r){S.y=r;S.g=-S.g;bonk=true} else if(S.y>SW.h-r){S.y=SW.h-r;S.g=-S.g;bonk=true}
+  if(bonk){S.g=snWrapA(S.g);S.tgt=S.g;res.wall=true}
+  // trail
+  let h=S.trail[0]; if(!h){S.trail=[[S.x,S.y]];h=S.trail[0]}
+  while(Math.sqrt(snDist2(S.x,S.y,h[0],h[1]))>=SN_SPACE){const a=snAngTo(h[0],h[1],S.x,S.y);h=[h[0]+Math.cos(a)*SN_SPACE,h[1]+Math.sin(a)*SN_SPACE];S.trail.unshift(h)}
+  const keep=Math.ceil(snLen(S.m)/SN_SPACE); if(S.trail.length>keep) S.trail.length=keep;
+  // boosting costs size
+  if(boosting){S.bAcc=(S.bAcc||0)+dt;if(S.bAcc>.45){S.bAcc=0;S.m--}}
+  // bumping into others
+  if(!((S.safe||0)>now)&&!(S.fx&&S.fx.star>now)){
+    for(const B of snOthers(i)){const hit=r*.55+B.r;
+      for(let j=0;j<B.pts.length;j++){const q=B.pts[j];if(snDist2(S.x,S.y,q[0],q[1])<hit*hit){
+        if(S.bonks>0){S.bonks--;S.g=snWrapA(snAngTo(q[0],q[1],S.x,S.y));S.tgt=S.g;S.x+=Math.cos(S.g)*hit*.6;S.y+=Math.sin(S.g)*hit*.6;res.bonk=true;break}
+        res.crash=true;res.by=B.k;return res}}
+      if(res.bonk) break}
+  }
+  // eating
+  const reach=r+(S.fx&&S.fx.mag>now?110:10), mult=S.fx&&S.fx.x3>now?3:1;
+  const eat=(p,id)=>{S.e=(S.e||[]).concat(id).slice(-40);
+    if(p.t==="c"){S.fx=Object.assign({},S.fx||{},{[p.k]:now+SN_CUBE[p.k].ms});res.cube=p.k}
+    else{S.m+=p.v*mult;S.sc=(S.sc||0)+1;res.ate=p}};
+  if(SNK.meta){
+    const r2=reach*reach;
+    const rc=(r+18)*(r+18);
+    for(let id=0;id<SN_ORBS+SN_FRUITS+SN_CUBES;id++){const p=snPellet(id),dd=snDist2(S.x,S.y,p.x,p.y);if(dd<(p.t==="c"?rc:r2)){const key=id+"."+p.g;snEatId(key);eat(p,key)}}
+    for(const id in SNK.drops){const p=SNK.drops[id];if(SNK.gone.has(id)){delete SNK.drops[id];continue}if(snDist2(S.x,S.y,p.x,p.y)<r2){SNK.gone.add(id);delete SNK.drops[id];eat(p,id)}}
+  }
+  if(S.fx)for(const k in S.fx)if(S.fx[k]<now)delete S.fx[k];
+  return res;
+}
+function snTickMine(dt){
+  const S=snOwn(SNK.seat); if(!S||!S.a) return;
+  // steering: finger/mouse points where to go; keys turn
+  const L=snMyLvl();
+  if(SNK.steer&&SNK.cam){const hx=(S.x-SNK.cam.x)*SNK.cam.z+SNK.cam.w/2,hy=(S.y-SNK.cam.y)*SNK.cam.z+SNK.cam.h/2;
+    if(Math.hypot(SNK.steer.x-hx,SNK.steer.y-hy)>8) S.tgt=Math.atan2(SNK.steer.y-hy,SNK.steer.x-hx)}
+  const K=SNK.keys, kx=(K.r?1:0)-(K.l?1:0), ky=(K.d?1:0)-(K.u?1:0); if(kx||ky) S.tgt=Math.atan2(ky,kx);
+  const res=snMove(SNK.seat,S,dt,{lvl:L,boost:SNK.boost&&L!=="little"});
+  if(res.crash){snCrashMine(res.by);return}
+  const t=performance.now();
+  if((res.wall||res.bonk)&&t-SNK.bonkAt>400){SNK.bonkAt=t;blip(220,.15,"triangle",.14);snBonkFx();if(res.bonk)sayLittle(S.bonks?"Bonk! Careful!":"Bonk! Next time it's a crash!")}
+  if(res.ate){SNK.snacks++;if(SNK.snacks%10===0)bump("snakeSnacks",10);
+    if(res.ate.t==="f"){blip(880,.1,"sine",.12);sayLittle(SN_FOOD[res.ate.k][1])} else if(t-(SNK.chompAt||0)>90){SNK.chompAt=t;blip(600+Math.min(20,S.m/10)*20,.05,"sine",.07)}}
+  if(res.cube){const C=SN_CUBE[res.cube];blip(1200,.25,"triangle",.14);toast(`${C.em} ${C.name[0].toUpperCase()+C.name.slice(1)}!`);sayLittle(C.name+"!")}
+  SNK.best=Math.max(SNK.best,S.m);
+  snPub(SNK.seat,S);
+}
+function snBonkFx(){const F=$("#snField");F.classList.remove("bonk");void F.offsetWidth;F.classList.add("bonk")}
+function snCrashMine(by){
+  const S=snOwn(SNK.seat); if(!S) return; S.kl=snHalf(S.m); S.a=0; S.cr=(S.cr||0)+1; S.by=by; SNK.crashes++; bump("snakeCrashes");
+  SNK.boost=false; $("#snBoost").classList.remove("on");
+  snPub(SNK.seat,S,true); snOnCrash(SNK.seat,S,S.pts);
+  blip(140,.4,"sawtooth",.12); snBonkFx();
+  const who=by!=null&&snSeatInfo(by)?snSeatInfo(by).name:null;
+  say(snMyLvl()==="little"?"Crash! Your snake got smaller. Solve a puzzle to get back in!":`Crash${who?` into ${who}`:""}! Half your snake is gone.`);
+  setTimeout(()=>{if(SNK.e&&!SNK.over&&SNK.s[SNK.seat]&&!SNK.s[SNK.seat].a)snRespawnPuzzle()},1100);
+}
+function snOnCrash(i,v,pts){ // everyone: spill the lost half; note who got the bump
+  const keepPts=Math.ceil(snLen(v.kl||snHalf(v.m))/(SN_SPACE*2)); snSpill(i,v.cr||0,pts||[],keepPts);
+  if(v.by!=null&&SNK.s[v.by]){const B=SNK.s[v.by];if(B.own){B.ko=(B.ko||0)+1}
+    const I=snSeatInfo(i),J=snSeatInfo(v.by); if(I&&J&&i!==SNK.seat) toast(v.by===SNK.seat?`💥 ${I.name} bumped into you!`:`💥 ${I.name} bumped into ${J.name}`)}
+}
+function snRespawnPuzzle(){
+  if(tk||!SNK.e||SNK.over) return; $("#snCrash").hidden=true;
+  const L=snMyLvl(), grown=L==="grown";
+  openTask({type:pickType(grown?SN_GROWN_PUZZLES:SN_KID_PUZZLES),lvl:L,chore:"snake",title:"🐍 Solve it to get back in!",
+    ctx:{item:pickOne([{em:"🍎",one:"apple",many:"apples"},{em:"🥕",one:"carrot",many:"carrots"},{em:"🍓",one:"strawberry",many:"strawberries"}])},
+    fast:true,onWin:snRespawn,onLose:()=>{if(SNK.e&&!SNK.over)setTimeout(snRespawnPuzzle,200)},onQuit:()=>{if(SNK.e&&!SNK.over)$("#snCrash").hidden=false}});
+}
+function snSpawnSpot(i){ // an open spot away from everyone
+  let best=null,bs=-1;
+  for(let t=0;t<60;t++){const x=rint(150,SW.w-150),y=rint(150,SW.h-150);let near=1e9;
+    for(let k=0;k<4;k++){if(k===i)continue;const S=SNK.s[k];if(!S||!S.a)continue;const pts=S.own?S.trail:S.pts||[];for(let j=0;j<pts.length;j+=3)near=Math.min(near,snDist2(x,y,pts[j][0],pts[j][1]))}
+    if(near>bs){bs=near;best={x,y};if(near>400*400)break}}
+  return best||{x:SW.w/2,y:SW.h/2};
+}
+function snRebirth(i,S){
+  const sp=snSpawnSpot(i), a=snAngTo(sp.x,sp.y,SW.w/2,SW.h/2), m=S.kl||SN_START, now=snNow();
+  Object.assign(S,{x:sp.x,y:sp.y,g:a,tgt:a,m,a:1,safe:now+SN_SAFE,by:null,fx:{},bAcc:0});
+  S.trail=snPts(snLine(sp.x,sp.y,a,m)).flatMap((p,k,arr)=>k+1<arr.length?[p,[(p[0]+arr[k+1][0])/2,(p[1]+arr[k+1][1])/2]]:[p]);
+  S.bonks=snLvl((snSeatInfo(i)||{}).k)==="little"?3:0;
+}
+function snRespawn(){
+  if(!SNK.e||SNK.over) return; const S=snOwn(SNK.seat); if(!S) return;
+  snRebirth(SNK.seat,S); SNK.steer=null;
+  blip(880,.2,"triangle",.12); sayLittle("You're back! Go go go!"); snPub(SNK.seat,S,true);
+}
+
+/* ---- host: computer snakes ---- */
+function snWhoHosts(){
+  if(!SNK.meta) return -1; const here=new Set(peers().filter(q=>q.presence&&q.presence.scr==="snake"&&q.presence.sg===SNK.e).map(q=>q.peer)), now=Date.now();
+  for(let i=0;i<4;i++){const st=SNK.meta.seats[i];if(!st||st.bot)continue;
+    if(i===SNK.seat) return i;
+    if(here.has(st.p)){SNK.absent[i]=0;return i}
+    if(!SNK.absent[i]) SNK.absent[i]=now;
+    if(now-SNK.absent[i]<3000||now-SNK.enteredAt<3000) return i; // give them a moment to show up
+  }
+  return -1;
+}
+function snBotSteer(i,S,L){
+  const now=snNow(); S.think=(S.think||0)-1; if(S.think>0) return; S.think=6;
+  // food: nearest pellet ahead-ish
+  let best=null,bd=1e12;
+  for(let id=0;id<SN_ORBS+SN_FRUITS+SN_CUBES;id++){const p=snPellet(id),d=snDist2(S.x,S.y,p.x,p.y)/(p.v||2);if(d<bd){bd=d;best=p}}
+  for(const id in SNK.drops){const p=SNK.drops[id],d=snDist2(S.x,S.y,p.x,p.y)/4;if(d<bd){bd=d;best=p}}
+  let want=best?snAngTo(S.x,S.y,best.x,best.y):S.g;
+  // look ahead for bodies and walls
+  const others=snOthers(i), r=snRad(S.m), look={little:55,big:85,grown:110}[L]||85;
+  const danger=a=>{const ax=S.x+Math.cos(a)*look,ay=S.y+Math.sin(a)*look;let d=0;
+    if(ax<r*2||ay<r*2||ax>SW.w-r*2||ay>SW.h-r*2)d+=1;
+    for(const B of others)for(let j=0;j<B.pts.length;j+=2){const q=B.pts[j],h=B.r+r+12;if(snDist2(ax,ay,q[0],q[1])<h*h||snDist2((S.x+ax)/2,(S.y+ay)/2,q[0],q[1])<h*h){d+=3;break}}return d};
+  const mistake={little:.25,big:.12,grown:.05}[L]||.12;
+  if(danger(want)&&Math.random()>mistake){
+    const opts=[-1.2,-.7,-.35,.35,.7,1.2,Math.PI].map(o=>snWrapA(S.g+o)).sort((a,b)=>Math.abs(snWrapA(a-want))-Math.abs(snWrapA(b-want)));
+    want=opts.find(a=>!danger(a))??want;
+  }
+  S.tgt=want;
+}
+function snHostTick(dt){
+  for(let i=0;i<4;i++){const I=snSeatInfo(i);if(!I||!I.bot||!SNK.s[i])continue;
+    const S=snOwn(i);
+    if(!S.a){if(!SNK.botDead[i])SNK.botDead[i]=Date.now();if(Date.now()-SNK.botDead[i]>5000){SNK.botDead[i]=0;snRebirth(i,S);snPub(i,S,true)}continue}
+    snBotSteer(i,S,I.lvl);
+    const res=snMove(i,S,dt,{lvl:I.lvl,bot:true});
+    if(res.crash){S.kl=snHalf(S.m);S.a=0;S.cr=(S.cr||0)+1;S.by=res.by;snPub(i,S,true);snOnCrash(i,S,S.pts);continue}
+    snPub(i,S);
+  }
+}
+
+/* ---- the field ---- */
+function snSetup(){
+  if(!SNK.cv){SNK.cv=$("#snCv");SNK.cx=SNK.cv.getContext("2d");SNK.mm=$("#snMini").getContext("2d");snWireControls();new ResizeObserver(snFit).observe($("#snField"))}
+  const L=snMyLvl(); $("#snake").classList.toggle("little",L==="little"); $("#snBoost").hidden=L==="little";
+  $("#snOver").hidden=true; $("#snCrash").hidden=true; $("#snTip").hidden=false; snFit(); snHud(true);
+}
+function snFit(){
+  const F=$("#snField"), r=F.getBoundingClientRect(); if(!r.width||!r.height) return;
+  const dpr=Math.min(2,devicePixelRatio||1); SNK.dpr=dpr; SNK.vw=r.width; SNK.vh=r.height;
+  SNK.cv.width=Math.round(r.width*dpr); SNK.cv.height=Math.round(r.height*dpr);
+}
+function snFace(i){const I=snSeatInfo(i);if(!I||!I.head)return null;if(!SNK.img[I.head]){const im=new Image();im.src=I.head;SNK.img[I.head]=im}const im=SNK.img[I.head];return im.complete&&im.naturalWidth?im:null}
+function snBody(i){ // the points to draw for seat i, smoothed between updates for other players
+  const S=SNK.s[i]; if(!S||!S.a) return null;
+  if(S.own) return {pts:[[S.x,S.y]].concat(S.trail.filter((_,j)=>j%2===1)),x:S.x,y:S.y,g:S.g};
+  const t=clamp((performance.now()-S.at)/S.iv,0,1.4), P=S.prev||S.pts, out=[];
+  for(let k=0;k<S.pts.length;k++){const a=P[Math.min(k,P.length-1)],b=S.pts[k];
+    out.push(a&&Math.abs(a[0]-b[0])+Math.abs(a[1]-b[1])<60?[a[0]+(b[0]-a[0])*Math.min(1,t),a[1]+(b[1]-a[1])*Math.min(1,t)]:b)}
+  const ex=t>1?(t-1):0, head=out[0]?[out[0][0]+Math.cos(S.g)*ex*8,out[0][1]+Math.sin(S.g)*ex*8]:[S.x,S.y]; if(out[0]) out[0]=head;
+  return {pts:out,x:head[0],y:head[1],g:S.g};
+}
+function snDraw(){
+  const c=SNK.cx, d=SNK.dpr, W=SNK.vw, H=SNK.vh; if(!c||!W) return;
+  const me0=SNK.s[SNK.seat], focus=me0&&me0.a?(me0.own?me0:snBody(SNK.seat)):SNK.cam||{x:SW.w/2,y:SW.h/2};
+  const m=me0?me0.m||SN_START:SN_START, zt=Math.min(W,H)/(560+Math.min(m,300)*2.2)*(snMyLvl()==="little"?.9:1);
+  const cam=SNK.cam=SNK.cam||{x:focus.x,y:focus.y,z:zt}; cam.x+=(focus.x-cam.x)*.18; cam.y+=(focus.y-cam.y)*.18; cam.z+=(zt-cam.z)*.05; cam.w=W; cam.h=H;
+  const z=cam.z, ox=W/2-cam.x*z, oy=H/2-cam.y*z, now=snNow(), t=performance.now();
+  c.setTransform(d,0,0,d,0,0); c.fillStyle="#3F7D2C"; c.fillRect(0,0,W,H);
+  c.setTransform(d*z,0,0,d*z,d*ox,d*oy);
+  // grass + dot grid
+  c.fillStyle="#9BD771"; c.fillRect(0,0,SW.w,SW.h);
+  const x0=Math.max(0,Math.floor((-ox/z)/60)*60), x1=Math.min(SW.w,(W-ox)/z), y0=Math.max(0,Math.floor((-oy/z)/60)*60), y1=Math.min(SW.h,(H-oy)/z);
+  c.fillStyle="#8BCB60"; for(let x=x0;x<=x1;x+=60)for(let y=y0;y<=y1;y+=60){c.beginPath();c.arc(x+((y/60)%2?30:0),y,5,0,7);c.fill()}
+  c.strokeStyle="#E5484D";c.lineWidth=8;c.setLineDash([24,16]);c.strokeRect(0,0,SW.w,SW.h);c.setLineDash([]);
+  const vis=(x,y,p)=>x>-ox/z-p&&x<(W-ox)/z+p&&y>-oy/z-p&&y<(H-oy)/z+p;
+  // pellets
+  c.textAlign="center";c.textBaseline="middle";
+  if(SNK.meta){
+    for(let id=0;id<SN_ORBS+SN_FRUITS+SN_CUBES;id++){const p=snPellet(id);if(!vis(p.x,p.y,30))continue;const bob=Math.sin(t/300+id)*1.5;
+      if(p.t==="o"){c.fillStyle=p.c;c.globalAlpha=.35;c.beginPath();c.arc(p.x,p.y+bob,p.r*2,0,7);c.fill();c.globalAlpha=1;c.beginPath();c.arc(p.x,p.y+bob,p.r,0,7);c.fill()}
+      else if(p.t==="f"){c.font=`22px system-ui,"Apple Color Emoji","Noto Color Emoji"`;c.fillText(SN_FOOD[p.k][0],p.x,p.y+bob)}
+      else{const s=15+Math.sin(t/200)*1.5;c.fillStyle="rgba(255,255,255,.9)";c.strokeStyle="#FFB020";c.lineWidth=3;c.beginPath();c.roundRect?c.roundRect(p.x-s,p.y-s+bob,s*2,s*2,7):c.rect(p.x-s,p.y-s+bob,s*2,s*2);c.fill();c.stroke();
+        c.font=`${p.k==="x3"?13:18}px system-ui,"Apple Color Emoji","Noto Color Emoji"`;c.fillStyle="#2B2140";c.fillText(SN_CUBE[p.k].em,p.x,p.y+bob+1)}}
+    for(const id in SNK.drops){const p=SNK.drops[id];if(!vis(p.x,p.y,20))continue;c.fillStyle=p.c;c.globalAlpha=.4;c.beginPath();c.arc(p.x,p.y,13+Math.sin(t/150+p.x)*2,0,7);c.fill();c.globalAlpha=1;c.beginPath();c.arc(p.x,p.y,7,0,7);c.fill()}
+  }
+  // snakes (smaller ones on top)
+  const order=[0,1,2,3].filter(i=>SNK.s[i]&&SNK.s[i].a).sort((a,b)=>(SNK.s[b].m||0)-(SNK.s[a].m||0));
+  const mine=snBody(SNK.seat), little=snMyLvl()==="little";
+  for(const i of order){const B=snBody(i);if(!B||!B.pts.length)continue;const S=SNK.s[i],I=snSeatInfo(i)||{hue:"#888",name:"?"},r=snRad(S.m);
+    const ghost=(S.safe||0)>now, star=S.fx&&S.fx.star>now; c.globalAlpha=ghost?.45+.15*Math.sin(t/120):1;
+    if(little&&i!==SNK.seat&&mine){c.fillStyle="rgba(255,120,0,.3)";for(let j=0;j<B.pts.length;j+=2){const q=B.pts[j];if(snDist2(q[0],q[1],mine.x,mine.y)<130*130){c.beginPath();c.arc(q[0],q[1],r*1.7,0,7);c.fill()}}}
+    const light=I.hue+"B0";
+    for(let j=B.pts.length-1;j>=0;j--){const q=B.pts[j];if(!vis(q[0],q[1],r*2))continue;
+      c.fillStyle="#2B2140";c.beginPath();c.arc(q[0],q[1],r+2,0,7);c.fill()}
+    for(let j=B.pts.length-1;j>=0;j--){const q=B.pts[j];if(!vis(q[0],q[1],r*2))continue;
+      c.fillStyle=I.hue;c.beginPath();c.arc(q[0],q[1],r,0,7);c.fill();
+      if(j%4<2){c.fillStyle="rgba(255,255,255,.22)";c.beginPath();c.arc(q[0]-r*.25,q[1]-r*.25,r*.55,0,7);c.fill()}}
+    if(star){c.strokeStyle="#FFD600";c.lineWidth=4;c.beginPath();c.arc(B.x,B.y,r*1.6+Math.sin(t/90)*2,0,7);c.stroke()}
+    const hr=r*1.35; c.fillStyle="#fff";c.beginPath();c.arc(B.x,B.y,hr,0,7);c.fill();
+    const im=snFace(i); if(im){c.save();c.beginPath();c.arc(B.x,B.y,hr*.92,0,7);c.clip();c.drawImage(im,B.x-hr,B.y-hr,hr*2,hr*2);c.restore()}
+    else{c.font=`${Math.round(hr*1.3)}px system-ui,"Apple Color Emoji","Noto Color Emoji"`;c.fillText(I.face||"🙂",B.x,B.y+hr*.06)}
+    c.strokeStyle=I.hue;c.lineWidth=Math.max(3,r*.3);c.beginPath();c.arc(B.x,B.y,hr,0,7);c.stroke();
+    // a little arrow showing which way the head is going
+    c.fillStyle=I.hue;c.beginPath();const ax=B.x+Math.cos(B.g)*hr*1.25,ay=B.y+Math.sin(B.g)*hr*1.25;
+    c.moveTo(ax+Math.cos(B.g)*8,ay+Math.sin(B.g)*8);c.lineTo(ax+Math.cos(B.g+2.3)*7,ay+Math.sin(B.g+2.3)*7);c.lineTo(ax+Math.cos(B.g-2.3)*7,ay+Math.sin(B.g-2.3)*7);c.fill();
+    c.globalAlpha=1;
+    const label=I.name+(i===SNK.seat?" (you)":""), fs=Math.max(12,14/z*.9); c.font=`800 ${fs}px system-ui,sans-serif`;
+    const w=c.measureText(label).width+12, ly=B.y-hr-fs; c.fillStyle="rgba(255,255,255,.9)";
+    c.beginPath();c.roundRect?c.roundRect(B.x-w/2,ly-fs*.7,w,fs*1.4,fs*.7):c.rect(B.x-w/2,ly-fs*.7,w,fs*1.4);c.fill();c.fillStyle=I.hue;c.fillText(label,B.x,ly+1);
+  }
+  c.setTransform(1,0,0,1,0,0);
+  snMini();
+}
+function snMini(){
+  const c=SNK.mm, cv=c.canvas, w=cv.width, h=cv.height, sx=w/SW.w, sy=h/SW.h;
+  c.clearRect(0,0,w,h); c.fillStyle="rgba(43,33,64,.45)"; c.fillRect(0,0,w,h);
+  for(let i=0;i<4;i++){const B=snBody(i);if(!B)continue;const I=snSeatInfo(i);c.fillStyle=I?I.hue:"#fff";
+    for(let j=0;j<B.pts.length;j+=6){c.fillRect(B.pts[j][0]*sx-1,B.pts[j][1]*sy-1,2,2)}
+    c.beginPath();c.arc(B.x*sx,B.y*sy,i===SNK.seat?5:3.5,0,7);c.fill();if(i===SNK.seat){c.strokeStyle="#fff";c.lineWidth=2;c.stroke()}}
+  if(SNK.cam){c.strokeStyle="rgba(255,255,255,.7)";c.lineWidth=1;c.strokeRect((SNK.cam.x-SNK.cam.w/2/SNK.cam.z)*sx,(SNK.cam.y-SNK.cam.h/2/SNK.cam.z)*sy,SNK.cam.w/SNK.cam.z*sx,SNK.cam.h/SNK.cam.z*sy)}
+}
+function snHud(force){
+  if(!SNK.meta) return; const now=snNow(), left=Math.max(0,SNK.meta.end-now), pre=SNK.meta.at+3000-now;
+  const tm=$("#snTime"); tm.textContent=pre>0?`Ready… ${Math.ceil(pre/1000)}`:mmss(left); tm.classList.toggle("low",left<15000&&pre<=0);
+  const S=SNK.s[SNK.seat], fx=S&&S.fx?Object.keys(S.fx).filter(k=>S.fx[k]>now):[];
+  const rows=[0,1,2,3].map(i=>({i,I:snSeatInfo(i),S:SNK.s[i]})).filter(r=>r.I&&r.S&&!(r.S.gone&&!r.S.a)).sort((a,b)=>(b.S.a?b.S.m:b.S.kl||0)-(a.S.a?a.S.m:a.S.kl||0));
+  const sig=JSON.stringify([rows.map(r=>[r.i,r.S.a,r.S.m,r.S.kl]),fx,S&&S.a]);
+  if(!force&&sig===SNK.hudSig) return; SNK.hudSig=sig;
+  const B=$("#snBoard"); B.innerHTML="";
+  rows.forEach((r,k)=>{const d=el("div","snlb"+(r.i===SNK.seat?" me":"")+(r.S.a?"":" out"));d.style.setProperty("--k",r.I.hue);
+    d.innerHTML=`<span class="rk">${k+1}</span>${r.I.head?`<img src="${r.I.head}" alt="">`:`<span class="em">${r.I.face}</span>`}<b>${esc(r.I.name)}</b><span class="mass">${r.S.a?r.S.m:"💥 "+(r.S.kl||"")}</span>`;B.append(d)});
+  $("#snFx").innerHTML=fx.map(k=>`<span class="snfx">${SN_CUBE[k].em}</span>`).join("");
+}
+
+/* ---- frame loop ---- */
+function snFrame(ts){
+  SNK.raf=0; if(!SNK.e||screen!=="snake") return;
+  const dt=Math.min(.1,(ts-(SNK.last||ts))/1000); SNK.last=ts;
+  if(SNK.meta&&!SNK.over){
+    const now=snNow(), h=snWhoHosts(), was=SNK.host; SNK.host=h===SNK.seat;
+    if(SNK.host&&!was) for(let i=0;i<4;i++){const I=snSeatInfo(i);if(I&&I.bot&&SNK.s[i])SNK.s[i].own=false}
+    if(now>=SNK.meta.at+3000){
+      if(!SNK.started){SNK.started=true;blip(990,.25,"triangle",.14);sayLittle("Go!")}
+      snTickMine(dt); if(SNK.host) snHostTick(dt);
+    }
+    if(now>=SNK.meta.end) snEnd();
+  }
+  snDraw(); snHud(false);
+  SNK.raf=requestAnimationFrame(snFrame);
+}
+
+/* ---- end of the round: podium ---- */
+function snEnd(){
+  if(SNK.over) return; SNK.over=true; if(tk&&tk.chore==="snake") closeTask(false); $("#snCrash").hidden=true; SNK.boost=false;
+  const rows=[];
+  for(let i=0;i<4;i++){const I=snSeatInfo(i),S=SNK.s[i];if(!I||!S||(S.gone&&!S.a))continue;rows.push({i,I,len:S.a?S.m:(S.kl||snHalf(S.m)),ko:S.ko||0,sc:S.sc||0})}
+  rows.sort((a,b)=>b.len-a.len||b.ko-a.ko);
+  const place=[];rows.forEach((r,k)=>{place[k]=k&&r.len===rows[k-1].len?place[k-1]:k});
+  const medal=["🥇","🥈","🥉","🎖️"], L=$("#snPodium"); L.innerHTML="";
+  rows.forEach((r,k)=>{const d=el("div","snrow"+(r.i===SNK.seat?" me":""));d.style.setProperty("--k",r.I.hue);
+    d.innerHTML=`<span class="medal">${medal[place[k]]}</span>${r.I.head?`<img src="${r.I.head}" alt="">`:`<span class="em">${r.I.face}</span>`}<b>${esc(r.I.name)}</b><span class="len">🐍 ${r.len}<small>${r.ko?`💥 ${r.ko} bump${r.ko>1?"s":""}`:""}</small></span>`;L.append(d)});
+  const win=rows[0]; $("#snWinner").textContent=win?(win.i===SNK.seat?"You win! 🎉":`${win.I.name} wins!`):"Round over!";
+  $("#snOver").hidden=false; tada(); if(win) say(win.i===SNK.seat?"You have the longest snake! You win!":`${win.I.name} has the longest snake!`);
+  if(SNK.snacks%10) bump("snakeSnacks",SNK.snacks%10);
+  if(SNK.best&&mail.ref&&me) mail.ref.child(`stats/${me}/days/${dayKey()}/counts/snakeLongest`).transaction(v=>Math.max(+v||0,SNK.best)).catch(()=>{});
+}
+function snPlayAgain(){
+  const here=new Set(peers().filter(q=>q.presence&&q.presence.scr==="snake"&&q.presence.sg===SNK.e).map(q=>q.peer));
+  const humans=(SNK.meta?SNK.meta.seats:[]).filter(s=>s&&!s.bot&&(s.p===myPeer||here.has(s.p))).map(s=>({k:s.k,p:s.p}));
+  startSnake(humans.length?humans:null);
+}
+
+/* ---- controls: finger or mouse points the way, keys steer, hold Boost (or space) to go fast ---- */
+function snWireControls(){
+  const F=$("#snField");
+  const at=e=>{const r=F.getBoundingClientRect();SNK.steer={x:e.clientX-r.left,y:e.clientY-r.top};$("#snTip").hidden=true};
+  F.addEventListener("pointerdown",e=>{if(e.target.closest("button"))return;at(e);try{F.setPointerCapture(e.pointerId)}catch(_){}});
+  F.addEventListener("pointermove",e=>{if(e.pointerType==="mouse"||e.buttons||e.pressure>0)at(e)});
+  F.addEventListener("touchmove",e=>e.preventDefault(),{passive:false});
+  const bo=$("#snBoost"), on=v=>{if(snMyLvl()==="little")v=false;SNK.boost=v;bo.classList.toggle("on",v)};
+  bo.addEventListener("pointerdown",e=>{e.preventDefault();e.stopPropagation();on(true)}); for(const ev of ["pointerup","pointercancel","pointerleave"]) bo.addEventListener(ev,()=>on(false));
+  const KM={ArrowUp:"u",ArrowDown:"d",ArrowLeft:"l",ArrowRight:"r",w:"u",s:"d",a:"l",d:"r"};
+  addEventListener("keydown",e=>{if(screen!=="snake"||tk)return;const k=KM[e.key];if(k){SNK.keys[k]=true;SNK.steer=null;e.preventDefault()}else if(e.key===" "){on(true);e.preventDefault()}});
+  addEventListener("keyup",e=>{const k=KM[e.key];if(k)SNK.keys[k]=false;if(e.key===" ")on(false)});
+  $("#snHome").onclick=()=>snGoHome();
+  $("#snCrashBtn").onclick=()=>snRespawnPuzzle();
+  $("#snAgain").onclick=()=>snPlayAgain();
+  $("#snOverHome").onclick=()=>snGoHome();
+}
+$("#playSnake").onclick=()=>{sayLittle("Snake race!");startSnake()};
+if(/[?&]snakelocal\b/.test(location.search))window.__snake={SNK,SW,startSnake,enterSnake,joinSnake,snEnd,snRespawn,snCrashMine,snWhoHosts,snPellet,snOwn,snNow,snSeatInfo,tk:()=>tk,win:finishTask,quit:()=>closeTask(true)}; // testing only
+
 if(/[?&]farmlocal\b/.test(location.search))window.__farm={animAt,fwNow,fmvStart,fmvDrag,fmvEnd,fpOk,STRUCT,FIELD_SPOTS,decorPos,openFamBasket,sellIt,moveGoods,openBasket,farmClamp,fCands,fInfo,fGo,openTask,TASK_TYPES,F,fm,FW,openBank,bankPut,farmZoomTo,fwWalk,farmTapAt:(i,j)=>{const p=fIso(i,j),r=fm.cv.getBoundingClientRect(),d=fm.cv.width/r.width;farmTap({clientX:r.left+p.x/d,clientY:r.top+p.y/d})},CO,coopUpd,coopTick,startTeam,joinTeam,tk:()=>tk,tapPlot,tapAnimal,tapStruct,openStore,openOrders,openJar,openSell,buyIt,storeItems,deliver,sendGift,win:finishTask,quit:()=>closeTask(true)}; // testing only
 /* ================= Capture the Flag (#18) — test build =================
    Live as a Beta Version card in the lobby. Single device for now:
