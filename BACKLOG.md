@@ -949,7 +949,16 @@ Turn photos of family members into **high-resolution cartoon characters** (in th
 
 ---
 
-## 17. 🆕 Farm NPC: Jeppson the corgi
+## 17. 🛠️ Farm NPC: Jeppson the corgi (basic version live Oct 27, drawn in code)
+
+**✅ Built Oct 27 (basic)**
+- Jeppson (the code-drawn corgi from Capture the Flag, `ctfCorgi`) wanders the **whole farm** on the shared clock (`jepAt()`, 20-second legs), so every device sees him in the same place: walk, sniff 👃, butt wiggle, sit, nap (z z z), with an orange "Jeppson" name tag.
+- Tap him: your farmer walks over, he hops and wiggles, and you get a ❤️/🐾/🦴 and a woof.
+- **Poops:** one every 5–10 minutes (random), max 3 on the farm, shared in Firebase (`farm/poops/<id> = {i,j,at}`, `farm/poopNext`; a transaction makes sure only one device drops it). Each has stink lines and flies (more flies after 15 minutes). Tap → walk over → a quick puzzle ("💩 Clean up after Jeppson", any puzzle type; grown-ups get grown-up games) → +2 Moolah and a happy Jeppson. Logged in stats like other chores.
+- Still to do: his approved art (both styles), chicken chasing, following the cleaner, animals holding their noses, the Little drag-to-trash and Big find-and-sort cleanup puzzles.
+
+**Team chore placeholders (Oct 27):** 8 new co-op chores in 🤝 (hay, fence, water trough, apples, sweep the barn, giant pumpkin, herd the sheep, Jeppson's bath). Type `tapteam`: everyone, whatever their level, taps a big button 10 times with live team progress bars; when the whole team is done, everyone gets +2 Moolah. Replace each one's `type` in `COOP_CHORES` with its real activity when it's built.
+
 
 **Jeppson** is the family's corgi, and he lives on the farm as a friendly non-player character (NPC). He wanders around, plays, and leaves **poops** that players clean up.
 

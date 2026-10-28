@@ -4,6 +4,19 @@ Newest first. Each release has kid-friendly notes (shown to everyone in the game
 
 ---
 
+## 1.3: Jeppson comes to the farm 🐶
+**October 27, 2026**: night update.
+
+### For everyone
+- 🐶 **Jeppson on the farm:** Jeppson the corgi trots around the farm, sniffs, wiggles, sits and naps. Tap him for a woof and a happy wiggle!
+- 💩 **Poop patrol:** every so often Jeppson leaves a poop (with buzzing flies). Tap it and solve a quick puzzle to scoop it up for 2 Moolah. Nothing bad happens if you leave it.
+- 🤝 **More team chores:** stack the hay, fix the fence, fill the water trough, pick apples, sweep the barn, carry the giant pumpkin, herd the sheep, and give Jeppson a bath, together. Everyone taps the big button 10 times to finish, for 2 Moolah each.
+
+### For grown-ups
+- 🧪 The new team chores are simple placeholders (tap a button) until the real activities are built. Jeppson is drawn in code until his art is approved.
+
+---
+
 ## 1.2: Quinn's play timer ⏰
 **October 27, 2026**: late evening update.
 

@@ -518,6 +518,15 @@ h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance;l
 .tnow{margin:0 0 8px;font-weight:800;color:#5b5175}
 .trow2{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0;border-top:1px solid #EEE8F8}
 .trow2 select{font:inherit;font-size:16px;padding:6px 10px;border-radius:12px;border:2px solid var(--sky-deep);background:#fff}
+.tapteam{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;width:100%}
+.tapbig{width:min(42vh,60vw,260px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FFE58A,var(--sun) 60%,var(--sun-deep));box-shadow:0 10px 0 #C98A00,0 16px 30px rgba(0,0,0,.18);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.tapbig span{font-size:min(16vh,90px);line-height:1}.tapbig b{font-family:var(--display);font-size:36px;color:var(--ink)}
+.tapbig:active{transform:translateY(6px);box-shadow:0 4px 0 #C98A00}.tapbig.bump span{animation:popin .25s ease-out}.tapbig:disabled{filter:saturate(.4);opacity:.7}
+.taprows{display:flex;flex-direction:column;gap:8px;width:min(520px,100%)}
+.taprow{display:grid;grid-template-columns:150px 1fr 56px;align-items:center;gap:10px;background:var(--paper);border-radius:999px;padding:6px 12px;border:3px solid var(--k)}
+.taprow .who{display:flex;align-items:center;gap:6px;font-weight:800}.taprow .who .facepic,.taprow .who .avatarpic{width:28px;height:28px}
+.taprow .bar{height:14px;border-radius:999px;background:#EEE8F8;overflow:hidden}.taprow .bar i{display:block;height:100%;background:var(--k);transition:width .2s}
+.taprow .n{font-weight:800;text-align:right}
 .sentbox{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
 .sentbox .gift{font-size:110px;animation:fly 1.6s ease-in forwards}
 @keyframes fly{0%{transform:scale(.6)}30%{transform:scale(1.15) rotate(-6deg)}60%{transform:scale(1) rotate(4deg)}100%{transform:translateY(-30vh) scale(.4);opacity:0}}
@@ -1467,7 +1476,7 @@ addEventListener("resize",()=>requestAnimationFrame(fitHelp));
    "## 1.0: Title" starts a release; "### For everyone" / "### For grown-ups" / any other "###" section follow.
    Grown-up sections ("For grown-ups", "How long it took…") are hidden from the kids.
    Bump APP_VERSION together with a new RELEASES.md entry. */
-const APP_VERSION="1.2";
+const APP_VERSION="1.3";
 const WN={rel:null,loading:null};
 function wnGrownOnly(h){return /grown/i.test(h)}
 function wnParse(md){
@@ -4947,6 +4956,8 @@ function fInfo(t){
     const G=GOODS[p.crop];return {em:G.icon,name:G.name+" plant",state:ps.st==="thirsty"?"needs water 💧":ps.st==="ripe"?"ready ✨":"growing"}}
   if(t.kind==="struct"){const S=STRUCT[t.ref];return {em:S.label,name:S.name,state:""}}
   if(t.kind==="decor"){const D=DECOR[t.ref];return {em:D?D.icon:"✨",name:D?D.name:"decoration",state:""}}
+  if(t.kind==="jep") return {em:"🐶",name:"Jeppson",state:"pet him ❤️"};
+  if(t.kind==="poop") return {em:"💩",name:"poop",state:"scoop it 🧹"};
   return {em:"",name:"",state:""};
 }
 function fGround(t){
@@ -4954,6 +4965,8 @@ function fGround(t){
   if(t.kind==="plot"){const [pi,pj]=FIELD_SPOTS[t.spot];return [pi+.5,pj+.5,.55]}
   if(t.kind==="struct"){const S=STRUCT[t.ref];return [S.i+S.wi/2,S.j+S.wj/2,Math.max(S.wi,S.wj)*.75]}
   if(t.kind==="decor"){const key=t.key||(Object.entries(F.st.decor||{}).find(([,k])=>k===t.ref)||[])[0];const sp=key&&decorPos(key);return sp?[sp[0]+.5,sp[1]+.5,.5]:[0,0,0]}
+  if(t.kind==="jep"){const P=jepAt(fwNow());return [P.i,P.j,.55]}
+  if(t.kind==="poop"){const p=(F.st.poops||{})[t.ref];return p?[+p.i,+p.j,.35]:[0,0,0]}
   return [0,0,0];
 }
 // walk my farmer over first; the chore starts when they arrive
@@ -4964,6 +4977,8 @@ function fGo(t){
   if(t.kind==="plot"){const [pi,pj]=FIELD_SPOTS[t.spot],[si,sj]=fwStandBy(pi+.5,pj+.5,.75);return fwWalk(si,sj,()=>tapPlot(t.spot))}
   if(t.kind==="struct"){const S=STRUCT[t.ref];return fwWalk(S.i+S.wi/2+.3,S.j+S.wj+.45,()=>tapStruct(t.ref))}
   if(t.kind==="decor"){const [gi,gj]=fGround(t),[si,sj]=fwStandBy(gi,gj,.7);return fwWalk(si,sj,()=>{blip(880,.12,"sine");fPopAt(fIso(gi,gj),"✨")})}
+  if(t.kind==="jep"){const P=jepAt(fwNow()),[si,sj]=fwStandBy(P.i,P.j,.9);return fwWalk(si,sj,jepTap)}
+  if(t.kind==="poop"){const p=(F.st.poops||{})[t.ref];if(!p)return;const [si,sj]=fwStandBy(+p.i,+p.j,.6);return fwWalk(si,sj,()=>jepScoop(t.ref))}
 }
 function farmTap(e){
   if(!F.st||tk)return;fm.press=null;
@@ -5667,6 +5682,7 @@ function farmDraw(t){
       if(w.state==="sleep"){g.fillStyle="#3A4A5A";g.textAlign="left";for(let k=0;k<3;k++){const q=(w.t*.5+k/3)%1;g.globalAlpha=1-q;g.font=`900 ${th*(.28+k*.08)}px system-ui`;g.fillText("z",p.x+wd*.3+q*th*.4,p.y-Hh*.8-q*th*.8)}g.globalAlpha=1}
       if(hungry)fBub(p.x,p.y-Hh-th*.05,A.foodIcon,t,w.i,{kind:"animal",ref:w});else if(as==="ready")fBub(p.x,p.y-Hh-th*.05,GOODS[A.good].icon,t,w.i,{kind:"animal",ref:w});
       fm.hits.push({kind:"animal",ref:w,d:w.i+w.j+.5,x0:p.x-wd*.4,x1:p.x+wd*.4,y0:p.y-Hh*.92,y1:p.y+th*.25})}})}
+  try{jepItems(items,t,now,dt)}catch(e){fmErr(e,"jeppson")}
   try{fwItems(items,dt,t)}catch(e){fmErr(e,"farmers")}
   items.sort((a,b)=>a.d-b.d).forEach(it=>{const g=fm.g;g.save();try{it.draw()}catch(e){fmErr(e,"item")}g.restore()});
   fHighlight(t,false);
@@ -6786,6 +6802,115 @@ function buildCoopJigsaw(api,key){
     check()};
   CO.listeners.add(sync);api.after(()=>CO.listeners.delete(sync));sync();
 }
+
+/* ================= JEPPSON ON THE FARM (backlog #17, basic) =================
+   Jeppson the corgi (drawn in code, like in Capture the Flag, until his art is approved) wanders the whole farm.
+   His path comes from the shared clock (like the other animals), so every device sees him in the same spot.
+   Every 5–10 minutes he leaves a poop (at most 3 on the farm). Poops are shared in Firebase:
+     farm/poops/<id> = {i, j, at}    farm/poopNext = when the next one is due
+   Tap a poop: your farmer walks over and you solve a quick puzzle to scoop it (+2 Moolah). Nothing is ever lost. */
+const JEP={slot:20000,speed:.9,happyUntil:0,hop:0,last:0,chk:0};
+const POOP_MAX=3, POOP_MIN=5*60e3, POOP_MAX_GAP=10*60e3;
+function jepWay(slot){const N=fm.N||FARM_SIZE;return [1.5+animRand("jeppson",slot,1)*(N-3),1.5+animRand("jeppson",slot,2)*(N-3)]}
+function jepAt(now){
+  const slot=Math.floor(now/JEP.slot),u=now-slot*JEP.slot,A=jepWay(slot),B=jepWay(slot+1),di=B[0]-A[0],dj=B[1]-A[1],d=Math.hypot(di,dj),walk=d/JEP.speed*1000;
+  const dir=(di-dj)>0?1:-1;
+  if(d>.05&&u<walk){const k=u/walk;return {i:A[0]+di*k,j:A[1]+dj*k,state:"walk",dir}}
+  const r=animRand("jeppson",slot,3);return {i:B[0],j:B[1],state:r<.4?"sniff":r<.65?"wiggle":r<.85?"sit":"nap",dir}
+}
+function jepPoops(){return Object.entries((F.st&&F.st.poops)||{}).filter(([,p])=>p&&Number.isFinite(+p.i)&&Number.isFinite(+p.j))}
+// whoever is on the farm when a poop is due drops it (a transaction on poopNext makes sure only one device does)
+function jepSchedule(now){
+  if(!F.st||now-JEP.chk<4000) return; JEP.chk=now;
+  const next=+F.st.poopNext||0;
+  if(!next){fTx("poopNext",v=>v?undefined:now+POOP_MIN+Math.random()*(POOP_MAX_GAP-POOP_MIN));return}
+  if(now<next) return;
+  fTx("poopNext",v=>(+v||0)>now?undefined:now+POOP_MIN+Math.random()*(POOP_MAX_GAP-POOP_MIN)).then(ok=>{
+    if(!ok||jepPoops().length>=POOP_MAX) return;
+    const P=jepAt(fwNow()),id="p"+now.toString(36);
+    fUpd({["poops/"+id]:{i:Math.round(P.i*100)/100,j:Math.round(P.j*100)/100,at:now}});
+  });
+}
+function jepItems(items,t,now,dt){
+  if(!F.st) return; jepSchedule(now);
+  const g=fm.g,th=fm.th,tw=fm.tw,P=jepAt(fwNow()); JEP.hop=Math.max(0,JEP.hop-dt*2.5);
+  const happy=now<JEP.happyUntil;
+  for(const [id,p] of jepPoops()){const i=+p.i,j=+p.j,old=now-(+p.at||now)>15*60e3;
+    items.push({d:i+j,draw:()=>{const c=fIso(i,j);
+      g.font=`${th*.62}px system-ui`;g.textAlign="center";g.textBaseline="bottom";g.fillText("💩",c.x,c.y+th*.12);g.textBaseline="alphabetic";
+      g.strokeStyle="rgba(110,140,60,.65)";g.lineWidth=Math.max(1.2,th*.035);
+      for(let k=-1;k<=1;k++){const x=c.x+k*th*.16,y=c.y-th*.62;g.beginPath();g.moveTo(x,y);for(let s=1;s<=4;s++)g.lineTo(x+Math.sin(t/200+s+k)*th*.05,y-s*th*.08);g.stroke()}
+      // flies buzz around (louder and more of them when it's been there a while)
+      g.fillStyle="#2B2140";for(let k=0;k<(old?3:2);k++){const a=t/(old?180:260)+k*2.1;g.beginPath();g.arc(c.x+Math.cos(a)*th*.38,c.y-th*.55+Math.sin(a*1.7)*th*.18,Math.max(1.5,th*.04),0,7);g.fill()}
+      fm.hits.push({kind:"poop",ref:id,d:i+j+.3,x0:c.x-th*.45,x1:c.x+th*.45,y0:c.y-th*.9,y1:c.y+th*.25})}});
+  }
+  items.push({d:P.i+P.j,draw:()=>{const c=fIso(P.i,P.j),s=tw*.75;
+    const run=P.state==="walk"||happy, T=t/1000;let y=c.y-JEP.hop*th*.5;
+    if(P.state==="wiggle"||happy){g.save();g.translate(c.x,y);g.rotate(Math.sin(T*14)*.08);g.translate(-c.x,-y)}
+    if(P.state==="nap"){g.save();g.translate(c.x,y);g.scale(1,.82);g.translate(-c.x,-y)}
+    ctfCorgi(g,c.x,y,s,P.dir,T,P.state==="sit"?1:0,run);
+    if(P.state==="wiggle"||happy||P.state==="nap")g.restore();
+    if(P.state==="nap"){g.fillStyle="#3A4A5A";g.textAlign="left";for(let k=0;k<3;k++){const q=(T*.5+k/3)%1;g.globalAlpha=1-q;g.font=`900 ${th*(.26+k*.07)}px system-ui`;g.fillText("z",c.x+s*.3+q*th*.4,c.y-s*.6-q*th*.8)}g.globalAlpha=1}
+    if(P.state==="sniff"){g.font=`${th*.32}px system-ui`;g.textAlign="center";g.globalAlpha=.5+.5*Math.sin(T*6);g.fillText("👃",c.x+P.dir*s*.55,c.y-s*.2);g.globalAlpha=1}
+    // name tag
+    g.font=`800 ${Math.max(11,th*.26)}px system-ui`;const tx="Jeppson",w=g.measureText(tx).width+th*.4,ty=c.y-s*.95;
+    g.fillStyle="rgba(201,122,53,.92)";g.beginPath();g.roundRect?g.roundRect(c.x-w/2,ty-th*.22,w,th*.44,th*.22):g.rect(c.x-w/2,ty-th*.22,w,th*.44);g.fill();
+    g.fillStyle="#fff";g.textAlign="center";g.textBaseline="middle";g.fillText(tx,c.x,ty);g.textBaseline="alphabetic";
+    fm.hits.push({kind:"jep",ref:"jeppson",d:P.i+P.j+.4,x0:c.x-s*.55,x1:c.x+s*.55,y0:c.y-s*.85,y1:c.y+th*.2})}});
+}
+function jepTap(){
+  JEP.hop=1;JEP.happyUntil=Date.now()+2500;fPopAt(fIso(jepAt(fwNow()).i,jepAt(fwNow()).j),pickOne(["❤️","🐾","🦴"]));
+  blip(740,.08,"square",.06);setTimeout(()=>blip(820,.08,"square",.06),140);
+  say(little()?"Jeppson! Woof woof!":pickOne(["Woof! Jeppson wiggles his fluffy butt.","Jeppson rolls over for a belly rub!","Woof woof! Jeppson does a zoomie lap."]));
+}
+function jepScoop(id){
+  const p=(F.st.poops||{})[id];if(!p)return;
+  farmPuzzle("scoop",{title:"💩 Clean up after Jeppson",item:{em:"💩",one:"poop",many:"poops"},reward:"+2 🪙 All clean!"},()=>{
+    fTx("poops/"+id,x=>x?null:undefined).then(ok=>{if(!ok){toast("Someone already cleaned that one!");return}
+      fUpd({["jars/"+me]:INC(2)});fPopAt(fIso(+p.i,+p.j),"✨");JEP.happyUntil=Date.now()+4000;
+      say(little()?"All clean! Jeppson says thank you!":"All clean! Jeppson wiggles to say thanks. Plus 2 Moolah!")});
+  });
+}
+
+/* ================= TEAM CHORE PLACEHOLDERS =================
+   Shared chores everyone does together. Each one is a simple "tap the button" for now (the same for every person,
+   whatever their level); the real activities get built later. Each chore's type is "tapteam".
+   Shared progress: coop/<sid>/prog/<who> = {n}. Done when everyone in the team reaches TAPTEAM_N. */
+const TAPTEAM_N=10;
+Object.assign(COOP_CHORES,{
+  hay:{type:"tapteam",title:"🌾 Stack the hay together",em:"🌾",verb:"stack the hay"},
+  fence:{type:"tapteam",title:"🪵 Fix the fence together",em:"🪵",verb:"fix the fence"},
+  trough:{type:"tapteam",title:"💧 Fill the water trough together",em:"💧",verb:"fill the water trough"},
+  apples:{type:"tapteam",title:"🍎 Pick apples together",em:"🍎",verb:"pick apples"},
+  sweep:{type:"tapteam",title:"🧹 Sweep the barn together",em:"🧹",verb:"sweep the barn"},
+  pumpkin:{type:"tapteam",title:"🎃 Carry the giant pumpkin together",em:"🎃",verb:"carry the giant pumpkin"},
+  herd:{type:"tapteam",title:"🐑 Herd the sheep together",em:"🐑",verb:"herd the sheep"},
+  bath:{type:"tapteam",title:"🛁 Give Jeppson a bath together",em:"🛁",verb:"give Jeppson a bath"},
+});
+for(const C of Object.values(COOP_CHORES)) if(C.type==="tapteam"){C.find=()=>"farm";C.none="";C.pic="";
+  C.finish=s=>{const up={};for(const w of s.order||Object.keys(s.members||{}))up["jars/"+w]=INC(2);fUpd(up)}}
+PUZZLE_NAMES.tapteam="team tapping"; SKILL.tapteam="teamwork";
+TASKS.tapteam=api=>{
+  const sid=api.ctx.coop&&api.ctx.coop.sid,S0=sid&&CO.sess[sid];
+  if(!S0){api.ask("Tap the button!");const b=el("button","tapbig","👆");b.onclick=()=>api.win(300);api.area.append(b);return}
+  const C=COOP_CHORES[S0.chore]||{em:"👆",verb:"do it"},order=S0.order||Object.keys(S0.members||{}),others=order.filter(w=>w!==me).map(w=>kidOf(w).name);
+  let mine=+(((S0.prog||{})[me]||{}).n)||0;
+  api.ask(`Tap the ${C.em} ${TAPTEAM_N} times!`,`Let's ${C.verb} with ${others.join(" and ")}! Tap the big button ${TAPTEAM_N} times.`);
+  const wrap=el("div","tapteam"),btn=el("button","tapbig",`<span>${C.em}</span><b>${Math.max(0,TAPTEAM_N-mine)}</b>`),rows=el("div","taprows");
+  wrap.append(btn,rows);api.area.append(wrap);
+  const draw=()=>{const s=CO.sess[sid]||S0;rows.innerHTML="";
+    for(const w of order){const n=w===me?mine:+(((s.prog||{})[w]||{}).n)||0,K=kidOf(w);
+      const r=el("div","taprow"+(w===me?" me":""),`<span class="who">${faceHTML(K)} ${esc(w===me?"You":K.name)}</span><span class="bar"><i style="width:${Math.min(100,n/TAPTEAM_N*100)}%"></i></span><span class="n">${Math.min(n,TAPTEAM_N)}/${TAPTEAM_N}</span>`);
+      r.style.setProperty("--k",K.hue);rows.append(r)}};
+  btn.onclick=()=>{if(!api.live()||mine>=TAPTEAM_N)return;mine++;btn.querySelector("b").textContent=Math.max(0,TAPTEAM_N-mine);
+    btn.classList.remove("bump");void btn.offsetWidth;btn.classList.add("bump");blip(500+mine*30,.06,"triangle");
+    coopUpd({[`${sid}/prog/${me}/n`]:mine});draw();
+    if(mine>=TAPTEAM_N){btn.disabled=true;if(order.length>1)api.ask("Done! Waiting for your team…",`Great job! Now let's wait for ${others.join(" and ")}.`)}
+    check()};
+  const check=()=>{const s=CO.sess[sid];if(!s)return;if(order.every(w=>(w===me?mine:+(((s.prog||{})[w]||{}).n)||0)>=TAPTEAM_N))coopComplete(sid)};
+  const sync=()=>{if(!api.live())return;const s=CO.sess[sid];if(!s)return;draw();if(s.status==="done"){api.win(500);return}check()};
+  CO.listeners.add(sync);api.after(()=>CO.listeners.delete(sync));draw();
+};
 
 function openFarm(){if(!me){goLobby();return}if(!fm.cv)farmInit();farmConnect();fwConnect();show("farm");farmHeader();farmFit();requestAnimationFrame(()=>{if(screen==="farm")farmFit()});fm.last=performance.now();if(!fm.raf)fm.raf=requestAnimationFrame(farmFrame);
   sayLittle("Tap where you want to go! Tap the bubbles to help the animals and plants.")}
@@ -8193,6 +8318,7 @@ $("#playCtf").onclick=()=>{sayLittle("Capture the Flag");openCtf()};
 ctfInputs();
 $("#playCtf").onclick=()=>{sayLittle("Capture the Flag");openCtf()};
 ctfInputs();
+if(/[?&]farmlocal\b/.test(location.search))window.__jep={get F(){return F},fm,jepAt,fIso,fwNow,get tk(){return tk},closeTask};
 if(/[?&](farmlocal|ctflocal)\b/.test(location.search))window.__ctf={get C(){return C},CN,ctfP,ctfCamera,openCtf,ctfCreate,joinCtf,ctfStart,ctfSwitch,ctfPath,ctfEnd,ctfTag,ctfUpdate,ctfGoTo,ctfTarget,ctfRespawn,ctfDraw,ctfInput,ctfIsHost,closeTask,get tk(){return tk},CTF};
 })();
 </script>
