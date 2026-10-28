@@ -124,6 +124,11 @@ select,input,textarea{font-size:max(16px,1em)}
 .cegrid button.on{background:var(--sun);box-shadow:inset 0 0 0 3px var(--ink)}
 .cegrid .cthumb,.cegrid .facepic,.cegrid .avatarpic{width:52px;height:52px;object-fit:contain;border-radius:10px}
 .cegrid.fam{grid-template-columns:repeat(auto-fill,minmax(80px,1fr))}
+.cegrid.fam .cthumb{width:64px;height:64px;background:radial-gradient(circle at 50% 45%,#fff,#E8F1FF);border-radius:12px}
+.cegrid.fam button.miss .cthumb{opacity:.25}
+.famsets h4 small{font-weight:800;color:#9a91b0}
+.famswap{background:var(--sky);border-radius:14px;padding:6px 10px}
+.famswap summary{font-weight:800;font-size:15px;cursor:pointer;padding:4px 0}
 .ced.little .cegrid{grid-template-columns:repeat(auto-fill,minmax(80px,1fr))}
 .ced.little .cegrid button{font-size:40px;min-height:76px}
 .ced.little .ctab{font-size:18px;padding:10px 14px}
@@ -1592,7 +1597,7 @@ addEventListener("resize",()=>requestAnimationFrame(fitHelp));
    "## 1.0: Title" starts a release; "### For everyone" / "### For grown-ups" / any other "###" section follow.
    Grown-up sections ("For grown-ups", "How long it took…") are hidden from the kids.
    Bump APP_VERSION together with a new RELEASES.md entry. */
-const APP_VERSION="1.7";
+const APP_VERSION="1.8";
 const WN={rel:null,loading:null};
 function wnGrownOnly(h){return /grown/i.test(h)}
 function wnParse(md){
@@ -3470,23 +3475,51 @@ function drawnGlowURL(strokes){
   }catch(e){return a.toDataURL("image/png")}
 }
 /* family cartoon likenesses live privately in Firebase: families/<code>/art/family/<who>/<key> = {img} */
-const csFam={list:null,imgs:new Map(),loading:null};
-async function csFamList(){
-  if(csFam.list) return csFam.list; if(csFam.loading) return csFam.loading;
-  csFam.loading=(async()=>{const out=[];try{
-    const base=`${FIREBASE.databaseURL}/families/${encodeURIComponent(familyCode)}/art/family`;
-    const who=await (await fetch(base+".json?shallow=true")).json()||{};
-    for(const w of Object.keys(who)){if(!KIDS[w])continue;const keys=await (await fetch(`${base}/${w}.json?shallow=true`)).json()||{};
-      for(const k of Object.keys(keys).sort((a,b)=>(a==="master"?-1:b==="master"?1:a.localeCompare(b))))if(/^[\w-]{1,40}$/.test(k))out.push([w,k])}
-  }catch(e){} csFam.list=out; return out})();
+/* Family cartoons (backlog #16 likeness art, made by the art chat): families/<code>/art/family/<who>/<name> = {img, w, h, kind, key, style, t}
+   Names: master, pose_<key>, outfit_<key>. New ones show up as they're uploaded: the list of names (no pictures) is re-checked
+   whenever the Family tab opens (at most once a minute), and pictures load one at a time, only when they're on screen. */
+const csFam={people:null,at:0,loading:null,keys:new Map(),imgs:new Map()};
+const CS_FAM_TTL=60000;
+const csFamBase=()=>`${FIREBASE.databaseURL}/families/${encodeURIComponent(familyCode)}/art/family`;
+async function csFamShallow(path){const r=await fetch(`${csFamBase()}${path}.json?shallow=true`,{cache:"no-store"});if(!r.ok)throw new Error(r.status);return await r.json()||{}}
+// who has cartoons: [[who, [names…]]], master first, then poses, then outfits
+async function csFamPeople(force){
+  if(csFam.people&&!force&&Date.now()-csFam.at<CS_FAM_TTL) return csFam.people; if(csFam.loading) return csFam.loading;
+  csFam.loading=(async()=>{let out=csFam.people||[];try{
+    const who=Object.keys(await csFamShallow("")).filter(w=>KIDS[w]);
+    out=await Promise.all(who.map(async w=>[w,csFamSort(Object.keys(await csFamShallow("/"+w).catch(()=>({}))).filter(k=>/^[\w-]{1,40}$/.test(k)))]));
+    out=out.filter(([,k])=>k.length).sort((a,b)=>(a[0]===me?-1:b[0]===me?1:0)||nameOf(a[0]).localeCompare(nameOf(b[0])));
+    out.forEach(([w,k])=>csFam.keys.set(w,k)); csFam.at=Date.now();
+  }catch(e){} csFam.people=out; csFam.loading=null; return out})();
   return csFam.loading;
 }
+function csFamSort(keys){const o=k=>k==="master"?0:k.startsWith("pose_")?1:k.startsWith("outfit_")?2:3;return keys.sort((a,b)=>o(a)-o(b)||a.localeCompare(b))}
+async function csFamList(){const ppl=await csFamPeople();const out=[];for(const [w,ks] of ppl)for(const k of ks)out.push([w,k]);return out}
 function csFamImg(who,key){
   const id=who+"/"+key; if(csFam.imgs.has(id)) return csFam.imgs.get(id);
-  const p=mail.ref?mail.ref.child(`art/family/${who}/${key}`).once("value").then(s=>{const v=s.val();return v&&typeof v.img==="string"&&v.img.startsWith("data:image/")?v.img:null}).catch(()=>null):Promise.resolve(null);
+  const ok=v=>v&&typeof v.img==="string"&&v.img.startsWith("data:image/")?v.img:null;
+  const p=fetch(`${csFamBase()}/${encodeURIComponent(who)}/${encodeURIComponent(key)}.json`).then(r=>r.ok?r.json():null).then(ok)
+    .catch(()=>mail.ref?mail.ref.child(`art/family/${who}/${key}`).once("value").then(s=>ok(s.val())).catch(()=>null):null)
+    .then(u=>{if(!u)csFam.imgs.delete(id);return u}); // a miss can be retried later (it may not be uploaded yet)
   csFam.imgs.set(id,p); return p;
 }
-function csFamLabel(key){return key==="master"?"":key.replace(/^(pose|outfit)_/,"").replace(/_/g," ")}
+const CS_FAM_WORDS={threequarter:"turned a bit",pillowfight:"pillow fight",thumbsup:"thumbs up",karate:"karate chop",sneak:"tiptoe",story:"reading a story",cook:"cooking",gift:"a present",hero:"hero pose",front:"standing",back:"from the back",side:"from the side",sit:"sitting",sleep:"sleeping",yawn:"yawning",run:"running",jump:"jumping",dance:"dancing",laugh:"laughing",think:"thinking",point:"pointing",cheer:"cheering",hug:"hugging",wave:"waving",surprised:"surprised"};
+function csFamLabel(key){if(key==="master")return"";const k=key.replace(/^(pose|outfit)_/,"");return CS_FAM_WORDS[k]||k.replace(/_/g," ")}
+// load a thumbnail only once it scrolls into view, so a person's 40 pictures don't all download at once
+const csFamIO=("IntersectionObserver" in window)?new IntersectionObserver(es=>{for(const e of es){if(!e.isIntersecting)continue;csFamIO.unobserve(e.target);const im=e.target;csFamImg(im.dataset.who,im.dataset.key).then(u=>{if(u)im.src=u;else im.closest("button")&&im.closest("button").classList.add("miss")})}},{rootMargin:"120px"}):null;
+function csFamThumb(who,key){const im=new Image();im.className="cthumb";im.alt="";im.dataset.who=who;im.dataset.key=key;
+  if(csFamIO)requestAnimationFrame(()=>csFamIO.observe(im));else csFamImg(who,key).then(u=>{if(u)im.src=u});return im}
+// the grid of one person's cartoons (Family tab, and "change pose" on a placed cartoon)
+function csFamGrid(who,keys,on,onPick){
+  const out=el("div","famsets");
+  for(const [title,pre] of [["",null],["Poses","pose_"],["Outfits","outfit_"]]){
+    const ks=keys.filter(k=>pre?k.startsWith(pre):!k.startsWith("pose_")&&!k.startsWith("outfit_")); if(!ks.length) continue;
+    if(title) out.append(el("h4",null,`${title} <small>${ks.length}</small>`));
+    const g=el("div","cegrid fam");
+    for(const k of ks){const b=el("button",k===on?"on":"");b.append(csFamThumb(who,k),el("small",null,esc(csFamLabel(k)||nameOf(who))));b.setAttribute("aria-label",nameOf(who)+" "+(csFamLabel(k)||""));b.onclick=()=>onPick(k,b);g.append(b)}
+    out.append(g)}
+  return out;
+}
 
 /* ---- building a scene (shared by the editor and the reader) ---- */
 function csFxLayer(fx){
@@ -3706,9 +3739,19 @@ function csRenderPanel(panel,stage){
       const g=el("div","cegrid fam");
       for(const k of Object.keys(KIDS)){const K=KIDS[k];if(!K.look)continue;const b=el("button",null,`${faceHTML(K,"cthumb")}<small>${esc(K.name)}</small>`);b.onclick=()=>{add({k:"av",who:k});sayLittle(K.name)};g.append(b)}
       panel.append(el("h4",null,"Family avatars")); if(g.childElementCount) panel.append(g); else panel.append(el("p","note","Make avatars in 👗 Dress up and they show up here."));
-      const g2=el("div","cegrid fam"); panel.append(el("h4",null,"Family cartoons")); panel.append(g2); g2.append(el("p","note","Looking…"));
-      csFamList().then(list=>{if(!g2.isConnected)return;g2.innerHTML="";if(!list.length){g2.style.display="block";g2.append(el("p","note","No family cartoons yet."));return}
-        for(const [w,key] of list.slice(0,40)){const b=el("button");const im=new Image();im.className="cthumb";im.alt="";b.append(im,el("small",null,esc(nameOf(w)+(csFamLabel(key)?" · "+csFamLabel(key):""))));csFamImg(w,key).then(u=>{if(u)im.src=u});b.onclick=()=>{add({k:"fam",who:w,key,h:.55});sayLittle(nameOf(w))};g2.append(b)}});
+      // family cartoons: pick a person, then a pose or outfit
+      const h=el("h4",null,"Family cartoons"); const box=el("div"); panel.append(h,box); box.append(el("p","note","Looking…"));
+      csFamPeople().then(ppl=>{if(!box.isConnected)return;box.innerHTML="";
+        if(!ppl.length){box.append(el("p","note","No family cartoons yet. When a grown-up makes them, they show up here."));return}
+        if(draft.famWho&&!ppl.some(p=>p[0]===draft.famWho)) draft.famWho=null;
+        if(!draft.famWho&&ppl.length===1) draft.famWho=ppl[0][0];
+        const who=el("div","cegrid fam");
+        for(const [w,ks] of ppl){const b=el("button",w===draft.famWho?"on":"");b.append(csFamThumb(w,ks[0]),el("small",null,`${esc(nameOf(w))} · ${ks.length}`));b.onclick=()=>{draft.famWho=w;sayLittle(nameOf(w));csRenderPanel(panel,stage)};who.append(b)}
+        box.append(who);
+        if(draft.famWho){const [w,ks]=ppl.find(p=>p[0]===draft.famWho);
+          box.append(el("p","note",L==="little"?"":`Tap one to put ${esc(nameOf(w))} on the page.`));
+          box.append(csFamGrid(w,ks,null,k=>{add({k:"fam",who:w,key:k,h:.55});sayLittle(csFamLabel(k)?`${nameOf(w)}, ${csFamLabel(k)}`:nameOf(w))}))}
+      });
     }
     else panel.append(csPanelGrid(CS_LIB[draft.addTab].map(([e,n])=>[e,e,L==="little"?"":n]),null,(e)=>{const nm=(CS_LIB[draft.addTab].find(x=>x[0]===e)||[])[1]||"friend";add({k:"e",e,nm});sayLittle(nm)},{cls:"emo"}));
   }
@@ -3730,6 +3773,13 @@ function csItemPanel(panel,stage,it){
   if(L!=="little") btn("⬆️","To front",()=>{page.items.push(page.items.splice(i,1)[0]);draft.sel=page.items.length-1;csSave();renderStory()});
   const del=btn("🗑️","Remove",()=>{page.items.splice(i,1);draft.sel=-1;csSave();renderStory();blip(300,.08)});
   panel.append(row);
+  if(it.k==="fam"){ // swap to another pose or outfit of the same person, keeping its place and moves
+    const fb=el("details","famswap"); fb.append(el("summary",null,`🔄 Change ${esc(nameOf(it.who))}'s pose or outfit`)); panel.append(fb);
+    fb.addEventListener("toggle",()=>{if(!fb.open||fb.dataset.ok)return;fb.dataset.ok=1;const w=el("div",null);w.append(el("p","note","Looking…"));fb.append(w);
+      csFamPeople().then(ppl=>{const e=ppl.find(p=>p[0]===it.who);w.innerHTML="";if(!e){w.append(el("p","note","No other pictures yet."));return}
+        w.append(csFamGrid(it.who,e[1],it.key,(k,b)=>{it.key=k;re();csSave();fb.querySelectorAll(".cegrid button").forEach(x=>x.classList.toggle("on",x===b));sayLittle(csFamLabel(k)||nameOf(it.who))}))})});
+    if(L==="little") fb.open=true;
+  }
   panel.append(el("h4",null,"How does it move?"));
   const moves=L==="little"?CS_MOVES.filter(m=>CS_LITTLE_MOVES.includes(m[0])):CS_MOVES;
   const mg=csPanelGrid(moves,it.mv,(k,b,l)=>{it.mv=k;if(it.path&&k!=="none"){}mg.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));csSave();sayLittle(l);csPreviewItem(stage,it,i)});

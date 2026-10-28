@@ -4,6 +4,18 @@ Newest first. Each release has kid-friendly notes (shown to everyone in the game
 
 ---
 
+## 1.8: Family cartoons in stories 🧔
+**October 28, 2026**
+
+### For everyone
+- 🧔 **Star in your story:** in ✨ My own story, tap ➕ Add › 👨‍👩‍👧 Family, pick a person, then a pose (running, waving, reading a story, pillow fight and lots more). New cartoons show up as soon as they're made.
+- 🔄 **Change pose:** tap a family cartoon on the page and pick a different pose or outfit. It stays in the same spot with the same moves.
+
+### For grown-ups
+- Cartoons load from the family's private space only when the Family tab is open, one picture at a time as it scrolls into view. The list of names is re-checked at most once a minute, so new uploads appear without reloading the game.
+
+---
+
 ## 1.7: Storybook magic 📖
 **October 28, 2026**
 
