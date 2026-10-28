@@ -988,6 +988,21 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
 .numbtn.glow{animation:hintp 1s ease-in-out infinite}
 /* ============ Capture the Flag (#18) ============ */
 .game .tag.beta{background:#FF8A00;color:#fff}
+.ctfroom{position:absolute;inset:0;z-index:4;background:rgba(214,236,255,.82);display:flex;align-items:center;justify-content:center;padding:12px max(12px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px));overflow:auto}
+.ctfroom .card{background:#fff;border-radius:26px;padding:18px 20px;max-width:620px;width:100%;box-shadow:0 10px 30px rgba(0,0,0,.15);display:flex;flex-direction:column;gap:10px;max-height:100%;overflow:auto}
+.ctfroom h2{margin:0;text-align:center;font-size:28px}
+.ctfroom h3{margin:0;font-size:16px}
+.ctfteams{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ctfteams .tcol{display:flex;flex-direction:column;gap:8px}
+.ctfteams .tcol.blue h3{color:#1D4ED8}.ctfteams .tcol.red h3{color:#B91C1C}
+.ctfslot{width:100%;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:10px;align-items:center;text-align:left;border-radius:16px;padding:8px 12px;border:3px solid;background:#fff;font:inherit;color:var(--ink);min-width:0}
+.ctfslot.blue{border-color:#2D8CFF}.ctfslot.red{border-color:#FF3B3B}
+.ctfslot.you{background:#FFF6C2}
+.ctfslot:disabled{opacity:1;cursor:default}
+.ctfslot .f{grid-row:1/3;font-size:32px}.ctfslot .n{font-weight:900;font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.ctfslot .w{font-size:13px;color:var(--ink-soft);font-weight:700}
+.ctfinv{display:flex;flex-wrap:wrap;gap:8px}.ctfinv .bigbtn,.ctfinv .ghost{font-size:16px;padding:8px 14px}
+.ctfnote{margin:0;color:var(--ink-soft);font-weight:700;font-size:14px}
+@media (max-width:480px){.ctfteams{grid-template-columns:1fr}}
 #ctf{padding-left:0;padding-right:0;background:#BFE3F7;position:relative;overflow:hidden}
 #ctf .ctfhud{display:flex;align-items:center;gap:10px;padding:calc(6px + env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) 4px max(12px,env(safe-area-inset-left,0px))}
 .ctfscore{flex:1;display:flex;align-items:center;justify-content:center;gap:12px;font-weight:900;font-size:26px;color:var(--ink)}
@@ -1232,10 +1247,18 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
   <div class="ctfhud">
     <button class="round" id="ctfHome" aria-label="Home">🏠</button>
     <div class="ctfscore"><span class="tm blue"><small id="ctfFB"></small><b id="ctfSB">0</b></span><span class="ctftime" id="ctfTime">3:00</span><span class="tm red"><b id="ctfSR">0</b><small id="ctfFR"></small></span></div>
+    <button class="round" id="ctfInvBtn" aria-label="Invite family" hidden>👋</button>
     <button class="round" id="ctfSayBtn" aria-label="What do I do?">🔊</button>
   </div>
   <div class="ctfflags" id="ctfFlags"></div>
   <div id="ctfBody"><canvas id="ctfCv"></canvas><div class="ctfbanner" id="ctfBanner"></div><div class="ctfpow" id="ctfPow"></div></div>
+  <div class="ctfroom" id="ctfRoom" hidden><div class="card">
+    <h2>🚩 Capture the Flag</h2>
+    <div class="ctfteams"><div class="tcol blue"><h3>Blue team</h3><div id="ctfSeatsB"></div></div><div class="tcol red"><h3>Red team</h3><div id="ctfSeatsR"></div></div></div>
+    <p class="ctfnote" id="ctfRoomHint"></p>
+    <h3 class="ctfih">👋 Invite family</h3><div class="ctfinv" id="ctfInv"></div>
+    <div class="tbtns"><button class="bigbtn" id="ctfStart">▶️ Start!</button><button class="bigbtn ghost" id="ctfRoomClose" hidden>Back to the game</button><button class="bigbtn ghost" id="ctfRoomHome">🏠 Home</button></div>
+  </div></div>
   <div class="ctfend" id="ctfEnd" hidden></div>
 </section>
 <div class="task" id="task" hidden>
@@ -1353,7 +1376,7 @@ function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i)
 function rng(seed){let a=seed>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 function esc(s){return String(s).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]))}
 function kidOf(k){return KIDS[k] || (k==="kapanigans"?SYS:KIDS.bear)}
-function show(id){const prevScr=screen;if(screen==="reader"&&id!=="reader")hush();if(screen==="inbox"&&id!=="inbox"&&typeof stopRec==="function")stopRec();if(prevScr==="snake"&&id!=="snake"&&typeof snLeave==="function")snLeave(); for(const s of ["setup","pick","lobby","game","story","reader","inbox","grown","farm","dress","ctf","snake"]) $("#"+s).hidden = s!==id; if(id!=="farm"&&id!=="ctf"&&tk) closeTask(true); screen=id; if(typeof renderVideoUI==="function") renderVideoUI(); if(id==="pick"&&typeof syncMailBadges==="function"){syncMailBadges();renderPickClaims()}
+function show(id){const prevScr=screen;if(screen==="reader"&&id!=="reader")hush();if(screen==="inbox"&&id!=="inbox"&&typeof stopRec==="function")stopRec();if(prevScr==="snake"&&id!=="snake"&&typeof snLeave==="function")snLeave();if(prevScr==="ctf"&&id!=="ctf"&&typeof ctfLeave==="function")ctfLeave(); for(const s of ["setup","pick","lobby","game","story","reader","inbox","grown","farm","dress","ctf","snake"]) $("#"+s).hidden = s!==id; if(id!=="farm"&&id!=="ctf"&&tk) closeTask(true); screen=id; if(typeof renderVideoUI==="function") renderVideoUI(); if(id==="pick"&&typeof syncMailBadges==="function"){syncMailBadges();renderPickClaims()}
   if(me&&room&&id!=="game"&&id!=="setup") setPresence(id==="farm"?{scr:id}:{scr:id,act:null});
   if(typeof tickStats==="function") tickStats();
   if(id!==prevScr) showHelp(id); else if(!$("#help").hidden&&helpLast!==id) $("#help").hidden=true}
@@ -1377,8 +1400,8 @@ const HELP={
     faq:[["Who can see it?","Only the person you send it to."],["Voice note won't record?","Allow the microphone in Settings › Safari."]]},
   grown:{em:"🔒",title:"Grown-ups",steps:[["📊","Reports: what the kids played and learned."],["🎙️","Voice: record your voice for the game's words."],["🔑","Code: see and share the family code."],["📸","Photos and inboxes for each person."]],
     faq:[["Can kids get in?","Only by pressing and holding the lock."],["New phone?","Open the site, type the same family code, pick your name."]]},
-  ctf:{em:"🚩",title:"Capture the Flag",steps:[["👆","Tap where you want to go. You walk there and stop."],["🧭","Arrows at the edge point to flags you can't see."],["🚩","Grab the red flag and bring it home to your blue base."],["👋","Touch the other team on YOUR side to tag them."],["🧩","Tagged? Solve a quick puzzle to get back in."],["💩","Dodge Jeppson's poops. They slow you down!"],["🐶","Tap Jeppson to send him after the other team."]],
-    faq:[["Power-ups?","💨 Zoomies make you fast. 🥾 Rain boots stop poop squishes. 🦴 Treat toss sends Jeppson to the other side."],["How do we win?","Most captures when the 3-minute timer runs out."],["Who are the others?","Computer friends. Your teammate is on Blue with you."]]},
+  ctf:{em:"🚩",title:"Capture the Flag",steps:[["👋","Invite family and pick a team, then tap Start. Others can join while you play."],["👆","Tap where you want to go. You walk there and stop."],["🧭","Arrows at the edge point to flags you can't see."],["🚩","Grab the red flag and bring it home to your blue base."],["👋","Touch the other team on YOUR side to tag them."],["🧩","Tagged? Solve a quick puzzle to get back in."],["💩","Dodge Jeppson's poops. They slow you down!"],["🐶","Tap Jeppson to send him after the other team."]],
+    faq:[["Power-ups?","💨 Zoomies make you fast. 🥾 Rain boots stop poop squishes. 🦴 Treat toss sends Jeppson to the other side."],["How do we win?","Most captures when the 3-minute timer runs out."],["Who are the others?","Family who joined (⭐ name tags) and computer friends filling empty spots."],["Can someone join later?","Yes! Tap 👋 to invite, or they tap Join on your card at Home."]]},
   snake:{em:"🐍",title:"Snake Race",steps:[["👆","Hold your finger where you want your snake to go."],["🍬","Eat the snacks to grow longer and fatter."],["🚫","Don't run into other snakes. Your own body is OK."],["💥","Crash? Half your snake spills out. Solve a puzzle to get back in."],["🎁","Boxes: 🧲 magnet, ⚡ speed, ✖️3 triple snacks, ⭐ go through snakes."],["🏆","Longest snake when time runs out wins."]],
     faq:[["Walls?","They just bonk you back."],["⚡ Boost?","Hold it to go faster. It uses up a little of your snake."],["Not enough players?","Computer snakes fill in."]]},
   farm:{em:"🥕",title:"Farmstand",steps:[["👆","Tap a crop, animal or building. Your farmer walks there."],["🧩","Solve the little puzzle to do the chore."],["🌱","Plant, water and pick crops. Feed animals for 🥚 🥛 🧶."],["🧺","Sell at the farmstand for 🪙 Moolah. Build at the red barn."],["📋","Fill family orders on the board."],["🤏","Pinch or tap ➕ ➖ to zoom. Press and hold to move buildings."]],
@@ -1863,6 +1886,7 @@ function wireRoom(){
   room.onPeers(()=>{
     const mine=room.peers().find(p=>p.sameTab); if(mine) myPeer=mine.peer;
     if(screen==="lobby") renderLobby();
+    if(screen==="ctf"&&typeof ctfRoomRender==="function") ctfRoomRender();
     if(screen==="game") {renderSeats();renderCursors();checkParty()}
     videoSync();
   },()=>{});
@@ -1875,6 +1899,7 @@ function wireRoom(){
     else if(me&&!["setup","pick"].includes(screen)) showInvite(g,idx,m.peer);
   });
   room.on("snake",m=>snOnStart(m));
+  room.on("ctf",m=>ctfOnInvite(m));
   room.on("react",m=>{
     if(!m.data||!KIDS[m.data.k]||typeof m.data.r!=="string") return;
     if(!["👋","❤️","😂","⭐"].includes(m.data.r)) return;
@@ -2567,6 +2592,8 @@ function renderPeople(){
       const mySeat=g.seats.findIndex((s,i)=>s.k===me&&!held.includes(i));
       if(mySeat>=0){const b=el("button","bigbtn","↩️ Jump back in");b.onclick=()=>enterGame(g,mySeat,true);act.append(b)}
       else{const b=el("button","bigbtn","👀 Watch");b.onclick=()=>{sayLittle(`Let's watch!`);enterGame(g,-1,true)};act.append(b)}
+    } else if(pr.scr==="ctf"&&pr.cg){
+      const b=el("button","bigbtn","🚩 Join Capture the Flag");b.onclick=()=>{sayLittle("Capture the Flag!");joinCtf(pr.cg)};act.append(b);
     } else if(pr.scr==="snake"&&pr.sg){
       const b=el("button","bigbtn","🐍 Join the race");b.onclick=()=>{sayLittle("Snake race!");joinSnake(pr.sg)};act.append(b);
     } else if(pr.scr==="farm"){
@@ -7097,15 +7124,22 @@ $("#playSnake").onclick=()=>{sayLittle("Snake race!");startSnake()};
 if(/[?&]snakelocal\b/.test(location.search))window.__snake={SNK,SW,startSnake,enterSnake,joinSnake,snEnd,snRespawn,snCrashMine,snWhoHosts,snPellet,snOwn,snNow,snSeatInfo,tk:()=>tk,win:finishTask,quit:()=>closeTask(true)}; // testing only
 
 if(/[?&]farmlocal\b/.test(location.search))window.__farm={animAt,fwNow,fmvStart,fmvDrag,fmvEnd,fpOk,STRUCT,FIELD_SPOTS,decorPos,openFamBasket,sellIt,moveGoods,openBasket,farmClamp,fCands,fInfo,fGo,openTask,TASK_TYPES,F,fm,FW,openBank,bankPut,farmZoomTo,fwWalk,farmTapAt:(i,j)=>{const p=fIso(i,j),r=fm.cv.getBoundingClientRect(),d=fm.cv.width/r.width;farmTap({clientX:r.left+p.x/d,clientY:r.top+p.y/d})},CO,coopUpd,coopTick,startTeam,joinTeam,tk:()=>tk,tapPlot,tapAnimal,tapStruct,openStore,openOrders,openJar,openSell,buyIt,storeItems,deliver,sendGift,win:finishTask,quit:()=>closeTask(true)}; // testing only
-/* ================= Capture the Flag (#18) — test build =================
-   Live as a Beta Version card in the lobby. Single device for now:
-   you + 1 bot teammate (Blue) vs 2 bots (Red). Big oval isometric field; the camera follows you, so you only
-   see part of it (edge arrows point to flags that are off screen). Tap a spot and you walk there, then stop. Tag opponents on YOUR side. Tagged = solve a quick puzzle, back in at base.
-   Jeppson wanders and poops; stepping in it slows you for 3 s (rain boots make you immune).
-   Power-ups: 💨 Zoomies (fast 6 s), 🥾 Rain boots (no squish 10 s), 🦴 Treat toss (Jeppson runs to the
-   other side and poops there). Carrying a flag = 75% speed. 3-minute timer, most captures wins. */
-const CTF={N:40,ROUND_MS:180e3,SPEED:2.1,TAG_R:.75,GRAB_R:.8,BASE_R:1.5,POOP_R:.5,POOP_SLOW:.5,POOP_MS:3000,POOP_LIFE:30e3,POOP_MAX:8,
-  CARRY:.75,ZOOM:1.6,ZOOM_MS:6000,BOOTS_MS:10000,DROP_MS:10000,INVULN_MS:2500,PU_MAX:3,PU_LIFE:20e3,J_SPEED:1.75};
+/* ================= Capture the Flag (#18) — beta, multiplayer =================
+   Two teams of 2: Blue (seats 0-1) and Red (seats 2-3). Real players take seats; computer players fill the rest.
+   Tap Capture the Flag to open a team room: invite family, switch teams by tapping a computer player, then Start.
+   Anyone can join a game in progress (Home card "Join Capture the Flag", or an invite from someone playing);
+   they take a computer player's seat. Big oval isometric field; the camera follows you; edge arrows point to flags.
+   Tap a spot to walk there and stop. Tag the other team on YOUR side. Tagged = a quick puzzle, then back in at base
+   (grown-ups: 2 lost puzzles in a row and you're back in anyway). Jeppson poops slow you down for 3 s.
+   Power-ups: 💨 Zoomies, 🥾 Rain boots, 🦴 Treat toss. 3-minute timer, most captures wins.
+   Sync: one device is the host (whoever made the game, or the next player if they leave). The host runs the whole
+   game (bots, Jeppson, tags, flags, poops) and publishes it ~9 times a second; everyone sends only their taps.
+   Your own player moves right away on your device and is gently corrected to the host's copy.
+   families/<CODE>/ctf/<e>/meta  {at,by,host,status:room|play|over,seats:[{k,p}|{bot:n}]x4,start,end}  (server time)
+   families/<CODE>/ctf/<e>/st    host snapshot {t,sc,ag,fl,pp,pu,j,ev}
+   families/<CODE>/ctf/<e>/in/<seat>  {gx,gy,gn,back,jt}  taps from that seat's device */
+const CTF={N:40,ROUND_MS:180e3,COUNT_MS:3500,SPEED:2.1,TAG_R:.75,GRAB_R:.8,BASE_R:1.5,POOP_R:.5,POOP_SLOW:.5,POOP_MS:3000,POOP_LIFE:30e3,POOP_MAX:8,
+  CARRY:.75,ZOOM:1.6,ZOOM_MS:6000,BOOTS_MS:10000,DROP_MS:10000,INVULN_MS:2500,PU_MAX:3,PU_LIFE:20e3,J_SPEED:1.75,PUB_MS:110,AWAY_MS:6000};
 // the field is an oval: u runs base to base, w across. A, B are its half-lengths (in tiles); bases sit at u = ±BASE_U
 const CTF_FIELD={c:20,A:20,B:10.6,BASE_U:15.6,K:1.25}; // K: obstacle spacing scale
 const ctfXY=(u,w)=>({x:CTF_FIELD.c+(u+w)/Math.SQRT2,y:CTF_FIELD.c+(w-u)/Math.SQRT2});
@@ -7113,14 +7147,14 @@ const ctfUW=p=>({u:(p.x-p.y)/Math.SQRT2,w:(p.x+p.y)/Math.SQRT2-CTF_FIELD.c*Math.
 function ctfInField(x,y,inset){const {u,w}=ctfUW({x,y});return (u/(CTF_FIELD.A-inset))**2+(w/(CTF_FIELD.B-inset))**2<=1}
 const CTF_BASE={blue:ctfXY(-CTF_FIELD.BASE_U,0),red:ctfXY(CTF_FIELD.BASE_U,0)};
 const CTF_TEAM={blue:{name:"Blue",hue:"#2D8CFF",dark:"#1D4ED8"},red:{name:"Red",hue:"#FF3B3B",dark:"#B91C1C"}};
-const CTF_MATES=[{name:"Bear friend",face:"🐻"},{name:"Bunny Bea",face:"🐰"}];
-const CTF_OPPS=[{name:"Fox friend",face:"🦊"},{name:"Farmer Frog",face:"🐸"},{name:"Piggy Pete",face:"🐷"},{name:"Goat Gus",face:"🐐"}];
-// bot strength comes from the human's level: opp/mate = speed vs yours, tag = chance a bot's tag on you counts,
-// avoid = chance a bot routes around poops, wander = chance of a silly detour, think = ms between decisions, out = bot "puzzle" time
+const CTF_BOTS=[{name:"Bear friend",face:"🐻"},{name:"Bunny Bea",face:"🐰"},{name:"Fox friend",face:"🦊"},{name:"Farmer Frog",face:"🐸"},{name:"Piggy Pete",face:"🐷"},{name:"Goat Gus",face:"🐐"}];
+// bot strength comes from the players' levels: opp/mate = bot speed (vs a player's) on a team without/with a real player,
+// tag = chance a bot's tag on a player of that level counts, avoid = chance a bot routes around poops, wander = chance of a
+// silly detour, think = ms between decisions, out = bot "puzzle" time, sight = how close an intruder must be before a
+// defender notices, chase = ms a bot chases before it gets tired and rests 1.5 s
 const CTF_DIFF={little:{opp:.5,mate:.8,tag:.35,avoid:.45,wander:.3,think:750,out:[9000,12000],sight:3.5,chase:2200},
   big:{opp:.78,mate:.85,tag:.85,avoid:.75,wander:.08,think:450,out:[7000,10000],sight:5,chase:3000},
   grown:{opp:.95,mate:.92,tag:1,avoid:.9,wander:0,think:300,out:[6000,9000],sight:7,chase:4500}};
-// sight = how close an intruder must be before a defender notices; chase = ms a bot chases before it gets tired and rests 1.5 s
 const CTF_PUZZLES=["count","letters","color","pattern","numorder","size","shadow"]; // the short ones (10-20 s)
 const CTF_GROWN=["blackjack","mines","jam"];
 const CTF_ITEMS=[{em:"🦴",one:"bone",many:"bones"},{em:"🚩",one:"flag",many:"flags"},{em:"🎾",one:"ball",many:"balls"}];
@@ -7130,13 +7164,30 @@ const CTF_OBS=[[-9,-3.5,"tree"],[-9.5,3.8,"tree"],[-6,0,"hay"],[-6,1.2,"hay"],[-
   [-7,-6,"bush"],[-4.6,-1.4,"tree"],[-2.4,1.4,"hay"],[-12,5.5,"bush"],[-14,-2.6,"bush"],[-8,6.6,"tree"],[-5.5,-7.2,"tree"],[-1.6,-6.6,"bush"]];
 const ctfOther=t=>t==="blue"?"red":"blue";
 const ctfSide=p=>p.x-p.y<0?"blue":"red";
+const ctfTeamOf=i=>i<2?"blue":"red";
 const ctfD=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
 const ctfRand=(a,b)=>a+Math.random()*(b-a);
-let C=null;
-
+let C=null; // the game on this device
+const CN={e:null,local:false,meta:null,seat:-1,refs:[],off:0,enteredAt:0,inSeen:{},pubAt:0,evSeen:-1,away:{},hostAway:0,invited:new Set(),ended:false,roomOpen:false};
+function ctfNow(){return Date.now()+CN.off}
+function ctfRef(p){return !CN.local&&mail.ref&&CN.e?mail.ref.child("ctf/"+CN.e+(p?"/"+p:"")):null}
+function ctfLvlOf(k){const K=KIDS[k];return !K?"big":K.grown?"grown":K.level}
+function ctfBotLevel(seats){const l=(seats||[]).filter(s=>s&&s.k).map(s=>ctfLvlOf(s.k));return l.includes("little")?"little":l.length&&l.every(x=>x==="grown")?"grown":"big"}
+function ctfIsHost(){return CN.local||!!(CN.meta&&CN.meta.host===myPeer)}
+function ctfHere(p){return p===myPeer||peers().some(q=>q.peer===p&&q.presence&&q.presence.scr==="ctf"&&q.presence.cg===CN.e)}
 function ctfLvl(){return isGrown()?"grown":lvl()}
-function ctfRandPt(maxU,maxW){for(let k=0;k<40;k++){const p=ctfXY(ctfRand(-maxU,maxU),ctfRand(-maxW,maxW));if(ctfFreeAt(p.x,p.y))return p}return ctfNearFree(CTF_FIELD.c,CTF_FIELD.c)}
-function ctfFree(i,j){const N=CTF.N;return i>=0&&j>=0&&i<N&&j<N&&!C.block[i*N+j]}
+
+/* ---------- the field (built once) ---------- */
+let CTF_MAP=null;
+function ctfMap(){
+  if(CTF_MAP) return CTF_MAP;
+  const N=CTF.N,block=new Uint8Array(N*N),obs=[];
+  for(let i=0;i<N;i++)for(let j=0;j<N;j++)if(!ctfInField(i+.5,j+.5,.7))block[i*N+j]=1;
+  for(const [u,w,k] of CTF_OBS){const p=ctfXY(u*CTF_FIELD.K,w*CTF_FIELD.K),i=Math.floor(p.x),j=Math.floor(p.y);if(i===j)continue;
+    block[i*N+j]=1;block[j*N+i]=1;obs.push({i,j,k},{i:j,j:i,k})}
+  return CTF_MAP={block,obs};
+}
+function ctfFree(i,j){const N=CTF.N;return i>=0&&j>=0&&i<N&&j<N&&!CTF_MAP.block[i*N+j]}
 function ctfFreeAt(x,y){return ctfFree(Math.floor(x),Math.floor(y))}
 function ctfNearFree(x,y){
   const N=CTF.N;x=clamp(x,.35,N-.35);y=clamp(y,.35,N-.35);
@@ -7145,6 +7196,7 @@ function ctfNearFree(x,y){
   for(let i=0;i<N;i++)for(let j=0;j<N;j++)if(ctfFree(i,j)){const d=Math.hypot(i+.5-x,j+.5-y);if(d<bd){bd=d;best={x:i+.5,y:j+.5}}}
   return best;
 }
+function ctfRandPt(maxU,maxW){for(let k=0;k<40;k++){const p=ctfXY(ctfRand(-maxU,maxU),ctfRand(-maxW,maxW));if(ctfFreeAt(p.x,p.y))return p}return ctfNearFree(CTF_FIELD.c,CTF_FIELD.c)}
 // line of sight: the whole width of a player fits along the line
 function ctfLos(a,b){
   const d=ctfD(a,b);if(d<.01)return true;const n=Math.ceil(d/.2),px=-(b.y-a.y)/d*.28,py=(b.x-a.x)/d*.28;
@@ -7186,44 +7238,184 @@ function ctfPoopOnLine(a,b){for(const p of C.poops){const t=clamp(((p.x-a.x)*(b.
   if(Math.hypot(a.x+(b.x-a.x)*t-p.x,a.y+(b.y-a.y)*t-p.y)<.7)return true}return false}
 function ctfPoopCells(){C.poopCell.fill(0);for(const p of C.poops){const i=Math.floor(p.x),j=Math.floor(p.y);if(i>=0&&j>=0&&i<CTF.N&&j<CTF.N)C.poopCell[i*CTF.N+j]=1}}
 
-/* ---------- setup ---------- */
-function openCtf(){
-  if(!me){goLobby();return}
-  const L=ctfLvl(),D=CTF_DIFF[L],N=CTF.N;
-  const block=new Uint8Array(N*N),obs=[];
-  for(let i=0;i<N;i++)for(let j=0;j<N;j++)if(!ctfInField(i+.5,j+.5,.7))block[i*N+j]=1;
-  for(const [u,w,k] of CTF_OBS){const p=ctfXY(u*CTF_FIELD.K,w*CTF_FIELD.K),i=Math.floor(p.x),j=Math.floor(p.y);if(i===j)continue;
-    block[i*N+j]=1;block[j*N+i]=1;obs.push({i,j,k},{i:j,j:i,k})}
-  const mk=(o)=>Object.assign({state:"play",path:[],carry:null,slowUntil:0,zoomUntil:0,bootsUntil:0,invulnUntil:0,tagCd:0,think:0,
-    vx:0,vy:0,step:0,backAt:0,stats:{caps:0,tags:0,poops:0}},o);
-  const opp=shuffle(CTF_OPPS).slice(0,2),mate=pickOne(CTF_MATES),k=kidOf(me);
-  const B=CTF_BASE;
-  const agents=[
-    mk({id:"me",human:true,team:"blue",name:k.name,face:k.face,spd:1,x:B.blue.x+.8,y:B.blue.y-1.4}),
-    mk({id:"mate",team:"blue",name:mate.name,face:mate.face,spd:D.mate,role:"flex",x:B.blue.x+1.8,y:B.blue.y-.2}),
-    mk({id:"o1",team:"red",name:opp[0].name,face:opp[0].face,spd:D.opp,role:"attack",x:B.red.x-.8,y:B.red.y+1.4}),
-    mk({id:"o2",team:"red",name:opp[1].name,face:opp[1].face,spd:D.opp,role:"defend",x:B.red.x-1.8,y:B.red.y+.2}),
-  ];
-  C={L,D,block,obs,agents,me:agents[0],t:0,last:0,phase:"help",count:0,score:{blue:0,red:0},
-    flags:{blue:{team:"blue",state:"home",x:B.blue.x,y:B.blue.y,carrier:null,at:0},red:{team:"red",state:"home",x:B.red.x,y:B.red.y,carrier:null,at:0}},
-    poops:[],prints:[],pus:[],nextPu:6000,poopCell:new Uint8Array(N*N),said30:false,raf:0,lay:null,ground:null,task:null,
-    cam:null,jep:{x:20,y:20,tx:20,ty:20,mode:"wander",until:0,idleUntil:0,nextPoop:2500,squat:0,face:1,run:0,queue:[],tapCd:0,target:null},
-    fx:[],down:false,lastDrag:0};
-  // a few poops to start
-  for(let n=0;n<4;n++){const q=ctfRandPt(11,6),p=ctfPoopSpot(q.x,q.y,1);if(p)C.poops.push({x:p.x,y:p.y,at:-n*4000,sq:false})}
-  ctfPoopCells();
-  $("#ctf").classList.toggle("little",L==="little");
-  $("#ctfEnd").hidden=true;$("#ctfBanner").innerHTML="";
-  $("#ctfFB").textContent=agents.filter(a=>a.team==="blue").map(a=>a.face).join("");
-  $("#ctfFR").textContent=agents.filter(a=>a.team==="red").map(a=>a.face).join("");
-  show("ctf");
+/* ---------- making, entering, joining, leaving ---------- */
+function ctfBotSeats(seats){ // fill empty seats with computer players nobody else is using
+  const used=new Set(seats.filter(s=>s&&s.bot!=null).map(s=>s.bot)),pool=shuffle([0,1,2,3,4,5]).filter(n=>!used.has(n));
+  return seats.map(s=>s&&(s.k||s.bot!=null)?s:{bot:pool.shift()});
+}
+function openCtf(){if(!me){goLobby();return}ctfCreate()}
+function ctfCreate(seatsIn){
+  const seats=ctfBotSeats(seatsIn||[{k:me,p:myPeer},null,null,null]);
+  const e=Date.now().toString(36)+uid,meta={at:ctfNow(),by:me,host:myPeer,status:"room",seats,start:0,end:0};
+  const mySeat=Math.max(0,seats.findIndex(s=>s&&s.p===myPeer));
+  if(!mail.ref){enterCtf(e,mySeat,meta);return}
+  mail.ref.child("ctf/"+e+"/meta").set(meta).catch(()=>{});
+  // tidy up games older than 30 minutes
+  mail.ref.child("ctf").once("value").then(s=>{const v=s.val()||{},old=ctfNow()-30*60e3,del={};for(const k in v){const m=v[k]&&v[k].meta;if(!m||!(m.at>old))del[k]=null}
+    if(Object.keys(del).length)mail.ref.child("ctf").update(del).catch(()=>{})}).catch(()=>{});
+  enterCtf(e,mySeat);
+  return e;
+}
+function enterCtf(e,seat,localMeta){
+  ctfLeave(true); hush();
+  Object.assign(CN,{e,local:!!localMeta,meta:null,seat,enteredAt:Date.now(),inSeen:{},pubAt:0,evSeen:-1,away:{},hostAway:0,invited:new Set(),ended:false,roomOpen:false});
+  C=ctfNewGame();
+  show("ctf"); setPresence({scr:"ctf",cg:e,act:null});
+  $("#ctfEnd").hidden=true;$("#ctfBanner").innerHTML="";$("#ctfRoom").hidden=true;
+  if(localMeta) ctfOnMeta(localMeta);
+  else{
+    const r=ctfRef();if(!r)return;
+    mail.db.ref(".info/serverTimeOffset").once("value").then(s=>{CN.off=s.val()||0}).catch(()=>{});
+    const on=(ref,ev,fn)=>{ref.on(ev,fn,()=>{});CN.refs.push(()=>ref.off(ev,fn))};
+    on(r.child("meta"),"value",s=>{if(CN.e===e){const m=s.val();if(m&&Array.isArray(m.seats))ctfOnMeta(m)}});
+    on(r.child("st"),"value",s=>{if(CN.e===e){const v=s.val();if(v)ctfOnState(v)}});
+    const inp=s=>{if(CN.e===e)ctfOnInput(+s.key,s.val()||{})};
+    on(r.child("in"),"child_added",inp);on(r.child("in"),"child_changed",inp);
+  }
   ctfLayout();
   cancelAnimationFrame(C.raf);C.last=performance.now();C.raf=requestAnimationFrame(ctfFrame);
-  ctfHud();
 }
+function ctfNewGame(){
+  const {block,obs}=ctfMap(),N=CTF.N,B=CTF_BASE;
+  return {block,obs,agents:[],me:null,t:ctfNow(),last:0,phase:"wait",score:{blue:0,red:0},D:CTF_DIFF.big,
+    flags:{blue:{team:"blue",state:"home",x:B.blue.x,y:B.blue.y,carrier:null,at:0},red:{team:"red",state:"home",x:B.red.x,y:B.red.y,carrier:null,at:0}},
+    poops:[],prints:[],pus:[],nextPu:0,poopCell:new Uint8Array(N*N),said30:false,raf:0,lay:null,ground:null,cam:null,task:null,
+    jep:{x:20,y:20,tx:20,ty:20,mode:"wander",until:0,idleUntil:0,nextPoop:0,squat:0,face:1,run:0,queue:[],tapCd:0,target:null},
+    evq:[],evn:0,synced:false,puzzling:false,losses:0,started:false,lastCount:0};
+}
+const CTF_SPOTS=[[-1.2,-1.6],[-1.9,1.3],[1.2,1.6],[1.9,-1.3]];
+function ctfSpawnSpot(i){const b=CTF_BASE[ctfTeamOf(i)],[du,dw]=CTF_SPOTS[i];const {u,w}=ctfUW(b);return ctfNearFree(...Object.values(ctfXY(u+du,w+dw)))}
+function ctfSeatInfo(i){const s=CN.meta&&CN.meta.seats&&CN.meta.seats[i];if(!s)return {bot:true,name:"",face:"🙂"};
+  if(s.k){const K=kidOf(s.k);return {bot:false,k:s.k,p:s.p,name:K.name,face:K.face,lvl:ctfLvlOf(s.k)}}
+  const B=CTF_BOTS[(s.bot|0)%CTF_BOTS.length];return {bot:true,name:B.name,face:B.face}}
+// someone joined, left or switched teams: update the players to match the seats
+function ctfOnMeta(m){
+  const prev=CN.meta;CN.meta=m;
+  const mine=m.seats.findIndex(s=>s&&s.p===myPeer);if(mine>=0)CN.seat=mine;
+  const humans=[0,1,2,3].filter(i=>m.seats[i]&&m.seats[i].k);
+  C.D=CTF_DIFF[ctfBotLevel(m.seats)];
+  for(let i=0;i<4;i++){
+    const I=ctfSeatInfo(i),team=ctfTeamOf(i),teamHasHuman=humans.some(h=>ctfTeamOf(h)===team);
+    let a=C.agents[i];
+    if(!a){const p=ctfSpawnSpot(i);a=C.agents[i]={seat:i,team,x:p.x,y:p.y,tx:p.x,ty:p.y,state:"play",path:[],carry:null,slowUntil:0,zoomUntil:0,bootsUntil:0,
+      invulnUntil:0,tagCd:0,think:0,vx:0,vy:0,step:0,backAt:0,ko:0,dir:1,stats:{caps:0,tags:0,poops:0},role:"attack"}}
+    const was=a.human;
+    Object.assign(a,{human:!I.bot,k:I.k||null,name:I.name,face:I.face,lvl:I.lvl||null,spd:I.bot?(teamHasHuman?C.D.mate:C.D.opp):1});
+    // bot jobs: on a team with a player the bot plays flexibly; otherwise one attacks and one defends
+    a.role=I.bot?(teamHasHuman?"flex":(i%2?"defend":"attack")):"human";
+    if(!was&&a.human&&prev&&C.phase==="play"&&ctfIsHost()){ // joined mid-game: start fresh at base
+      if(a.carry)ctfDropFlag(a);const p=ctfSpawnSpot(i);Object.assign(a,{x:p.x,y:p.y,tx:p.x,ty:p.y,state:"play",path:[],invulnUntil:ctfNow()+CTF.INVULN_MS,backAt:0});
+      ctfEv("join",i)}
+    if(was&&!a.human&&a.state==="out"&&ctfIsHost())a.backAt=ctfNow()+2000;
+  }
+  C.me=CN.seat>=0?C.agents[CN.seat]:null;
+  if(m.status==="play"&&!C.started&&m.start){C.started=true;ctfResetForStart();if(CN.seat>=0&&!CN.local)bump("ctfRounds")}
+  $("#ctf").classList.toggle("little",ctfLvl()==="little");
+  $("#ctfFB").textContent=C.agents.filter(a=>a.team==="blue").map(a=>a.face).join("");
+  $("#ctfFR").textContent=C.agents.filter(a=>a.team==="red").map(a=>a.face).join("");
+  ctfRoomRender();ctfHud();
+}
+function ctfResetForStart(){ // everyone lines up at their base; the host puts a few poops out
+  for(const a of C.agents){const p=ctfSpawnSpot(a.seat);Object.assign(a,{x:p.x,y:p.y,tx:p.x,ty:p.y,state:"play",path:[],carry:null,slowUntil:0,zoomUntil:0,bootsUntil:0,backAt:0})}
+  for(const f of Object.values(C.flags))ctfFlagHome(f);
+  C.score={blue:0,red:0};C.poops=[];C.pus=[];C.said30=false;
+  if(ctfIsHost()){for(let n=0;n<4;n++){const q=ctfRandPt(11,6),p=ctfPoopSpot(q.x,q.y,1);if(p)C.poops.push({x:p.x,y:p.y,at:ctfNow()-n*4000,sq:false})}
+    C.nextPu=CN.meta.start+6000;C.jep.nextPoop=CN.meta.start+2500}
+  ctfPoopCells();ctfCamera(0,true);
+}
+// join a game (from an invite or someone's card on Home): take back our old seat, or a computer player's
+function joinCtf(e){
+  if(!me)return;if(CN.e===e&&screen==="ctf")return;
+  if(!mail.ref){toast("Not connected yet. Try again in a moment.");return}
+  const held=new Set(peers().filter(q=>q.presence&&q.presence.scr==="ctf"&&q.presence.cg===e).map(q=>q.peer));let got=-1,ended=false;
+  mail.ref.child(`ctf/${e}/meta`).transaction(m=>{
+    if(!m||!Array.isArray(m.seats))return m;got=-1;ended=false;
+    if(m.status==="over"||(m.end&&m.end<ctfNow())){ended=true;return}
+    let i=m.seats.findIndex(s=>s&&s.k===me&&(s.p===myPeer||!held.has(s.p)));
+    if(i<0){const hum=t=>m.seats.filter((s,j)=>s&&s.k&&ctfTeamOf(j)===t).length;
+      const order=[0,1,2,3].filter(j=>m.seats[j]&&!m.seats[j].k).sort((a,b)=>hum(ctfTeamOf(a))-hum(ctfTeamOf(b))||a-b);
+      if(!order.length)i=m.seats.findIndex(s=>s&&s.k&&!held.has(s.p)); else i=order[0]}
+    if(i<0)return;m.seats[i]={k:me,p:myPeer};got=i;return m;
+  }).then(r=>{
+    if(ended){toast("That game just ended.");return}
+    if(!r.committed||got<0){toast("Capture the Flag is full (4 players).");return}
+    enterCtf(e,got);
+  }).catch(()=>toast("Couldn't join. Try again."));
+}
+function ctfLeave(silent){
+  for(const f of CN.refs.splice(0))try{f()}catch(e){}
+  if(tk&&tk.chore==="ctf")closeTask(false);
+  if(C&&C.raf){cancelAnimationFrame(C.raf);C.raf=0}
+  // leaving the team room frees our seat for a computer player
+  if(CN.e&&!CN.local&&mail.ref&&CN.meta&&CN.meta.status==="room"){const e=CN.e;
+    mail.ref.child(`ctf/${e}/meta`).transaction(m=>{if(!m||!Array.isArray(m.seats)||m.status!=="room")return m;
+      const i=m.seats.findIndex(s=>s&&s.p===myPeer);if(i<0)return m;m.seats[i]=null;m.seats=ctfBotSeats(m.seats);
+      if(m.host===myPeer){const h=m.seats.find(s=>s&&s.k&&s.p!==myPeer);m.host=h?h.p:null}return m}).catch(()=>{})}
+  CN.e=null;CN.meta=null;CN.seat=-1;
+  if(!silent){const o=$("#ctfEnd");if(o)o.hidden=true}
+}
+function ctfGoHome(){ctfLeave();goLobby()}
+// switch teams in the team room by tapping a computer player on the other side
+function ctfSwitch(i){
+  const m=CN.meta;if(!m||m.status!=="room"||CN.seat<0||ctfTeamOf(i)===ctfTeamOf(CN.seat)||m.seats[i].k)return;
+  const swap=mm=>{const j=mm.seats.findIndex(s=>s&&s.p===myPeer);if(j<0||mm.seats[i].k)return null;const t=mm.seats[i];mm.seats[i]=mm.seats[j];mm.seats[j]=t;return mm};
+  blip(700,.08);
+  if(CN.local){const mm=swap(JSON.parse(JSON.stringify(m)));if(mm){C.agents=[];ctfOnMeta(mm)}return}
+  ctfRef("meta").transaction(mm=>mm&&Array.isArray(mm.seats)?swap(mm)||mm:mm).catch(()=>{});
+}
+function ctfStart(){
+  const m=CN.meta;if(!m||m.status!=="room")return;
+  const start=ctfNow()+CTF.COUNT_MS,end=start+CTF.ROUND_MS;
+  if(CN.local){ctfOnMeta(Object.assign({},m,{status:"play",start,end}));return}
+  ctfRef("meta").transaction(mm=>{if(!mm||mm.status!=="room")return mm;mm.status="play";mm.start=start;mm.end=end;return mm}).catch(()=>{});
+}
+// invites: before the game starts or while it's going
+function ctfInvite(peer){
+  if(!CN.e||CN.local)return;send("ctf",{e:CN.e,to:peer,k:me});CN.invited.add(peer);blip(660,.1);ctfRoomRender();
+}
+function ctfOnInvite(m){
+  if(m.sameTab||!m.data||typeof m.data.e!=="string"||!me)return;const d=m.data;
+  if(d.to&&d.to!==myPeer)return;
+  if(Array.isArray(d.peers)&&!d.peers.includes(myPeer))return;
+  if(CN.e===d.e)return;
+  // "Play again" from the end screen: come along if we were in that game
+  if(d.again&&screen==="ctf"&&CN.e===d.from){joinCtf(d.e);return}
+  if(["setup","pick"].includes(screen))return;
+  const who=d.k&&KIDS[d.k]?kidOf(d.k).name:"Someone";
+  $("#inviteMsg").textContent=`🚩 ${who} wants to play Capture the Flag with you!`;
+  $("#invite").hidden=false;blip(660,.15,"triangle",.12);setTimeout(()=>blip(880,.2,"triangle",.12),150);
+  sayClip("invite_ctf",`${who} wants to play Capture the Flag with you!`);
+  $("#inviteJoin").onclick=()=>{$("#invite").hidden=true;if(game&&game.refs)game.refs.forEach(r=>r.off());game=null;joinCtf(d.e)};
+  $("#inviteNo").onclick=()=>{$("#invite").hidden=true};
+  clearTimeout(inviteT);inviteT=setTimeout(()=>{$("#invite").hidden=true},60000);
+}
+// the team room (before Start) and the invite sheet (during the game) are the same card
+function ctfRoomRender(){
+  const R=$("#ctfRoom");if(!R||!CN.meta||!C)return;
+  const m=CN.meta,room=m.status==="room",show=room||CN.roomOpen;R.hidden=!show||C.phase==="over";if(R.hidden)return;
+  const slot=i=>{const I=ctfSeatInfo(i),you=i===CN.seat,canSwap=room&&I.bot&&CN.seat>=0&&ctfTeamOf(i)!==ctfTeamOf(CN.seat);
+    return `<button class="ctfslot ${ctfTeamOf(i)}${you?" you":""}" data-i="${i}" ${canSwap?"":"disabled"}><span class="f">${I.face}</span><span class="n">${esc(you?I.name+" (you)":I.name)}</span><span class="w">${I.bot?(canSwap?"🤖 tap to switch":"🤖 computer"):(ctfHere(I.p)?"✅ ready":"⏳ coming")}</span></button>`};
+  $("#ctfSeatsB").innerHTML=slot(0)+slot(1);$("#ctfSeatsR").innerHTML=slot(2)+slot(3);
+  for(const b of R.querySelectorAll(".ctfslot"))b.onclick=()=>ctfSwitch(+b.dataset.i);
+  const inGame=new Set(m.seats.filter(s=>s&&s.p).map(s=>s.p)),inv=$("#ctfInv");
+  if(CN.local){inv.innerHTML=`<p class="ctfnote">Connect to the internet to invite family.</p>`}
+  else{
+    const list=peers().filter(p=>!p.sameTab&&p.presence&&KIDS[p.presence.kid]&&!inGame.has(p.peer)&&p.presence.cg!==CN.e);
+    const seen=new Set(),uniq=list.filter(p=>!seen.has(p.presence.kid)&&seen.add(p.presence.kid));
+    inv.innerHTML=uniq.length?"":`<p class="ctfnote">Nobody else is on right now. When family opens Kapanigans, they show up here.</p>`;
+    for(const p of uniq){const K=kidOf(p.presence.kid),done=CN.invited.has(p.peer);
+      const b=el("button",done?"ghost":"bigbtn",`${K.face} ${esc(K.name)} · ${done?"Invited ✓":"Invite"}`);b.disabled=done;b.onclick=()=>ctfInvite(p.peer);inv.append(b)}
+  }
+  const full=m.seats.every(s=>s&&s.k);
+  $("#ctfRoomHint").textContent=room?"Tap a computer player to switch teams. Computer players fill empty spots.":full?"The game is full.":"Invite someone to take a computer player's spot.";
+  $("#ctfStart").hidden=!room;$("#ctfRoomClose").hidden=room;$("#ctfRoomHome").hidden=!room;
+  $("#ctfInvBtn").hidden=CN.local||room;
+}
+
+/* ---------- ground (drawn once per resize): an oval field on a pond ---------- */
 function ctfLayout(){
   const cv=$("#ctfCv");if(!cv||!C)return;const box=$("#ctfBody").getBoundingClientRect();
-  const W=Math.max(200,box.width),H=Math.max(150,box.height),dpr=Math.min(2,window.devicePixelRatio||1),N=CTF.N;
+  const W=Math.max(200,box.width),H=Math.max(150,box.height),dpr=Math.min(2,window.devicePixelRatio||1);
   cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);
   // zoomed in: a tile is about 1/7.5 of the short side of the screen, so only part of the field shows at once
   const tw=clamp(Math.min(W,H)/7.5,58,110);
@@ -7235,7 +7427,8 @@ const ctfIso=(x,y)=>({x:(x-y)*C.lay.hw,y:(x+y)*C.lay.hh});
 const ctfP=(x,y)=>({x:C.lay.W/2+(x-y)*C.lay.hw-C.cam.x,y:C.lay.H/2+(x+y)*C.lay.hh-C.cam.y});
 function ctfWorld(sx,sy){const l=C.lay,dx=(sx-l.W/2+C.cam.x)/l.hw,dy=(sy-l.H/2+C.cam.y)/l.hh;return {x:(dx+dy)/2,y:(dy-dx)/2}}
 function ctfCamera(dt,snap){
-  const l=C.lay,F=CTF_FIELD,m=C.me,focus=m.state==="play"?m:CTF_BASE[m.team],p=ctfIso(focus.x,focus.y);
+  if(!C.lay)return;
+  const l=C.lay,F=CTF_FIELD,m=C.me,focus=m?(m.state==="play"?m:CTF_BASE[m.team]):CTF_BASE.blue,p=ctfIso(focus.x,focus.y);
   const tx=p.x,ty=p.y-l.tw*.4;
   if(!C.cam||snap)C.cam={x:tx,y:ty};else{const k=1-Math.exp(-dt*5);C.cam.x+=(tx-C.cam.x)*k;C.cam.y+=(ty-C.cam.y)*k}
   // keep the view over the field (center it on an axis where the screen is wider than the field)
@@ -7243,8 +7436,6 @@ function ctfCamera(dt,snap){
   C.cam.x=rx*2<l.W?0:clamp(C.cam.x,-rx+l.W/2,rx-l.W/2);
   C.cam.y=bot-top<l.H?(top+bot)/2:clamp(C.cam.y,top+l.H/2,bot-l.H/2);
 }
-
-/* ---------- ground (drawn once per resize): an oval field on a pond ---------- */
 function ctfGround(){
   const l=C.lay,F=CTF_FIELD,N=CTF.N,gd=Math.min(1.25,l.dpr),rx=F.A*Math.SQRT2*l.hw,ry=F.B*Math.SQRT2*l.hh,th=l.tw*.4,pad=l.tw;
   const cyI=2*F.c*l.hh,minX=-rx-pad,minY=cyI-ry-pad,Wg=2*rx+2*pad,Hg=2*ry+th+2*pad;
@@ -7252,7 +7443,6 @@ function ctfGround(){
   const c=g.getContext("2d");c.setTransform(gd,0,0,gd,-minX*gd,-minY*gd); // draw in iso space
   const I=(x,y)=>ctfIso(x,y);
   const dia=(x,y)=>{const a=I(x,y),b=I(x+1,y),d=I(x+1,y+1),e=I(x,y+1);c.beginPath();c.moveTo(a.x,a.y);c.lineTo(b.x,b.y);c.lineTo(d.x,d.y);c.lineTo(e.x,e.y);c.closePath()};
-  // dirt edge under the grass
   c.fillStyle="#7E5330";c.beginPath();c.ellipse(0,cyI+th,rx,ry,0,0,6.283);c.fill();
   c.fillStyle="#9C6B3F";c.beginPath();c.ellipse(0,cyI+th*.5,rx,ry,0,0,6.283);c.fill();
   c.save();c.beginPath();c.ellipse(0,cyI,rx,ry,0,0,6.283);c.clip();
@@ -7288,7 +7478,7 @@ function ctfDropPoop(x,y,spread=.2){
   C.poops.push({x:p.x,y:p.y,at:C.t,sq:false});ctfPoopCells();blip(330,.08,"sine",.05);return true;
 }
 
-/* ---------- Jeppson ---------- */
+/* ---------- Jeppson (host only) ---------- */
 function ctfJep(dt){
   const j=C.jep,t=C.t;
   if(j.squat>t){j.run=0;return}
@@ -7332,91 +7522,102 @@ function ctfTreat(team){ // Jeppson runs to the other team's side and leaves a f
   j.mode="treat";j.queue=q;j.path=null;j.squat=0;j.idleUntil=0;
 }
 
-/* ---------- people ---------- */
+/* ---------- players (rules run on the host) ---------- */
 function ctfSpeed(a){let s=CTF.SPEED*a.spd;if(a.carry)s*=CTF.CARRY;if(C.t<a.slowUntil)s*=CTF.POOP_SLOW;if(C.t<a.zoomUntil)s*=CTF.ZOOM;return s}
 function ctfGoTo(a,goal,poopW){a.goal=goal;a.path=ctfPath(a,goal,poopW||0)}
-function ctfStep(a,dt){
+function ctfWalk(a,dt){ // just the walking (used by the host for everyone, and by each device for its own player)
   const ox=a.x,oy=a.y;
   if(a.path.length){const p=a.path[0],d=ctfD(a,p),step=ctfSpeed(a)*dt;
     if(d<=step){a.x=p.x;a.y=p.y;a.path.shift()}else{a.x+=(p.x-a.x)/d*step;a.y+=(p.y-a.y)/d*step}}
+  ctfMoved(a,ox,oy,dt);
+}
+function ctfMoved(a,ox,oy,dt){
   a.vx=dt?(a.x-ox)/dt:0;a.vy=dt?(a.y-oy)/dt:0;
   const moving=Math.hypot(a.vx,a.vy)>.2;
   if(moving&&Math.abs(a.vx-a.vy)>.05)a.dir=a.vx-a.vy>0?1:-1;
-  if(moving){a.step+=dt;if(C.t<a.slowUntil&&C.t-(a.lastPrint||0)>260){a.lastPrint=C.t;C.prints.push({x:a.x,y:a.y,at:C.t})}}
-  // poop?
+  if(moving){a.step+=dt;if(C.t<a.slowUntil&&C.t>=a.bootsUntil&&C.t-(a.lastPrint||0)>260){a.lastPrint=C.t;C.prints.push({x:a.x,y:a.y,at:C.t})}}
+}
+function ctfStep(a,dt){
+  ctfWalk(a,dt);
   if(C.t>=a.bootsUntil)for(const p of C.poops)if(ctfD(a,p)<CTF.POOP_R){
-    if(C.t>=a.slowUntil){a.stats.poops++;p.sq=true;if(a.human){blip(140,.22,"sawtooth",.1);ctfSay("Squish! Jeppson's poop!","Squish!")}else blip(160,.12,"sawtooth",.05)}
+    if(C.t>=a.slowUntil){a.stats.poops++;p.sq=true;ctfEv("squish",a.seat)}
     a.slowUntil=C.t+CTF.POOP_MS;
   }
-  // power-ups
   for(const u of C.pus.slice())if(ctfD(a,u)<.75){C.pus.splice(C.pus.indexOf(u),1);ctfPower(a,u.k)}
 }
 function ctfPower(a,k){
-  blip(880,.15,"triangle",.1);
   if(k==="zoom")a.zoomUntil=C.t+CTF.ZOOM_MS;
   if(k==="boots"){a.bootsUntil=C.t+CTF.BOOTS_MS;a.slowUntil=0}
   if(k==="treat")ctfTreat(a.team);
-  const who=a.human?"You":a.name,T=CTF_TEAM[ctfOther(a.team)].name;
-  const msg={zoom:"Zoomies! Super fast!",boots:"Rain boots! No more squish!",treat:`Treat toss! Jeppson runs to ${T}'s side!`}[k];
-  if(a.human)ctfSay(`${CTF_PU[k].em} ${msg}`,msg);
-  else if(k==="treat")ctfSay(`${CTF_PU[k].em} ${who}: ${msg}`);
+  ctfEv("power",a.seat,null,k);
 }
 function ctfFlags(a){
   const F=C.flags,E=F[ctfOther(a.team)],O=F[a.team];
-  if(!a.carry){
-    if(E.state==="home"&&ctfD(a,CTF_BASE[E.team])<CTF.GRAB_R+.3||E.state==="dropped"&&ctfD(a,E)<CTF.GRAB_R){
-      E.state="carried";E.carrier=a;a.carry=E.team;blip(700,.15,"triangle",.1);
-      if(a.human)ctfSay("🚩 You got the flag! Go home!","You got the flag! Go home!");
-      else if(a.team==="blue")ctfSay(`🚩 ${a.name} has the flag!`);
-      else ctfSay(`😮 ${a.name} took our flag! Tag them on our side!`,"Uh oh! They took our flag! Tag them on our side!");
-    }
-  }
-  if(O.state==="dropped"&&ctfD(a,O)<CTF.GRAB_R){ctfFlagHome(O);if(a.human||a.team==="blue")ctfSay(`🏠 ${a.human?"You":a.name} saved our flag!`)}
+  if(!a.carry&&(E.state==="home"&&ctfD(a,CTF_BASE[E.team])<CTF.GRAB_R+.3||E.state==="dropped"&&ctfD(a,E)<CTF.GRAB_R)){
+    E.state="carried";E.carrier=a;a.carry=E.team;ctfEv("grab",a.seat,null,E.team)}
+  if(O.state==="dropped"&&ctfD(a,O)<CTF.GRAB_R){ctfFlagHome(O);ctfEv("save",a.seat)}
   if(a.carry&&ctfD(a,CTF_BASE[a.team])<CTF.BASE_R)ctfScore(a);
 }
 function ctfFlagHome(f){f.state="home";f.carrier=null;f.x=CTF_BASE[f.team].x;f.y=CTF_BASE[f.team].y}
+function ctfDropFlag(a){const f=C.flags[a.carry],p=ctfNearFree(a.x,a.y);f.state="dropped";f.carrier=null;f.x=p.x;f.y=p.y;f.at=C.t;a.carry=null}
 function ctfScore(a){
-  const f=C.flags[a.carry];a.carry=null;ctfFlagHome(f);C.score[a.team]++;a.stats.caps++;
-  tada();a.invulnUntil=C.t+1500;
-  if(a.team==="blue")ctfSay(a.human?"🎉 You scored for Blue!":`🎉 ${a.name} scored for Blue!`,"Blue scores! Hooray!",true);
-  else ctfSay(`${a.name} scored for Red!`,"Red scores!",true);
-  ctfHud();
+  const f=C.flags[a.carry];a.carry=null;ctfFlagHome(f);C.score[a.team]++;a.stats.caps++;a.invulnUntil=C.t+1500;
+  ctfEv("score",a.seat);
 }
 function ctfTag(b,by){
-  if(b.carry){const f=C.flags[b.carry],p=ctfNearFree(b.x,b.y);f.state="dropped";f.carrier=null;f.x=p.x;f.y=p.y;f.at=C.t;b.carry=null}
-  b.state="out";b.path=[];b.slowUntil=0;b.zoomUntil=0;by.stats.tags++;blip(240,.2,"square",.08);
-  if(b.human){ctfSay(`🧩 Tagged by ${by.name}! Solve a puzzle to get back in.`,"Tagged! Solve a puzzle to get back in.",true);setTimeout(ctfPuzzle,900)}
-  else{b.backAt=C.t+ctfRand(...C.D.out);if(by.human)ctfSay(`👋 You tagged ${b.name}!`,"You tagged them!")}
+  if(b.carry)ctfDropFlag(b);
+  b.state="out";b.path=[];b.slowUntil=0;b.zoomUntil=0;b.ko=(b.ko||0)+1;by.stats.tags++;
+  b.backAt=b.human?0:C.t+ctfRand(...C.D.out);
+  ctfEv("tag",by.seat,b.seat);
 }
 function ctfRespawn(a){
-  if(!C||C.phase==="over")return;
-  const b=CTF_BASE[a.team],p=ctfNearFree(b.x+ctfRand(-1,1),b.y+ctfRand(-1,1));
-  a.state="play";a.x=p.x;a.y=p.y;a.path=[];a.invulnUntil=C.t+CTF.INVULN_MS;a.backAt=0;
-  if(a.human)ctfSay("🏃 You're back in!","You're back in! Go go go!");
+  if(!C||C.phase!=="play")return;
+  const p=ctfSpawnSpot(a.seat);
+  Object.assign(a,{state:"play",x:p.x,y:p.y,tx:p.x,ty:p.y,path:[],invulnUntil:C.t+CTF.INVULN_MS,backAt:0});
+  if(a.human)ctfEv("back",a.seat);
 }
-// tagged human: a quick age-appropriate puzzle (same engine as the Farmstand chores)
+// tagged: a quick age-appropriate puzzle (same engine as the Farmstand chores), on that player's own device
 function ctfPuzzle(){
-  if(!C||C.phase==="over"||screen!=="ctf"||C.me.state!=="out"||tk)return;
-  const L=C.L,type=pickType(L==="grown"?CTF_GROWN:CTF_PUZZLES);
+  if(!C||C.phase!=="play"||screen!=="ctf"||!C.me||C.me.state!=="out"||tk)return;
+  const L=ctfLvl(),type=pickType(L==="grown"?CTF_GROWN:CTF_PUZZLES),ko=C.me.ko;
   openTask({type,lvl:L,chore:"ctf",title:"🧩 Solve it to get back in!",ctx:{item:pickOne(CTF_ITEMS)},
-    onWin:()=>{C.me.losses=0;ctfRespawn(C.me)},
-    onQuit:()=>{if(!C||C.phase==="over")return;
+    onWin:()=>{C.losses=0;ctfInput({back:ko})},
+    onQuit:()=>{if(!C||C.phase!=="play")return;
       const my=C.task;C.task=null;
       if(my&&my.won){ // grown-up lost the game: a new puzzle; two losses in a row and you're back in anyway
-        C.me.losses=(C.me.losses||0)+1;
-        if(C.me.losses>=2){C.me.losses=0;ctfRespawn(C.me);return}
+        C.losses=(C.losses||0)+1;
+        if(C.losses>=2){C.losses=0;ctfInput({back:ko});return}
         setTimeout(ctfPuzzle,250);return}
-      C.me.backAt=C.t+5000;ctfSay("⏳ Back in 5 seconds…")}}); // closed the puzzle: a short wait instead
+      ctfSayLocal("⏳ Back in 5 seconds…");setTimeout(()=>{if(C&&C.me&&C.me.state==="out"&&C.me.ko===ko)ctfInput({back:ko})},5000)}}); // closed the puzzle: a short wait instead
   C.task=tk;
 }
+// what this device sends: where it tapped, "I'm back" after a puzzle, or "go Jeppson"
+function ctfInput(msg){
+  if(CN.seat<0)return;
+  if(ctfIsHost()){ctfApplyInput(CN.seat,Object.assign({},msg,{_local:1}));return}
+  if(msg.gx!=null)msg.gn=Date.now();
+  ctfRef("in/"+CN.seat).update(msg).catch(()=>{});
+}
+function ctfOnInput(seat,v){if(ctfIsHost())ctfApplyInput(seat,v)}
+function ctfApplyInput(seat,v){
+  const a=C.agents[seat];if(!a||!a.human||C.phase!=="play")return;const seen=CN.inSeen[seat]||(CN.inSeen[seat]={});
+  if(v.gx!=null&&(v._local||v.gn!==seen.gn)){seen.gn=v.gn;if(a.state==="play")ctfGoTo(a,{x:+v.gx,y:+v.gy})}
+  if(v.back!=null&&a.state==="out"&&+v.back===a.ko)ctfRespawn(a);
+  if(v.jt&&(v._local||v.jt!==seen.jt)){seen.jt=v.jt;if(v._local||ctfNow()-v.jt<4000)ctfJepGo(a)}
+}
+function ctfJepGo(a){
+  const j=C.jep;if(C.t<j.tapCd)return;
+  const foe=C.agents.filter(b=>b.team!==a.team&&b.state==="play").sort((p,q)=>ctfD(j,p)-ctfD(j,q))[0];if(!foe)return;
+  Object.assign(j,{mode:"chase",target:foe,until:C.t+4000,tapCd:C.t+9000,path:null,squat:0,idleUntil:0});ctfEv("jep",a.seat,foe.seat);
+}
 
-/* ---------- bots ---------- */
+/* ---------- bots (host only) ---------- */
 function ctfBot(a){
   const T=a.team,E=ctfOther(T),F=C.flags,O=F[T],EF=F[E],D=C.D,home=CTF_BASE[T];
-  const foes=C.agents.filter(b=>b.team===E&&b.state==="play"),pals=C.agents.filter(b=>b.team===T&&b!==a&&b.state==="play");
+  const foes=C.agents.filter(b=>b.team===E&&b.state==="play");
   const avoid=Math.random()<D.avoid?6:0;let goal=null;
   let role=a.role;
-  if(role==="flex"){const h=C.me;role=h.state!=="play"||ctfSide(h)===T?"attack":"defend"}
+  if(role==="flex"){const pal=C.agents.find(b=>b.team===T&&b.human&&b!==a);role=!pal||pal.state!=="play"||ctfSide(pal)===T?"attack":"defend"}
   if(a.carry)goal=home;
   else if(O.state==="carried"&&O.carrier&&O.carrier.state==="play"&&(ctfSide(O.carrier)===T||ctfD(a,O.carrier)<3)){const c=O.carrier;goal=ctfNearFree(c.x+c.vx*.4,c.y+c.vy*.4)}
   else if(O.state==="dropped")goal=O;
@@ -7425,45 +7626,146 @@ function ctfBot(a){
   if(!goal&&Math.random()<D.wander)goal=ctfNearFree(a.x+ctfRand(-4,4),a.y+ctfRand(-4,4));
   if(!goal&&role==="attack"){
     if(EF.state==="home")goal=CTF_BASE[E];
-    else if(EF.state==="carried"){ // a teammate has it: run alongside between them and home
-      const c=EF.carrier;goal=ctfNearFree((c.x+home.x)/2+ctfRand(-1,1),(c.y+home.y)/2+ctfRand(-1,1))}
+    else if(EF.state==="carried"){const c=EF.carrier;goal=ctfNearFree((c.x+home.x)/2+ctfRand(-1,1),(c.y+home.y)/2+ctfRand(-1,1))}
     else goal=EF;
   }
   if(!goal){ // defend: chase anyone on our side, else stroll near the flag
-    const tired=C.t<a.restUntil;
+    const tired=C.t<(a.restUntil||0);
     const intr=tired?null:foes.filter(b=>ctfSide(b)===T&&C.t>=b.invulnUntil&&(ctfD(a,b)<D.sight||b.carry)).sort((p,q)=>ctfD(a,p)-ctfD(a,q))[0];
     if(intr){if(!a.chaseAt)a.chaseAt=C.t;if(C.t-a.chaseAt>D.chase){a.restUntil=C.t+1500;a.chaseAt=0}goal=ctfNearFree(intr.x+intr.vx*.4,intr.y+intr.vy*.4)}
-    else a.chaseAt=0;
-    if(!intr){if(!a.patrol||ctfD(a,a.patrol)<.6||Math.random()<.1){const ang=Math.random()*6.28,r=ctfRand(2.5,5.5);
-      let p=ctfNearFree(home.x+Math.cos(ang)*r,home.y+Math.sin(ang)*r);if(p&&ctfSide(p)!==T)p=ctfNearFree(home.x,home.y);a.patrol=p}
+    else{a.chaseAt=0;
+      if(!a.patrol||ctfD(a,a.patrol)<.6||Math.random()<.1){const ang=Math.random()*6.28,r=ctfRand(2.5,5.5);
+        let p=ctfNearFree(home.x+Math.cos(ang)*r,home.y+Math.sin(ang)*r);if(p&&ctfSide(p)!==T)p=ctfNearFree(home.x,home.y);a.patrol=p}
       goal=a.patrol}
   }
   if(goal)ctfGoTo(a,goal,avoid);
+}
+
+/* ---------- events: the host sends what happened; each device words it for its own player ---------- */
+function ctfEv(y,a,b,x){
+  if(!ctfIsHost())return;
+  const ev={i:++C.evn,y,a:a==null?-1:a,b:b==null?-1:b,x:x||0};C.evq.push(ev);if(C.evq.length>12)C.evq.shift();
+  CN.evSeen=Math.max(CN.evSeen,ev.i);ctfShowEv(ev);
+}
+function ctfShowEv(ev){
+  const m=CN.seat,me_=C.agents[m],myT=m>=0?ctfTeamOf(m):"blue",A=C.agents[ev.a],B=C.agents[ev.b],nm=a=>a?(a.seat===m?"You":a.name):"Someone";
+  const T=t=>CTF_TEAM[t].name,aT=A?A.team:null;let txt=null,sp,big=false;
+  switch(ev.y){
+    case "grab":blip(700,.15,"triangle",.1);
+      if(ev.a===m){txt="🚩 You got the flag! Go home!"}else if(aT===myT)txt=`🚩 ${nm(A)} has the flag!`;
+      else{txt=`😮 ${nm(A)} took our flag! Tag them on our side!`;sp="Uh oh! They took our flag! Tag them on our side!"}break;
+    case "save":if(aT===myT)txt=`🏠 ${nm(A)} saved our flag!`;break;
+    case "score":tada();big=true;
+      if(aT===myT){txt=ev.a===m?`🎉 You scored for ${T(aT)}!`:`🎉 ${nm(A)} scored for ${T(aT)}!`;sp=`${T(aT)} scores! Hooray!`}
+      else{txt=`${nm(A)} scored for ${T(aT)}!`;sp=`${T(aT)} scores!`}break;
+    case "tag":blip(240,.2,"square",.08);
+      if(ev.b===m){txt=`🧩 Tagged by ${nm(A)}! Solve a puzzle to get back in.`;sp="Tagged! Solve a puzzle to get back in."}
+      else if(ev.a===m){txt=`👋 You tagged ${nm(B)}!`;sp="You tagged them!"}break;
+    case "home":txt=`🏠 The ${T(ev.x)} flag went home.`;break;
+    case "power":if(ev.a===m||ev.x==="treat"){blip(880,.15,"triangle",.1);
+      const msg={zoom:"Zoomies! Super fast!",boots:"Rain boots! No more squish!",treat:`Treat toss! Jeppson runs to ${T(ctfOther(aT))}'s side!`}[ev.x];
+      txt=`${CTF_PU[ev.x].em} ${ev.a===m?"":nm(A)+": "}${msg}`;sp=msg}break;
+    case "jep":blip(600,.1);setTimeout(()=>blip(750,.1),110);txt=`🐶 ${ev.a===m?"":nm(A)+": "}Go get ${B?B.seat===m?"you":B.name:"them"}, Jeppson!`;sp="Go get 'em, Jeppson!";break;
+    case "squish":if(ev.a===m){blip(140,.22,"sawtooth",.1);txt="Squish! Jeppson's poop!";sp="Squish!"}else blip(160,.12,"sawtooth",.04);break;
+    case "back":if(ev.a===m){txt="🏃 You're back in!";sp="You're back in! Go go go!"}break;
+    case "join":txt=`👋 ${nm(A)} joined ${T(aT)}!`;break;
+    case "t30":txt="⏰ 30 seconds left!";sp="Thirty seconds left!";break;
+  }
+  if(txt)ctfSayLocal(txt,sp,big);
+}
+
+/* ---------- sync: the host publishes the game; everyone else follows it ---------- */
+const r2=v=>Math.round(v*100)/100;
+function ctfPublish(force){
+  if(CN.local||!ctfRef())return;const now=performance.now();if(!force&&now-CN.pubAt<CTF.PUB_MS)return;CN.pubAt=now;
+  const F=f=>[f.state==="home"?0:f.state==="dropped"?1:2,r2(f.x),r2(f.y),f.carrier?f.carrier.seat:-1,Math.round(f.at||0)];
+  const j=C.jep;
+  ctfRef("st").set({t:Math.round(C.t),sc:[C.score.blue,C.score.red],
+    ag:C.agents.map(a=>[r2(a.x),r2(a.y),a.state==="play"?1:0,a.carry==="blue"?1:a.carry==="red"?2:0,Math.round(a.slowUntil),Math.round(a.zoomUntil),Math.round(a.bootsUntil),
+      Math.round(a.invulnUntil),Math.round(a.backAt||0),a.ko||0,a.path&&a.path.length?1:0,a.stats.caps,a.stats.tags,a.stats.poops]),
+    fl:[F(C.flags.blue),F(C.flags.red)],pp:C.poops.map(p=>[r2(p.x),r2(p.y),Math.round(p.at),p.sq?1:0]),pu:C.pus.map(u=>[r2(u.x),r2(u.y),u.k,Math.round(u.at)]),
+    j:[r2(j.x),r2(j.y),j.face||1,Math.round(j.squat||0),j.run?1:0],ev:C.evq,n:C.evn}).catch(()=>{});
+}
+function ctfOnState(v){
+  if(ctfIsHost()&&C.synced)return; // that's our own update
+  if(!Array.isArray(v.ag))return;
+  C.score={blue:v.sc&&v.sc[0]||0,red:v.sc&&v.sc[1]||0};
+  for(let i=0;i<4;i++){const a=C.agents[i],q=v.ag[i];if(!a||!q)continue;
+    const st=q[2]?"play":"out",wasOut=a.state==="out";
+    a.carry=q[3]===1?"blue":q[3]===2?"red":null;a.slowUntil=q[4];a.zoomUntil=q[5];a.bootsUntil=q[6];a.invulnUntil=q[7];a.backAt=q[8];
+    const koChanged=(q[9]||0)!==(a.ko||0);a.ko=q[9]||0;a.hostMoving=!!q[10];a.stats={caps:q[11]||0,tags:q[12]||0,poops:q[13]||0};
+    a.tx=q[0];a.ty=q[1];
+    if(i===CN.seat){ // our own player: we moved it already; follow the host when it's far off or something happened
+      const d=Math.hypot(a.x-q[0],a.y-q[1]);
+      if(st!==a.state||koChanged||d>2.5||!C.synced){a.x=q[0];a.y=q[1];a.path=[]}
+      a.state=st;
+    }else{a.state=st;if(wasOut&&st==="play"||!C.synced||Math.hypot(a.x-q[0],a.y-q[1])>4){a.x=q[0];a.y=q[1]}}
+  }
+  const setF=(f,q)=>{if(!q)return;f.state=["home","dropped","carried"][q[0]]||"home";f.x=q[1];f.y=q[2];f.carrier=q[3]>=0?C.agents[q[3]]:null;f.at=q[4]};
+  if(Array.isArray(v.fl)){setF(C.flags.blue,v.fl[0]);setF(C.flags.red,v.fl[1])}
+  C.poops=(v.pp||[]).map(p=>({x:p[0],y:p[1],at:p[2],sq:!!p[3]}));ctfPoopCells();
+  C.pus=(v.pu||[]).map(u=>({x:u[0],y:u[1],k:u[2],at:u[3]}));
+  if(Array.isArray(v.j)){const j=C.jep;j.tx=v.j[0];j.ty=v.j[1];j.face=v.j[2];j.squat=v.j[3];j.run=v.j[4];if(!C.synced){j.x=j.tx;j.y=j.ty}}
+  const evs=Array.isArray(v.ev)?v.ev:[];
+  if(CN.evSeen<0)CN.evSeen=v.n||0; // joining: don't replay old news
+  for(const ev of evs)if(ev&&ev.i>CN.evSeen){CN.evSeen=ev.i;ctfShowEv(ev)}
+  C.evn=Math.max(C.evn,v.n||0);C.evq=evs.filter(Boolean);
+  C.synced=true;
+}
+// every second: hand the game to someone else if the host is gone; computer players replace players who left
+function ctfHostCheck(){
+  const m=CN.meta;if(!m||CN.local||!CN.e)return;const now=Date.now();
+  if(m.host!==myPeer){
+    if(m.host&&ctfHere(m.host)){CN.hostAway=0;return}
+    if(!CN.hostAway)CN.hostAway=now;if(now-CN.hostAway<3000||now-CN.enteredAt<3000)return;
+    // the lowest seat still here takes over
+    const next=m.seats.findIndex(s=>s&&s.k&&ctfHere(s.p));if(next<0||m.seats[next].p!==myPeer)return;
+    const old=m.host;ctfRef("meta").transaction(mm=>{if(!mm||mm.host!==old)return mm;mm.host=myPeer;return mm}).catch(()=>{});
+    CN.hostAway=now;return;
+  }
+  if(m.status!=="play")return;
+  for(let i=0;i<4;i++){const s=m.seats[i];if(!s||!s.k||s.p===myPeer)continue;
+    if(ctfHere(s.p)){CN.away[i]=0;continue}
+    if(!CN.away[i])CN.away[i]=now;
+    if(now-CN.away[i]>CTF.AWAY_MS){CN.away[i]=0;const p=s.p;
+      ctfRef("meta").transaction(mm=>{if(!mm||!Array.isArray(mm.seats)||!mm.seats[i]||mm.seats[i].p!==p)return mm;mm.seats[i]=null;mm.seats=ctfBotSeats(mm.seats);return mm}).catch(()=>{})}
+  }
 }
 
 /* ---------- loop ---------- */
 function ctfFrame(now){
   if(!C||screen!=="ctf"){if(C)C.raf=0;return}
   C.raf=requestAnimationFrame(ctfFrame);
-  const dt=Math.min(.05,(now-C.last)/1000);C.last=now;
-  if(C.phase==="help"){if($("#help").hidden){C.phase="count";C.count=C.t+3000;ctfSay("3","",true);blip(500,.12)}}
-  else if(C.phase==="count"){
-    C.t+=dt*1000;const left=Math.ceil((C.count-C.t)/1000);
-    if(left!==C.lastCount&&left>0&&left<3){C.lastCount=left;ctfSay(String(left),"",true);blip(500,.12)}
-    if(C.t>=C.count){C.phase="play";C.t0=C.t;blip(900,.25,"triangle",.12);
-      ctfSay("Go! Get the red flag and bring it home!","Go! Get the red flag and bring it home!",true);ctfSay("Watch out for Jeppson's poops! 💩")}
+  const dt=Math.min(.05,(now-C.last)/1000);C.last=now;C.t=ctfNow();
+  const m=CN.meta,host=ctfIsHost(),prev=C.phase;
+  C.phase=!m?"wait":m.status==="room"?"room":m.status==="over"?"over":C.t<m.start?"count":C.t<m.end?"play":"over";
+  if(prev!==C.phase)ctfRoomRender();
+  if(C.phase==="count"){
+    if(!$("#help").hidden)$("#help").hidden=true;
+    const left=Math.ceil((m.start-C.t)/1000);
+    if(left!==C.lastCount&&left>0&&left<=3){C.lastCount=left;ctfSayLocal(String(left),"",true);blip(500,.12)}
   }
-  else if(C.phase==="play")ctfUpdate(dt);
+  if(C.phase==="play"&&prev==="count"){blip(900,.25,"triangle",.12);const E=C.me?CTF_TEAM[ctfOther(C.me.team)].name.toLowerCase():"other";
+    ctfSayLocal(`Go! Get the ${E} flag and bring it home!`,`Go! Get the ${E} flag and bring it home!`,true);ctfSayLocal("Watch out for Jeppson's poops! 💩")}
+  if(C.phase==="play"){
+    if(host)ctfUpdate(dt);else ctfFollow(dt);
+    // our own puzzle when we get tagged
+    if(C.me&&C.me.state==="out"&&!C.puzzling){C.puzzling=true;setTimeout(ctfPuzzle,900)}
+    if(C.me&&C.me.state==="play"&&C.puzzling){C.puzzling=false;if(tk&&tk.chore==="ctf")closeTask(false)}
+  }
+  if(C.phase==="over"&&!CN.ended){
+    if(host&&m&&m.status!=="over"){ctfPublish(true);if(!CN.local)ctfRef("meta").update({status:"over"}).catch(()=>{});else m.status="over"}
+    ctfEnd();
+  }
+  if(now-(C.chkAt||0)>1000){C.chkAt=now;ctfHostCheck();if(CN.roomOpen||C.phase==="room")ctfRoomRender()}
+  if(now-(C.hudAt||0)>250){C.hudAt=now;ctfHud()}
   ctfCamera(dt);ctfDraw(now/1000);
 }
-function ctfUpdate(dt){
-  C.t+=dt*1000;const t=C.t;
-  const left=CTF.ROUND_MS-(t-C.t0);
-  if(left<=30e3&&!C.said30){C.said30=true;ctfSay("⏰ 30 seconds left!","Thirty seconds left!")}
-  if(left<=0){ctfEnd();return}
-  // bots think
+function ctfUpdate(dt){ // the host runs the game
+  const t=C.t,left=CN.meta.end-t;
+  if(left<=30e3&&!C.said30){C.said30=true;ctfEv("t30")}
   for(const a of C.agents){
-    if(a.state==="out"){if(a.backAt&&t>=a.backAt)ctfRespawn(a);continue}
+    if(a.state==="out"){if(!a.human&&a.backAt&&t>=a.backAt)ctfRespawn(a);continue}
     if(!a.human&&t>=a.think){a.think=t+C.D.think*ctfRand(.7,1.3);ctfBot(a)}
     ctfStep(a,dt);
   }
@@ -7471,41 +7773,54 @@ function ctfUpdate(dt){
   // tags: you can tag someone standing on YOUR side
   for(const a of C.agents)for(const b of C.agents){
     if(a.team===b.team||a.state!=="play"||b.state!=="play"||ctfSide(b)!==a.team||t<b.invulnUntil||t<a.tagCd||ctfD(a,b)>CTF.TAG_R)continue;
-    if(b.human&&!a.human&&Math.random()>C.D.tag){a.tagCd=t+1200;continue} // easy bots miss a lot
+    if(b.human&&!a.human&&Math.random()>CTF_DIFF[b.lvl||"big"].tag){a.tagCd=t+1200;continue} // easy bots miss a lot against little ones
     a.tagCd=t+600;ctfTag(b,a);
   }
-  // dropped flags go home on their own
-  for(const f of Object.values(C.flags))if(f.state==="dropped"&&t-f.at>CTF.DROP_MS){ctfFlagHome(f);ctfSay(`🏠 The ${CTF_TEAM[f.team].name} flag went home.`)}
-  // poops fade, prints fade
+  for(const f of Object.values(C.flags))if(f.state==="dropped"&&t-f.at>CTF.DROP_MS){ctfFlagHome(f);ctfEv("home",-1,-1,f.team)}
   const n=C.poops.length;C.poops=C.poops.filter(p=>t-p.at<CTF.POOP_LIFE);if(C.poops.length!==n)ctfPoopCells();
   C.prints=C.prints.filter(p=>t-p.at<4000);
-  // power-ups
   C.pus=C.pus.filter(u=>t-u.at<CTF.PU_LIFE);
-  if(t-C.t0>C.nextPu){C.nextPu=t-C.t0+ctfRand(9000,14000);
+  if(t>C.nextPu){C.nextPu=t+ctfRand(9000,14000);
     if(C.pus.length<CTF.PU_MAX){const ks=["zoom","zoom","boots","boots","treat"];
       for(let k=0;k<10;k++){const p=ctfRandPt(11,7.5);
         if(!C.pus.some(u=>ctfD(u,p)<3)&&!C.agents.some(a=>ctfD(a,p)<1.5)){C.pus.push({x:p.x,y:p.y,k:pickOne(ks),at:t});break}}}}
   ctfJep(dt);
-  if(t-(C.hudAt||0)>250){C.hudAt=t;ctfHud()}
+  ctfPublish();
+}
+function ctfFollow(dt){ // not the host: move our own player right away, glide everyone else to the host's copy
+  const k=1-Math.exp(-dt*12),t=C.t;
+  for(const a of C.agents){const ox=a.x,oy=a.y;
+    if(a===C.me&&a.state==="play"){
+      ctfWalk(a,dt);
+      if(!a.path.length&&!a.hostMoving&&a.tx!=null){const d=Math.hypot(a.x-a.tx,a.y-a.ty);if(d>.2){a.x+=(a.tx-a.x)*k*.5;a.y+=(a.ty-a.y)*k*.5;ctfMoved(a,ox,oy,dt)}}
+      continue}
+    if(a.tx==null)continue;a.x+=(a.tx-a.x)*k;a.y+=(a.ty-a.y)*k;ctfMoved(a,ox,oy,dt);
+  }
+  const j=C.jep,ox=j.x;j.x+=(j.tx-j.x)*k;j.y+=(j.ty-j.y)*k;if(Math.abs(j.x-ox)>.001)j.face=j.face||1;
+  C.prints=C.prints.filter(p=>t-p.at<4000);
 }
 function ctfHud(){
   if(!C)return;$("#ctfSB").textContent=C.score.blue;$("#ctfSR").textContent=C.score.red;
-  const left=C.phase==="play"?Math.max(0,CTF.ROUND_MS-(C.t-C.t0)):CTF.ROUND_MS;
+  const m=CN.meta,left=m&&C.phase==="play"?Math.max(0,m.end-C.t):C.phase==="over"?0:CTF.ROUND_MS;
   const tm=$("#ctfTime");tm.textContent=mmss(left);tm.classList.toggle("hurry",C.phase==="play"&&left<=30e3);
-  const st=f=>{const nm=CTF_TEAM[f.team].name;
+  const myT=C.me?C.me.team:"blue";
+  const st=f=>{const nm=CTF_TEAM[f.team].name,alarm=f.team===myT&&f.state!=="home"?" alarm":"";
     if(f.state==="home")return `<span class="${f.team}">🚩 ${nm} flag: home</span>`;
-    if(f.state==="dropped")return `<span class="${f.team}${f.team==="blue"?" alarm":""}">🚩 ${nm} flag: on the ground!</span>`;
-    const c=f.carrier;return `<span class="${f.team}${f.team==="blue"?" alarm":""}">🚩 ${c.human?"You have":esc(c.name)+" has"} the ${nm} flag!</span>`};
-  $("#ctfFlags").innerHTML=st(C.flags.blue)+st(C.flags.red);
-  const m=C.me,p=[];
-  if(C.t<m.zoomUntil)p.push(`💨 ${Math.ceil((m.zoomUntil-C.t)/1000)}`);
-  if(C.t<m.bootsUntil)p.push(`🥾 ${Math.ceil((m.bootsUntil-C.t)/1000)}`);
-  if(C.t<m.slowUntil&&C.t>=m.bootsUntil)p.push("💩 slow");
-  if(m.carry)p.push("🚩 slow");
+    if(f.state==="dropped")return `<span class="${f.team}${alarm}">🚩 ${nm} flag: on the ground!</span>`;
+    const c=f.carrier;return `<span class="${f.team}${alarm}">🚩 ${c&&c===C.me?"You have":esc(c?c.name:"Someone")+" has"} the ${nm} flag!</span>`};
+  $("#ctfFlags").innerHTML=C.phase==="room"?`<span>${C.me?`You're on ${CTF_TEAM[C.me.team].name}`:"Team room"}</span>`:st(C.flags.blue)+st(C.flags.red);
+  const M=C.me,p=[];
+  if(M&&C.phase==="play"){
+    if(C.t<M.zoomUntil)p.push(`💨 ${Math.ceil((M.zoomUntil-C.t)/1000)}`);
+    if(C.t<M.bootsUntil)p.push(`🥾 ${Math.ceil((M.bootsUntil-C.t)/1000)}`);
+    if(C.t<M.slowUntil&&C.t>=M.bootsUntil)p.push("💩 slow");
+    if(M.carry)p.push("🚩 slow");
+  }
   $("#ctfPow").innerHTML=p.map(s=>`<span>${s}</span>`).join("");
+  $("#ctfInvBtn").hidden=CN.local||!m||m.status==="room"||C.phase==="over";
 }
 // banner on screen; Little hears it read aloud
-function ctfSay(text,spoken,big){
+function ctfSayLocal(text,spoken,big){
   const b=$("#ctfBanner");if(!b)return;
   const d=el("div",big&&text.length<5?"big":"",esc(text));b.append(d);
   while(b.children.length>(innerHeight<520?2:3))b.firstChild.remove();
@@ -7513,49 +7828,56 @@ function ctfSay(text,spoken,big){
   if(spoken!=="")sayLittle(spoken||text);
 }
 function ctfEnd(){
-  C.phase="over";if(tk&&tk.chore==="ctf")closeTask(false);
-  const s=C.score,m=C.me.stats,win=s.blue>s.red?"blue":s.red>s.blue?"red":null;
+  CN.ended=true;if(tk&&tk.chore==="ctf")closeTask(false);
+  const s=C.score,M=C.me,ms=M?M.stats:{caps:0,tags:0,poops:0},win=s.blue>s.red?"blue":s.red>s.blue?"red":null;
   const title=win?`${CTF_TEAM[win].name} wins!`:"It's a tie!";
   const sub=win?`Great running, ${CTF_TEAM[ctfOther(win)].name}!`:"Great running, everybody!";
-  const E=$("#ctfEnd");E.hidden=false;
-  E.innerHTML=`<div class="card"><canvas id="ctfWiggle" width="400" height="240"></canvas><h2>${win==="blue"?"🎉 ":""}${title}</h2><p>${sub}</p>
+  const E=$("#ctfEnd");E.hidden=false;$("#ctfRoom").hidden=true;
+  E.innerHTML=`<div class="card"><canvas id="ctfWiggle" width="400" height="240"></canvas><h2>${M&&win===M.team?"🎉 ":""}${title}</h2><p>${sub}</p>
     <div class="fs"><b class="blue">${s.blue}</b> – <b class="red">${s.red}</b></div>
-    <p class="mine">You: ${m.caps} 🚩 captures · ${m.tags} 👋 tags · ${m.poops} 💩 squishes</p>
+    <p class="mine">You: ${ms.caps} 🚩 captures · ${ms.tags} 👋 tags · ${ms.poops} 💩 squishes</p>
     <div class="tbtns"><button class="bigbtn" id="ctfAgain">Play again</button><button class="bigbtn ghost" id="ctfOut">Home</button></div></div>`;
-  $("#ctfAgain").onclick=()=>openCtf();$("#ctfOut").onclick=()=>goLobby();
-  if(win==="blue")tada();
+  $("#ctfAgain").onclick=()=>ctfAgain();$("#ctfOut").onclick=()=>ctfGoHome();
+  if(M&&win===M.team)tada();
   sayLittle(`${title} ${sub}`);
-  // Jeppson does a happy wiggle
   const cv=$("#ctfWiggle"),c=cv.getContext("2d"),t0=performance.now();
   const loop=now=>{if(!cv.isConnected)return;const t=(now-t0)/1000;c.clearRect(0,0,400,240);
     c.save();c.translate(200,200);c.rotate(Math.sin(t*14)*.08);ctfCorgi(c,0,0,170,Math.sin(t*3)>0?1:-1,t,0,true);c.restore();requestAnimationFrame(loop)};
   requestAnimationFrame(loop);
-  // TODO(#8): push round stats (rounds, captures, tags, poops) once multiplayer is wired
-  C.stats={at:Date.now(),lvl:C.L,score:{...s},me:{...m}};
+  // TODO(#8): round stats (captures, tags, poops) into the progress reports
+}
+// Play again: a new team room with everyone still here in the same seats
+function ctfAgain(){
+  const m=CN.meta,old=CN.e;if(!m){openCtf();return}
+  const seats=m.seats.map(s=>s&&s.k&&(s.p===myPeer||ctfHere(s.p))?{k:s.k,p:s.p}:null);
+  const others=seats.filter(s=>s&&s.p!==myPeer).map(s=>s.p);
+  const e=ctfCreate(seats);
+  if(e&&others.length)send("ctf",{e,k:me,again:1,from:old,peers:others});
 }
 
 /* ---------- input: tap a spot and you walk there and stop; tap Jeppson to send him after the other team ---------- */
 function ctfPoint(e){const r=$("#ctfCv").getBoundingClientRect();return {sx:e.clientX-r.left,sy:e.clientY-r.top}}
-function ctfTap(e,first){
-  if(!C||C.phase!=="play"||C.me.state!=="play")return;
-  const {sx,sy}=ctfPoint(e);
-  if(first){const jp=ctfP(C.jep.x,C.jep.y);
-    if(Math.hypot(sx-jp.x,sy-(jp.y-C.lay.tw*.3))<C.lay.tw*.75){
-      if(C.t<C.jep.tapCd){ctfSay("🐶 Jeppson needs a rest!");return}
-      const foe=C.agents.filter(a=>a.team==="red"&&a.state==="play").sort((p,q)=>ctfD(C.jep,p)-ctfD(C.jep,q))[0];
-      if(foe){Object.assign(C.jep,{mode:"chase",target:foe,until:C.t+4000,tapCd:C.t+9000,path:null,squat:0,idleUntil:0});
-        blip(600,.1);setTimeout(()=>blip(750,.1),110);ctfSay(`🐶 Go get ${foe.name}, Jeppson!`,"Go get 'em, Jeppson!")}
-      return}}
+function ctfTap(e){
+  if(!C||C.phase!=="play"||!C.me||C.me.state!=="play")return;
+  const {sx,sy}=ctfPoint(e),jp=ctfP(C.jep.x,C.jep.y);
+  if(Math.hypot(sx-jp.x,sy-(jp.y-C.lay.tw*.3))<C.lay.tw*.75){
+    if(C.t<C.jep.tapCd){ctfSayLocal("🐶 Jeppson needs a rest!");return}
+    ctfInput({jt:ctfNow()});return}
   const w=ctfWorld(sx,sy),g=ctfNearFree(w.x,w.y);if(!g)return;
-  ctfGoTo(C.me,g,0);C.tapMark={x:g.x,y:g.y,at:C.t};
+  if(!ctfIsHost())ctfGoTo(C.me,g,0); // move right away on our own screen
+  ctfInput({gx:r2(g.x),gy:r2(g.y)});C.tapMark={x:g.x,y:g.y,at:C.t};
 }
 function ctfInputs(){
   const cv=$("#ctfCv");
-  cv.addEventListener("pointerdown",e=>{e.preventDefault();ctfTap(e,true)});
-  $("#ctfHome").onclick=()=>{if(C)C.phase="over";goLobby()};
-  $("#ctfSayBtn").onclick=()=>{if(!C)return;const m=C.me;
-    say(m.state!=="play"?"Solve the puzzle to get back in!":m.carry?"You have the flag! Bring it home to your blue base!":
-      C.flags.blue.state==="carried"?"They have our flag! Tag them on our side!":"Tap where you want to go. Get the red flag and bring it home!")};
+  cv.addEventListener("pointerdown",e=>{e.preventDefault();ctfTap(e)});
+  $("#ctfHome").onclick=()=>ctfGoHome();$("#ctfRoomHome").onclick=()=>ctfGoHome();
+  $("#ctfStart").onclick=()=>{sayLittle("Here we go!");ctfStart()};
+  $("#ctfRoomClose").onclick=()=>{CN.roomOpen=false;ctfRoomRender()};
+  $("#ctfInvBtn").onclick=()=>{CN.roomOpen=true;ctfRoomRender()};
+  $("#ctfSayBtn").onclick=()=>{if(!C)return;const m=C.me;if(!m){say("Tap Start to play!");return}
+    const E=CTF_TEAM[ctfOther(m.team)].name.toLowerCase(),H=CTF_TEAM[m.team].name.toLowerCase();
+    say(C.phase==="room"?"Invite your family, then tap Start!":m.state!=="play"?"Solve the puzzle to get back in!":m.carry?`You have the flag! Bring it home to your ${H} base!`:
+      C.flags[m.team].state==="carried"?"They have our flag! Tag them on our side!":`Tap where you want to go. Get the ${E} flag and bring it home!`)};
   window.addEventListener("resize",()=>{if(C&&screen==="ctf")ctfLayout()});
 }
 
@@ -7568,14 +7890,14 @@ function ctfDraw(T){
   {const g=C.gOff;c.drawImage(C.ground,l.W/2-C.cam.x+g.x,l.H/2-C.cam.y+g.y,C.ground.width/g.s,C.ground.height/g.s)}
   const tw=l.tw,t=C.t;
   // base glow when you carry the flag home
-  if(C.me.carry){const p=ctfP(CTF_BASE.blue.x,CTF_BASE.blue.y),k=.5+.5*Math.sin(T*6);
+  if(C.me&&C.me.carry){const p=ctfP(CTF_BASE[C.me.team].x,CTF_BASE[C.me.team].y),k=.5+.5*Math.sin(T*6);
     c.beginPath();c.ellipse(p.x,p.y,CTF.BASE_R*tw*(.8+.15*k),CTF.BASE_R*tw*(.4+.075*k),0,0,Math.PI*2);c.fillStyle=`rgba(255,214,0,${.25+.3*k})`;c.fill()}
   // footprints, poops (flat on the ground)
   for(const p of C.prints){const q=ctfP(p.x,p.y);c.globalAlpha=Math.max(0,1-(t-p.at)/4000)*.6;c.fillStyle="#6B4423";
     c.beginPath();c.ellipse(q.x,q.y,tw*.07,tw*.04,0,0,Math.PI*2);c.fill()}
   c.globalAlpha=1;
   // tap marker
-  if(C.tapMark&&C.me.state==="play"&&(C.me.path.length||t-C.tapMark.at<500)){const q=ctfP(C.tapMark.x,C.tapMark.y),k=(Math.sin(T*6)+1)/2;
+  if(C.tapMark&&C.me&&C.me.state==="play"&&(C.me.path.length||t-C.tapMark.at<500)){const q=ctfP(C.tapMark.x,C.tapMark.y),k=(Math.sin(T*6)+1)/2;
     c.strokeStyle="rgba(255,255,255,.95)";c.fillStyle="rgba(255,214,0,.35)";c.lineWidth=3;c.beginPath();c.ellipse(q.x,q.y,tw*(.3+.06*k),tw*(.15+.03*k),0,0,Math.PI*2);c.fill();c.stroke()}
   // the arrow on the ground from you toward where to go
   ctfGuide(c,T);
@@ -7589,32 +7911,32 @@ function ctfDraw(T){
   const j=C.jep;items.push({z:j.x+j.y,f:()=>{const p=ctfP(j.x,j.y);ctfCorgi(c,p.x,p.y,tw*.95,j.face,T,j.squat>t?1:0,j.run)}});
   items.sort((a,b)=>a.z-b.z);for(const it of items)it.f();
   // out players wait at their base with a puzzle bubble
-  for(const a of C.agents)if(a.state==="out"){const b=CTF_BASE[a.team],p=ctfP(b.x+(a.id.endsWith("2")||a.id==="mate"?.9:-.9),b.y);
+  for(const a of C.agents)if(a.state==="out"&&C.phase==="play"){const b=CTF_BASE[a.team],p=ctfP(b.x+(a.seat%2?.9:-.9),b.y);
     c.globalAlpha=.75;c.font=`${tw*.42}px system-ui`;c.textAlign="center";c.textBaseline="middle";
     c.fillStyle="#fff";c.beginPath();c.arc(p.x,p.y-tw*.5,tw*.32,0,Math.PI*2);c.fill();c.fillText("🧩",p.x,p.y-tw*.5);
-    if(a.backAt){const k=clamp(1-(a.backAt-t)/(C.D.out[1]),0,1);c.strokeStyle=CTF_TEAM[a.team].hue;c.lineWidth=3;c.beginPath();c.arc(p.x,p.y-tw*.5,tw*.36,-Math.PI/2,-Math.PI/2+k*6.28);c.stroke()}
+    if(a.backAt&&!a.human){const k=clamp(1-(a.backAt-t)/(C.D.out[1]),0,1);c.strokeStyle=CTF_TEAM[a.team].hue;c.lineWidth=3;c.beginPath();c.arc(p.x,p.y-tw*.5,tw*.36,-Math.PI/2,-Math.PI/2+k*6.28);c.stroke()}
     c.globalAlpha=1}
   // beacons: a column of light over each flag, wherever it is
   for(const f of Object.values(C.flags)){const pos=f.state==="carried"&&f.carrier?f.carrier:f,p=ctfP(pos.x,pos.y),k=.5+.5*Math.sin(T*4);
     const g=c.createLinearGradient(0,p.y-tw*3.2,0,p.y-tw*.6);const col=f.team==="blue"?"45,140,255":"255,59,59";
     g.addColorStop(0,`rgba(${col},0)`);g.addColorStop(1,`rgba(${col},${.25+.2*k})`);c.fillStyle=g;c.fillRect(p.x-tw*.16,p.y-tw*3.2,tw*.32,tw*2.6)}
   // bouncing "go here" pointer
-  const tg=ctfTarget();if(tg&&C.phase==="play"){const p=ctfP(tg.x,tg.y),b=Math.abs(Math.sin(T*5))*tw*.3,s=C.L==="little"?1.5:1,y=p.y-tw*(tg.carried?1.7:1.5)-b;
+  const tg=ctfTarget();if(tg&&C.phase==="play"){const p=ctfP(tg.x,tg.y),b=Math.abs(Math.sin(T*5))*tw*.3,s=ctfLvl()==="little"?1.5:1,y=p.y-tw*(tg.carried?1.7:1.5)-b;
     c.fillStyle="#FFD600";c.strokeStyle="#2B2140";c.lineWidth=3;c.beginPath();c.moveTo(p.x,y+tw*.35*s);c.lineTo(p.x-tw*.3*s,y-tw*.05*s);c.lineTo(p.x-tw*.12*s,y-tw*.05*s);
     c.lineTo(p.x-tw*.12*s,y-tw*.4*s);c.lineTo(p.x+tw*.12*s,y-tw*.4*s);c.lineTo(p.x+tw*.12*s,y-tw*.05*s);c.lineTo(p.x+tw*.3*s,y-tw*.05*s);c.closePath();c.fill();c.stroke()}
   // arrows on the screen edge for things that are off screen: both flags, and home when you carry one
   const marks=[];
   for(const f of Object.values(C.flags)){const pos=f.state==="carried"&&f.carrier?f.carrier:f;
-    if(f.state==="carried"&&f.carrier&&f.carrier.human)continue;
+    if(f.state==="carried"&&f.carrier&&f.carrier===C.me)continue;
     marks.push({x:pos.x,y:pos.y,col:CTF_TEAM[f.team].hue,em:"🚩",alarm:f.team==="blue"&&f.state!=="home"})}
-  if(C.me.carry&&C.me.state==="play")marks.push({x:CTF_BASE.blue.x,y:CTF_BASE.blue.y,col:"#FFD600",em:"🏠",alarm:true});
+  if(C.me&&C.me.carry&&C.me.state==="play")marks.push({x:CTF_BASE[C.me.team].x,y:CTF_BASE[C.me.team].y,col:"#FFD600",em:"🏠",alarm:true});
   for(const mk of marks)ctfEdgeMark(c,mk,T);
 }
 function ctfEdgeMark(c,mk,T){
-  const l=C.lay,p=ctfP(mk.x,mk.y),py=p.y-l.tw*.6,m=34+(C.L==="little"?8:0);
+  const l=C.lay,p=ctfP(mk.x,mk.y),py=p.y-l.tw*.6,m=34+(ctfLvl()==="little"?8:0);
   if(p.x>m*.5&&p.x<l.W-m*.5&&py>m*.5&&py<l.H-m*.5)return; // on screen: the beacon shows it
   const cx=l.W/2,cy=l.H/2,dx=p.x-cx,dy=py-cy,k=Math.min((cx-m)/Math.abs(dx||1e-6),(cy-m)/Math.abs(dy||1e-6)),x=cx+dx*k,y=cy+dy*k,a=Math.atan2(dy,dx);
-  const r=C.L==="little"?26:21,pulse=mk.alarm?1+.12*Math.sin(T*8):1;
+  const r=ctfLvl()==="little"?26:21,pulse=mk.alarm?1+.12*Math.sin(T*8):1;
   c.save();c.translate(x,y);c.scale(pulse,pulse);
   c.rotate(a);c.fillStyle=mk.col;c.strokeStyle="#2B2140";c.lineWidth=2.5;c.beginPath();c.moveTo(r+14,0);c.lineTo(r-2,-10);c.lineTo(r-2,10);c.closePath();c.fill();c.stroke();c.rotate(-a);
   c.fillStyle="#fff";c.lineWidth=4;c.strokeStyle=mk.col;c.beginPath();c.arc(0,0,r,0,6.283);c.fill();c.stroke();
@@ -7622,17 +7944,16 @@ function ctfEdgeMark(c,mk,T){
 }
 // where should YOU go: the red flag, or home if you (or your teammate) have it
 function ctfTarget(){
-  const m=C.me,R=C.flags.red;if(m.state!=="play")return null;
-  if(m.carry)return {...CTF_BASE.blue};
-  if(R.state==="carried")return {...CTF_BASE.blue};
-  if(R.state==="dropped")return {x:R.x,y:R.y};
-  return {...CTF_BASE.red};
+  const m=C.me;if(!m||m.state!=="play")return null;const E=C.flags[ctfOther(m.team)],home=CTF_BASE[m.team];
+  if(m.carry||E.state==="carried")return {...home};
+  if(E.state==="dropped")return {x:E.x,y:E.y};
+  return {...CTF_BASE[E.team]};
 }
 function ctfGuide(c,T){
-  const m=C.me,tg=ctfTarget();if(!tg||C.phase!=="play")return;const d=ctfD(m,tg);if(d<1.4)return;
-  const ux=(tg.x-m.x)/d,uy=(tg.y-m.y)/d,tw=C.lay.tw,n=C.L==="little"?4:3;
+  const m=C.me,tg=ctfTarget();if(!m||!tg||C.phase!=="play")return;const d=ctfD(m,tg);if(d<1.4)return;
+  const ux=(tg.x-m.x)/d,uy=(tg.y-m.y)/d,tw=C.lay.tw,n=ctfLvl()==="little"?4:3;
   for(let k=0;k<n;k++){const off=.9+k*.55+((T*1.6)%1)*.55;if(off>d-.8)break;
-    const z=C.L==="little"?1.5:1.15,cx=m.x+ux*off,cy=m.y+uy*off,a=ctfP(cx+ux*.3*z,cy+uy*.3*z),l1=ctfP(cx-ux*.1*z-uy*.32*z,cy-uy*.1*z+ux*.32*z),r1=ctfP(cx-ux*.1*z+uy*.32*z,cy-uy*.1*z-ux*.32*z);
+    const z=ctfLvl()==="little"?1.5:1.15,cx=m.x+ux*off,cy=m.y+uy*off,a=ctfP(cx+ux*.3*z,cy+uy*.3*z),l1=ctfP(cx-ux*.1*z-uy*.32*z,cy-uy*.1*z+ux*.32*z),r1=ctfP(cx-ux*.1*z+uy*.32*z,cy-uy*.1*z-ux*.32*z);
     c.globalAlpha=.85-k*.18;c.fillStyle="#FFD600";c.strokeStyle="#2B2140";c.lineWidth=2;
     c.beginPath();c.moveTo(a.x,a.y);c.lineTo(l1.x,l1.y);c.lineTo(r1.x,r1.y);c.closePath();c.fill();c.stroke()}
   c.globalAlpha=1;
@@ -7684,12 +8005,12 @@ function ctfFlag(c,f,T){
 }
 function ctfAgent(c,a,T){
   const tw=C.lay.tw,t=C.t,p=ctfP(a.x,a.y),moving=Math.hypot(a.vx,a.vy)>.2,bob=moving?Math.abs(Math.sin(a.step*14))*tw*.07:0;
-  const r=tw*(a.human?.33:.3),cy=p.y-tw*.38-bob,team=CTF_TEAM[a.team];
+  const r=tw*(a===C.me?.33:.3),cy=p.y-tw*.38-bob,team=CTF_TEAM[a.team];
   if(t<a.invulnUntil&&Math.floor(T*10)%2)c.globalAlpha=.45;
   c.fillStyle="rgba(0,0,0,.2)";c.beginPath();c.ellipse(p.x,p.y,r*.9,r*.42,0,0,6.28);c.fill();
   if(t<a.zoomUntil&&moving){c.strokeStyle="rgba(255,255,255,.9)";c.lineWidth=2;for(let k=-1;k<=1;k++){c.beginPath();
     const dir=a.dir||1,bx=-dir*r*1.1;c.moveTo(p.x+bx,cy+k*r*.4);c.lineTo(p.x+bx-dir*r*.8,cy+k*r*.4);c.stroke()}}
-  if(a.human){c.strokeStyle="#FFD600";c.lineWidth=4;c.beginPath();c.ellipse(p.x,p.y,r*1.15,r*.55,0,0,6.28);c.stroke()}
+  if(a===C.me){c.strokeStyle="#FFD600";c.lineWidth=4;c.beginPath();c.ellipse(p.x,p.y,r*1.15,r*.55,0,0,6.28);c.stroke()}
   c.fillStyle="#fff";c.strokeStyle=team.hue;c.lineWidth=Math.max(3,tw*.1);c.beginPath();c.arc(p.x,cy,r,0,6.28);c.fill();c.stroke();
   if(t<a.slowUntil){c.fillStyle="rgba(120,80,30,.35)";c.beginPath();c.arc(p.x,cy,r,0,6.28);c.fill()}
   c.font=`${r*1.25}px system-ui`;c.textAlign="center";c.textBaseline="middle";c.fillStyle="#2B2140";c.fillText(a.face,p.x,cy+r*.06);
@@ -7698,9 +8019,10 @@ function ctfAgent(c,a,T){
     for(let k=-1;k<=1;k++){const x=p.x+k*r*.6,y=cy-r*1.1;c.beginPath();c.moveTo(x,y);for(let s=1;s<=4;s++)c.lineTo(x+Math.sin(T*6+s+k)*r*.15,y-s*r*.18);c.stroke()}}
   if(a.carry)ctfFlagShape(c,p.x+r*.75,cy+r*.2,tw,a.carry,T,tw*.95);
   // name tag
-  const label=a.human?"YOU":a.name;c.font="800 13px system-ui";const w=c.measureText(label).width+12,ny=cy-r-13;
-  c.fillStyle=a.human?"#FFD600":team.hue;c.beginPath();c.roundRect?c.roundRect(p.x-w/2,ny-10,w,20,10):c.rect(p.x-w/2,ny-10,w,20);c.fill();
-  c.fillStyle=a.human?"#2B2140":"#fff";c.fillText(label,p.x,ny+1);
+  const you=a===C.me,label=you?"YOU":a.human?"⭐ "+a.name:a.name;c.font="800 13px system-ui";const w=c.measureText(label).width+12,ny=cy-r-13;
+  c.fillStyle=you?"#FFD600":team.hue;c.beginPath();c.roundRect?c.roundRect(p.x-w/2,ny-10,w,20,10):c.rect(p.x-w/2,ny-10,w,20);c.fill();
+  c.fillStyle=you?"#2B2140":"#fff";c.fillText(label,p.x,ny+1);
+  if(a.human&&!you){c.strokeStyle="#fff";c.lineWidth=2;c.beginPath();c.roundRect?c.roundRect(p.x-w/2,ny-10,w,20,10):c.rect(p.x-w/2,ny-10,w,20);c.stroke()}
   c.globalAlpha=1;
 }
 // Jeppson, a tricolor Pembroke corgi, drawn in code until his real art is made (#17)
@@ -7730,7 +8052,9 @@ function ctfCorgi(c,x,y,s,face,T,squat,run){
 }
 $("#playCtf").onclick=()=>{sayLittle("Capture the Flag");openCtf()};
 ctfInputs();
-if(/[?&]farmlocal\b/.test(location.search))window.__ctf={get C(){return C},ctfP,ctfCamera,openCtf,ctfPath,ctfEnd,ctfTag,ctfUpdate,ctfGoTo,ctfTarget,ctfRespawn,ctfDraw,closeTask,get tk(){return tk},CTF};
+$("#playCtf").onclick=()=>{sayLittle("Capture the Flag");openCtf()};
+ctfInputs();
+if(/[?&](farmlocal|ctflocal)\b/.test(location.search))window.__ctf={get C(){return C},CN,ctfP,ctfCamera,openCtf,ctfCreate,joinCtf,ctfStart,ctfSwitch,ctfPath,ctfEnd,ctfTag,ctfUpdate,ctfGoTo,ctfTarget,ctfRespawn,ctfDraw,ctfInput,ctfIsHost,closeTask,get tk(){return tk},CTF};
 })();
 </script>
 </body>

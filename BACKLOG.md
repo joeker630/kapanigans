@@ -1005,7 +1005,10 @@ Turn photos of family members into **high-resolution cartoon characters** (in th
 ## 18. 🧪 Capture the Flag (with Jeppson's poops) — Beta live Oct 27
 
 **Beta (Oct 27), single device:** you + 1 bot teammate (Blue) vs 2 bots (Red). Big oval isometric field; the camera follows you, so you see part of it at a time, with edge arrows pointing to off-screen flags (and home when you carry one). Tap a spot to walk there and stop. Tagged players solve a quick age-appropriate puzzle (grown-ups: Blackjack, Minesweeper or Traffic jam; lose 2 in a row and you're back in anyway). Jeppson is drawn in code until his art is made. 3-minute timer, most captures wins. Power-ups: 💨 Zoomies, 🥾 Rain boots, 🦴 Treat toss. The lobby card says **Beta Version**.
-- Still to do: online multiplayer (Firebase), round stats into #8, Jeppson art (#17).
+- ✅ **Multiplayer (Oct 27):** tapping Capture the Flag opens a **team room**: 2 Blue and 2 Red spots, computer players in the empty ones. Invite anyone who's on (they get a Join popup), tap a computer player on the other side to switch teams, then Start. During a game, 👋 invites more people, and anyone can tap **Join Capture the Flag** on a player's card at Home; they take a computer player's spot. Someone who leaves is replaced by a computer player after about 6 seconds.
+  - Sync: the device that made the game is the host and runs everything (bots, Jeppson, tags, flags, poops), publishing ~9 times a second to `families/<code>/ctf/<e>/st`; others send only their taps to `in/<seat>` and move their own player right away. If the host leaves, the next player takes over from the last update.
+  - Computer players get easier if a Little is playing; a bot's tag on a player counts based on that player's level.
+- Still to do: round stats into #8, Jeppson art (#17).
 
 
 A quick, silly **team Capture the Flag** game. Grab the other team's flag and bring it back to your base, while dodging **Jeppson's poops** (#17), which slow you down. **Computer players** fill the teams, so it works with just one kid.
