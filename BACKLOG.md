@@ -303,15 +303,12 @@ About **48 images** left including retries, which is roughly one day of the free
 - [x] Sheared sheep (shown after wool is collected) — 1
 - [x] Hiding spots for egg hunt: hay pile, bush — 2
 
-*Batch B — the farm itself (about 12)*
-- [ ] Buildings: red barn, chicken coop, farmhouse (door to the dressing room), farmstand stall with an awning, stable (buildable with Moolah) — 5
-- [ ] Fence: straight piece and corner (mirrored in code for other directions) — 2
-- [ ] Nature: round tree, apple tree, flower patch, rock, small pond — 5
-
-*Batch B2 — new for building and orders (about 9)*
-- [ ] Stable, sheep shed, water trough or well — 3
-- [ ] Fence gate, fertilizer bag, milk jug (gallon) — 3
-- [ ] Order board, Moolah jar, Moolah coin (replaces the copper and silver coins in Batch C) — 3
+*Batch B — the farm's buildings and shop decorations (19), replacing the code-drawn boxes and emoji labels*
+- Ready: `tools/batches/farmB.json`. Scheduled for Oct 29 after the free allowance rolls over. Files go to `art/iso/farm/bld/` and `art/iso/farm/decor/`, named after the game's `STRUCT` and `DECOR` keys.
+- [ ] Buildings (9): farmstand stall (`stand`), order board (`board`), Family Basket (`fbasket`), Family Bank (`bank`), Farm Store red barn (`store`, the game's `barn`), chicken coop (`coop`), pig pen (`pen`), sheep shed (`shed`), stable (`stable`)
+- [ ] Fence: straight piece and corner (`fence`, `fencecorner`; mirror in code for other directions) — 2
+- [ ] Shop decorations (8, matching `DECOR`): flowers, sunflowers, lantern, bench, mailbox, apple tree, beehive, duck pond
+- **For the Farmstand chat:** draw each sprite at the building's spot in place of its box, bottom-center on the footprint, scaled to the footprint width. Keep the emoji only as a small badge if it helps Little players.
 
 *Batch C — farmstand shop unlocks (about 11)*
 - [ ] Decorations to buy with coins: scarecrow, windmill, flower pot, bench, mailbox, lantern — 6

@@ -1,0 +1,22 @@
+{"about": "Farm art Batch B (backlog #3): the game's buildings (STRUCT in index.html) and shop decorations (DECOR). Run: python3 tools/genart.py isobatch tools/batches/farmB.json (skips anything already made).",
+ "items": {
+  "farm/bld/stand":   {"prompt": "a small wooden farmstand market stall with a red and white striped awning and crates of vegetables on the counter, wide and low"},
+  "farm/bld/board":   {"prompt": "a small wooden notice board on two posts with a little peaked roof and several paper notes pinned to it, no writing"},
+  "farm/bld/fbasket": {"prompt": "a giant woven wicker basket on the ground overflowing with eggs, carrots, pumpkins and a ball of wool, with a little heart-shaped wooden sign with no writing"},
+  "farm/bld/bank":    {"prompt": "a tiny cute farm bank building with cream walls, a green roof, two little columns at the door and a big gold coin emblem above the door, no writing"},
+  "farm/bld/store":   {"prompt": "a big classic red barn with white trim and big open doors, a hammer and saw hanging by the door, used as the farm's building shop, no writing"},
+  "farm/bld/coop":    {"prompt": "a small yellow wooden chicken coop with an orange roof, a little ramp and a round door"},
+  "farm/bld/pen":     {"prompt": "a low wooden pig pen fence enclosing a muddy patch with a small wooden trough, open top"},
+  "farm/bld/shed":    {"prompt": "a long low sheep shed with light grey wooden walls and a slate blue roof, wide and low"},
+  "farm/bld/stable":  {"prompt": "a large brown wooden horse and cow stable with a dark roof and a big double door with a hay loft window"},
+  "farm/bld/fence":   {"prompt": "one straight section of white wooden picket farm fence, about two posts long"},
+  "farm/bld/fencecorner": {"prompt": "one corner piece of white wooden picket farm fence forming an L shape"},
+  "farm/decor/flowers":   {"prompt": "a small round patch of colorful tulips in soil"},
+  "farm/decor/sunflower": {"prompt": "a small cluster of three tall sunflowers"},
+  "farm/decor/lantern":   {"prompt": "an old fashioned farm lantern on a short wooden post, warm glowing light"},
+  "farm/decor/bench":     {"prompt": "a small wooden garden bench"},
+  "farm/decor/mailbox":   {"prompt": "a classic red farm mailbox on a wooden post with the little flag up, no writing"},
+  "farm/decor/tree":      {"prompt": "a round leafy green apple tree with a few red apples"},
+  "farm/decor/beehive":   {"prompt": "a classic white wooden beehive box on a little stand with a few cute bees"},
+  "farm/decor/pond":      {"prompt": "a small round blue duck pond with reeds and a little yellow duck floating"}
+ }}
