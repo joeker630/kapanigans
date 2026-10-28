@@ -111,7 +111,7 @@ def generate(prompt, model="klein", ref=None, seed=None, style=None):
         except urllib.error.HTTPError as e:
             msg = e.read().decode(errors="ignore")[:300]
             if e.code == 429 or "neurons" in msg.lower():
-                sys.exit(f"Free daily limit reached (resets 7pm Central). {msg}")
+                sys.exit(f"Free limit reached: Cloudflare counts a rolling 24 hours (not the calendar day), so it clears about 24h after the earliest recent images. {msg}")
             if attempt == 2: sys.exit(f"Cloudflare error {e.code}: {msg}")
             time.sleep(3)
         except (urllib.error.URLError, TimeoutError, ConnectionError) as e:
@@ -124,12 +124,12 @@ def generate(prompt, model="klein", ref=None, seed=None, style=None):
 
 
 def log_usage(n):
-    day = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    """Rolling 24-hour log (Cloudflare's cap behaves like a rolling window)."""
+    now = time.time()
     try: u = json.loads(LOG.read_text())
     except Exception: u = {}
-    if u.get("day") != day: u = {"day": day, "neurons": 0, "images": 0}
-    u["neurons"] += n; u["images"] += 1
-    LOG.write_text(json.dumps(u))
+    ev = [e for e in u.get("events", []) if now - e[0] < 86400] + [[now, n]]
+    LOG.write_text(json.dumps({"events": ev}))
 
 
 def cutout(raw, keepbg=False, size=512):
@@ -378,12 +378,15 @@ def main():
     elif a.cmd == "sheet":
         sheet(a.args[0] if a.args else "", a.out)
     elif a.cmd == "usage":
-        try: u = json.loads(LOG.read_text())
-        except Exception: u = {"neurons": 0, "images": 0}
-        if u.get("day") != datetime.now(timezone.utc).strftime("%Y-%m-%d"): u = {"neurons": 0, "images": 0}
-        left = DAILY - u["neurons"]
-        print(f"today: {u['images']} images, ~{u['neurons']} neurons used, ~{left} left "
-              f"(~{left//MODELS['klein'][1]} klein / ~{left//MODELS['schnell'][1]} schnell). Resets 7pm Central.")
+        try: ev = json.loads(LOG.read_text()).get("events", [])
+        except Exception: ev = []
+        now = time.time(); ev = [e for e in ev if now - e[0] < 86400]
+        used = sum(e[1] for e in ev); left = DAILY - used
+        msg = f"last 24h: {len(ev)} images, ~{int(used)} neurons, ~{int(left)} left (~{max(0,int(left))//MODELS['klein'][1]} klein)."
+        if ev and left < 1000:
+            free_at = datetime.fromtimestamp(min(e[0] for e in ev) + 86400).strftime("%a %H:%M")
+            msg += f" Oldest image rolls off {free_at} (this machine's clock)."
+        print(msg + " Only counts this workspace; the Cloudflare dashboard is the real number.")
 
 
 if __name__ == "__main__":
