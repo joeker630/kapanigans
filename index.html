@@ -2133,7 +2133,7 @@ function videoPeers(){
 }
 let vsT=null;
 function videoSync(){clearTimeout(vsT);vsT=setTimeout(doVideoSync,150)}
-function doVideoSync(){
+function doVideoSync(){ setTimeout(tuneSenders,1500);
   const want=new Set(videoPeers().map(p=>p.peer));
   for(const p of [...vid.pcs.keys()]) if(!want.has(p)) closePc(p,false);
   for(const p of [...vid.streams.keys()]) if(!want.has(p)) {vid.streams.delete(p)}
@@ -2148,21 +2148,56 @@ function closePc(peer,bye){
 }
 function newPc(peer){
   const pc=new RTCPeerConnection({iceServers:ICE}), c={pc,pending:[],t:null};
-  vid.local.getTracks().forEach(t=>{const snd=pc.addTrack(t,vid.local);
-    if(t.kind==="video"&&snd.getParameters){try{const prm=snd.getParameters();prm.encodings=prm.encodings&&prm.encodings.length?prm.encodings:[{}];prm.encodings[0].maxBitrate=250000;snd.setParameters(prm).catch(()=>{})}catch(e){}}});
+  vid.local.getTracks().forEach(t=>{if(t.kind==="video"&&"contentHint" in t)t.contentHint="motion";pc.addTrack(t,vid.local)});
+  // a little jitter buffer on what we hear: a touch more delay, far fewer choppy gaps on busy Wi-Fi
+  pc.addEventListener("track",e=>{try{if(e.receiver&&"jitterBufferTarget" in e.receiver)e.receiver.jitterBufferTarget=e.track.kind==="audio"?120:150}catch(_){}});
   pc.onicecandidate=e=>{if(e.candidate&&room) room.signal(peer,{y:"ice",c:e.candidate.toJSON()})};
   pc.ontrack=e=>{const st=e.streams[0]||new MediaStream([e.track]);vid.streams.set(peer,st);renderVideoUI()};
   pc.onconnectionstatechange=()=>{
     if(vid.pcs.get(peer)!==c) return; const s=pc.connectionState;
-    if(s==="connected"){renderVideoUI()}
+    if(s==="connected"){renderVideoUI();tuneSenders()}
     else if(s==="failed"||s==="closed"){closePc(peer,false);setTimeout(videoSync,2500)}
     else if(s==="disconnected"){setTimeout(()=>{if(vid.pcs.get(peer)===c&&pc.connectionState!=="connected"){closePc(peer,false);videoSync()}},6000)}
   };
   vid.pcs.set(peer,c); return c;
 }
+/* ---- call quality: voices first, video shares what's left ----
+   Every device sends its own copy to each other person (up to 3), so the upload is split by how many are on.
+   Audio: Opus with error correction (FEC) and silence suppression (DTX), marked high priority.
+   Video: bitrate and frame rate scale with the number of people, and drop further if the network is losing packets. */
+const VQ={level:0}; // 0 normal, 1 reduced, 2 low
+function opusTune(sdp){return sdp.replace(/a=fmtp:(\d+) ([^\r\n]*)/g,(m,pt,p)=>{
+  if(!new RegExp("a=rtpmap:"+pt+" opus/","i").test(sdp)) return m;
+  const kv=Object.fromEntries(p.split(";").map(x=>x.trim().split("=")).filter(x=>x[0]));
+  Object.assign(kv,{useinbandfec:"1",usedtx:"1",stereo:"0",maxaveragebitrate:"32000"});
+  return "a=fmtp:"+pt+" "+Object.entries(kv).map(([k,v])=>k+"="+v).join(";")})}
+function tuneSenders(){
+  const n=Math.max(1,vid.pcs.size);
+  const base=[[420,20],[300,15],[220,15],[180,12]][Math.min(3,n)]||[180,12];
+  const kbps=Math.round(base[0]*[1,.65,.4][VQ.level]), fps=[base[1],Math.min(base[1],12),8][VQ.level];
+  for(const c of vid.pcs.values()) for(const snd of c.pc.getSenders()){
+    if(!snd.track||!snd.getParameters) continue;
+    // some browsers reject a field they don't know, so try with everything, then with just the essentials
+    const apply=full=>{try{const prm=snd.getParameters(); if(!prm.encodings||!prm.encodings.length) return Promise.resolve();
+      const e=prm.encodings[0];
+      if(snd.track.kind==="audio"){e.maxBitrate=40000;if(full){e.priority="high";e.networkPriority="high"}}
+      else{e.maxBitrate=kbps*1000;e.maxFramerate=fps;if(full){e.priority="low";e.networkPriority="low";prm.degradationPreference="maintain-framerate"}}
+      return snd.setParameters(prm)}catch(err){return Promise.reject(err)}};
+    apply(true).catch(()=>apply(false)).catch(()=>{});
+  }
+}
+// every few seconds: if the other end reports lost video packets, step quality down; when it's clean again, step back up
+setInterval(async()=>{
+  if(!vid.pcs.size) {VQ.level=0;return}
+  let lost=0,cnt=0;
+  for(const c of vid.pcs.values()){try{const st=await c.pc.getStats();st.forEach(r=>{if(r.type==="remote-inbound-rtp"&&r.kind==="video"&&typeof r.fractionLost==="number"){lost+=r.fractionLost;cnt++}})}catch(_){}}
+  if(!cnt) return; const f=lost/cnt, was=VQ.level;
+  if(f>.08&&VQ.level<2) VQ.level++; else if(f<.02&&VQ.level>0) VQ.level--;
+  if(VQ.level!==was) tuneSenders();
+},5000);
 function flushIce(c){if(!c.pc.remoteDescription)return;for(const x of c.pending)c.pc.addIceCandidate(x).catch(()=>{});c.pending=[]}
 async function call(peer){
-  const c=newPc(peer); const off=await c.pc.createOffer(); await c.pc.setLocalDescription(off);
+  const c=newPc(peer); const off=await c.pc.createOffer(); await c.pc.setLocalDescription({type:"offer",sdp:opusTune(off.sdp)});
   room.signal(peer,{y:"offer",sdp:c.pc.localDescription.sdp});
   c.t=setTimeout(()=>{if(vid.pcs.get(peer)===c&&c.pc.signalingState==="have-local-offer"){closePc(peer,false);videoSync()}},12000);
 }
@@ -2174,7 +2209,7 @@ async function onSignal(m){
     closePc(peer,false); const c=newPc(peer);
     for(const x of earlyIce.get(peer)||[]) c.pending.push(x); earlyIce.delete(peer);
     await c.pc.setRemoteDescription({type:"offer",sdp:m.sdp}); flushIce(c);
-    const ans=await c.pc.createAnswer(); await c.pc.setLocalDescription(ans);
+    const ans=await c.pc.createAnswer(); await c.pc.setLocalDescription({type:"answer",sdp:opusTune(ans.sdp)});
     room.signal(peer,{y:"answer",sdp:c.pc.localDescription.sdp});
   } else if(m.y==="answer"&&typeof m.sdp==="string"){
     const c=vid.pcs.get(peer); if(c&&c.pc.signalingState==="have-local-offer"){await c.pc.setRemoteDescription({type:"answer",sdp:m.sdp});flushIce(c)}
