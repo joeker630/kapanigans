@@ -1010,8 +1010,17 @@ A quick, silly **team Capture the Flag** game. Grab the other team's flag and br
 - Two teams, **Red** and **Blue**, each with a base and a flag on opposite sides of a top-down field (the farm, a backyard or a park).
 - Move your avatar (#10) by dragging a finger or using a big on-screen joystick.
 - **Grab** the other team's flag by running into it, then carry it back to your own base to score.
-- **Tagging:** touch an opponent on your side of the field to tag them. A tagged player is sent back to their base (no "out," just a quick respawn). Carrying a flag when tagged drops it on the spot, and touching your own dropped flag returns it home.
+- **Tagging:** touch an opponent on your side of the field to tag them. A tagged player drops any flag they're carrying (touching your own dropped flag returns it home), then solves a quick puzzle to get back in at their base (see below).
 - **First to 3 captures wins**, or the most captures after **3 minutes**. A round should never feel long.
+
+**🧩 Puzzle to get back in**
+- When you get tagged, you solve a quick **age-appropriate puzzle** to get back in, using the same puzzle system as the Farmstand chores (all 8 kid puzzle types, with Little and Big versions; grown-ups get their grown-up puzzles).
+- Respawn puzzles are **short (about 10–20 seconds)**, so you're back in the action fast. The game keeps going for everyone else while you solve it.
+- **Little:** the easiest version, read aloud, with hints after a wrong tap. Every wrong answer just gets "try again," and you always get back in.
+- **Big:** normal difficulty, with a hint button.
+- **Grown-ups:** a grown-up puzzle. If you lose it, you get a new one (no getting stuck out of the game).
+- The puzzle type rotates so the same one doesn't come up twice in a row.
+- Every respawn puzzle is logged in the stats (#8), like farm puzzles.
 
 **🐶💩 Jeppson and his poops**
 - Jeppson (#17) runs around the field and leaves poops as he goes, a few at the start and more during the round (no more than about 8 at once).
@@ -1030,7 +1039,7 @@ A quick, silly **team Capture the Flag** game. Grab the other team's flag and br
 - Bots have fun names and looks (Bear friend, Fox friend, and silly farm-hand bots) so kids know who's a computer.
 
 **By level**
-- **Little (Violet):** tap where you want to go and your avatar walks there. A big glowing arrow points to the flag and back home. Friendlier rules: tags just bounce you back a few steps, and the opposing bots move slowly. Everything is read aloud ("You got the flag! Go home!").
+- **Little (Violet):** tap where you want to go and your avatar walks there. A big glowing arrow points to the flag and back home. Friendlier rules: the opposing bots move slowly, and her respawn puzzles are the easiest kind. Everything is read aloud ("You got the flag! Go home!").
 - **Big (Quinn) and grown-ups:** joystick or drag control, full tagging rules, faster bots and a sprint button with a short cooldown.
 
 **Multiplayer**
@@ -1039,12 +1048,13 @@ A quick, silly **team Capture the Flag** game. Grab the other team's flag and br
 - Play time and results go into the stats (#8): rounds played, captures, tags, and poops stepped in.
 
 **Gentle rules**
-- No elimination and no lost Moolah. Everyone stays in the game the whole round.
+- No elimination and no lost Moolah. A tag only means a quick puzzle, then you're back in.
 - A cheerful end screen for both teams ("Red wins! Great running, Blue!") and Jeppson doing a happy wiggle.
 
 **Acceptance criteria**
 - [ ] Two teams with bases and flags; carrying a flag home scores a capture
 - [ ] Tagging sends players back to base and drops a carried flag
+- [ ] A tagged player solves a short, age-appropriate puzzle to respawn at their base
 - [ ] Jeppson runs around leaving poops that slow players for about 3 seconds and fade after about 30 seconds
 - [ ] Flag carriers move at about 75% speed, and slowdowns stack with poop
 - [ ] Bots fill empty spots, with defend, attack and chase roles and difficulty set by level
@@ -1071,8 +1081,17 @@ A live **multiplayer snake** game: every player steers their own snake around on
   - Two heads bumping = both crash.
   - Walls: either wrap around to the other side or crash (decision below).
   - Your own tail: decision below (crash, like classic snake, or pass through, which is easier for little ones).
-- **After a crash:** your snake turns into a trail of sparkly snacks others can eat, and you **respawn** as a short snake after 3 seconds, with a few seconds of see-through safety. Nobody is out for the whole game.
+- **After a crash:** your snake turns into a trail of sparkly snacks others can eat. Solve a quick puzzle (see below) to **respawn** as a short snake, with a few seconds of see-through safety. Nobody is out for the whole game.
 - **Rounds of 2–3 minutes.** The winner is the **longest snake at the end** (or most snacks eaten), with a podium for everyone.
+
+**🧩 Puzzle to get back in**
+- When you crash, you solve a quick **age-appropriate puzzle** to get back in, using the same puzzle system as the Farmstand chores (all 8 kid puzzle types, with Little and Big versions; grown-ups get their grown-up puzzles).
+- Respawn puzzles are **short (about 10–20 seconds)**, so you're back in the action fast. The game keeps going for everyone else while you solve it.
+- **Little:** the easiest version, read aloud, with hints after a wrong tap. Every wrong answer just gets "try again," and you always get back in.
+- **Big:** normal difficulty, with a hint button.
+- **Grown-ups:** a grown-up puzzle. If you lose it, you get a new one (no getting stuck out of the game).
+- The puzzle type rotates so the same one doesn't come up twice in a row.
+- Every respawn puzzle is logged in the stats (#8), like farm puzzles.
 
 **Controls**
 - **Swipe** to turn (up, down, left, right), or a big on-screen joystick or arrow pad.
@@ -1098,7 +1117,7 @@ A live **multiplayer snake** game: every player steers their own snake around on
 **Acceptance criteria**
 - [ ] Up to 4 snakes (real players plus bots) on one shared field, in sync across devices
 - [ ] Hitting another snake's tail or body crashes your snake; head-on bumps crash both
-- [ ] Crashed snakes leave snacks behind and respawn after about 3 seconds with brief safety
+- [ ] Crashed snakes leave snacks behind; the player solves a short, age-appropriate puzzle to respawn with brief safety
 - [ ] Snacks grow your snake; the longest snake at the end of a 2–3 minute round wins
 - [ ] Little players get slower speed, big buttons and gentle bounces before crashes
 - [ ] Swipe and button controls both work on iPad, iPhone and the Fire tablet
