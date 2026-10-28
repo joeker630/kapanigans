@@ -376,6 +376,11 @@ h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance;l
 .jarchip{background:var(--sun);box-shadow:0 3px 0 var(--sun-deep)}
 .fzoom{position:absolute;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:8px;z-index:4}
 .paysrc button{font-size:15px}
+.gico{width:1.15em;height:1.15em;object-fit:contain;vertical-align:middle;display:inline-block}
+.gico.sm{width:1.05em;height:1.05em}
+.choice .em .gico{width:56px;height:56px}
+.onote .oem .gico{width:34px;height:34px}
+.orow .em .gico{width:32px;height:32px}
 /* order board: a corkboard with pinned paper notes, centered on screen */
 .boardsheet{align-items:center;padding:12px;box-sizing:border-box}
 .boardsheet .inner{width:min(820px,100%);max-height:min(92%,720px);border-radius:26px;padding:14px 16px 16px;gap:10px;
@@ -5240,7 +5245,15 @@ const little=()=>lvl()==="little";
    action: "plant" | "water" | "harvest" | "feed" | "eggs" | "milk" | "shear" | "sell" | "build" | "deliver" | "buy" */
 const FOOD={corn:{em:"🌽",one:"ear of corn",many:"ears of corn"},hay:{em:"🌾",one:"bale of hay",many:"bales of hay"},grass:{em:"🌿",one:"bunch of grass",many:"bunches of grass"},slop:{em:"🍎",one:"apple",many:"apples"}};
 const gItem=g=>({em:GOODS[g].icon,one:GOODS[g].name,many:GOODS[g].names});
-const cropPic=c=>["carrot","pumpkin"].includes(c)?c+"/ripe":undefined;
+const cropPic=c=>CROPS[c]?c+"/ripe":undefined;
+/* ---- farm art (art/iso/farm/): use the sprite wherever one exists, the emoji until it loads or if it's missing ----
+   gIcon(k) = good k as an <img> for menus; gSeed(c) = its seed packet; artImg(path) = a loaded Image for the canvas, or null. */
+const FOOD_ART={corn:"food/feed",hay:"food/hay",slop:"food/slop"};
+const BLD_ART={barn:"store"}; // Batch B file names follow STRUCT keys, except the barn is "store"
+function artImg(path){if(!path)return null;const im=farmImg(path);return imgOk(im)?im:null}
+function artTag(path,em,cls="gico"){return path?`<img class="${cls}" src="${FARM_ART}${path}.webp" alt="${em}" onerror="this.replaceWith(document.createTextNode('${em}'))">`:em}
+const gIcon=(k,cls)=>GOODS[k]?(CROPS[k]?GOODS[k].icon:artTag(GOODS[k].art,GOODS[k].icon,cls)):""; // crop "ripe" sprites are whole plants, so crops keep their fruit emoji in menus
+const gSeed=c=>artTag("seeds/"+c,GOODS[c]?GOODS[c].icon:"🌱");
 function farmDo(action,info){
   if(action==="buy")return Promise.resolve(true); // seeds, animals, fertilizer, decorations: no puzzle
   const A=info.animal&&ANIMALS[info.animal];let o;
@@ -5266,6 +5279,8 @@ function farmInit(){
   fm.cv=$("#farmCv");fm.g=fm.cv.getContext("2d");
   for(const k in ANIMALS)for(const p of ["stand","eat","sleep","back"])farmImg(k+"/"+p);farmImg("sheep/sheared");
   for(const c in CROPS)for(const p of ["growing","ripe"])farmImg(c+"/"+p);farmImg("carrot/sprout");
+  for(const k in GOODS)farmImg(GOODS[k].art);for(const f of Object.values(FOOD_ART))farmImg(f);
+  for(const k in STRUCT)farmImg("bld/"+(BLD_ART[k]||k));for(const k in DECOR)farmImg("decor/"+k);
   new ResizeObserver(farmFit).observe($("#farmBody"));
   // one finger drags (or taps); two fingers pinch to zoom; the mouse wheel and the ➕ ➖ buttons zoom too
   fm.ptrs=new Map();
@@ -5341,7 +5356,7 @@ function fChanged(){
   if(F.sheet&&F.sheet.render)F.sheet.render();
 }
 function farmHeader(){
-  const g=myGoods(),parts=Object.keys(GOODS).filter(k=>g[k]>0).map(k=>`${GOODS[k].icon}${g[k]}`);
+  const g=myGoods(),parts=Object.keys(GOODS).filter(k=>g[k]>0).map(k=>`${gIcon(k,"gico sm")}${g[k]}`);
   $("#farmGoods").innerHTML=(gDestFam()?"👨‍👩‍👧 ":"")+(parts.length?parts.slice(0,4).join(" ")+(parts.length>4?" …":""):"🧺");
   $("#farmJar").innerHTML=`🪙 <b>${myJar()}</b>`;
 }
@@ -5507,8 +5522,8 @@ function openSeeds(n){
     const fert=(myGoods().fert||0)>0;let useF=false;
     const grid=el("div","choices");let any=false;
     for(const c of Object.keys(CROPS)){const G=GOODS[c],k=mySeeds(c);
-      if(k>0){any=true;grid.append(fBtn("",G.icon,little()?`× ${k}`:`${G.names} (${k} seed${k===1?"":"s"})`,little()?"":`ready in ${Math.round(CROPS[c].grow/60e3)} min`,()=>plantIt(n,c,useF)))}
-      else grid.append(fBtn("lock",G.icon,G.names,"no seeds",null,`You need ${G.names} seeds. Buy them at the Farm Store.`))}
+      if(k>0){any=true;grid.append(fBtn("",gSeed(c),little()?`× ${k}`:`${G.names} (${k} seed${k===1?"":"s"})`,little()?"":`ready in ${Math.round(CROPS[c].grow/60e3)} min`,()=>plantIt(n,c,useF)))}
+      else grid.append(fBtn("lock",gSeed(c),G.names,"no seeds",null,`You need ${G.names} seeds. Buy them at the Farm Store.`))}
     body.append(grid);
     if(!any)body.prepend(el("p","fempty",little()?"No seeds! Buy some at the Farm Store.":"You're out of seeds. Buy seed packs at the 🔨 Farm Store."));
     const st=el("button","ghost","🔨 Buy seeds at the Farm Store");st.onclick=()=>{closeSheet();const S=STRUCT.barn;fwWalk(S.i+S.wi/2+.3,S.j+S.wj+.45,openStore)};body.append(st);
@@ -5531,7 +5546,7 @@ function openSell(){
     body.append(el("p","fnote",little()?"Tap something to sell it for Moolah!":`Tap something to sell one. You have ${coins(myJar())} Moolah.`));
     if(!have.length){body.append(el("p","fempty",goodsSrc()==="family"?"The family basket is empty.":"Your basket is empty. Pick crops and collect eggs, milk and wool, then come back!"));return}
     const grid=el("div","choices");
-    for(const k of have){const G=GOODS[k];grid.append(fBtn("",G.icon,little()?`× ${g[k]}`:`${g[k]} ${g[k]===1?G.name:G.names}`,`${coins(G.price)} each`,()=>sellIt({[k]:1})))}
+    for(const k of have){const G=GOODS[k];grid.append(fBtn("",gIcon(k),little()?`× ${g[k]}`:`${g[k]} ${g[k]===1?G.name:G.names}`,`${coins(G.price)} each`,()=>sellIt({[k]:1})))}
     body.append(grid);
     if(!little()&&have.length){const all={};let tot=0;for(const k of have){all[k]=g[k];tot+=g[k]*GOODS[k].price}
       const b=el("button","bigbtn",`Sell everything for ${coins(tot)}`);b.onclick=()=>sellIt(all);body.append(b)}
@@ -5559,7 +5574,7 @@ function openBasket(){
     body.append(el("p","fnote",tab==="family"?(little()?"Tap something to take one for you.":"Everyone's goods. Tap one to take it into your basket."):(little()?"Tap something to share one with the family.":"Tap one to share it with the family basket.")));
     if(!have.length)body.append(el("p","fempty",tab==="family"?"The family basket is empty. Share something!":"Nothing yet! Pick ripe crops and collect eggs, milk and wool."));
     else{const grid=el("div","choices");
-      for(const k of have)grid.append(fBtn("",GOODS[k].icon,`${g[k]} ${g[k]===1?GOODS[k].name:GOODS[k].names}`,tab==="family"?"tap to take 1":"tap to share 1",()=>moveGoods(tab==="family"?"take":"share",{[k]:1})));
+      for(const k of have)grid.append(fBtn("",gIcon(k),`${g[k]} ${g[k]===1?GOODS[k].name:GOODS[k].names}`,tab==="family"?"tap to take 1":"tap to share 1",()=>moveGoods(tab==="family"?"take":"share",{[k]:1})));
       body.append(grid);
       if(!little()){const all={};for(const k of have)all[k]=g[k];const b=el("button","ghost",tab==="family"?"Take everything":"Share everything");b.onclick=()=>moveGoods(tab==="family"?"take":"share",all);body.append(b)}}
     if(tab==="mine"&&myGoods().fert)body.append(el("p","fnote",`💩 Fertilizer: ${myGoods().fert}. Use it when you plant a seed.`));
@@ -5579,11 +5594,11 @@ function openFamBasket(){
     body.append(el("p","fnote",little()?"Goods for the whole family! Tap something of yours to put it in.":"Goods for the whole family. Anyone can sell them or use them for orders."));
     body.append(el("h3","fsec",`⬇️ Put in from my basket (${goodsCount(mg)})`));
     if(!mine.length)body.append(el("p","fnote","Your basket is empty. Pick crops and collect eggs, milk and wool!"));
-    else{const grid=el("div","choices");for(const k of mine)grid.append(fBtn("",GOODS[k].icon,little()?`× ${mg[k]}`:`${mg[k]} ${mg[k]===1?GOODS[k].name:GOODS[k].names}`,"tap to put 1 in",()=>moveGoods("share",{[k]:1})));body.append(grid);
+    else{const grid=el("div","choices");for(const k of mine)grid.append(fBtn("",gIcon(k),little()?`× ${mg[k]}`:`${mg[k]} ${mg[k]===1?GOODS[k].name:GOODS[k].names}`,"tap to put 1 in",()=>moveGoods("share",{[k]:1})));body.append(grid);
       const all={};for(const k of mine)all[k]=mg[k];const b=el("button","bigbtn",`⬇️ Put it all in (${goodsCount(mg)})`);b.onclick=()=>moveGoods("share",all);body.append(b)}
     body.append(el("h3","fsec","⬆️ Take out for me"));
     if(!fam.length)body.append(el("p","fnote","The family basket is empty."));
-    else{const grid=el("div","choices");for(const k of fam)grid.append(fBtn("",GOODS[k].icon,little()?`× ${fg[k]}`:`${fg[k]} ${fg[k]===1?GOODS[k].name:GOODS[k].names}`,"tap to take 1",()=>moveGoods("take",{[k]:1})));body.append(grid)}
+    else{const grid=el("div","choices");for(const k of fam)grid.append(fBtn("",gIcon(k),little()?`× ${fg[k]}`:`${fg[k]} ${fg[k]===1?GOODS[k].name:GOODS[k].names}`,"tap to take 1",()=>moveGoods("take",{[k]:1})));body.append(grid)}
     const dest=el("div","seg paysrc");
     for(const [k,l] of [["mine","🧺 My basket"],["family","👨‍👩‍👧 Family Basket"]]){const b=el("button",(gDestFam()?"family":"mine")===k?"on":"",l);
       b.onclick=()=>{fUpd({["gdest/"+me]:k==="family"?"family":null});say(k==="family"?"New goods go to the family basket.":"New goods go to your basket.")};dest.append(b)}
@@ -5628,7 +5643,7 @@ function farmMail(to,from,text,emoji){if(!mail.ref||!KIDS[to]||!KIDS[from])retur
 /* ---- Farm Store ---- */
 function storeItems(){
   const S=F.st,out=[];
-  const crops=[];for(const [c,P] of Object.entries(SEED_PACK))crops.push({sec:"Seeds",em:GOODS[c].icon,name:`${P.n} ${c==="corn"?"corn":GOODS[c].name} seeds`,price:P.price,sub:`you have ${mySeeds(c)}`,
+  const crops=[];for(const [c,P] of Object.entries(SEED_PACK))crops.push({sec:"Seeds",em:gSeed(c),name:`${P.n} ${c==="corn"?"corn":GOODS[c].name} seeds`,price:P.price,sub:`you have ${mySeeds(c)}`,
     buy:()=>fUpd({[`goods/${me}/seed_${c}`]:INC(P.n)}),done:`You got ${P.n} ${c==="corn"?"corn":GOODS[c].name} seeds! Plant them in the field.`});
   out.push(...crops);
   const f=S.field||0;out.push({sec:"Farm",em:"🟫",name:f>=4?"Field (full size)":"Bigger field (+3 plots)",price:PRICES.field[f]||0,own:f>=4,puzzle:true,buy:()=>fUpd({field:f+1}),done:"Your field is bigger! Plant more seeds."});
@@ -5720,8 +5735,8 @@ function orderCard(id,o,who,n=0){
   card.style.setProperty("--tilt",[-2,1.5,-1,2][n%4]+"deg");
   const late=o.by&&Date.now()>o.by;
   const items=Object.entries(o.items).map(([k,c])=>{const have=g[k]||0,ok=have>=c;
-    return little()?`<span class="oi${ok?" ok":""}"><span class="oem">${GOODS[k].icon.repeat(Math.min(c,4))}</span>${c>4?`<b>×${c}</b>`:""}${ok?`<i>✓</i>`:""}</span>`
-      :`<span class="oi${ok?" ok":""}"><span class="oem">${GOODS[k].icon}</span><b>×${c}</b><small>${ok?"✓ got it":`need ${c-have} more`}</small></span>`}).join("");
+    return little()?`<span class="oi${ok?" ok":""}"><span class="oem">${gIcon(k).repeat(Math.min(c,4))}</span>${c>4?`<b>×${c}</b>`:""}${ok?`<i>✓</i>`:""}</span>`
+      :`<span class="oi${ok?" ok":""}"><span class="oem">${gIcon(k)}</span><b>×${c}</b><small>${ok?"✓ got it":`need ${c-have} more`}</small></span>`}).join("");
   card.innerHTML=`<span class="opin">📌</span><div class="ofrom"><span class="oface">${faceHTML(K,"oface")}</span><b>${esc(K.name)}</b>${o.custom?"<small>✏️</small>":""}</div>
     <div class="oitems">${items}</div><div class="opay">${coins(o.pay)}${o.by&&!late?` <span class="obonus">⏰ +${o.bonus} by ${new Date(o.by).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"})}</span>`:""}</div>`;
   if(who===me){const b=el("button","odeliver"+(canDo?" ready":""),canDo?"✅ Deliver!":little()?"🧺 Need more":"Not yet");
@@ -5763,7 +5778,7 @@ function writeOrder(){
     body.append(el("p","fnote","Who is it for?"),pick,el("p","fnote","What do you want?"));
     const grid=el("div","ostep");
     for(const g of availGoods()){const row=el("div","orow"),n=sel.items[g]||0;
-      row.innerHTML=`<span class="em">${GOODS[g].icon}</span><span class="nm">${esc(GOODS[g].names)}</span>`;
+      row.innerHTML=`<span class="em">${gIcon(g)}</span><span class="nm">${esc(GOODS[g].names)}</span>`;
       const m=el("button","round","➖"),c=el("b",null,String(n)),p=el("button","round","➕");
       m.onclick=()=>{sel.items[g]=Math.max(0,n-1);F.sheet.render()};p.onclick=()=>{sel.items[g]=Math.min(10,n+1);F.sheet.render()};
       row.append(m,c,p);grid.append(row)}
@@ -6038,19 +6053,34 @@ function fPop(w,txt){fPopAt(fIso(w.i,w.j),txt,fm.th*2.2*((ANIMALS[(F.st.animals[
 function fPopAt(p,txt,up=fm.th*1.6){fm.pops.push({x:p.x,y:p.y-up,txt,t:0})}
 function farmTile(i,j,fill,wi=1,wj=1){const g=fm.g,a=fIso(i,j),b=fIso(i+wi,j),c=fIso(i+wi,j+wj),d=fIso(i,j+wj);g.beginPath();g.moveTo(a.x,a.y);g.lineTo(b.x,b.y);g.lineTo(c.x,c.y);g.lineTo(d.x,d.y);g.closePath();g.fillStyle=fill;g.fill()}
 // a bubble that is also its own tap target (it always wins over whatever is behind it)
-function fBub(x,y,txt,now,k,target){bubble(x,y,txt,now,k);const r=fm.th*.46;fm.hits.push({kind:"bubble",target,d:1000+y,x0:x-r,x1:x+r,y0:y-r*2.1,y1:y+r*.3})}
-function bubble(x,y,txt,now,k=0){const g=fm.g,th=fm.th,r=th*.36,bob=Math.sin(now/300+k)*th*.06;
+function fBub(x,y,txt,now,k,target,img){bubble(x,y,txt,now,k,img);const r=fm.th*.46;fm.hits.push({kind:"bubble",target,d:1000+y,x0:x-r,x1:x+r,y0:y-r*2.1,y1:y+r*.3})}
+function bubble(x,y,txt,now,k=0,img){const g=fm.g,th=fm.th,r=th*.36,bob=Math.sin(now/300+k)*th*.06;
   g.fillStyle="rgba(255,255,255,.95)";g.strokeStyle="rgba(43,33,64,.25)";g.lineWidth=Math.max(1,th*.03);
   g.beginPath();g.arc(x,y-r+bob,r,0,7);g.fill();g.stroke();g.beginPath();g.moveTo(x-r*.3,y-r*.2+bob);g.lineTo(x,y+r*.45+bob);g.lineTo(x+r*.3,y-r*.2+bob);g.fill();
+  if(img){const s=r*1.55,w=img.naturalWidth>=img.naturalHeight?s:s*img.naturalWidth/img.naturalHeight,h=w*img.naturalHeight/img.naturalWidth;g.drawImage(img,x-w/2,y-r+bob-h/2,w,h);return}
   g.font=`${r*1.15}px system-ui`;g.textAlign="center";g.textBaseline="middle";g.fillText(txt,x,y-r+bob+r*.05);g.textBaseline="alphabetic"}
+const bldSprite=id=>artImg("bld/"+(BLD_ART[id]||id));
+// Batch B: the sprite stands bottom-center on the footprint's front corner, scaled to the footprint width.
+// Its label bubble floats above it; the Family Basket also shows what's inside, and the stand shows produce.
+function drawStructSprite(id,s,now,im){
+  const g=fm.g,th=fm.th,b=fIso(s.i+s.wi,s.j),c=fIso(s.i+s.wi,s.j+s.wj),d=fIso(s.i,s.j+s.wj);
+  const w=(b.x-d.x)*1.04,h=w*im.naturalHeight/im.naturalWidth,cx=(d.x+b.x)/2,bot=c.y+th*.08;
+  g.fillStyle="rgba(0,0,0,.14)";g.beginPath();g.ellipse(cx,c.y-th*(s.wi+s.wj)*.25,w*.48,th*(s.wi+s.wj)*.3,0,0,7);g.fill();
+  g.drawImage(im,cx-w/2,bot-h,w,h);
+  if(id==="fbasket"){const fg=famGoods(),ks=Object.keys(GOODS).filter(k=>fg[k]>0).slice(0,3);ks.forEach((k,n)=>{const ii=artImg(GOODS[k].art);const x=cx+(n-(ks.length-1)/2)*th*.55,y=bot-h*.62;
+    if(ii){const z=th*.6;g.drawImage(ii,x-z/2,y-z/2,z,z)}else{g.font=`${th*.45}px system-ui`;g.textAlign="center";g.fillText(GOODS[k].icon,x,y)}})}
+  const ly=bot-h-th*.2;bubble(cx,ly,s.label,now,s.i);
+  fm.hits.push({kind:"struct",ref:id,d:s.i+s.j+s.wi+s.wj,x0:cx-w*.48,x1:cx+w*.48,y0:ly-th*.8,y1:bot});
+}
 function drawStruct(id,s,now){
+  {const im=bldSprite(id);if(im)return drawStructSprite(id,s,now,im)}
   const g=fm.g,th=fm.th,H=s.h*th*2,a=fIso(s.i,s.j),b=fIso(s.i+s.wi,s.j),c=fIso(s.i+s.wi,s.j+s.wj),d=fIso(s.i,s.j+s.wj),U=p=>({x:p.x,y:p.y-H});
   const poly=(pts,f)=>{g.beginPath();g.moveTo(pts[0].x,pts[0].y);for(const p of pts.slice(1))g.lineTo(p.x,p.y);g.closePath();g.fillStyle=f;g.fill()};
   g.fillStyle="rgba(0,0,0,.15)";farmTile(s.i-.1,s.j-.1,"rgba(0,0,0,.12)",s.wi+.2,s.wj+.2);
   poly([d,c,U(c),U(d)],s.l);poly([c,b,U(b),U(c)],s.r);poly([U(a),U(b),U(c),U(d)],s.top);
   let topY=U(a).y;
   if(s.roof){const ap={x:(a.x+c.x)/2,y:(a.y+c.y)/2-H-th*Math.max(s.wi,s.wj)*.7};poly([U(d),U(c),ap],s.roof);g.globalAlpha=.75;poly([U(c),U(b),ap],s.roof);g.globalAlpha=1;topY=ap.y}
-  if(id==="fbasket"){const fg=famGoods(),ems=Object.keys(GOODS).filter(k=>fg[k]>0).slice(0,3).map(k=>GOODS[k].icon);
+  if(id==="fbasket"&&!bldSprite(id)){const fg=famGoods(),ems=Object.keys(GOODS).filter(k=>fg[k]>0).slice(0,3).map(k=>GOODS[k].icon);
     g.strokeStyle="rgba(120,72,24,.45)";g.lineWidth=Math.max(1,th*.04);for(let k=1;k<4;k++){const y0=d.y-H*k/4,y1=c.y-H*k/4,y2=b.y-H*k/4;g.beginPath();g.moveTo(d.x,y0);g.lineTo(c.x,y1);g.lineTo(b.x,y2);g.stroke()}
     g.font=`${th*.45}px system-ui`;g.textAlign="center";ems.forEach((em,n)=>{const p=fIso(s.i+s.wi*(.3+n*.22),s.j+s.wj*.5);g.fillText(em,p.x,p.y-H+th*.12)})}
   if(id==="stand"){g.font=`${th*.5}px system-ui`;g.textAlign="center";for(const [n,em] of [[.3,"🥕"],[.6,"🎃"],[.85,"🥚"]]){const p=fIso(s.i+s.wi*n,s.j+s.wj*.5);g.fillText(em,p.x,p.y-H+th*.1)}}
@@ -6097,6 +6127,9 @@ function farmDraw(t){
   for(const [id,s] of Object.entries(STRUCT))if(!s.home||(F.st.builds||{})[id])items.push({d:s.i+s.j+s.wi+s.wj-1,draw:()=>drawStruct(id,s,t)});
   for(const [key,k] of Object.entries(F.st.decor||{})){const sp=decorPos(key),D=DECOR[k];if(!sp||!D)continue;
     items.push({d:sp[0]+sp[1]+1,draw:()=>{const c=fIso(sp[0]+.5,sp[1]+.5);
+      const dim=artImg("decor/"+k);
+      if(dim){const w=fm.tw*(k==="tree"?1.35:k==="pond"?1.1:.95),h=w*dim.naturalHeight/dim.naturalWidth,bot=c.y+th*.42;g.drawImage(dim,c.x-w/2,bot-h,w,h);
+        fm.hits.push({kind:"decor",ref:k,key,p:c,d:sp[0]+sp[1]+1,x0:c.x-w*.45,x1:c.x+w*.45,y0:bot-h,y1:bot});return}
       if(k==="pond"){g.fillStyle="#7FC8F8";g.beginPath();g.ellipse(c.x,c.y,fm.tw*.45,th*.42,0,0,7);g.fill();g.fillStyle="#5BB0E8";g.beginPath();g.ellipse(c.x,c.y+th*.05,fm.tw*.32,th*.26,0,0,7);g.fill()}
       g.font=`${th*(k==="tree"?1.5:k==="pond"?.6:1)}px system-ui`;g.textAlign="center";g.fillText(D.icon,c.x,c.y+th*(k==="pond"?.1:.3));
       fm.hits.push({kind:"decor",ref:k,key,p:c,d:sp[0]+sp[1]+1,x0:c.x-th*.6,x1:c.x+th*.6,y0:c.y-th*1.4,y1:c.y+th*.4})}})}
@@ -6112,7 +6145,7 @@ function farmDraw(t){
       else{const gr=fm.img["carrot/growing"];if(imgOk(gr)){const w=fm.tw*.7,h=w*gr.naturalHeight/gr.naturalWidth;g.drawImage(gr,-w/2,-h,w,h)}
         if(stage==="ripe"){g.font=`${th*.75}px system-ui`;g.textAlign="center";g.fillText(GOODS[p.crop].icon,0,-th*.5)}}
       g.restore();
-      if(ps.st==="thirsty")fBub(c.x,c.y-th*1.2,"💧",t,n,{kind:"plot",spot:n});
+      if(ps.st==="thirsty")fBub(c.x,c.y-th*1.2,"💧",t,n,{kind:"plot",spot:n},artImg("tools/wateringcan"));
       else if(stage==="ripe"){g.globalAlpha=.5+.5*Math.sin(t/250);g.font=`${th*.5}px system-ui`;g.textAlign="center";g.fillText("✨",c.x+fm.tw*.3,c.y-th);g.globalAlpha=1}
       if(p.fert&&stage!=="ripe"){g.font=`${th*.32}px system-ui`;g.textAlign="center";g.fillText("💩",c.x-fm.tw*.32,c.y+th*.3)}}})}
   for(const w of F.anim.values()){const a=(F.st.animals||{})[w.id];if(!a||!ANIMALS[a.k])continue;const A=ANIMALS[a.k],as=animalState(a,now),hungry=as==="hungry";
@@ -6133,7 +6166,7 @@ function farmDraw(t){
       g.save();g.translate(p.x,p.y+th*.1+bob);g.rotate(rot);const flip=pose==="back"?(w.dir<0?-1:1):(w.dir>0?-1:1);g.scale(flip*sc,sc*(hungry?.92:1));
       if(hungry)g.filter="saturate(.55)";g.drawImage(im,-wd/2,-Hh,wd,Hh);g.filter="none";g.restore();
       if(w.state==="sleep"){g.fillStyle="#3A4A5A";g.textAlign="left";for(let k=0;k<3;k++){const q=(w.t*.5+k/3)%1;g.globalAlpha=1-q;g.font=`900 ${th*(.28+k*.08)}px system-ui`;g.fillText("z",p.x+wd*.3+q*th*.4,p.y-Hh*.8-q*th*.8)}g.globalAlpha=1}
-      if(hungry)fBub(p.x,p.y-Hh-th*.05,A.foodIcon,t,w.i,{kind:"animal",ref:w});else if(as==="ready")fBub(p.x,p.y-Hh-th*.05,GOODS[A.good].icon,t,w.i,{kind:"animal",ref:w});
+      if(hungry)fBub(p.x,p.y-Hh-th*.05,A.foodIcon,t,w.i,{kind:"animal",ref:w},artImg(FOOD_ART[A.food]));else if(as==="ready")fBub(p.x,p.y-Hh-th*.05,GOODS[A.good].icon,t,w.i,{kind:"animal",ref:w},artImg(GOODS[A.good].art));
       fm.hits.push({kind:"animal",ref:w,d:w.i+w.j+.5,x0:p.x-wd*.4,x1:p.x+wd*.4,y0:p.y-Hh*.92,y1:p.y+th*.25})}})}
   try{jepItems(items,t,now,dt)}catch(e){fmErr(e,"jeppson")}
   try{fwItems(items,dt,t)}catch(e){fmErr(e,"farmers")}

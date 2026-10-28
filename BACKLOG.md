@@ -294,6 +294,10 @@ Building happens on empty **build lots** around the map. Paying starts a **Build
 About **48 images** left including retries, which is roughly one day of the free allowance if nothing else is using it. Make them in this order:
 
 *Batch A — needed for the chore puzzles (about 25)*
+- ✅ **Used in the game (Oct 28):** tomato, corn and strawberry grow with real sprites.
+  - Bubbles show the egg, milk and wool sprites when ready, the chicken feed, hay or slop when an animal is hungry, and the watering can when a plant is thirsty.
+  - Menus (farmstand, baskets, orders) use the egg, milk and wool sprites. The seed picker and the store's seed packs use the seed packets.
+  - Crops keep their fruit emoji in menus, because the "ripe" sprites are whole plants.
 - ✅ Made Oct 28 (24 sprites in `art/iso/farm/`: crops, seeds, goods, food, tools, hiding spots). Re-run anytime with `python3 tools/genart.py isobatch tools/batches/farmA.json` (skips what exists).
 - [x] Crops, growing + ripe (the carrot sprout is reused for every crop): tomato, corn, strawberry — 6
 - [x] Seed packets, one per crop (Plant puzzle: match seed to picture): carrot, tomato, corn, pumpkin, strawberry — 5
@@ -309,6 +313,8 @@ About **48 images** left including retries, which is roughly one day of the free
 - [ ] Fence: straight piece and corner (`fence`, `fencecorner`; mirror in code for other directions) — 2
 - [ ] Shop decorations (8, matching `DECOR`): flowers, sunflowers, lantern, bench, mailbox, apple tree, beehive, duck pond
 - **For the Farmstand chat:** draw each sprite at the building's spot in place of its box, bottom-center on the footprint, scaled to the footprint width. Keep the emoji only as a small badge if it helps Little players.
+- ✅ **Wired in the game (Oct 28), waiting on the files:** `drawStruct()` uses `bld/<key>.webp` (the barn reads `store.webp`) and decorations use `decor/<key>.webp` as soon as they load. Each one stands bottom-center on its footprint, scaled to the footprint width, with its label bubble above it and the same tap area. The Family Basket shows what's inside on top. Until a file exists, the code-drawn box or emoji stays. Tested with stand-in sprites.
+- [ ] Fence sprites (`fence`, `fencecorner`): not wired yet. The pasture fence is still drawn in code; place the pieces along the pasture edges once the art is in, so the orientation can be checked.
 
 *Batch C — farmstand shop unlocks (about 11)*
 - [ ] Decorations to buy with coins: scarecrow, windmill, flower pot, bench, mailbox, lantern — 6
