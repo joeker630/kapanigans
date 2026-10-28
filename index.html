@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" href="icon.png">
 <link rel="icon" href="icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;800;900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;800;900&family=Andika:wght@700&display=swap">
 <style>
 /* Layout: one-screen app — header / play area / crayon tray. Deliberately single-theme: a bright crayon box on a sky-blue table. */
 :root{
@@ -628,6 +628,33 @@ table.everyone .facepic,table.everyone .avatarpic,table.everyone .em{width:26px;
 .anim-sleepy{animation:a-sleep 3.2s ease-in-out infinite;transform-origin:50% 100%}
 @keyframes a-sleep{0%,100%{transform:scale(1) rotate(0)}50%{transform:scale(.95,.92) rotate(-3deg)}}
 @media (max-height:560px){.rchar{width:min(30vh,26vw)}.rtext{font-size:18px;padding:8px 14px}.rnav .arrow{width:48px;height:48px;font-size:22px}}
+/* storybook look (backlog #13): a picture-book frame, a cozy reading font, drawn characters with a glow and a ground shadow */
+.rscene{border:5px solid #E9C46A;border-radius:24px;overflow:hidden;box-shadow:0 0 0 3px #7A4E1D,0 0 0 10px rgba(233,196,106,.18),0 10px 30px rgba(0,0,0,.45),inset 0 0 50px rgba(0,0,0,.35);width:100%;max-width:1200px;align-self:center;backface-visibility:hidden}
+.rframe{position:absolute;inset:7px;z-index:4;pointer-events:none;border:2px dashed rgba(255,226,122,.35);border-radius:16px}
+.rframe i{position:absolute;font-style:normal;font-size:clamp(14px,2.2vw,22px);color:var(--starlite);line-height:1;text-shadow:0 0 8px rgba(255,226,122,.8)}
+.rframe i:nth-child(1){left:6px;top:4px}.rframe i:nth-child(2){right:6px;top:4px}.rframe i:nth-child(3){left:6px;bottom:4px}.rframe i:nth-child(4){right:6px;bottom:4px}
+.rscene>.cfx{z-index:1}
+.rtext{font-family:"Andika","Nunito",var(--body);font-weight:700;letter-spacing:.01em;border:3px solid rgba(233,196,106,.55);box-shadow:inset 0 0 24px rgba(0,0,0,.35)}
+.rchar .ranim{width:100%;height:100%;display:grid;place-items:center}
+.rshadow,.cshadow{position:absolute;left:14%;right:14%;bottom:-3%;height:10%;border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.38),rgba(0,0,0,0));pointer-events:none}
+.rchar .rshadow{bottom:-2%}
+#reader .rhead #rSfx{font-size:22px}
+#reader .rhead #rSfx.off{opacity:.55}
+/* drawn covers */
+.cvimg{width:1em;height:1em;object-fit:cover;border-radius:.16em;vertical-align:middle;box-shadow:0 2px 6px rgba(0,0,0,.3);background:#FFF8E7}
+.covers .ctool.drawn{padding:4px}.covers .ctool.drawn img{width:46px;height:46px;border-radius:8px;object-fit:cover;background:#FFF8E7}
+/* spelling helper */
+.spellwrap{position:relative;width:100%;border-radius:14px;background:#fff}
+.spellwrap .cetextarea{position:relative;background:transparent;z-index:1;display:block}
+.spellback{position:absolute;inset:0;pointer-events:none;overflow:hidden;white-space:pre-wrap;overflow-wrap:break-word;word-wrap:break-word;color:transparent;z-index:0}
+.spellback mark{background:none;color:transparent;text-decoration:underline wavy #E5484D;text-decoration-thickness:2px;text-underline-offset:4px;text-decoration-skip-ink:none}
+.spellrow{display:flex;flex-direction:column;gap:6px}
+.spellfix{display:flex;flex-wrap:wrap;align-items:center;gap:6px;background:#FFF1F1;border-radius:14px;padding:6px 8px}
+.spellfix .bad{font-weight:900;color:#B42318;text-decoration:underline wavy #E5484D;text-underline-offset:3px;margin-right:2px}
+.spellfix .chip{background:#fff;box-shadow:0 2px 0 var(--sky-deep)}
+.spellfix .chip.ok{background:var(--sky);font-weight:700}
+.spellfix .none{font-size:13px;font-weight:700;color:#6b6283}
+.padtools .tool.on small{font-weight:900}
 
 /* ---------- Inbox ---------- */
 #inbox{padding-block:12px;gap:12px;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
@@ -1378,12 +1405,14 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
   <div class="rhead">
     <button class="round" id="rClose" aria-label="Close story">✖️</button>
     <h1 id="rTitle"></h1>
+    <button class="round" id="rSfx" aria-label="Story sounds on or off">🔔</button>
     <button class="round" id="rAuto" aria-label="Read by itself">▶️</button>
   </div>
   <div class="rscene">
     <div class="rmoon"></div>
     <div class="rprops" id="rProps"></div>
     <div class="rcast" id="rCast"></div>
+    <div class="rframe"><i>✦</i><i>✦</i><i>✦</i><i>✦</i></div>
   </div>
   <div class="rtext" id="rText"></div>
   <div class="rnav">
@@ -1536,7 +1565,7 @@ addEventListener("resize",()=>requestAnimationFrame(fitHelp));
    "## 1.0: Title" starts a release; "### For everyone" / "### For grown-ups" / any other "###" section follow.
    Grown-up sections ("For grown-ups", "How long it took…") are hidden from the kids.
    Bump APP_VERSION together with a new RELEASES.md entry. */
-const APP_VERSION="1.6";
+const APP_VERSION="1.7";
 const WN={rel:null,loading:null};
 function wnGrownOnly(h){return /grown/i.test(h)}
 function wnParse(md){
@@ -1696,6 +1725,40 @@ function load(k){try{return localStorage.getItem(k)}catch(e){return null}}
 let actx=null;
 function blip(f=660,d=.12,type="sine",vol=.15){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();const o=actx.createOscillator(),g=actx.createGain();o.type=type;o.frequency.setValueAtTime(f,actx.currentTime);o.frequency.exponentialRampToValueAtTime(f*1.5,actx.currentTime+d);g.gain.setValueAtTime(vol,actx.currentTime);g.gain.exponentialRampToValueAtTime(.001,actx.currentTime+d);o.connect(g).connect(actx.destination);o.start();o.stop(actx.currentTime+d)}catch(e){}}
 function tada(){[523,659,784,1047].forEach((f,i)=>setTimeout(()=>blip(f,.25,"triangle",.12),i*120))}
+/* ---- story sound effects (backlog #13): all made in code (no files), soft, and muted with 🔔 in the reader ---- */
+const sfx={on:load("kp.storySfx")!=="0",box:null,last:{}};
+function sfxCtx(){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();if(actx.state==="suspended")actx.resume();return actx}catch(e){return null}}
+function sfxNoise(c,dur){const b=c.createBuffer(1,Math.ceil(c.sampleRate*dur),c.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;const s=c.createBufferSource();s.buffer=b;return s}
+function sfxEnv(c,t,peak,att,dur){const g=c.createGain();g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(peak,t+att);g.gain.exponentialRampToValueAtTime(.0001,t+dur);g.connect(c.destination);return g}
+function sfxTone(c,t,f,dur,vol,type,f2){const o=c.createOscillator();o.type=type||"sine";o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+dur*.8);o.connect(sfxEnv(c,t,vol,.01,dur));o.start(t);o.stop(t+dur+.05);return o}
+function storySfx(kind){
+  if(!sfx.on) return; const c=sfxCtx(); if(!c) return;
+  const now=performance.now(); if(sfx.last[kind]&&now-sfx.last[kind]<250) return; sfx.last[kind]=now; // no machine-gun repeats
+  const t=c.currentTime+.02;
+  try{switch(kind){
+    case "page":{const n=sfxNoise(c,.45),f=c.createBiquadFilter();f.type="bandpass";f.Q.value=.9;f.frequency.setValueAtTime(700,t);f.frequency.exponentialRampToValueAtTime(2600,t+.3);n.connect(f).connect(sfxEnv(c,t,.09,.08,.42));n.start(t);n.stop(t+.45);break}
+    case "whoosh":{const n=sfxNoise(c,.8),f=c.createBiquadFilter();f.type="bandpass";f.Q.value=1.4;f.frequency.setValueAtTime(300,t);f.frequency.exponentialRampToValueAtTime(1600,t+.35);f.frequency.exponentialRampToValueAtTime(380,t+.75);n.connect(f).connect(sfxEnv(c,t,.11,.25,.78));n.start(t);n.stop(t+.8);break}
+    case "pop": sfxTone(c,t,320,.12,.14,"sine",980); sfxTone(c,t+.02,1400,.05,.04,"triangle"); break;
+    case "chime": [1318.5,1975.5,2637].forEach((f,i)=>sfxTone(c,t+i*.07,f,1.1-i*.2,.06-i*.015,"sine")); break;
+    case "hoot":{const hoo=(s,d)=>{const o=c.createOscillator(),v=c.createOscillator(),vg=c.createGain();o.type="sine";o.frequency.setValueAtTime(410,s);o.frequency.linearRampToValueAtTime(360,s+d);v.frequency.value=6;vg.gain.value=6;v.connect(vg).connect(o.frequency);o.connect(sfxEnv(c,s,.11,.06,d));o.start(s);v.start(s);o.stop(s+d+.05);v.stop(s+d+.05)};
+      hoo(t,.42);hoo(t+.62,.22);hoo(t+.9,.42);break}
+  }}catch(e){}
+}
+// a music-box lullaby ("Twinkle, Twinkle", a traditional tune) for the end of a story
+function storyMusicBox(){
+  storyMusicBoxStop(); if(!sfx.on) return; const c=sfxCtx(); if(!c) return;
+  const out=c.createGain(); out.gain.value=.5; out.connect(c.destination); sfx.box=out;
+  const N={C:1046.5,D:1174.7,E:1318.5,F:1396.9,G:1568,A:1760};
+  const tune="C C G G A A G- F F E E D D C-".split(" "); let t=c.currentTime+.15;
+  try{for(const n of tune){const long=n.endsWith("-"),f=N[n[0]],d=long?.9:.45;
+    for(const [m,v] of [[1,.09],[2,.025],[4.2,.012]]){const o=c.createOscillator(),g=c.createGain();o.type="sine";o.frequency.value=f*m;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v,t+.008);g.gain.exponentialRampToValueAtTime(.0001,t+1.4);o.connect(g).connect(out);o.start(t);o.stop(t+1.45)}
+    t+=d}}catch(e){}
+}
+function storyMusicBoxStop(){const b=sfx.box;sfx.box=null;if(!b)return;try{const c=sfxCtx();b.gain.setTargetAtTime(.0001,c.currentTime,.15);setTimeout(()=>{try{b.disconnect()}catch(e){}},900)}catch(e){}}
+function sfxToggle(){sfx.on=!sfx.on;store("kp.storySfx",sfx.on?"1":"0");if(!sfx.on)storyMusicBoxStop();else storySfx("chime");syncSfxBtn()}
+function syncSfxBtn(){const b=document.getElementById("rSfx");if(!b)return;b.textContent=sfx.on?"🔔":"🔕";b.classList.toggle("off",!sfx.on);b.setAttribute("aria-label",sfx.on?"Story sounds are on. Tap to turn them off":"Story sounds are off. Tap to turn them on")}
+// which sound a character's move makes when it starts
+function csItemSfx(it){if(it.mv==="pop")return"pop";if(["fly","run","swim"].includes(it.mv))return"whoosh";if(it.mv==="sparkle")return"chime";if(it.k==="e"&&it.e==="🦉")return"hoot";return null}
 
 /* ---------------- line art ---------------- */
 let c; // drawing context for art fns
@@ -2814,7 +2877,7 @@ function renderStory(){
     row.append(mk,sh); B.append(row); sayLittle("Make a story, or read my stories?");
     csDraftList().then(list=>{if(sStep!=="home"||screen!=="story"||!list.length||!B.isConnected)return;
       B.append(el("h3",null,"📝 Keep working on a story"));const dl=el("div","draftlist");
-      for(const d of list){const b=el("button","draftcard",`<span class="em">${esc(d.cover)}</span><span><b>${esc(d.title||"My own story")}</b><small>${d.mine?"":`${esc(nameOf(d.owner))}'s draft · `}for ${esc(KIDS[d.to]?nameOf(d.to):"someone")} · ${d.pages} page${d.pages>1?"s":""}</small></span>`);
+      for(const d of list){const b=el("button","draftcard",`<span class="em">${coverHTML(d)}</span><span><b>${esc(d.title||"My own story")}</b><small>${d.mine?"":`${esc(nameOf(d.owner))}'s draft · `}for ${esc(KIDS[d.to]?nameOf(d.to):"someone")} · ${d.pages} page${d.pages>1?"s":""}</small></span>`);
         b.onclick=()=>csOpenDraft(d.owner,d.id);dl.append(b);
         if(d.mine){const x=el("button","round sm","🗑️");x.setAttribute("aria-label","Delete draft");x.onclick=()=>{if(x.dataset.armed){csDeleteDraft(d.owner,d.id);b.remove();x.remove();return}x.dataset.armed=1;x.textContent="Sure?";x.classList.add("danger")};dl.append(x)}}
       B.append(dl)});
@@ -2825,7 +2888,7 @@ function renderStory(){
     if(!list.length){B.append(el("p","empty",`No stories yet. When someone makes you a bedtime story, it shows up here.`));return}
     const grid=el("div","shelf");
     for(const g of list){const st=storyMeta(g);
-      const b=el("button","scard",`${g.read?"":'<span class="new">New</span>'}<span class="em">${st.cover}</span><h3>${esc(st.title)}</h3><span class="from">from ${esc(nameOf(g.from))}</span>`);
+      const b=el("button","scard",`${g.read?"":'<span class="new">New</span>'}<span class="em">${coverHTML(st)}</span><h3>${esc(st.title)}</h3><span class="from">from ${esc(nameOf(g.from))}</span>`);
       b.onclick=()=>openStoryMsg(g); grid.append(b)}
     B.append(grid);
   }
@@ -2920,7 +2983,7 @@ function renderStory(){
     const K=kidOf(draft.to);
     B.append(el("h2",null,`Your story for ${esc(K.name)} is ready!`));
     const M=csIsCustom()?storyMeta(csGift()):S;
-    B.append(el("p","sub",`${M.cover} ${esc(M.title)}`));
+    B.append(el("p","sub",`${M.coverImg?coverHTML(M):M.cover} ${esc(M.title)}`));
     const row=el("div","rowbtns");
     const prev=el("button","ghost","👀 Read it first"); prev.onclick=()=>openReader(draftGift(),{preview:true});
     if(csIsCustom()&&draft.owner&&draft.owner!==me){row.append(prev);B.append(row);B.append(el("p","note",`Saved! ${esc(nameOf(draft.owner))} can send it from their Bedtime Story screen.`));return}
@@ -2978,6 +3041,8 @@ function buildPad(B,strokes){
   tb("erase","🧽","Eraser");
   const oops=el("button","tool",`↩️<small>${L==="little"?"Oops":"Undo"}</small>`);oops.onclick=()=>{pad.strokes.pop();redraw()};r1.append(oops);
   const clr=el("button","tool",`🗑️<small>Clear</small>`);clr.onclick=()=>{pad.strokes.length=0;redraw()};r1.append(clr);
+  if(pad.smooth==null) pad.smooth=load("kp.padSmooth")!=="0";
+  if(L!=="little"){const sm=el("button","tool smooth",`〰️<small>Smooth</small>`);sm.setAttribute("aria-label","Smooth lines on or off");sm.onclick=()=>{pad.smooth=!pad.smooth;store("kp.padSmooth",pad.smooth?"1":"0");blip(520,.06);sync();toast(pad.smooth?"Smooth lines on: wobbly lines come out neat":"Smooth lines off")};r1.append(sm)}
   tools.append(r1);
   if(L!=="little"){const r2=el("div","trow");[6,14,26].forEach((w,j)=>{const b=el("button","sz",`<i style="width:${6+j*8}px;height:${6+j*8}px"></i>`);b.dataset.sz=j;b.onclick=()=>{pad.size=j;sync()};r2.append(b)});tools.append(r2)}
   const r3=el("div","trow");
@@ -2986,16 +3051,23 @@ function buildPad(B,strokes){
   const ctx=cv.getContext("2d");
   function redraw(){ctx.clearRect(0,0,PAD,PAD);drawStrokes(ctx,pad.strokes,1)}
   function sync(){tools.querySelectorAll(".tool[data-t]").forEach(b=>b.classList.toggle("on",b.dataset.t===pad.tool));
+    {const sm=tools.querySelector(".tool.smooth");if(sm)sm.classList.toggle("on",!!pad.smooth)}
     tools.querySelectorAll(".sw").forEach(b=>b.classList.toggle("on",b.dataset.c===pad.c&&pad.tool==="pen"));
     tools.querySelectorAll(".sz").forEach(b=>b.classList.toggle("on",+b.dataset.sz===pad.size))}
   let cur=null;
   const pt=e=>{const r=cv.getBoundingClientRect();return[Math.round((e.clientX-r.left)/r.width*PAD),Math.round((e.clientY-r.top)/r.height*PAD)]};
   cv.onpointerdown=e=>{e.preventDefault();if(cur)return;cv.setPointerCapture(e.pointerId);const [x,y]=pt(e);
-    const w=L==="little"?20:[6,14,26][pad.size];cur={id:e.pointerId,st:{c:pad.tool==="erase"?"erase":pad.c,w:pad.tool==="erase"?w*2:w,p:[x,y]}};pad.strokes.push(cur.st);redraw()};
+    const w=L==="little"?20:[6,14,26][pad.size];cur={id:e.pointerId,st:{c:pad.tool==="erase"?"erase":pad.c,w:pad.tool==="erase"?w*2:w,p:[x,y]}};if(pad.tool!=="erase"&&(L==="little"||pad.smooth))cur.st.sm=1;pad.strokes.push(cur.st);redraw()};
   cv.onpointermove=e=>{if(!cur||e.pointerId!==cur.id)return;const p=cur.st.p;for(const ev of (e.getCoalescedEvents?e.getCoalescedEvents():[e])){const [x,y]=pt(ev);if(Math.hypot(x-p[p.length-2],y-p[p.length-1])>=3)p.push(x,y)}
     if(p.length>3000){p.length=3000} redraw()};
   const up=e=>{if(cur&&e.pointerId===cur.id)cur=null};cv.onpointerup=up;cv.onpointercancel=up;
   redraw();sync();
+}
+// steady a wobbly line: average each point with its neighbours (the ends stay put)
+function csSmoothPts(p){
+  const n=p.length/2|0; if(n<4) return p; const q=new Array(n*2), R=2;
+  for(let i=0;i<n;i++){let x=0,y=0,c=0;const r=Math.min(R,i,n-1-i);for(let j=i-r;j<=i+r;j++){x+=p[j*2];y+=p[j*2+1];c++}q[i*2]=x/c;q[i*2+1]=y/c}
+  return q;
 }
 function drawStrokes(ctx,strokes,scale){
   ctx.lineCap="round";ctx.lineJoin="round";
@@ -3005,7 +3077,13 @@ function drawStrokes(ctx,strokes,scale){
     ctx.globalCompositeOperation=s.c==="erase"?"destination-out":"source-over";
     ctx.strokeStyle=/^#[0-9A-Fa-f]{6}$/.test(s.c)?s.c:"#2B2140"; ctx.lineWidth=Math.min(80,Math.max(1,+s.w||8))*scale;
     ctx.beginPath();ctx.moveTo(p[0]*scale,p[1]*scale);
-    if(p.length===2) ctx.lineTo(p[0]*scale+.1,p[1]*scale); else for(let i=2;i+1<p.length;i+=2) ctx.lineTo(p[i]*scale,p[i+1]*scale);
+    if(p.length===2) ctx.lineTo(p[0]*scale+.1,p[1]*scale);
+    else if(s.sm&&p.length>=6){ // smoothed line: curves through the midpoints between points
+      const q=csSmoothPts(p);
+      for(let i=2;i+3<q.length;i+=2){const mx=(q[i]+q[i+2])/2,my=(q[i+1]+q[i+3])/2;ctx.quadraticCurveTo(q[i]*scale,q[i+1]*scale,mx*scale,my*scale)}
+      ctx.lineTo(q[q.length-2]*scale,q[q.length-1]*scale);
+    }
+    else for(let i=2;i+1<p.length;i+=2) ctx.lineTo(p[i]*scale,p[i+1]*scale);
     ctx.stroke();
   }
   ctx.globalCompositeOperation="source-over";
@@ -3016,8 +3094,8 @@ function charFigure(g,i){
   if(ch&&ch.s&&ch.s.length){
     const key=(g.id||"draft")+":"+i+":"+ch.s.length;
     let url=g.id?figCache.get(key):null;
-    if(!url){const cv=document.createElement("canvas");cv.width=PAD;cv.height=PAD;drawStrokes(cv.getContext("2d"),ch.s,1);url=cv.toDataURL("image/png");if(g.id)figCache.set(key,url)}
-    const img=new Image();img.src=url;img.alt="";return img;
+    if(!url){url=drawnGlowURL(ch.s);if(g.id)figCache.set(key,url)}
+    const img=new Image();img.src=url;img.alt="";img.dataset.drawn="1";return img;
   }
   const d=el("div","emc");d.textContent=S.cast[i].from?((g.words[S.cast[i].from]||{}).e||"⭐"):S.cast[i].emoji;return d;
 }
@@ -3027,7 +3105,8 @@ function sendStoryGift(){
   if(csIsCustom()){const g=csGift(); delete g.id;
     for(const p of g.pages) for(const it of p.items) if(it.s) it.s=thin(it.s);
     if(JSON.stringify(g).length>(g.voice?6000000:1500000)){toast("That story is too big to send. Try shorter recordings or simpler drawings.");return}
-    if(!sendMsg([g.to],{kind:"story",story:"custom",title:g.title,cover:g.cover},g)) return;
+    if(!g.coverImg) delete g.coverImg;
+    if(!sendMsg([g.to],Object.assign({kind:"story",story:"custom",title:g.title,cover:g.cover},g.coverImg?{coverImg:g.coverImg}:{}),g)) return;
     csDeleteDraft(draft.owner||me,draft.id); bump("storiesSent"); tada(); sGo("sent"); say(`Sent to ${nameOf(g.to)}!`); return}
   const g=draftGift(); delete g.id;
   for(const c of g.chars) c.s=thin(c.s);
@@ -3042,6 +3121,7 @@ const rd={g:null,msg:null,ret:"lobby",page:0,auto:false,preview:false,wordSpans:
 function openReader(g,o={}){
   if(screen!=="reader") rd.ret=o.ret||screen; if(o.preview) rd.msg=null; unlockAudio(); rd.vurls={};
   rd.g=g; rd.page=Math.min(o.page||0,storyPages(g).length-1); rd.preview=!!o.preview; rd.auto=false; // nothing plays until Play is tapped
+  clearTimeout(rd.boxT); storyMusicBoxStop(); syncSfxBtn();
   show("reader"); $("#rTitle").textContent=storyMeta(g).title+(g.voice?` · 🎤 read by ${nameOf(g.from)}`:g.silent?" · 🤫 no audio":""); $("#rEnd").hidden=true; syncAuto();
   keepAwake();
   if(o.gift){$("#rUnwrapMsg").textContent=`A story from ${nameOf(g.from)}! Tap to open`;$("#rUnwrap").hidden=false;$("#rUnwrap").classList.remove("pop");if(!g.silent)say(`A story from ${nameOf(g.from)}! Tap to open.`)}
@@ -3056,7 +3136,15 @@ function renderPage(){
   const g=rd.g,S=STORIES[g.story],P=S.pages[rd.page];
   // cast
   const cast=$("#rCast");cast.innerHTML="";
-  for(const i of P.c){const wrap=el("div","rchar");const fig=charFigure(g,i);const a=P.sleepy?"sleepy":(g.chars[i]?g.chars[i].a:"bob");wrap.className="rchar anim-"+a;wrap.style.position="relative";wrap.append(fig);if(P.sleepy){const z=el("span","zzz");z.textContent="z z z";wrap.append(z)}cast.append(wrap)}
+  for(const i of P.c){const wrap=el("div","rchar");const fig=charFigure(g,i);const a=P.sleepy?"sleepy":(g.chars[i]?g.chars[i].a:"bob");wrap.style.position="relative";
+    const inner=el("div","ranim anim-"+a);inner.append(fig);
+    if(fig.dataset&&fig.dataset.drawn&&a!=="float")wrap.append(el("div","rshadow"));
+    wrap.append(inner);if(P.sleepy){const z=el("span","zzz");z.textContent="z z z";wrap.append(z)}cast.append(wrap)}
+  // night details: fireflies drift over every template page
+  {const sc=$("#reader .rscene");sc.querySelectorAll(":scope>.cfx").forEach(x=>x.remove());const fx=csFxLayer("fireflies");fx.style.zIndex=1;sc.append(fx);
+    const owl=g.words&&g.words.animal&&g.words.animal.e==="🦉"&&S.cast.some((c,j)=>c.from==="animal"&&P.c.includes(j));
+    if(owl){const pg=rd.page,gg=rd.g;setTimeout(()=>{if(screen==="reader"&&rd.g===gg&&rd.page===pg)storySfx("hoot")},1400)}}
+  rdTurn();
   // props
   const props=$("#rProps");props.innerHTML="";
   (P.props||[]).forEach((t,j)=>{const e=g.words[t]&&g.words[t].e;if(!e)return;for(let k=0;k<2;k++){const sp=el("span");sp.textContent=e;sp.style.left=(k?72:10)+j*6+"%";sp.style.top=(18+k*14+j*8)+"%";sp.style.animationDelay=(k*1.3)+"s";props.append(sp)}});
@@ -3096,21 +3184,32 @@ function readPage(text){
   if(!speech.ok||!speech.on){if(rd.auto)rd.timer=setTimeout(nextPage,Math.max(4000,text.length*70));return}
   say(text,{pause:450,onWord:(ci)=>{const i=spans.findIndex(s=>ci>=s.start&&ci<s.end);if(i>=0)mark(i)},onEnd:after});
 }
-function nextPage(){clearTimeout(rd.timer);if(rd.page<storyPages(rd.g).length-1){rd.page++;renderPage()}else showEnd()}
+function nextPage(){clearTimeout(rd.timer);if(rd.page<storyPages(rd.g).length-1){rd.page++;rd.turn=1;renderPage()}else showEnd()}
+// turning the page: the new page swings in like a book page (a soft fade if the device asks for less motion)
+function rdTurn(){
+  const d=rd.turn; rd.turn=0; if(!d) return; storySfx("page");
+  const sc=$("#reader .rscene"), tx=$("#rText"); if(!sc||!sc.animate) return;
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches){[sc,tx].forEach(e=>e.animate([{opacity:0},{opacity:1}],{duration:300}));return}
+  const o=d>0?"left center":"right center";
+  sc.animate([{transformOrigin:o,transform:`perspective(1800px) rotateY(${d>0?-80:80}deg)`,opacity:.1},{transformOrigin:o,transform:`perspective(1800px) rotateY(${d>0?-14:14}deg)`,opacity:.9,offset:.6},{transformOrigin:o,transform:"perspective(1800px) rotateY(0deg)",opacity:1}],{duration:650,easing:"cubic-bezier(.25,.7,.3,1)"});
+  if(!tx.hidden) tx.animate([{opacity:0,transform:"translateY(12px)"},{opacity:1,transform:"translateY(0)"}],{duration:420,delay:200,fill:"backwards",easing:"ease-out"});
+}
 function showEnd(){
   hush();const g=rd.g;$("#rEnd").hidden=false;
   const fromOther=!rd.preview&&g.from!==me&&g.id; if(!rd.preview) bump("storiesRead");
   $("#rThanks").hidden=!fromOther;
   $("#rEndMsg").textContent=fromOther?`Tap to say thank you to ${nameOf(g.from)}`:"Sweet dreams!";
   if(g.silent||!rd.auto){} else if(fromOther) say(`The end. Say thank you to ${nameOf(g.from)}!`); else sayClip("the_end","The end. Sweet dreams!");
+  clearTimeout(rd.boxT); rd.boxT=setTimeout(()=>{if(screen==="reader"&&!$("#rEnd").hidden)storyMusicBox()},900);
 }
 $("#rNext").onclick=()=>{blip(520,.06);nextPage()};
-$("#rPrev").onclick=()=>{clearTimeout(rd.timer);if(rd.page>0){rd.page--;renderPage()}};
+$("#rPrev").onclick=()=>{clearTimeout(rd.timer);if(rd.page>0){rd.page--;rd.turn=-1;renderPage()}};
+$("#rSfx").onclick=()=>{unlockAudio();sfxToggle()};
 function syncAuto(){const b=$("#rAuto");b.classList.add("backpill");b.innerHTML=rd.auto?"⏸️<span>Pause</span>":"▶️<span>Play</span>";b.classList.toggle("playing",rd.auto)}
 $("#rAuto").onclick=()=>{unlockAudio();rd.auto=!rd.auto;syncAuto();clearTimeout(rd.timer);hush();
-  if(rd.auto){if(!$("#rEnd").hidden){$("#rEnd").hidden=true;rd.page=0}renderPage()}};
-$("#rAgain").onclick=()=>{$("#rEnd").hidden=true;rd.page=0;renderPage()};
-const closeReader=()=>{clearTimeout(rd.timer);hush();if(rd.ret==="grown"){show("grown");renderGrown()}else if(rd.preview||rd.ret==="story"){show("story");renderStory()}else if(rd.ret==="inbox"){show("inbox");ib.view="list";renderInbox()}else goLobby()};
+  if(rd.auto){if(!$("#rEnd").hidden){clearTimeout(rd.boxT);storyMusicBoxStop();$("#rEnd").hidden=true;rd.page=0}renderPage()}};
+$("#rAgain").onclick=()=>{clearTimeout(rd.boxT);storyMusicBoxStop();$("#rEnd").hidden=true;rd.page=0;rd.turn=1;renderPage()};
+const closeReader=()=>{clearTimeout(rd.timer);clearTimeout(rd.boxT);storyMusicBoxStop();hush();if(rd.ret==="grown"){show("grown");renderGrown()}else if(rd.preview||rd.ret==="story"){show("story");renderStory()}else if(rd.ret==="inbox"){show("inbox");ib.view="list";renderInbox()}else goLobby()};
 $("#rClose").onclick=closeReader; $("#rDone").onclick=closeReader;
 $("#rThanks").addEventListener("click",e=>{const b=e.target.closest("button");if(!b||!rd.g)return;const g=rd.g;
   floatReaction(b.dataset.r,me);
@@ -3155,6 +3254,86 @@ const CS_ADD_TABS=[["animals","🐶","Animals"],["magic","🦄","Magic"],["peopl
 const CS_STARTERS=["Once upon a time,","One night,","Then suddenly,","But then,","So","They lived happily ever after.","The end."];
 const CS_DOES=[["🤗","hugged"],["🎈","played with"],["🔎","found"],["❤️","loves"],["👋","said hi to"],["🎶","sang to"],["🚶","walked to"],["🕊️","flew to"],["😴","fell asleep by"],["🍪","shared a cookie with"]];
 
+/* ---- spelling helper for Big writers (backlog #13): wavy underline + tap a suggestion to fix it ----
+   words/spell.txt = about 39,000 common English words, most common first (kid-safe filtered), loaded only when needed. */
+const spell={rank:null,loading:null,ok:new Set((load("kp.spellOk")||"").split("|").filter(Boolean))};
+const SPELL_EXTRA="snuggly snuggle snuggled ladybug ladybugs yawned yawning yawny giggly giggled giggling sparkly twinkly sleepyhead bedtime goodnight lullaby lullabies teddy teddies unicorn unicorns mermaid mermaids pegasus gnome gnomes jeppson corgi corgis moolah kapanigans farmstand kitty kitties bunny bunnies puppy puppies doggy froggy piggy duckling ducklings hedgehog hedgehogs octopus dinosaur dinosaurs dino dinos superhero superheroes spaceship rocketship playdate playground pajamas jammies boo booboo uh oh yay yummy yum hooray whee whoosh boing zoom zzz mommy daddy mama papa grandma grandpa nana papa granny auntie uncle sis bro okay ok hi bye".split(" ");
+function spellLoad(){
+  if(spell.rank) return Promise.resolve(spell.rank); if(spell.loading) return spell.loading;
+  spell.loading=fetch("words/spell.txt").then(r=>r.ok?r.text():"").then(t=>{const m=new Map();t.split("\n").forEach((w,i)=>{w=w.trim();if(w&&!m.has(w))m.set(w,i)});
+    SPELL_EXTRA.forEach(w=>{if(w&&!m.has(w))m.set(w,6000)});spell.rank=m.size>1000?m:null;spell.loading=null;return spell.rank}).catch(()=>{spell.loading=null;return null});
+  return spell.loading;
+}
+function spellNames(){const s=new Set();for(const K of Object.values(KIDS))String(K.name||"").toLowerCase().split(/\s+/).forEach(w=>w&&s.add(w));
+  for(const list of Object.values(CS_LIB))for(const [,n] of list)n.toLowerCase().split(/\s+/).forEach(w=>s.add(w));
+  if(draft&&draft.pages)draft.pages.forEach(p=>p.items.forEach(it=>{if(it.nm)String(it.nm).toLowerCase().split(/\s+/).forEach(w=>s.add(w))}));
+  return s}
+function spellKnown(w,names){
+  const R=spell.rank; if(!R) return true;
+  w=w.toLowerCase().replace(/’/g,"'"); if(w.length<2||/\d/.test(w)) return true;
+  if(R.has(w)||names.has(w)||spell.ok.has(w)) return true;
+  if(w.endsWith("'s")&&spellKnown(w.slice(0,-2),names)) return true;
+  if(/^(.)\1{2,}$|(.)\2{2,}/.test(w)) return true; // "zzzz", "whoooa": sound words are fine
+  const has=x=>R.has(x)||names.has(x);
+  for(const [suf,add] of [["s",""],["es",""],["ed",""],["ed","e"],["d",""],["ing",""],["ing","e"],["ly",""],["er",""],["er","e"],["est",""],["est","e"],["ies","y"],["ied","y"],["ier","y"],["iest","y"],["ily","y"],["y",""],["y","e"]]){
+    if(!w.endsWith(suf)||w.length<suf.length+2) continue; const st=w.slice(0,-suf.length)+add; if(has(st)) return true;
+    if(!add&&/(ed|ing|er|est|y)$/.test(suf)&&st.length>2&&st[st.length-1]===st[st.length-2]&&has(st.slice(0,-1))) return true}
+  return false;
+}
+function spellEach(w,fn){const a="abcdefghijklmnopqrstuvwxyz";
+  for(let i=0;i<=w.length;i++){const L=w.slice(0,i),R=w.slice(i);
+    if(R)fn(L+R.slice(1)); if(R.length>1)fn(L+R[1]+R[0]+R.slice(2));
+    for(let j=0;j<26;j++){const c=a[j];if(R)fn(L+c+R.slice(1));fn(L+c+R)}}}
+// up to 3 likely words, most common first; one-letter fixes before two-letter fixes (remembered per word)
+const spellSug=new Map();
+// how a word sounds (roughly), so "elefant" finds "elephant" and "becuz" finds "because"
+function spellSound(w){return w.replace(/ph/g,"f").replace(/ck/g,"k").replace(/c(?=[eiy])/g,"s").replace(/[cq]/g,"k").replace(/x/g,"ks").replace(/z/g,"s").replace(/^wr/,"r").replace(/^kn/,"n").replace(/gh/g,"").replace(/(.)\1+/g,"$1")}
+function spellBones(w){return spellSound(w).replace(/[aeiouyhw']/g,"")}
+function spellSuggest(word){
+  const R=spell.rank; if(!R) return []; const w=word.toLowerCase();
+  let best=spellSug.get(w);
+  if(!best){const sc=new Map(),e1=[];
+    spellEach(w,x=>{e1.push(x);if(R.has(x)&&!sc.has(x))sc.set(x,R.get(x)+(x[0]===w[0]?0:4000))});
+    if(sc.size<3&&w.length<=11){const seen=new Set();for(const y of e1){if(y.length<2||seen.has(y))continue;seen.add(y);spellEach(y,x=>{if(x!==w&&!sc.has(x)&&R.has(x))sc.set(x,R.get(x)+20000+(x[0]===w[0]?0:8000))})}}
+    const ws=spellSound(w),wb=spellBones(w);
+    for(const [x,v] of sc){let b=v+Math.abs(x.length-w.length)*1500;if(spellSound(x)===ws)b-=60000;else if(spellBones(x)===wb)b-=15000;sc.set(x,b)}
+    best=[...sc.entries()].filter(([x])=>kidSafe(x)===x).sort((a,b)=>a[1]-b[1]).slice(0,3).map(([x])=>x);
+    spellSug.set(w,best)}
+  const cap=word[0]!==word[0].toLowerCase();
+  return best.map(x=>cap?x[0].toUpperCase()+x.slice(1):x);
+}
+// wraps a textarea: underlines words it doesn't know and lists fixes under it. onFix(newText) is called after a fix.
+function spellAttach(ta,row,onFix){
+  const wrap=el("div","spellwrap"); ta.replaceWith(wrap); const back=el("div","spellback"); wrap.append(back,ta); ta.spellcheck=false;
+  const mirror=()=>{const cs=getComputedStyle(ta);for(const k of ["fontFamily","fontSize","fontWeight","lineHeight","letterSpacing","paddingTop","paddingRight","paddingBottom","paddingLeft","borderTopWidth","borderRightWidth","borderBottomWidth","borderLeftWidth","boxSizing","textIndent","wordSpacing"])back.style[k]=cs[k];back.style.borderStyle="solid";back.style.borderColor="transparent";back.scrollTop=ta.scrollTop};
+  let t=null;
+  const check=()=>{
+    clearTimeout(t); if(!spell.rank){spellLoad().then(r=>{if(r&&ta.isConnected)check()});return}
+    mirror(); const v=ta.value, names=spellNames(), bad=[]; let html="",last=0;
+    const caret=document.activeElement===ta?ta.selectionEnd:-1;
+    for(const m of v.matchAll(/[A-Za-z]+(?:['’][A-Za-z]+)*/g)){
+      const end=m.index+m[0].length; if(caret===end) continue; // still typing this word
+      if(spellKnown(m[0],names)) continue;
+      bad.push(m[0]); html+=esc(v.slice(last,m.index))+"<mark>"+esc(m[0])+"</mark>"; last=end}
+    back.innerHTML=html+esc(v.slice(last))+"\n";
+    row.innerHTML=""; const seen=new Set();
+    for(const b of bad){const k=b.toLowerCase();if(seen.has(k))continue;seen.add(k);if(seen.size>3)break;
+      const box=el("div","spellfix");box.append(el("span","bad",esc(b)),document.createTextNode("→ "));
+      const sug=spellSuggest(b);
+      for(const s of sug){const c=el("button","chip",esc(s));c.onclick=()=>{const re=new RegExp("(^|[^A-Za-z'’])"+b.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"(?![A-Za-z])");ta.value=ta.value.replace(re,(_,pre)=>pre+s);onFix(ta.value);blip(700,.06);say(s);check()};box.append(c)}
+      if(!sug.length) box.append(el("span","none","No ideas. Try sounding it out!"));
+      const hear=el("button","chip ok","🔊");hear.setAttribute("aria-label","Hear "+b);hear.onclick=()=>say(b);
+      const keep=el("button","chip ok","👍 Keep it");keep.onclick=()=>{spell.ok.add(k);store("kp.spellOk",[...spell.ok].slice(-200).join("|"));check()};
+      box.append(hear,keep); row.append(box)}
+  };
+  ta.addEventListener("input",()=>{clearTimeout(t);t=setTimeout(check,450)});
+  ta.addEventListener("blur",()=>setTimeout(check,60));
+  ta.addEventListener("scroll",()=>{back.scrollTop=ta.scrollTop});
+  addEventListener("resize",()=>{if(ta.isConnected)mirror()});
+  requestAnimationFrame(check);
+  return check;
+}
+
 /* ---- kid-safe words: blocked words become "silly", no scolding ---- */
 const KS_RE=new RegExp("\\b(?:"+["fuck\\w*","shit\\w*","bitch\\w*","bastard\\w*","asshole\\w*","cunt\\w*","nigg\\w*","fagg\\w*","whore\\w*","slut\\w*","porn\\w*","retard\\w*","wank\\w*","twat\\w*","pussy","dick","dicks","cock","cocks","piss","pissed","ass","asses","damn","dammit","crap","fag","sex","sexy","kill","killed","kills","murder\\w*","gun","guns","blood","bloody","stupid","idiot","idiots","dumb","hell"].join("|")+")\\b","gi");
 function kidSafe(t){return String(t==null?"":t).replace(KS_RE,"silly")}
@@ -3171,10 +3350,12 @@ function csSave(){clearTimeout(csSaveT);csSaveT=setTimeout(csSaveNow,1200)}
 function csSaveNow(){
   clearTimeout(csSaveT); if(!csIsCustom()||!mail.ref||!draft.owner) return;
   const d={id:draft.id,owner:draft.owner,to:draft.to,title:kidSafe(draft.title).slice(0,60),cover:draft.cover||"",readBy:draft.readBy||"",at:Date.now(),
+    coverS:draft.coverS||null,useDrawn:!!(draft.useDrawn&&draft.coverS),
     pages:draft.pages.map(p=>Object.assign({sc:p.sc,fx:p.fx,t:p.t||"",items:p.items.map(csCleanItem)},p.v?{v:p.v}:{}))};
   const clean=JSON.parse(JSON.stringify(d));
   mail.ref.child(`drafts/${draft.owner}/${draft.id}`).set(clean).catch(()=>{});
-  mail.ref.child(`draftIndex/${draft.owner}/${draft.id}`).set({title:clean.title,to:clean.to||"",pages:clean.pages.length,cover:clean.cover||csGuessCover(),at:clean.at}).catch(()=>{});
+  const ix={title:clean.title,to:clean.to||"",pages:clean.pages.length,cover:clean.cover||csGuessCover(),at:clean.at};if(draft.useDrawn&&coverOK(draft.coverImg))ix.coverImg=draft.coverImg;
+  mail.ref.child(`draftIndex/${draft.owner}/${draft.id}`).set(ix).catch(()=>{});
 }
 function csDeleteDraft(owner,id){if(!mail.ref)return;mail.ref.child(`drafts/${owner}/${id}`).remove().catch(()=>{});mail.ref.child(`draftIndex/${owner}/${id}`).remove().catch(()=>{})}
 async function csDraftList(){
@@ -3183,7 +3364,7 @@ async function csDraftList(){
     for(const [owner,ds] of Object.entries(all)){if(!KIDS[owner]||!ds)continue;
       const mine=owner===me, help=!mine&&KIDS[me]&&KIDS[me].grown&&!KIDS[owner].grown;
       if(!mine&&!help)continue;
-      for(const [id,x] of Object.entries(ds))if(x&&typeof x==="object")out.push({owner,id,title:String(x.title||""),to:x.to,pages:+x.pages||1,cover:String(x.cover||"📖").slice(0,16),at:+x.at||0,mine})}
+      for(const [id,x] of Object.entries(ds))if(x&&typeof x==="object")out.push({owner,id,title:String(x.title||""),to:x.to,pages:+x.pages||1,cover:String(x.cover||"📖").slice(0,16),coverImg:coverOK(x.coverImg)?x.coverImg:"",at:+x.at||0,mine})}
     return out.sort((a,b)=>(b.mine-a.mine)||(b.at-a.at)).slice(0,8)}catch(e){return[]}
 }
 async function csOpenDraft(owner,id){
@@ -3193,6 +3374,7 @@ async function csOpenDraft(owner,id){
   const n=csNorm(Object.assign({},v,{story:"custom"}),true); if(!n){toast("That draft couldn't open.");return}
   draft=Object.assign(csNewDraft(KIDS[v.to]?v.to:null),{id,owner,title:n.title==="A story"?"":n.title,cover:v.cover||"",readBy:v.readBy||"",pages:n.pages,fromHome:true});
   (v.pages||[]).forEach((p,i)=>{if(p&&p.v&&typeof p.v.data==="string"&&draft.pages[i])draft.pages[i].v={mime:String(p.v.mime||"audio/mp4"),data:p.v.data}});
+  {const cs=Array.isArray(v.coverS)?v.coverS.filter(x=>x&&Array.isArray(x.p)&&x.p.length<=3000).slice(0,200):[];if(cs.length){draft.coverS=cs;draft.coverImg=coverPic(cs);draft.useDrawn=v.useDrawn===true&&!!draft.coverImg}}
   if(!draft.to){sGo("to");return} sGo("cedit");
 }
 
@@ -3220,24 +3402,46 @@ function csNorm(raw,isDraft){
   }).filter(Boolean);
   if(!pages.length) return null;
   const g={story:"custom",title:kidSafe(String(raw.title||"")).slice(0,60)||"A story",cover:String(raw.cover||"📖").slice(0,16),pages,at:+raw.at||Date.now()};
+  if(coverOK(raw.coverImg)) g.coverImg=raw.coverImg;
   if(!isDraft){if(!KIDS[raw.to]||!KIDS[raw.from])return null;g.to=raw.to;g.from=raw.from}
   return g;
 }
 function csGuessCover(){for(const p of draft.pages)for(const it of p.items)if(it.k==="e")return it.e;return CS_SCENES[draft.pages[0].sc].e}
 function csGift(preview){
-  const g={id:null,story:"custom",to:draft.to,from:draft.owner||me,at:Date.now(),title:kidSafe(draft.title).trim().slice(0,60)||`${nameOf(draft.to)}'s story`,cover:draft.cover||csGuessCover(),
+  const g={id:null,story:"custom",to:draft.to,from:draft.owner||me,at:Date.now(),title:kidSafe(draft.title).trim().slice(0,60)||`${nameOf(draft.to)}'s story`,cover:draft.cover||csGuessCover(),coverImg:draft.useDrawn&&coverOK(draft.coverImg)?draft.coverImg:undefined,
     pages:draft.pages.map(p=>({sc:p.sc,fx:p.fx,t:kidSafe(p.t||"").slice(0,400),items:p.items.map(csCleanItem).filter(Boolean)}))};
   const rb=draft.readBy||(draft.pages.some(p=>p.v)?"rec":"voice");
   if(rb==="none") g.silent=true;
   else if(rb==="rec"||preview){const v={};draft.pages.forEach((p,i)=>{if(p.v)v["p"+i]=p.v});if(Object.keys(v).length)g.voice=v}
   return g;
 }
-function storyMeta(x){if(x&&x.story==="custom")return{title:String(x.title||"A story").slice(0,60),cover:String(x.cover||"📖").slice(0,16)};const S=x&&STORIES[x.story];return S?{title:S.title,cover:S.cover}:{title:"A story",cover:"📖"}}
+// a drawn cover is kept as a small JPEG picture (on the message too, so shelves show it without loading the whole story)
+function coverOK(u){return typeof u==="string"&&/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(u)&&u.length<60000}
+function coverPic(strokes){
+  const S=192,cv=document.createElement("canvas");cv.width=S;cv.height=S;const x=cv.getContext("2d");
+  x.fillStyle="#FFF8E7";x.fillRect(0,0,S,S);const a=document.createElement("canvas");a.width=PAD;a.height=PAD;drawStrokes(a.getContext("2d"),strokes,1);x.drawImage(a,0,0,S,S);
+  for(const q of [.82,.7,.55]){const u=cv.toDataURL("image/jpeg",q);if(u.length<45000)return u}
+  return null;
+}
+function coverHTML(m){return m&&coverOK(m.coverImg)?`<img class="cvimg" src="${m.coverImg}" alt="">`:esc(m&&m.cover||"📖")}
+function storyMeta(x){if(x&&x.story==="custom")return{title:String(x.title||"A story").slice(0,60),cover:String(x.cover||"📖").slice(0,16),coverImg:coverOK(x.coverImg)?x.coverImg:""};const S=x&&STORIES[x.story];return S?{title:S.title,cover:S.cover}:{title:"A story",cover:"📖"}}
 function storyPages(g){return g.story==="custom"?g.pages:STORIES[g.story].pages}
 
 /* ---- drawing characters into pictures ---- */
 const csDrawCache=new WeakMap();
-function csDrawURL(s){let u=csDrawCache.get(s);if(u)return u;const cv=document.createElement("canvas");cv.width=PAD;cv.height=PAD;drawStrokes(cv.getContext("2d"),s,1);u=cv.toDataURL("image/png");csDrawCache.set(s,u);return u}
+function csDrawURL(s){let u=csDrawCache.get(s);if(u)return u;u=drawnGlowURL(s);csDrawCache.set(s,u);return u}
+// a kid's drawing as a picture with a soft glowing outline baked in, so it sits nicely on any scene (no live filters, so it stays smooth on the Fire tablet)
+function drawnGlowURL(strokes){
+  const mk=()=>{const c=document.createElement("canvas");c.width=PAD;c.height=PAD;return c};
+  const a=mk();drawStrokes(a.getContext("2d"),strokes,1);
+  try{
+    const w=mk(),wx=w.getContext("2d");wx.drawImage(a,0,0);wx.globalCompositeOperation="source-in";wx.fillStyle="#FFFFFF";wx.fillRect(0,0,PAD,PAD);
+    const b=mk(),x=b.getContext("2d");
+    x.shadowColor="rgba(255,240,190,.95)";x.shadowBlur=22;x.drawImage(w,0,0);x.drawImage(w,0,0);x.shadowBlur=0;x.shadowColor="transparent";
+    for(let i=0;i<12;i++){const t=i/12*Math.PI*2;x.drawImage(w,Math.round(Math.cos(t)*5),Math.round(Math.sin(t)*5))}
+    x.drawImage(a,0,0);return b.toDataURL("image/png");
+  }catch(e){return a.toDataURL("image/png")}
+}
 /* family cartoon likenesses live privately in Firebase: families/<code>/art/family/<who>/<key> = {img} */
 const csFam={list:null,imgs:new Map(),loading:null};
 async function csFamList(){
@@ -3278,8 +3482,13 @@ function csItemEl(it,i){
   else if(it.k==="d"){const im=new Image();im.src=csDrawURL(it.s);im.alt="";fl.append(im)}
   else if(it.k==="av"){const K=KIDS[it.who];if(K&&K.look){const im=new Image();im.src=avatarURL(K.look,"full");im.alt="";fl.append(im)}else{const c=el("div","cem");c.textContent=K?K.face:"🙂";fl.append(c)}}
   else if(it.k==="fam"){const im=new Image();im.alt="";fl.append(im);csFamImg(it.who,it.key).then(u=>{if(u)im.src=u;else{im.replaceWith(Object.assign(el("div","cem"),{textContent:KIDS[it.who].face}))}})}
-  fe.append(fl); mv.append(fe); d.append(mv);
-  if(it.path&&it.path.length>=4) d.dataset.path="1";
+  fe.append(fl); mv.append(fe);
+  // a soft shadow on the ground under characters standing near the bottom (not when they fly, swim, float or follow a path)
+  const hasPath=it.path&&it.path.length>=4;
+  if((it.k==="d"||it.k==="av"||it.k==="fam")&&it.y>=.8&&!hasPath&&!["fly","swim","float","peek","fade"].includes(it.mv)){
+    const sh=el("div","cshadow"); if(["walk","run","tiptoe"].includes(it.mv)) mv.prepend(sh); else d.append(sh)}
+  d.append(mv);
+  if(hasPath) d.dataset.path="1";
   return d;
 }
 function csBuildStage(stage,page,o={}){
@@ -3357,9 +3566,10 @@ function csStop(d){(d._anims||[]).forEach(a=>{try{a.cancel()}catch(e){}});d._ani
 function csPlayStage(stage,page,o={}){
   const W=stage.clientWidth,H=stage.clientHeight;
   stage.querySelectorAll(".citem").forEach(d=>{const it=page.items[+d.dataset.i]; if(!it) return;
-    if(it.at==="late"){d.style.opacity=0;const t=setTimeout(()=>{if(!d.isConnected)return;d.style.opacity="";d.animate&&d.animate([{transform:"translate(-50%,0) scale(0)"},{transform:"translate(-50%,0) scale(1.15)",offset:.7},{transform:"translate(-50%,0) scale(1)"}],{duration:600,easing:"ease-out"});csStart(d,it,W,H)},2200);(o.timers||[]).push(t)}
-    else if(it.at==="tap"){d.classList.add("ctap");d.onclick=()=>{if(!d.classList.contains("ctap"))return;d.classList.remove("ctap");blip(880,.12,"triangle",.12);csStart(d,it,W,H);if(o.onTap)o.onTap(it)}}
-    else csStart(d,it,W,H);
+    const snd=csItemSfx(it);
+    if(it.at==="late"){d.style.opacity=0;const t=setTimeout(()=>{if(!d.isConnected)return;d.style.opacity="";d.animate&&d.animate([{transform:"translate(-50%,0) scale(0)"},{transform:"translate(-50%,0) scale(1.15)",offset:.7},{transform:"translate(-50%,0) scale(1)"}],{duration:600,easing:"ease-out"});storySfx("pop");if(snd&&snd!=="pop")setTimeout(()=>{if(d.isConnected)storySfx(snd)},350);csStart(d,it,W,H)},2200);(o.timers||[]).push(t)}
+    else if(it.at==="tap"){d.classList.add("ctap");d.onclick=()=>{if(!d.classList.contains("ctap"))return;d.classList.remove("ctap");if(sfx.on)storySfx(snd||"chime");else blip(880,.12,"triangle",.12);csStart(d,it,W,H);if(o.onTap)o.onTap(it)}}
+    else{csStart(d,it,W,H);if(snd&&o.sounds!==false){const t=setTimeout(()=>{if(d.isConnected)storySfx(snd)},snd==="hoot"?1400:450);(o.timers||[]).push(t)}}
   });
 }
 
@@ -3398,7 +3608,7 @@ function csFitStage(){
   let w=portrait?Math.min(cell.clientWidth,ced.clientHeight*.56*CS_ASPECT):Math.min(cell.clientWidth,cell.clientHeight*CS_ASPECT);
   w=Math.max(160,Math.floor(w)); st.style.width=w+"px"; st.style.height=Math.round(w/CS_ASPECT)+"px";
 }
-addEventListener("resize",()=>{if(screen==="story"&&sStep==="cedit")requestAnimationFrame(csFitStage);if(screen==="reader"&&rd.g&&rd.g.story==="custom"){clearTimeout(csReadPage._t);csReadPage._t=setTimeout(()=>csReadStage(),200)}});
+addEventListener("resize",()=>{if(screen==="story"&&sStep==="cedit")requestAnimationFrame(csFitStage);if(screen==="reader"&&rd.g&&rd.g.story==="custom"){clearTimeout(csReadPage._t);csReadPage._t=setTimeout(()=>csReadStage(true),200)}});
 // drag to move, pinch to resize, or draw a path for the selected character
 function csStageInput(stage,page){
   const pts=new Map(); let drag=null, pinch=null, pathRec=null;
@@ -3513,7 +3723,7 @@ function csItemPanel(panel,stage,it){
 }
 function csPreviewItem(stage,it,i){
   const d=stage.querySelector(`.citem[data-i="${i}"]`); if(!d) return; csStop(d);
-  csStart(d,it,stage.clientWidth,stage.clientHeight);
+  csStart(d,it,stage.clientWidth,stage.clientHeight); {const snd=csItemSfx(it);if(snd)storySfx(snd)}
   clearTimeout(d._pt); d._pt=setTimeout(()=>csStop(d),3200);
 }
 function csWordsPanel(panel){
@@ -3556,28 +3766,30 @@ function csWordsPanel(panel){
   const ta=el("textarea","cetextarea");ta.maxLength=400;ta.rows=4;ta.placeholder="Once upon a time…";ta.value=page.t||"";
   ta.oninput=()=>{page.t=ta.value;csSave()}; ta.onblur=()=>{const s=kidSafe(ta.value);if(s!==ta.value){ta.value=s;page.t=s;csSave()}};
   panel.append(ta);
+  const spRow=el("div","spellrow"); panel.append(spRow);
+  const spCheck=spellAttach(ta,spRow,v=>{page.t=v;csSave()});
   const chips=el("div","cechips");
-  for(const s of CS_STARTERS){const c=el("button","chip",esc(s));c.onclick=()=>{const v=ta.value.trim();ta.value=(v?v+" ":"")+s+(/[.!?]$/.test(s)?"":" ");page.t=ta.value;csSave();ta.focus()};chips.append(c)}
+  for(const s of CS_STARTERS){const c=el("button","chip",esc(s));c.onclick=()=>{const v=ta.value.trim();ta.value=(v?v+" ":"")+s+(/[.!?]$/.test(s)?"":" ");page.t=ta.value;csSave();ta.focus();spCheck()};chips.append(c)}
   panel.append(chips);
   const r=el("div","cerow");
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(SR){const d=el("button","ctool","🎙️<small>Say it</small>");d.onclick=()=>{try{const sr=new SR();sr.lang="en-US";sr.interimResults=false;sr.maxAlternatives=1;d.classList.add("on");d.querySelector("small").textContent="Listening…";
-    sr.onresult=e=>{const t=kidSafe(e.results[0][0].transcript||"");const v=ta.value.trim();let s=t.charAt(0).toUpperCase()+t.slice(1);if(!/[.!?]$/.test(s))s+=".";ta.value=((v?v+" ":"")+s).slice(0,400);page.t=ta.value;csSave()};
+    sr.onresult=e=>{const t=kidSafe(e.results[0][0].transcript||"");const v=ta.value.trim();let s=t.charAt(0).toUpperCase()+t.slice(1);if(!/[.!?]$/.test(s))s+=".";ta.value=((v?v+" ":"")+s).slice(0,400);page.t=ta.value;csSave();spCheck()};
     sr.onend=()=>{d.classList.remove("on");d.querySelector("small").textContent="Say it"};sr.onerror=sr.onend;sr.start()}catch(e){toast("Talking to type isn't available here.")}};r.append(d)}
   const hear=el("button","ctool","🔊<small>Hear it</small>");hear.onclick=()=>say(kidSafe(ta.value));r.append(hear);
   panel.append(r);
   panel.append(el("h4",null,"Your voice (optional)"),recRow,lab);
 }
 // a full-screen drawing sheet for a new character (same pad as the template stories)
-function csDrawSheet(onDone){
+function csDrawSheet(onDone,title,start){
   let sh=$("#csDraw"); if(!sh){sh=el("div","cdrawsheet drawing");sh.id="csDraw";document.body.append(sh)}
   sh.hidden=false; sh.innerHTML=""; const B=el("div","sbody"); sh.append(B);
-  B.append(el("h2",null,"Draw your character!"));
-  const strokes=[]; buildPad(B,strokes);
+  B.append(el("h2",null,esc(title||"Draw your character!")));
+  const strokes=start?start.map(x=>Object.assign({},x,{p:x.p.slice()})):[]; buildPad(B,strokes);
   const row=el("div","rowbtns");
   const no=el("button","ghost","Cancel");no.onclick=()=>{sh.hidden=true;sh.innerHTML=""};
   const ok=el("button","bigbtn","Add it ✔️");ok.onclick=()=>{if(!strokes.length){say("Draw something first!");return}sh.hidden=true;sh.innerHTML="";onDone(thin(strokes))};
-  row.append(no,ok); B.append(row); requestAnimationFrame(fitPad); sayLittle("Draw your character!");
+  row.append(no,ok); B.append(row); requestAnimationFrame(fitPad); sayLittle(title||"Draw your character!");
 }
 
 /* ---- finishing: title, cover, who reads ---- */
@@ -3604,7 +3816,14 @@ function csRenderFinish(B){
   const covers=[];draft.pages.forEach(p=>{p.items.forEach(it=>{if(it.k==="e"&&!covers.includes(it.e))covers.push(it.e)});const e=CS_SCENES[p.sc].e;if(!covers.includes(e))covers.push(e)});
   ["📖","🌙","⭐","💖"].forEach(e=>{if(!covers.includes(e))covers.push(e)});
   if(!draft.cover) draft.cover=covers[0];
-  const cg=el("div","cerow covers");for(const e of covers.slice(0,12)){const b=el("button","ctool"+(draft.cover===e?" on":""),`<span>${e}</span>`);b.onclick=()=>{draft.cover=e;csSave();cg.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b))};cg.append(b)}
+  const cg=el("div","cerow covers");
+  const pickOn=b=>cg.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));
+  const drawB=el("button","ctool wide",`✏️<small>${draft.coverS?"Draw it again":"Draw a cover"}</small>`);
+  drawB.onclick=()=>csDrawSheet(st=>{const img=coverPic(st);if(!img){toast("That cover is too busy to send. Try a simpler one.");return}
+    draft.coverS=st;draft.coverImg=img;draft.useDrawn=true;csSave();renderStory();sayLittle("What a cover!")},"Draw your cover!",draft.coverS);
+  cg.append(drawB);
+  if(draft.coverS&&draft.coverImg){const b=el("button","ctool drawn"+(draft.useDrawn?" on":""),`<img src="${draft.coverImg}" alt="My drawing">`);b.setAttribute("aria-label","My drawn cover");b.onclick=()=>{draft.useDrawn=true;csSave();pickOn(b)};cg.append(b)}
+  for(const e of covers.slice(0,12)){const b=el("button","ctool"+(!draft.useDrawn&&draft.cover===e?" on":""),`<span>${e}</span>`);b.onclick=()=>{draft.cover=e;draft.useDrawn=false;csSave();pickOn(b)};cg.append(b)}
   B.append(cg);
   B.append(el("h3",null,"Who reads it?"));
   const hasRec=draft.pages.some(p=>p.v); if(!draft.readBy) draft.readBy=hasRec?"rec":"voice";
@@ -3616,18 +3835,20 @@ function csRenderFinish(B){
 }
 
 /* ---- reading a custom story ---- */
-function csReadStage(){
+function csReadStage(quiet){
   const g=rd.g, P=g.pages[rd.page]; if(!P) return;
   const host=$("#reader .rscene"); let wrap=host.querySelector(".cread"); if(!wrap){wrap=el("div","cread");host.append(wrap)}
   (rd.csTimers||[]).forEach(clearTimeout); rd.csTimers=[];
+  host.querySelectorAll(":scope>.cfx").forEach(x=>x.remove());
   wrap.innerHTML=""; wrap.style.background=(CS_SCENES[P.sc]||CS_SCENES.night).bg;
   const stage=el("div","cstage read"); wrap.append(stage);
   stage.style.width=host.clientWidth+"px"; stage.style.height=host.clientHeight+"px"; // fill the page; places are shares of the width and height
-  csBuildStage(stage,P); csPlayStage(stage,P,{timers:rd.csTimers});
+  csBuildStage(stage,P); csPlayStage(stage,P,{timers:rd.csTimers,sounds:!quiet});
 }
 function csReadPage(){
   const g=rd.g, P=g.pages[rd.page];
-  csReadStage();
+  csReadStage(); rdTurn();
+  if(P.sc==="forest"&&!P.items.some(it=>csItemSfx(it)==="hoot")){const pg=rd.page,gg=rd.g;rd.csTimers.push(setTimeout(()=>{if(screen==="reader"&&rd.g===gg&&rd.page===pg)storySfx("hoot")},1800))}
   const T=$("#rText"); T.innerHTML=""; rd.wordSpans=[]; let spoken="";
   const text=P.t||""; T.hidden=!text;
   for(const tk of text.split(/(\s+)/)){if(!tk)continue;if(/^\s+$/.test(tk)){T.append(document.createTextNode(" "));spoken+=tk;continue}

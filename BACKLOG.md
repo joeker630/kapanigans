@@ -745,7 +745,7 @@ Add a button to the video chat bubble to **flip between the iPad's front and bac
 
 ---
 
-## 13. 🛠️ Bedtime Story 2.0: better art, write your own story, more animations (B and C built Oct 27 with code-drawn scenes; A waits on art)
+## 13. 🛠️ Bedtime Story 2.0: better art, write your own story, more animations (B and C built Oct 27 with code-drawn scenes; storybook polish live Oct 28 in 1.7; A waits on art)
 
 **✅ Built Oct 27 (no image credits used)**
 - **✨ My own story** (Make a story → who it's for → ✨ My own story): a page editor that fits one screen. Up to 12 pages; add, delete and reorder pages.
@@ -757,7 +757,14 @@ Add a button to the video chat bubble to **flip between the iPad's front and bac
   - **Finish:** title (typed, or 4 suggestions for Violet), cover emoji, who reads it (reading voice, my recordings, no audio), preview, send. Arrives in the Inbox and plays in the reader like the template stories.
   - **Drafts** save as you go to `families/<code>/drafts/<owner>/<id>` (+ `draftIndex`), listed on the Bedtime Story home ("Keep working on a story"). Grown-ups see the kids' drafts and can help; only the owner sends.
   - **Kid-safe word filter** (`kidSafe()`): blocked words become "silly" in story words, titles, talk-to-type, typed blanks and typed Inbox notes.
-- Not yet: generated art (A, #14, #15), a smoothed line option and glow outline for drawings, page-turn animation and sound effects.
+**✅ Built Oct 28 (1.7, no image credits used)**
+- **Drawn characters:** a soft glowing outline baked into the picture (no live filters, so it stays smooth on the Fire tablet) and a ground shadow under drawings, avatars and family cartoons standing near the bottom (none when flying, swimming, floating or following a path). Template stories get the glow and shadow too.
+- **Smooth lines:** strokes marked `sm` are steadied (neighbour averaging) and drawn as curves. Violet always smooth; a 〰️ **Smooth** toggle for Big players (remembered per device in `kp.padSmooth`). Also applies to Inbox drawings.
+- **Page look:** golden storybook frame with corner stars, the Andika reading font for story text, a page-turn animation forward and back (a fade with reduced motion), and fireflies on template pages.
+- **Sounds (made in code):** page turn, whoosh (fly, run, swim), pop (pop move, "a bit later" arrivals), chime (sparkle and tap-to-start), owl hoot (owl characters and the moonlit forest), and a music-box "Twinkle, Twinkle" at The End. 🔔/🔕 in the reader header (`kp.storySfx`).
+- **Spelling helper (Big):** `words/spell.txt` (about 39,000 common words, kid-safe filtered) loaded on demand; wavy red underline behind the page text box, up to 3 suggestions per word (one-letter fixes first, sound-alikes boosted: "elefant" → elephant), 🔊 hear it, 👍 Keep it (`kp.spellOk`). Family names and story characters count as words.
+- **Drawn cover:** ✏️ Draw a cover on the finish step; saved as a small JPEG (`coverImg`) on the message, the gift and the draft index, with the strokes in the draft (`coverS`) so it can be redrawn. Older app versions fall back to the cover emoji.
+- Not yet: generated art (A, #14, #15) and the night-light dim at "The end."
 
 Bedtime Story (#1) works, but the pictures are plain, kids can only fill in blanks in 3 templates, and there are only 6 simple moves. This upgrade makes it look like a real picture book, lets kids **write a whole story from scratch**, and adds many more animations.
 

@@ -4,6 +4,24 @@ Newest first. Each release has kid-friendly notes (shown to everyone in the game
 
 ---
 
+## 1.7: Storybook magic 📖
+**October 28, 2026**
+
+### For everyone
+- 📖 **A real storybook:** stories now sit in a golden picture-book frame with a cozy reading font, and pages **turn like a book** when you go forward or back. Fireflies drift over the Sleepy Dragon, Moon Picnic and Lost Teddy pages too.
+- ✨ **Drawings glow:** characters you draw get a soft glowing outline and a little shadow on the ground, so they look great on every scene.
+- 〰️ **Smooth lines:** wobbly lines come out neat. Violet's crayon is always smooth; Quinn and grown-ups can turn **Smooth** on or off on the drawing pad.
+- 🔔 **Story sounds:** a page-turn swish, a whoosh when someone flies or runs, a pop, a twinkle when you tap to wake a character, an owl hoot in the forest, and a music-box lullaby at "The End." Tap 🔔 in the story to turn sounds off.
+- 🔤 **Spelling helper:** when Quinn or a grown-up types a page, tricky words get a wavy red line with ideas to tap ("elefant" → elephant). 🔊 hears the word, 👍 **Keep it** for made-up and silly words.
+- 🎨 **Draw your own cover:** on the last step of ✨ My own story, tap **Draw a cover**. It shows on the story shelf and in drafts.
+
+### For grown-ups
+- 🧩 Sounds are all made in code (no downloads) and remember their on/off setting on each device.
+- 📚 The spelling helper uses a list of about 39,000 common words (kid-safe filtered), loaded only when someone types a story page, plus family names and the story builder's characters.
+- 🎨 A drawn cover is a small picture saved with the story. Older copies of Kapanigans still show the cover emoji.
+
+---
+
 ## 1.6: The family dashboard 📈
 **October 28, 2026**
 
