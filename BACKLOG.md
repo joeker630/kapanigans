@@ -1239,6 +1239,8 @@ Show **release notes** inside Kapanigans so everyone knows what changed: a frien
 
 ## Done
 
+- **Family dashboard (Oct 28, v1.6):** Joe-only page in Grown-ups › Reports (`drawDash`): KPIs vs the previous period, share of family time, time by game, everyone table, first-try ranking, skills side by side (kids/grown-ups) with week-over-week ▲▼=, 6-week first-try trend, day×hour heat map, play timers (breaks/extra time counted from Oct 28). Grown-up puzzles now log their own skill names.
+
 - **Inbox flow (Oct 27):** labeled back button (⬅️ Home / Inbox / Who / Back), Who → What → Send steps with a "To:" chip, ❤️ 🤗 😂 replies swap to "Sent to …!" with My inbox / Home, ➡️ Next message, and the sent screen offers My inbox / Send another / Home.
 - **iPad zoom (Oct 27):** no double-tap zoom on anything (fast taps still all count), text boxes 16px+ so focusing never zooms, and any zoom that slips through is undone after typing.
 

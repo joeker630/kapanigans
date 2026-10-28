@@ -4,6 +4,20 @@ Newest first. Each release has kid-friendly notes (shown to everyone in the game
 
 ---
 
+## 1.6: The family dashboard 📈
+**October 28, 2026**
+
+### For grown-ups
+- 📈 **Family dashboard (Joe):** in 🔒 Grown-ups › Reports, **📈 Family dashboard** puts everyone on one page for the last 7 days, 30 days or all time:
+  - headline numbers (family play time, active profiles, sessions, average session, puzzles and first-try %, busiest time), each compared with the period before
+  - each person's **share of family play time**, kids vs grown-ups, and time by game
+  - **everyone at a glance**: time, % of family, change, sessions, days active, top game, puzzles and first-try %, last played (tap a row for the full report)
+  - **right on the first try** for each person, and **skills side by side** (kids and grown-ups) with ▲ ▼ = changes from the week before
+  - **week by week** first-try % for the last 6 weeks, when the family plays (day × hour), and the play timers (breaks and extra time)
+- Grown-up puzzles are now recorded by name (sudoku, word guess, blackjack, minesweeper, traffic jam) so they show up as skills.
+
+---
+
 ## 1.5: Everyone's usage for Joe 📊
 **October 28, 2026**
 
