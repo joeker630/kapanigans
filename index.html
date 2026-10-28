@@ -1184,6 +1184,28 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
 .alkb .allt{flex:1;min-width:0;max-width:58px;border-radius:10px;background:#fff;box-shadow:0 3px 0 #C9C0DC}
 .allt.used{visibility:hidden}
 .allt.glow{outline:5px solid #00A88F;outline-offset:2px}
+.pzwrap{display:flex;flex-direction:column;align-items:center;gap:12px;width:100%}
+.mzwrap{display:flex;flex-direction:column;align-items:center;gap:12px}
+.mzwrap.side{flex-direction:row}
+.mzstage svg,.dtstage svg,.tpstage svg{display:block;width:100%;height:100%;touch-action:none;-webkit-user-select:none;user-select:none}
+.mzstage{border-radius:18px;box-shadow:0 6px 0 rgba(0,0,0,.08)}
+.mzpiece{transition:x .12s,y .12s;pointer-events:none}
+.mzpad{display:grid;grid-template-columns:repeat(3,52px);grid-template-rows:repeat(3,52px);gap:6px}
+.mzkey{font-size:26px;border:0;border-radius:14px;background:var(--paper);box-shadow:0 4px 0 rgba(0,0,0,.12);cursor:pointer;padding:0}
+.mzkey:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.12)}
+.mzkey.u{grid-area:1/2}.mzkey.l{grid-area:2/1}.mzkey.r{grid-area:2/3}.mzkey.d{grid-area:3/2}
+.dtstage,.tpstage{border-radius:22px;box-shadow:0 6px 0 rgba(0,0,0,.08)}
+.dtdot{cursor:pointer;outline:none}
+.dtdot.on .dtc{fill:#00A88F}
+.dtdot.start .dtc,.dtdot.glow .dtc{animation:dtpulse 1s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes dtpulse{50%{transform:scale(1.25)}}
+.dtfill{transition:opacity .5s}
+.dtpop{animation:dtpopin .5s cubic-bezier(.3,1.6,.6,1)}
+@keyframes dtpopin{from{opacity:0;transform:scale(.3)}to{opacity:1;transform:scale(1)}}
+.dtpop{transform-box:fill-box;transform-origin:center}
+.tpmover{pointer-events:none}
+.tpslip{animation:tpshake .35s}
+@keyframes tpshake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
 </style>
 
 </head>
@@ -7569,6 +7591,319 @@ TASKS.abcteam=api=>{
     CO.listeners.add(sync);api.after(()=>CO.listeners.delete(sync))}
   drawRows();next();
 };
+
+/* ================= NEW PUZZLES: MOUSE MAZE, CONNECT THE DOTS, TRACE THE PATH =================
+   Each works alone (in the chore rotation) and as a team chore (api.ctx.coop): teamKit shares progress at
+   coop/<sid>/prog/<who> = {pct, done}, like Water the field. Grown-up versions can be lost. */
+function teamKit(api){
+  const sid=api.ctx.coop&&api.ctx.coop.sid,S0=sid&&CO.sess[sid];
+  const order=S0?(S0.order||Object.keys(S0.members||{})):[me],others=order.filter(w=>w!==me),names=others.map(w=>kidOf(w).name);
+  const rowsEl=el("div","taprows");let mine=0,done=false,lastSent=-1;
+  const progOf=w=>{if(w===me)return done?1:mine;const s=CO.sess[sid];const p=s&&s.prog&&s.prog[w];return p?(p.done?1:+p.pct||0):0};
+  const draw=()=>{if(order.length<2){rowsEl.hidden=true;return}rowsEl.innerHTML="";
+    for(const w of order){const v=progOf(w),K=kidOf(w);const r=el("div","taprow"+(w===me?" me":""),`<span class="who">${faceHTML(K)} ${esc(w===me?"You":K.name)}</span><span class="bar"><i style="width:${Math.round(v*100)}%"></i></span><span class="n">${v>=1?"✅":Math.round(v*100)+"%"}</span>`);
+      r.style.setProperty("--k",K.hue);rowsEl.append(r)}};
+  const check=()=>{const s=CO.sess[sid];if(s&&order.every(w=>progOf(w)>=1))coopComplete(sid)};
+  if(sid){const sync=()=>{if(!api.live())return;const s=CO.sess[sid];if(!s)return;draw();if(s.status==="done"){api.win(500);return}if(done)check()};
+    CO.listeners.add(sync);api.after(()=>CO.listeners.delete(sync))}
+  draw();
+  return {sid,rowsEl,team:order.length>1,with:names.length?` with ${names.join(" and ")}`:"",isDone:()=>done,
+    progress(p){if(done)return;mine=clamp(p,0,.99);api.store.pct=mine;const q=Math.round(mine*20);if(sid&&q!==lastSent){lastSent=q;coopUpd({[`${sid}/prog/${me}/pct`]:mine})}draw()},
+    finish(wait=700){if(done||!api.live())return;done=true;
+      if(!sid){api.win(wait);return}
+      coopUpd({[`${sid}/prog/${me}/pct`]:1,[`${sid}/prog/${me}/done`]:true});
+      if(others.length&&!others.every(w=>progOf(w)>=1))api.ask("You did it! Waiting for your team…",`Great job! Let's wait for ${names.join(" and ")}.`);
+      draw();check()}};
+}
+// grown-up clock shown above the puzzle; extra() adds the misses/hits text
+function grownClock(api,secs,extra,onOut){
+  let left=secs,t=null;
+  const draw=()=>adStatus(api,`<span class="jamclock${left<=10?" low":""}">⏱️ ${left}s</span> <span class="adsm">${extra()}</span>`);
+  draw();t=setInterval(()=>{if(!api.live())return clearInterval(t);left--;draw();if(left<=0){clearInterval(t);onOut()}},1000);
+  api.after(()=>clearInterval(t));
+  return {stop:()=>clearInterval(t),draw};
+}
+const svgPt=(svg,e)=>{const m=svg.getScreenCTM();if(!m)return{x:0,y:0};const p=new DOMPoint(e.clientX,e.clientY).matrixTransform(m.inverse());return{x:p.x,y:p.y}};
+const NS="http://www.w3.org/2000/svg";
+const svgEl=(tag,attrs={},html)=>{const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(html!=null)e.innerHTML=html;return e};
+
+/* ---------- 1. MOUSE MAZE ----------
+   Little: one winding path (no dead ends) on a 3×4 grid, drag the mouse. Big: 6×6 maze with dead ends, drag or arrows.
+   Grown: 10×10 maze, 45 s, a cat pops out of a side tunnel onto the way through; caught 3 times loses. */
+const MZ_SIDES=[[1,-1,0,4],[2,0,1,8],[4,1,0,1],[8,0,-1,2]]; // bit, dr, dc, opposite bit
+function mzPerfect(R,C){
+  const open=Array.from({length:R},()=>Array(C).fill(0)),seen=new Set([0]),st=[[0,0]];
+  while(st.length){const [r,c]=st[st.length-1];
+    const nb=shuffle(MZ_SIDES).filter(([,dr,dc])=>{const nr=r+dr,nc=c+dc;return nr>=0&&nc>=0&&nr<R&&nc<C&&!seen.has(nr*C+nc)});
+    if(!nb.length){st.pop();continue}
+    const [b,dr,dc,ob]=nb[0],nr=r+dr,nc=c+dc;open[r][c]|=b;open[nr][nc]|=ob;seen.add(nr*C+nc);st.push([nr,nc])}
+  return open;
+}
+function mzPath(R,C,minLen){ // one self-avoiding path from the left edge to the right edge
+  for(let tries=0;tries<400;tries++){
+    const r0=rint(0,R-1),path=[[r0,0]],seen=new Set([r0*C]);
+    while(path.length<40){const [r,c]=path[path.length-1];if(c===C-1&&path.length>=minLen)return path;
+      const nb=shuffle(MZ_SIDES).filter(([,dr,dc])=>{const nr=r+dr,nc=c+dc;return nr>=0&&nc>=0&&nr<R&&nc<C&&!seen.has(nr*C+nc)&&!(nc===C-1&&path.length+1<minLen)});
+      if(!nb.length)break;const [,dr,dc]=nb[0];path.push([r+dr,c+dc]);seen.add((r+dr)*C+c+dc)}
+  }
+  return [[1,0],[1,1],[1,2],[1,3]];
+}
+TASKS.maze=api=>{
+  const grown=isGrown(),L=api.L,kit=teamKit(api);
+  const R=L?3:grown?10:6,C=L?4:grown?10:6;
+  let open,start,goal,onPath=null;
+  if(L){const p=mzPath(R,C,7);open=Array.from({length:R},()=>Array(C).fill(0));onPath=new Set(p.map(([r,c])=>r*C+c));
+    p.forEach(([r,c],i)=>{const n=p[i+1];if(!n)return;const s=MZ_SIDES.find(([,dr,dc])=>r+dr===n[0]&&c+dc===n[1]);open[r][c]|=s[0];open[n[0]][n[1]]|=s[3]});
+    start=p[0];goal=p[p.length-1]}
+  else{open=mzPerfect(R,C);start=[rint(0,R-1),0];goal=[rint(0,R-1),C-1]}
+  const bfs=from=>{const d=Array(R*C).fill(-1),par=Array(R*C).fill(-1),q=[from];d[from[0]*C+from[1]]=0;
+    while(q.length){const [r,c]=q.shift();for(const [b,dr,dc] of MZ_SIDES){if(!(open[r][c]&b))continue;const j=(r+dr)*C+c+dc;if(d[j]<0){d[j]=d[r*C+c]+1;par[j]=r*C+c;q.push([r+dr,c+dc])}}}
+    return {d,par}};
+  const toGoal=bfs(goal).d, d0=toGoal[start[0]*C+start[1]];
+  api.store._t={open,start,goal,R,C}; // lets tests solve it
+  api.ask(L?"Drag the mouse to the cheese!":grown?"Get the mouse to the cheese. Don't let the cat catch you!":"Help the mouse find the cheese!",
+    L?`Help the mouse get to the cheese${kit.with}! Drag the mouse along the path.`:`Help the mouse find the cheese${kit.with}! Drag the mouse or use the arrows.`);
+  const S=100,svg=svgEl("svg",{viewBox:`0 0 ${C*S} ${R*S}`,class:"mzsvg",role:"img","aria-label":"Maze"});
+  let g=`<rect width="${C*S}" height="${R*S}" rx="18" fill="${L?"#8CCB5E":"#F3E3BC"}"/>`;
+  for(let r=0;r<R;r++)for(let c=0;c<C;c++){const x=c*S,y=r*S;
+    if(L){g+=onPath.has(r*C+c)?`<rect x="${x+6}" y="${y+6}" width="${S-12}" height="${S-12}" rx="22" fill="#F3E3BC"/>`:
+      `<circle cx="${x+35}" cy="${y+40}" r="26" fill="#5FA83A"/><circle cx="${x+64}" cy="${y+58}" r="28" fill="#4E9A2E"/>`}
+    }
+  if(L){ // join neighbouring path tiles so the path reads as one trail
+    for(let r=0;r<R;r++)for(let c=0;c<C;c++){if(open[r][c]&2)g+=`<rect x="${c*S+50}" y="${r*S+22}" width="${S}" height="${S-44}" fill="#F3E3BC"/>`;if(open[r][c]&4)g+=`<rect x="${c*S+22}" y="${r*S+50}" width="${S-44}" height="${S}" fill="#F3E3BC"/>`}
+  } else {
+    const w=grown?9:12;let d="";
+    for(let r=0;r<R;r++)for(let c=0;c<C;c++){const x=c*S,y=r*S,o=open[r][c];
+      if(!(o&1))d+=`M${x} ${y}H${x+S}`;if(!(o&8))d+=`M${x} ${y}V${y+S}`;
+      if(r===R-1&&!(o&4))d+=`M${x} ${y+S}H${x+S}`;if(c===C-1&&!(o&2))d+=`M${x+S} ${y}V${y+S}`}
+    g+=`<path d="${d}" stroke="#3E7D27" stroke-width="${w}" stroke-linecap="round" fill="none"/>`;
+  }
+  g+=`<text x="${goal[1]*S+50}" y="${goal[0]*S+52}" font-size="${L?62:58}" text-anchor="middle" dominant-baseline="middle">🧀</text>`;
+  svg.innerHTML=g;
+  const cat=svgEl("text",{"font-size":"58","text-anchor":"middle","dominant-baseline":"middle",class:"mzpiece"},"🐱");
+  const mouse=svgEl("text",{"font-size":L?"66":"60","text-anchor":"middle","dominant-baseline":"middle",class:"mzpiece"},"🐭");
+  svg.append(mouse);
+  const box=el("div","mzwrap"),stageEl=el("div","mzstage");stageEl.append(svg);box.append(stageEl);
+  let pos=start.slice(),hearts=3,clock=null,catPath=null,catI=0,catDir=1;
+  const place=(node,[r,c])=>{node.setAttribute("x",c*S+50);node.setAttribute("y",r*S+52)};
+  place(mouse,pos);
+  // grown-up: the cat comes out of a side tunnel next to the way through, then goes back in
+  if(grown){const par=bfs(start).par,sol=[];let j=goal[0]*C+goal[1];while(j>=0){sol.unshift(j);j=par[j]}
+    const onSol=new Set(sol);
+    for(const k of shuffle(sol.slice(Math.floor(sol.length*.25),Math.floor(sol.length*.75)))){const r=Math.floor(k/C),c=k%C;
+      for(const [b,dr,dc] of MZ_SIDES){if(!(open[r][c]&b))continue;const n=(r+dr)*C+c+dc;if(onSol.has(n))continue;
+        const tun=[k,n];let prev=k,cur=n;while(tun.length<4){const cr=Math.floor(cur/C),cc=cur%C;const nx=MZ_SIDES.map(([bb,ddr,ddc])=>open[cr][cc]&bb?(cr+ddr)*C+cc+ddc:-1).filter(x=>x>=0&&x!==prev&&!onSol.has(x));if(!nx.length)break;prev=cur;cur=nx[0];tun.push(cur)}
+        if(tun.length>=3){catPath=tun.reverse().map(x=>[Math.floor(x/C),x%C]);break}}
+      if(catPath)break}
+    if(catPath){svg.append(cat);catI=0;place(cat,catPath[0]);
+      const ct=setInterval(()=>{if(!api.live()||kit.isDone())return;catI+=catDir;if(catI>=catPath.length-1||catI<=0)catDir=-catDir;catI=clamp(catI,0,catPath.length-1);place(cat,catPath[catI]);caught()},480);
+      api.after(()=>clearInterval(ct))}
+    svg.append(mouse);
+    clock=grownClock(api,45,()=>`${"❤️".repeat(hearts)}${"🤍".repeat(3-hearts)}`,()=>api.lose("Time ran out before the mouse got the cheese."));
+  }
+  function caught(){
+    if(!catPath||kit.isDone())return;const [cr,cc]=catPath[catI];if(cr!==pos[0]||cc!==pos[1])return;
+    hearts--;blip(180,.25,"sawtooth",.1);clock&&clock.draw();
+    if(hearts<=0){api.lose("The cat caught the mouse three times.");return}
+    pos=start.slice();place(mouse,pos);toast("🐱 Caught! Back to the start.");
+  }
+  function step(b,dr,dc){if(!api.live()||kit.isDone())return false;const [r,c]=pos;if(!(open[r][c]&b))return false;
+    pos=[r+dr,c+dc];place(mouse,pos);blip(600+Math.random()*80,.03,"triangle",.04);
+    const left=toGoal[pos[0]*C+pos[1]];kit.progress(1-left/d0);caught();
+    if(pos[0]===goal[0]&&pos[1]===goal[1]){mouse.textContent="🐭";blip(880,.2,"triangle");if(L)say("Yum! The mouse found the cheese!");clock&&clock.stop();cat.remove();kit.finish(700)}
+    return true}
+  function toward([tr,tc]){for(let n=0;n<R+C;n++){const [r,c]=pos;if(r===tr&&c===tc)return;const dr=Math.sign(tr-r),dc=Math.sign(tc-c);
+      const a=Math.abs(tr-r)>=Math.abs(tc-c)?[[dr,0],[0,dc]]:[[0,dc],[dr,0]];let moved=false;
+      for(const [ar,ac] of a){if(!ar&&!ac)continue;const s=MZ_SIDES.find(([,x,y])=>x===ar&&y===ac);if(step(s[0],ar,ac)){moved=true;break}}
+      if(!moved)return}}
+  let dragging=false;const cellAt=e=>{const p=svgPt(svg,e);return[clamp(Math.floor(p.y/S),0,R-1),clamp(Math.floor(p.x/S),0,C-1)]};
+  svg.addEventListener("pointerdown",e=>{dragging=true;try{svg.setPointerCapture(e.pointerId)}catch(x){}toward(cellAt(e))});
+  svg.addEventListener("pointermove",e=>{if(dragging)toward(cellAt(e))});
+  const up=()=>{dragging=false};svg.addEventListener("pointerup",up);svg.addEventListener("pointercancel",up);
+  if(!L){const pad=el("div","mzpad");
+    for(const [lab,b,dr,dc,cls] of [["⬆️",1,-1,0,"u"],["⬅️",8,0,-1,"l"],["➡️",2,0,1,"r"],["⬇️",4,1,0,"d"]]){const k=el("button","mzkey "+cls,lab);k.setAttribute("aria-label",{u:"Up",l:"Left",r:"Right",d:"Down"}[cls]);k.onclick=()=>step(b,dr,dc);pad.append(k)}
+    box.append(pad);
+    const key=e=>{const m={ArrowUp:[1,-1,0],ArrowDown:[4,1,0],ArrowLeft:[8,0,-1],ArrowRight:[2,0,1]}[e.key];if(m&&api.live()){e.preventDefault();step(...m)}};
+    document.addEventListener("keydown",key);api.after(()=>document.removeEventListener("keydown",key))}
+  const wrap=el("div","pzwrap");wrap.append(box,kit.rowsEl);api.area.append(wrap);
+  adFit(api,wrap,r=>{const pw=L?0:(r.width>r.height*1.15?150:0),ph=L?0:(pw?0:150);
+    const h=r.height-(kit.team?110:10)-ph-(grown?40:0),w=r.width-20-pw;const cs=Math.max(24,Math.floor(Math.min(w/C,h/R,L?150:grown?70:95)));
+    stageEl.style.width=cs*C+"px";stageEl.style.height=cs*R+"px";box.classList.toggle("side",!!pw)});
+  kit.progress(0);
+};
+
+/* ---------- 2. CONNECT THE DOTS ----------
+   Little: tap 1 to 5 and a picture appears. Big: 10–20 dots, sometimes counting by 2s, 5s or 10s.
+   Grown: 16 dots that follow a hidden rule (the first two are joined to show it) with 8 decoys mixed in; 3 misses or 60 s loses. */
+const DT_SHAPES={ // outlines in a 0–100 box; em is what it turns into
+  house:{em:"🏠",name:"a house",p:[[15,90],[15,45],[50,10],[85,45],[85,90]]},
+  star:{em:"⭐",name:"a star",p:[[50,5],[78,92],[5,38],[95,38],[22,92]]},
+  gem:{em:"💎",name:"a gem",p:[[20,35],[35,12],[65,12],[80,35],[50,92]]},
+  fish:{em:"🐟",name:"a fish",p:[[95,50],[80,30],[55,22],[30,36],[6,18],[14,50],[6,82],[30,64],[55,78],[80,70]]},
+  star10:{em:"⭐",name:"a star",p:Array.from({length:10},(_,i)=>{const a=-Math.PI/2+i*Math.PI/5,rr=i%2?20:46;return[50+rr*Math.cos(a),52+rr*Math.sin(a)]})},
+  cat:{em:"🐱",name:"a cat",p:[[20,92],[10,55],[15,8],[38,32],[62,32],[85,8],[90,55],[80,92]]},
+  boat:{em:"⛵",name:"a sailboat",p:[[50,4],[86,58],[53,58],[53,66],[96,66],[80,92],[20,92],[4,66],[47,66],[47,4]]},
+  tree:{em:"🎄",name:"a tree",p:[[50,4],[70,28],[60,28],[80,52],[66,52],[90,78],[55,78],[55,95],[45,95],[45,78],[10,78],[34,52],[20,52],[40,28],[30,28]]},
+  rocket:{em:"🚀",name:"a rocket",p:[[50,3],[65,25],[65,65],[80,86],[62,80],[56,93],[44,93],[38,80],[20,86],[35,65],[35,25]]},
+  heart:{em:"❤️",name:"a heart",p:Array.from({length:10},(_,i)=>{const t=i/10*2*Math.PI;return[50+2.8*16*Math.sin(t)**3,46-2.8*(13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t))]})},
+};
+function dtResample(v,N){ // keep every corner, add points along the longer edges until there are N
+  if(v.length>=N)return v.slice(0,N);
+  const E=v.map((a,i)=>{const b=v[(i+1)%v.length];return Math.hypot(b[0]-a[0],b[1]-a[1])}),tot=E.reduce((s,x)=>s+x,0),extra=N-v.length;
+  const share=E.map(x=>x/tot*extra),k=share.map(Math.floor);let left=extra-k.reduce((s,x)=>s+x,0);
+  share.map((x,i)=>[x-k[i],i]).sort((a,b)=>b[0]-a[0]).slice(0,left).forEach(([,i])=>k[i]++);
+  const out=[];v.forEach((a,i)=>{const b=v[(i+1)%v.length];out.push(a);for(let j=1;j<=k[i];j++){const t=j/(k[i]+1);out.push([a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t])}});
+  return out;
+}
+function dtRule(){
+  const r=rint(0,5),pickNot=(lo,hi,bad,n)=>{const s=new Set();let g=0;while(s.size<n&&g++<500){const x=rint(lo,hi);if(!bad(x))s.add(x)}return[...s]};
+  if(r===0){const k=pickOne([6,7,8,9,11,12]),t=Array.from({length:16},(_,i)=>k*(i+1));return{name:`multiples of ${k}`,t:t.map(String),d:pickNot(k+1,16*k,x=>x%k===0,8).map(String)}}
+  if(r===1){const t=Array.from({length:16},(_,i)=>(i+1)**2);return{name:"square numbers",t:t.map(String),d:pickNot(2,250,x=>Number.isInteger(Math.sqrt(x)),8).map(String)}}
+  if(r===2){const P=[2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53];return{name:"prime numbers",t:P.map(String),d:shuffle([9,15,21,25,27,33,35,39,45,49,51]).slice(0,8).map(String)}}
+  if(r===3){const F=[1,2,3,5,8,13,21,34,55,89,144,233,377,610,987,1597];return{name:"the Fibonacci sequence (add the last two)",t:F.map(String),d:shuffle([4,7,10,18,30,50,100,150,300,400,700,1000]).slice(0,8).map(String)}}
+  if(r===4){const R=["I","II","III","IV","V","VI","VII","VIII","IX","X","XI","XII","XIII","XIV","XV","XVI"];return{name:"Roman numerals",t:R,d:shuffle(["IIII","VV","IIX","XIIII","VIV","IVI","XVV","IIV","VX","XVX"]).slice(0,8)}}
+  const t=Array.from({length:16},(_,i)=>(i+1)*(i+2)/2);return{name:"triangle numbers (add 2, then 3, then 4…)",t:t.map(String),d:pickNot(2,150,x=>t.includes(x),8).map(String)};
+}
+TASKS.dots=api=>{
+  const grown=isGrown(),L=api.L,kit=teamKit(api);
+  let shapeKey,labels,pts,decoys=[],rule=null;
+  if(L){shapeKey=pickOne(["house","star","gem"]);labels=["1","2","3","4","5"];pts=DT_SHAPES[shapeKey].p}
+  else if(grown){shapeKey=pickOne(["fish","star10","cat","boat","tree","rocket","heart"]);rule=dtRule();labels=rule.t;pts=dtResample(DT_SHAPES[shapeKey].p,16)}
+  else{const mode=pickOne(["ones","ones","twos","fives","tens"]);
+    shapeKey=mode==="ones"?pickOne(["fish","star10","cat","boat","tree","rocket","heart"]):pickOne(["fish","star10","cat","boat","heart"]);
+    const N=mode==="ones"?Math.max(DT_SHAPES[shapeKey].p.length,rint(10,20)):10,step={ones:1,twos:2,fives:5,tens:10}[mode];
+    labels=Array.from({length:N},(_,i)=>String((i+1)*step));pts=dtResample(DT_SHAPES[shapeKey].p,N)}
+  const SH=DT_SHAPES[shapeKey],N=pts.length;
+  api.store._t={labels}; // lets tests solve it
+  // fit the outline into an 800×640 board
+  const W=800,H=640,M=L?120:grown?80:95,xs=pts.map(p=>p[0]),ys=pts.map(p=>p[1]),x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys);
+  const sc=Math.min((W-2*M)/(x1-x0||1),(H-2*M)/(y1-y0||1)),ox=(W-(x1-x0)*sc)/2,oy=(H-(y1-y0)*sc)/2;
+  const P=pts.map(([x,y])=>[ox+(x-x0)*sc,oy+(y-y0)*sc]),cx=P.reduce((s,p)=>s+p[0],0)/N,cy=P.reduce((s,p)=>s+p[1],0)/N;
+  if(grown){let g=0;while(decoys.length<rule.d.length&&g++<4000){const q=[rint(40,W-40),rint(40,H-40)];if([...P,...decoys].every(p=>Math.hypot(p[0]-q[0],p[1]-q[1])>70))decoys.push(q)}}
+  api.ask(L?"Tap the dots from 1 to 5!":grown?"Connect the dots. Figure out the rule from the first two!":labels[1]==="2"?`Connect the dots from 1 to ${N}!`:`Count by ${labels[0]}s to connect the dots!`,
+    L?`Connect the dots${kit.with}! Tap number one, then two, all the way to five.`:labels[1]==="2"?`Connect the dots${kit.with}! Tap them in order from one to ${N}.`:`Connect the dots${kit.with}! Count by ${labels[0]}s.`);
+  const R=L?36:grown?22:26,FS=L?44:grown?24:28;
+  const svg=svgEl("svg",{viewBox:`0 0 ${W} ${H}`,class:"dtsvg",role:"img","aria-label":"Connect the dots"});
+  svg.innerHTML=`<rect width="${W}" height="${H}" rx="26" fill="#FFFDF5"/>`;
+  const fill=svgEl("polygon",{points:P.map(p=>p.join(",")).join(" "),fill:"#FFD86B",opacity:"0",class:"dtfill"});
+  const lines=svgEl("g",{stroke:"#2B2140","stroke-width":L?10:7,"stroke-linecap":"round"});svg.append(fill,lines);
+  const all=[...P.map((p,i)=>({p,label:labels[i],i,real:true})),...decoys.map((p,k)=>({p,label:rule.d[k],real:false}))];
+  let next=grown?2:0,misses=0,clock=null;
+  const line=(a,b)=>lines.append(svgEl("line",{x1:a[0],y1:a[1],x2:b[0],y2:b[1]}));
+  for(const d of all){const g=svgEl("g",{class:"dtdot",role:"button","aria-label":`Dot ${d.label}`,tabindex:"0"});
+    const lx=d.real?d.p[0]+(d.p[0]-cx)/(Math.hypot(d.p[0]-cx,d.p[1]-cy)||1)*(R+FS*.75):d.p[0],ly=d.real?d.p[1]+(d.p[1]-cy)/(Math.hypot(d.p[0]-cx,d.p[1]-cy)||1)*(R+FS*.75):d.p[1]-R-FS*.5;
+    g.innerHTML=`<circle cx="${d.p[0]}" cy="${d.p[1]}" r="${R+22}" fill="transparent"/><circle class="dtc" cx="${d.p[0]}" cy="${d.p[1]}" r="${R}" fill="#7C4DFF" stroke="#fff" stroke-width="5"/>`+
+      `<text x="${lx}" y="${ly}" font-size="${FS}" font-weight="900" text-anchor="middle" dominant-baseline="middle" fill="#2B2140" stroke="#FFFDF5" stroke-width="6" paint-order="stroke">${esc(d.label)}</text>`;
+    d.g=g;svg.append(g);
+    g.addEventListener("pointerdown",e=>{e.preventDefault();tap(d)});g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();tap(d)}})}
+  const mark=()=>all.forEach(d=>{d.g.classList.toggle("on",d.real&&d.i<next);d.g.classList.toggle("start",!grown&&d.real&&d.i===0&&next===0)});
+  if(grown){line(P[0],P[1]);mark();clock=grownClock(api,60,()=>`misses: ${misses} of 3`,()=>api.lose(`Time ran out. The rule was ${rule.name}.`))}else mark();
+  api.hint(()=>{const d=all.find(x=>x.real&&x.i===next);if(d)d.g.classList.add("glow")});
+  function tap(d){
+    if(!api.live()||kit.isDone()||next>=N)return;
+    if(d.real&&d.i===next){
+      all.forEach(x=>x.g.classList.remove("glow"));if(next>0)line(P[next-1],P[next]);next++;mark();
+      blip(500+next*25,.06,"triangle");if(L)say(NUMW[next]||String(next));
+      kit.progress(next/N);
+      if(next>=N){line(P[N-1],P[0]);clock&&clock.stop();fill.setAttribute("opacity","1");
+        const t=svgEl("text",{x:cx,y:cy,"font-size":L?150:120,"text-anchor":"middle","dominant-baseline":"middle",class:"dtpop"},SH.em);svg.append(t);
+        if(!grown)say(`It's ${SH.name}!`);setTimeout(()=>kit.finish(400),600)}
+      return}
+    if(d.real&&d.i<next)return; // already joined
+    if(grown){misses++;d.g.classList.remove("wig");void d.g.getBoundingClientRect();d.g.classList.add("wig");blip(200,.18,"sine",.1);clock.draw();
+      if(misses>=3)api.lose(`Three misses. The rule was ${rule.name}.`);return}
+    api.miss(d.g,L?`That's ${d.label}. Find ${NUMW[next+1]}!`:`Not ${d.label}. Which comes after ${labels[next-1]||"the start"}?`);
+  }
+  const wrap=el("div","pzwrap"),stageEl=el("div","dtstage");stageEl.append(svg);wrap.append(stageEl,kit.rowsEl);api.area.append(wrap);
+  adFit(api,wrap,r=>{const h=r.height-(kit.team?110:10)-(grown?40:0),w=r.width-16;const s=Math.min(w/W,h/H,1.3);stageEl.style.width=Math.floor(W*s)+"px";stageEl.style.height=Math.floor(H*s)+"px"});
+  kit.progress(0);
+};
+
+/* ---------- 3. TRACE THE PATH ----------
+   Little: a thick line, zigzag, wave or hill from the bee to the flower. Big: loops, a spiral, or a star/square/triangle in one stroke.
+   Grown: a thin buzz-wire path with hairpins and a spiral that narrows; leaving it or lifting your finger is a slip; 3 slips or 40 s loses. */
+function tpSample(pts,step=6){const out=[pts[0]];for(let i=1;i<pts.length;i++){const a=pts[i-1],b=pts[i],d=Math.hypot(b[0]-a[0],b[1]-a[1]),n=Math.max(1,Math.round(d/step));for(let k=1;k<=n;k++)out.push([a[0]+(b[0]-a[0])*k/n,a[1]+(b[1]-a[1])*k/n])}return out}
+const tpFn=(f,n=300)=>Array.from({length:n+1},(_,i)=>f(i/n));
+function tpShape(kind){
+  const W=1000,H=600,poly=(c,r,k,rot=-Math.PI/2,inner)=>{const v=[];for(let i=0;i<=k*(inner?2:1);i++){const a=rot+i*2*Math.PI/(k*(inner?2:1)),rr=inner&&i%2?r*inner:r;v.push([c[0]+rr*Math.cos(a),c[1]+rr*Math.sin(a)])}return v};
+  switch(kind){
+    case"line":return{name:"straight line",p:[[110,300],[890,300]]};
+    case"zigzag":return{name:"zigzag",p:[[100,170],[260,430],[420,170],[580,430],[740,170],[900,430]]};
+    case"wave":return{name:"wave",p:tpFn(t=>[110+780*t,300+150*Math.sin(t*Math.PI*3)])};
+    case"hill":return{name:"rainbow",p:tpFn(t=>[130+740*t,470-330*Math.sin(t*Math.PI)])};
+    case"loops":return{name:"loop-de-loops",p:tpFn(t=>{const u=t*6*Math.PI;return[140+t*720-60*Math.sin(u),300+95*Math.cos(u)-95]},600).map(([x,y])=>[x,y+95])};
+    case"spiral":return{name:"spiral",p:tpFn(t=>{const a=t*6*Math.PI,r=18+t*240;return[500+r*Math.cos(a),300+r*Math.sin(a)*.95]},600)};
+    case"star":return{name:"star",p:poly([500,320],255,5,-Math.PI/2,.42)};
+    case"square":return{name:"square",p:[[300,90],[700,90],[700,510],[300,510],[300,90]]};
+    case"triangle":return{name:"triangle",p:[[500,70],[790,520],[210,520],[500,70]]};
+    case"wire":{ // hairpins with tighter and tighter turns, then a spiral to finish
+      const rows=[80,190,290,380],v=[];let left=true;
+      rows.forEach((y,i)=>{const xa=left?70:930,xb=left?930:70;v.push([xa,y],[xb,y]);
+        const ny=rows[i+1];if(ny!=null){const rr=(ny-y)/2,cxx=xb,cyy=y+rr;for(let k=1;k<12;k++){const a=-Math.PI/2+k/12*Math.PI;v.push([cxx+(left?1:-1)*rr*Math.cos(a),cyy+rr*Math.sin(a)])}}left=!left});
+      const last=v[v.length-1],sc=[500,500];v.push([last[0],500]);
+      const start=Math.atan2(0,last[0]-sc[0]),r0=Math.abs(last[0]-sc[0]);
+      // straight run along the bottom into the spiral, which winds in to the middle
+      return{name:"buzz wire",p:[...v.slice(0,-1),[last[0],460],...tpFn(t=>{const a=(last[0]<500?Math.PI:0)+(last[0]<500?-1:1)*t*3*Math.PI,r=Math.min(r0,95)*(1-t*.8);return[sc[0]+r*Math.cos(a),sc[1]+r*Math.sin(a)*.78]},300)]};}
+  }
+}
+TASKS.path=api=>{
+  const grown=isGrown(),L=api.L,kit=teamKit(api);
+  const kind=L?pickOne(["line","zigzag","wave","hill"]):grown?"wire":pickOne(["loops","spiral","star","square","triangle","zigzag"]);
+  const sh=tpShape(kind),pts=tpSample(sh.p,6),n=pts.length,W=1000,H=600;
+  api.store._t={pts,kind}; // lets tests solve it
+  api.ask(L?"Drag the bee along the path to the flower!":grown?"Trace the wire without slipping off. Don't lift your finger!":`Trace the ${sh.name} in one go!`,
+    L?`Help the bee fly to the flower${kit.with}! Drag your finger along the path.`:`Trace the ${sh.name}${kit.with}! Start at the green dot and follow the line.`);
+  const svg=svgEl("svg",{viewBox:`0 0 ${W} ${H}`,class:"tpsvg",role:"img","aria-label":`Trace the ${sh.name}`});
+  const dAttr="M"+sh.p.map(p=>p.map(v=>v.toFixed(1)).join(" ")).join("L");
+  const lane=svgEl("path",{d:dAttr,fill:"none",stroke:grown?"#D9D2E6":"#EADFC7","stroke-linecap":"round","stroke-linejoin":"round"});
+  const guide=svgEl("path",{d:dAttr,fill:"none",stroke:"#B3A6C9","stroke-width":grown?3:5,"stroke-dasharray":grown?"0":"14 12","stroke-linecap":"round"});
+  const doneP=svgEl("polyline",{fill:"none",stroke:grown?"#2D8CFF":"#7C4DFF","stroke-linecap":"round","stroke-linejoin":"round",points:""});
+  svg.innerHTML=`<rect width="${W}" height="${H}" rx="26" fill="#FFFDF5"/>`;svg.append(lane,guide,doneP);
+  const endEm=svgEl("text",{x:pts[n-1][0],y:pts[n-1][1],"font-size":L?84:56,"text-anchor":"middle","dominant-baseline":"middle"},L?"🌻":grown?"🏁":"⭐");
+  const startDot=svgEl("circle",{cx:pts[0][0],cy:pts[0][1],r:grown?14:22,fill:"#2ECC40",stroke:"#fff","stroke-width":4});
+  const mover=svgEl("text",{"font-size":L?76:52,"text-anchor":"middle","dominant-baseline":"middle",class:"tpmover"},L?"🐝":"✏️");
+  const ring=svgEl("circle",{r:16,fill:"#2D8CFF",stroke:"#fff","stroke-width":4,class:"tpmover"});
+  svg.append(startDot,endEm,grown?ring:mover);
+  let idx=0,tol=40,tracking=false,slips=0,clock=null,lastP=null;
+  const at=i=>{const [x,y]=pts[i];if(grown){ring.setAttribute("cx",x);ring.setAttribute("cy",y)}else{mover.setAttribute("x",x);mover.setAttribute("y",y-(L?6:4))}};
+  const drawDone=()=>{doneP.setAttribute("points",pts.slice(0,idx+1).map(p=>p[0].toFixed(1)+","+p[1].toFixed(1)).join(" "))};
+  at(0);
+  const tolAt=i=>grown?tol*(1-.4*i/n):tol;
+  function slip(why){if(!grown||kit.isDone()||!api.live())return;tracking=false;slips++;blip(180,.22,"sawtooth",.1);
+    svg.classList.remove("tpslip");void svg.getBoundingClientRect();svg.classList.add("tpslip");clock&&clock.draw();
+    if(slips>=3){api.lose(`Three slips off the wire (the last one: ${why}).`);return}
+    toast(`Slip ${slips} of 3! Put your finger back on the blue dot.`)}
+  function move(p){
+    let best=-1,bestD=1e9;const end=Math.min(n-1,idx+35);
+    for(let j=idx;j<=end;j++){const d=Math.hypot(p.x-pts[j][0],p.y-pts[j][1]);if(d<tolAt(j)&&j>best){best=j;bestD=d}else if(best>=0&&d>tolAt(j)*3)break}
+    if(best>idx){idx=best;at(idx);drawDone();kit.progress(idx/(n-1));if(idx%6===0)blip(520+idx/n*400,.02,"triangle",.03)}
+    else if(grown){let m=1e9;for(let j=Math.max(0,idx-12);j<=end;j++)m=Math.min(m,Math.hypot(p.x-pts[j][0],p.y-pts[j][1]));if(m>tolAt(idx)*1.05)slip("you left the path")}
+    if(idx>=n-2){tracking=false;idx=n-1;at(idx);drawDone();clock&&clock.stop();blip(880,.2,"triangle");if(L)say("The bee made it to the flower!");kit.finish(700)}
+  }
+  svg.addEventListener("pointerdown",e=>{if(!api.live()||kit.isDone())return;const p=svgPt(svg,e);
+    if(Math.hypot(p.x-pts[idx][0],p.y-pts[idx][1])>Math.max(tolAt(idx)*1.6,grown?30:60)){if(!grown)toast(L?"Start at the bee!":"Start where you left off!");return}
+    tracking=true;try{svg.setPointerCapture(e.pointerId)}catch(x){}move(p)});
+  svg.addEventListener("pointermove",e=>{if(tracking)move(svgPt(svg,e))});
+  const up=()=>{if(!tracking)return;tracking=false;if(grown&&idx<n-1&&idx>0)slip("you lifted your finger")};
+  svg.addEventListener("pointerup",up);svg.addEventListener("pointercancel",up);
+  if(grown)clock=grownClock(api,40,()=>`slips: ${slips} of 3`,()=>api.lose("Time ran out before you reached the flag."));
+  const wrap=el("div","pzwrap"),stageEl=el("div","tpstage");stageEl.append(svg);wrap.append(stageEl,kit.rowsEl);api.area.append(wrap);
+  adFit(api,wrap,r=>{const h=r.height-(kit.team?110:10)-(grown?40:0),w=r.width-16,s=Math.min(w/W,h/H,1.4);
+    stageEl.style.width=Math.floor(W*s)+"px";stageEl.style.height=Math.floor(H*s)+"px";
+    tol=Math.min((L?42:grown?17:27)/s,L?70:grown?30:34); // finger slack is in screen pixels (capped so loops and rings never blur together)
+    lane.setAttribute("stroke-width",(tol*2).toFixed(1));doneP.setAttribute("stroke-width",(grown?tol*1.1:tol*1.4).toFixed(1))});
+  kit.progress(0);
+};
+Object.assign(COOP_CHORES,{
+  maze:{type:"maze",title:"🧀 Mouse maze together",em:"🧀",verb:"get the mice to the cheese",find:()=>"farm",none:"",pic:"",finish:s=>{const up={};for(const w of s.order||Object.keys(s.members||{}))up["jars/"+w]=INC(2);fUpd(up)}},
+  dots:{type:"dots",title:"✏️ Connect the dots together",em:"✏️",verb:"connect the dots",find:()=>"farm",none:"",pic:"",finish:s=>{const up={};for(const w of s.order||Object.keys(s.members||{}))up["jars/"+w]=INC(2);fUpd(up)}},
+  path:{type:"path",title:"🐝 Trace the path together",em:"🐝",verb:"trace the paths",find:()=>"farm",none:"",pic:"",finish:s=>{const up={};for(const w of s.order||Object.keys(s.members||{}))up["jars/"+w]=INC(2);fUpd(up)}},
+});
+Object.assign(PUZZLE_NAMES,{maze:"mouse maze",dots:"connect the dots",path:"trace the path"});
+Object.assign(SKILL,{maze:"planning",dots:"number order",path:"pre-writing"});
+TASK_TYPES.push("maze","dots","path");
+ADULT_TYPES.push("maze","dots","path");
+Object.assign(PUZZLE_SIZE.little,{maze:1,dots:1,path:1});Object.assign(PUZZLE_SIZE.big,{maze:1,dots:1,path:1});Object.assign(PUZZLE_SIZE.grown,{maze:2,dots:2,path:2});
 
 function openFarm(){if(!me){goLobby();return}if(!fm.cv)farmInit();farmConnect();fwConnect();show("farm");farmHeader();farmFit();requestAnimationFrame(()=>{if(screen==="farm")farmFit()});fm.last=performance.now();if(!fm.raf)fm.raf=requestAnimationFrame(farmFrame);
   sayLittle("Tap where you want to go! Tap the bubbles to help the animals and plants.")}
