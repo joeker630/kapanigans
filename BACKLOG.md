@@ -286,7 +286,7 @@ Building happens on empty **build lots** around the map. Paying starts a **Build
 About **48 images** left including retries, which is roughly one day of the free allowance if nothing else is using it. Make them in this order:
 
 *Batch A — needed for the chore puzzles (about 25)*
-- Ready to run: `python3 tools/genart.py isobatch tools/batches/farmA.json` (skips anything already made). Scheduled to run automatically at 7:05 PM Central on Oct 27.
+- Ready to run: `python3 tools/genart.py isobatch tools/batches/farmA.json` (skips anything already made). The scheduled run at 7:05 PM Central on Oct 27 made nothing: Cloudflare still said the free daily limit was used up (tried 7:05–7:17 PM). Needs another run after the next reset.
 - [ ] Crops, growing + ripe (the carrot sprout is reused for every crop): tomato, corn, strawberry — 6
 - [ ] Seed packets, one per crop (Plant puzzle: match seed to picture): carrot, tomato, corn, pumpkin, strawberry — 5
 - [ ] Animal goods to collect: white egg, brown egg (sizes and colors done in code for the sorting puzzle), milk pail, ball of wool — 4
