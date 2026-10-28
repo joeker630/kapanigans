@@ -965,6 +965,14 @@ Turn photos of family members into **high-resolution cartoon characters** (in th
 - Tap him for a reaction: a happy bark, a zoomie lap, or rolling over for belly rubs. His name floats above him like the player avatars.
 - Little players hear "Jeppson!" read aloud when they tap him.
 
+**👵 Jeppson ❤️ Gramma Mia**
+- Jeppson is **obsessed with Gramma Mia**. Whenever Gramma Mia is on the farm, he **follows her avatar everywhere** and **barks at her** ("Woof! Woof!" with a bark bubble), about every 10–20 seconds and whenever she stops or starts a chore.
+- He trots right behind her (keeping a small gap so he doesn't block her taps), sits and stares while she does a chore puzzle, and does a happy butt wiggle when she finishes one.
+- He drops whatever he's doing to run to her the moment she arrives on the farm, with an extra-excited bark and zoomies.
+- **When Gramma Mia isn't on the farm:** he wanders on his normal schedule, follows other players now and then, and sometimes sits by the farmhouse door "waiting for Gramma Mia," with a little thought bubble of her avatar.
+- Barks are short and not too loud; a grown-up can mute Jeppson's barks in settings. Little players hear "Jeppson loves Gramma Mia!" the first time they see it.
+- Synced across devices: everyone on the farm sees him following Gramma Mia (the farm's shared animal schedule decides his position, with Gramma Mia's avatar as the target).
+
 **💩 Poop cleanup (a farm chore)**
 - Every so often Jeppson leaves a small, cartoon (not gross) poop somewhere on the farm, with a few flies buzzing and a little stink cloud.
 - Cleaning it up is a chore puzzle like the others, done with a **pooper-scooper** or a bag:
@@ -991,6 +999,8 @@ Turn photos of family members into **high-resolution cartoon characters** (in th
 - 3 versions in the **storybook film style** (full portrait, the approved #16 storybook style).
 - Put all 6 on a private review page for Joe to approve before anything goes into the game.
 - [ ] At least 5 idle animations and a tap reaction
+- [ ] When Gramma Mia is on the farm, Jeppson follows her avatar and barks at her, the same on every device
+- [ ] When she isn't there, he wanders and sometimes waits by the farmhouse door for her
 - [ ] Poops appear on a timer (max 3 at once) and are shared across devices
 - [ ] Cleanup is a chore puzzle with Little, Big and grown-up versions
 - [ ] Leftover poops have only gentle effects; nothing is lost
