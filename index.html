@@ -5607,7 +5607,7 @@ function taskApi(A){
       if(reveal) try{reveal()}catch(e){}
       blip(160,.35,"sawtooth",.1);
       if(my.cd) cdStart(my.cd); my.cdDone=true;
-      if(my.onLose){A.append(el("div","tdone lost peek",`<div class="lostcard"><h2>😵 You lost</h2><p>${esc(reason)}</p><p>Here comes another one…</p></div>`));setTimeout(()=>{if(tk===my){closeTask(false);my.onLose()}},2200);return}
+      if(my.onLose){A.append(el("div","tdone lost peek",`<div class="lostcard"><h2>😵 You lost</h2><p>${esc(reason)}</p><p>${my.chore==="snake"&&(SNK.losses||0)>=1?"Back to the race anyway!":"Here comes another one…"}</p></div>`));setTimeout(()=>{if(tk===my){closeTask(false);my.onLose()}},2200);return}
       const d=el("div","tdone lost peek",`<div class="lostcard"><h2>😵 You lost</h2><p>${esc(reason)}</p>${my.cd?`<p class="cdnote">⏳ This chore rests for ${Math.round(LOSE_COOLDOWN_MS/60000)} minutes before you can try again.</p>`:""}<div class="tbtns"></div></div>`);
       const back=el("button","bigbtn",my.chore==="ctf"?(typeof C!=="undefined"&&C&&C.me.losses>=1?"Back in the game":"New puzzle"):"Back to the farm");
       back.onclick=()=>{if(tk===my)closeTask(true)};
@@ -6706,7 +6706,7 @@ function startSnake(seatsIn){
 function enterSnake(e,seat){
   snLeave(true); hush();
   Object.assign(SNK,{e,seat,meta:null,s:{},gen:{},pc:[],drops:{},gone:new Set(),over:false,host:false,absent:{},enteredAt:Date.now(),botDead:{},
-    mine:null,best:0,snacks:0,crashes:0,started:false,boost:false,steer:null,keys:{},pubAt:0,cam:null,hudSig:""});
+    mine:null,best:0,snacks:0,crashes:0,started:false,losses:0,boost:false,steer:null,keys:{},pubAt:0,cam:null,hudSig:""});
   if(seat>=0) bump("snakeRounds");
   show("snake"); snSetup(); setPresence({scr:"snake",sg:e,act:null});
   const r=snRef(); if(!r) return;
@@ -6868,7 +6868,7 @@ function snRespawnPuzzle(){
   const L=snMyLvl(), grown=L==="grown";
   openTask({type:pickType(grown?SN_GROWN_PUZZLES:SN_KID_PUZZLES),lvl:L,chore:"snake",title:"🐍 Solve it to get back in!",
     ctx:{item:pickOne([{em:"🍎",one:"apple",many:"apples"},{em:"🥕",one:"carrot",many:"carrots"},{em:"🍓",one:"strawberry",many:"strawberries"}])},
-    fast:true,onWin:snRespawn,onLose:()=>{if(SNK.e&&!SNK.over)setTimeout(snRespawnPuzzle,200)},onQuit:()=>{if(SNK.e&&!SNK.over)$("#snCrash").hidden=false}});
+    fast:true,onWin:()=>{SNK.losses=0;snRespawn()},onLose:()=>{if(!SNK.e||SNK.over)return;SNK.losses=(SNK.losses||0)+1;if(SNK.losses>=2){SNK.losses=0;toast("Back in you go!");snRespawn()}else setTimeout(snRespawnPuzzle,200)},onQuit:()=>{if(SNK.e&&!SNK.over)$("#snCrash").hidden=false}});
 }
 function snSpawnSpot(i){ // an open spot away from everyone
   let best=null,bs=-1;
@@ -6885,7 +6885,7 @@ function snRebirth(i,S){
 }
 function snRespawn(){
   if(!SNK.e||SNK.over) return; const S=snOwn(SNK.seat); if(!S) return;
-  snRebirth(SNK.seat,S); SNK.steer=null;
+  snRebirth(SNK.seat,S); SNK.steer=null; $("#snCrash").hidden=true;
   blip(880,.2,"triangle",.12); sayLittle("You're back! Go go go!"); snPub(SNK.seat,S,true);
 }
 
