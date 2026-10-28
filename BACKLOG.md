@@ -1134,6 +1134,44 @@ A live **multiplayer snake** game: every player steers their own snake around on
 
 ---
 
+## 20. 🆕 Release notes: "What's new" in the game
+
+Show **release notes** inside Kapanigans so everyone knows what changed: a friendly "What's new" screen after an update, and a history anyone can open anytime.
+
+**Version numbers**
+- The game has no version number today. Add one (`APP_VERSION`, for example `1.4`) shown small in the lobby corner, bumped with each release.
+- A release groups the changes pushed together (usually a day's work), not every small commit.
+
+**Where the notes come from**
+- A `RELEASES.md` (or `releases.json`) file in the repo, one entry per version: the date, a title, and short bullets.
+- Written in **plain, kid- and family-friendly words**, not developer terms. For example, "🦄 Violet has a sparkly Unicorn brush!" rather than "added unicorn brush tool."
+- Each bullet is tagged for who it's for (kids, grown-ups, everyone), and can link to its backlog number.
+- Claude drafts the notes when pushing a release, and Joe can edit them.
+
+**Showing them in the game**
+- **After an update:** the first time a person opens the new version, a **"What's new!"** card pops up with confetti and the new version's bullets.
+  - **Little:** big pictures and emoji, with each line read aloud ("New! A sparkly unicorn brush!"), and a big "Let's play!" button.
+  - **Big and grown-ups:** the full list, with a "See all updates" link.
+- It's shown **once per person** (remembered in Firebase, so it doesn't pop up again on every device), and it never interrupts a game in progress; it waits for the lobby.
+- **Anytime:** a 📰 **What's new** button in the lobby (or in grown-up settings) opens the full history, newest first.
+- **Grown-up-only notes** (stats, settings and privacy changes) show only for grown-up personas, or in the Grown-ups dashboard (#8).
+- A gentle **"Update ready"** nudge if a device is still running an old version (the page loaded before a release): "Tap to get the newest Kapanigans," which reloads it.
+
+**Acceptance criteria**
+- [ ] The game has a version number, shown in the lobby
+- [ ] Release notes live in one file in the repo, written in plain, friendly words
+- [ ] A "What's new!" card appears once per person after an update, only in the lobby, never mid-game
+- [ ] Little players get a picture-and-read-aloud version
+- [ ] A What's new button shows the full history anytime
+- [ ] Devices running an old version get an "Update ready" prompt
+- [ ] Grown-up-only notes are hidden from kids
+
+**🔍 Decisions needed**
+- Should the first release notes cover everything already built (Color Together, Bedtime Story, Farmstand, Inbox, avatars and so on) as a "Welcome to Kapanigans" page, or just start from the next update?
+- Should Joe approve the notes before each release goes live, or should Claude publish them with the release and Joe edit afterward?
+
+---
+
 ## Shared groundwork (needed by #1, #3, #4, #5, #8, #13 and #14)
 
 - ⚠️ **One shared script:** Farmstand and the rest of the game live in the same `<script>`, so two `function` declarations with the same name silently replace each other (this broke story and inbox sending once: `sendGift`, `deliver`). Use unique names; a quick check is to list duplicate `function` names before pushing.
