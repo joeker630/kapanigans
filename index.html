@@ -487,6 +487,7 @@ h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance;l
 .colormode{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 10px}
 .colormode button{background:var(--paper);border-radius:999px;padding:10px 16px;font-weight:800;font-size:16px;box-shadow:0 3px 0 var(--sky-deep);border:3px solid transparent}
 .colormode button.on{background:var(--sun);border-color:var(--ink)}
+.ghost.small{font-size:13px;padding:6px 12px;min-height:0}
 .sentbox{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
 .sentbox .gift{font-size:110px;animation:fly 1.6s ease-in forwards}
 @keyframes fly{0%{transform:scale(.6)}30%{transform:scale(1.15) rotate(-6deg)}60%{transform:scale(1) rotate(4deg)}100%{transform:translateY(-30vh) scale(.4);opacity:0}}
@@ -1060,7 +1061,7 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
 
 <div class="vid" id="vid" hidden>
   <div class="vtiles" id="vTiles"></div>
-  <div class="vbtns"><button id="vMin" aria-label="Shrink video">➖</button><button id="vMic" aria-label="Microphone on or off">🎤</button><button id="vCam" aria-label="Camera on or off">📷</button><button id="vFlip" aria-label="Flip camera" hidden>🔄</button><button id="vShow" class="showit" hidden>👀 Show it!</button></div>
+  <div class="vbtns"><button id="vMin" aria-label="Shrink video">➖</button><button id="vOff" aria-label="Turn off video calls">📴</button><button id="vMic" aria-label="Microphone on or off">🎤</button><button id="vCam" aria-label="Camera on or off">📷</button><button id="vFlip" aria-label="Flip camera" hidden>🔄</button><button id="vShow" class="showit" hidden>👀 Show it!</button></div>
 </div>
 <div class="invite" id="invite" hidden><span id="inviteMsg"></span><div class="rowbtns"><button class="bigbtn" id="inviteJoin">Join</button><button class="ghost" id="inviteNo">Not now</button></div></div>
 
@@ -1661,7 +1662,7 @@ function doChooseKid(k){
   if(me!==k){tickStats();flushStats();releaseClaim(me)} writeClaim(k); me=k; joinedAt=Date.now(); store("kp.kid",k); bump("sessions");
   for(const m of unreadOf(k)) mail.seen.add(m.id);
   sayClip("hi_"+k,`Hi ${kidOf(k).name}!`);
-  setPresence({kid:k,at:joinedAt,scr:"lobby",g:null,seat:null,done:null});
+  setPresence({kid:k,at:joinedAt,scr:"lobby",g:null,seat:null,done:null,calls:vid.optOut?"off":null});
   blip(700); goLobby();
 }
 function goLobby(){show("lobby");renderLobby();if(!vid.local&&!vid.denied)startMedia()}
@@ -2063,7 +2064,7 @@ function connect(code){
   clearTimeout(connect.rt); connect.rt=setTimeout(maybeWeeklyReport,8000);
   room=makeRoom(code); if(!room){toast("Offline: playing on this device only");return}
   wireRoom();
-  if(me) setPresence({kid:me,at:joinedAt,scr:screen==="game"?"game":"lobby"});
+  if(me) setPresence({kid:me,at:joinedAt,scr:screen==="game"?"game":"lobby",calls:vid.optOut?"off":null});
 }
 $("#newCode").onclick=()=>{$("#codeIn").value="";$("#longCode").open=false;setBoxes(makeCode())};
 $("#saveCode").onclick=()=>{
@@ -2076,11 +2077,18 @@ $("#codeIn").addEventListener("keydown",e=>{if(e.key==="Enter")$("#saveCode").cl
 
 /* ---------------- family video: camera + mic start on the home screen ----------------
    Everyone online (up to 3 others) is connected straight to each other. Signaling goes through Firebase (live/signal). */
-const vid={local:null,asking:false,denied:false,mic:load("kp.mic")!=="off",cam:load("kp.cam")!=="off",pcs:new Map(),streams:new Map(),els:new Map(),min:false};
+const vid={optOut:load("kp.calls")==="off",local:null,asking:false,denied:false,mic:load("kp.mic")!=="off",cam:load("kp.cam")!=="off",pcs:new Map(),streams:new Map(),els:new Map(),min:false};
 const ICE=[{urls:["stun:stun.l.google.com:19302","stun:stun1.l.google.com:19302"]}];
 const MAX_REMOTE=3;
 function mediaOK(){return !!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia&&window.RTCPeerConnection)}
-function startMedia(){
+// opting out: this device never turns on the camera or mic, and isn't in anyone's video call
+function setCalls(on){
+  vid.optOut=!on; store("kp.calls",on?"on":"off");
+  if(!on){stopMedia();setPresence({calls:"off"});toast("Video calls are off on this device");sayLittle("Video off")}
+  else{setPresence({calls:null});vid.denied=false;startMedia();sayLittle("Video on!")}
+  peopleSig=""; renderVideoUI(); if(screen==="lobby") renderPeople();
+}
+function startMedia(){ if(vid.optOut) return;
   if(vid.local||vid.asking||!mediaOK()||!me) return;
   vid.asking=true; renderVideoUI();
   // called straight from a tap where possible, so iPhone/iPad allow it
@@ -2271,6 +2279,7 @@ function renderVideoUI(){
 $("#vMic").onclick=()=>setMic(!vid.mic);
 $("#vCam").onclick=()=>setCam(!vid.cam);
 $("#vMin").onclick=()=>{vid.min=!vid.min;renderVideoUI()};
+$("#vOff").onclick=()=>{const b=$("#vOff");if(b.dataset.armed){delete b.dataset.armed;b.textContent="📴";setCalls(false);return}b.dataset.armed=1;b.textContent="Off?";setTimeout(()=>{delete b.dataset.armed;b.textContent="📴"},3000)};
 $("#vFlip").onclick=()=>flipCamera();
 $("#vShow").onclick=()=>startShowIt();
 // drag the bubble out of the way
@@ -2295,7 +2304,7 @@ function whereOf(pr){
 function renderPeople(){
   const box=$("#people"); if(!box||!me) return;
   const list=peers().filter(p=>p.presence&&KIDS[p.presence.kid]).sort((a,b)=>(b.sameTab-a.sameTab)||((a.presence.at||0)-(b.presence.at||0)));
-  const sig=JSON.stringify([me,vid.mic,vid.cam,!!vid.local,vid.asking,vid.denied,list.map(p=>[p.peer,p.presence.kid,p.presence.scr,p.presence.act,p.presence.g&&p.presence.g.e,p.presence.seat,p.presence.vr,p.presence.mic,p.presence.cam,vid.streams.has(p.peer)])]);
+  const sig=JSON.stringify([me,vid.mic,vid.cam,!!vid.local,vid.asking,vid.denied,list.map(p=>[p.peer,p.presence.kid,p.presence.scr,p.presence.act,p.presence.g&&p.presence.g.e,p.presence.seat,p.presence.vr,p.presence.mic,p.presence.cam,p.presence.calls,vid.optOut,vid.streams.has(p.peer)])]);
   if(sig===peopleSig&&box.childElementCount) return; peopleSig=sig;
   box.innerHTML="";
   const head=el("div","peoplehead",`<span>Who's on</span><em>${list.length}</em>`); box.append(head);
@@ -2305,17 +2314,19 @@ function renderPeople(){
     const card=el("div","pcard"+(mine?" mine":"")); card.style.setProperty("--k",K.hue);
     const tile=tileFor(p,mine); card.append(tile);
     const [ic,txt]=mine?["📍","You are here"]:whereOf(pr);
-    const info=el("div","pinfo",`<b>${esc(K.name)}${mine?" <small>(you)</small>":""}</b><span class="where"><i>${ic}</i>${esc(txt)}</span>`); card.append(info);
+    const info=el("div","pinfo",`<b>${esc(K.name)}${mine?" <small>(you)</small>":""}</b><span class="where"><i>${ic}</i>${esc(txt)}</span>${!mine&&pr.calls==="off"?'<span class="where"><i>📴</i>Video off</span>':""}`); card.append(info);
     const act=el("div","pact"); card.append(act);
     if(mine){
       if(!mediaOK()) act.append(el("span","note","No camera on this device"));
+      else if(vid.optOut){act.append(el("span","note","📴 Video calls are off on this device"));const b=el("button","bigbtn","📞 Join video calls");b.onclick=()=>setCalls(true);act.append(b)}
       else if(!vid.local){const b=el("button","bigbtn",vid.asking?"Starting…":"📷 Turn on camera");b.disabled=vid.asking;b.onclick=()=>{vid.denied=false;startMedia()};act.append(b);
         if(vid.denied) act.append(el("span","note",/Android|Silk|Kindle/i.test(navigator.userAgent)?"If nothing happens, allow the camera and microphone in Settings › Apps › Silk Browser › Permissions.":"If nothing happens, allow the camera and microphone in Settings › Safari."))}
       else{const m=el("button","round"+(vid.mic?"":" off"),vid.mic?"🎤":"🔇");m.setAttribute("aria-label","Microphone");m.onclick=()=>setMic(!vid.mic);
         const c=el("button","round"+(vid.cam?"":" off"),"📷");c.setAttribute("aria-label","Camera");c.onclick=()=>setCam(!vid.cam);act.append(m,c);
         if(canShowIt()){const sh=el("button","bigbtn showit","👀 Show it!");sh.onclick=()=>startShowIt();act.append(sh)}
-        {const dz=el("button","ghost","👗 Dress up");dz.onclick=()=>openDress();act.append(dz)}
-        if((vid.cams||[]).length>1){const f=el("button","round","🔄");f.setAttribute("aria-label","Flip camera");f.disabled=!!vid.flipping;f.onclick=()=>flipCamera();act.append(f)}}
+        if((vid.cams||[]).length>1){const f=el("button","round","🔄");f.setAttribute("aria-label","Flip camera");f.disabled=!!vid.flipping;f.onclick=()=>flipCamera();act.append(f)}
+        {const lv=el("button","ghost small","📴 Turn off video calls");lv.onclick=()=>setCalls(false);act.append(lv)}}
+      {const dz=el("button","ghost","👗 Dress up");dz.onclick=()=>openDress();act.append(dz)}
     } else if(["lobby","story","reader","inbox"].includes(pr.scr)){
       const b=el("button","bigbtn",`🎨 Color with ${esc(K.name)}`);b.onclick=()=>{sayLittle(`Color with ${K.name}!`);openPics([p.peer])};act.append(b);
       if(pr.scr!=="lobby"){const n=el("button","ghost","💌 Note");n.onclick=()=>{sayLittle(`Send ${K.name} a note`);openInbox("what",{to:pr.kid})};act.append(n)}
