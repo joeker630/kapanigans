@@ -1320,8 +1320,18 @@ const HELP={
     faq:[["Is it our farm?","Yes, the whole family shares one farm."],["Did I lose anything?","Never. Plants and animals just droop until you help."],["How long?","About 30 minutes is a good farm visit."]]},
 };
 let helpLast="";
-function showHelp(id){
-  const H=HELP[id]; if(!H) return; helpLast=id;
+// who sees help: grown-ups see each screen's help once (per person, per device); the kids never do (they can't read yet).
+// The family code screen shows once per device; "Who are you?" is the kids' screen, so no help there.
+function helpKey(id){return "kp.help."+(id==="setup"?"device":me||"device")+"."+id}
+function showHelp(id,force){
+  const H=HELP[id]; if(!H) return;
+  if(!force){
+    if(id==="pick") return;
+    if(id!=="setup"&&!(me&&KIDS[me]&&KIDS[me].grown)) return;
+    if(load(helpKey(id))) return;
+    store(helpKey(id),"1");
+  }
+  helpLast=id;
   const box=$("#help"); const little=typeof lvl==="function"&&lvl()==="little";
   box.innerHTML=`<div class="hcard${little?" little":""}" role="dialog" aria-label="${esc(H.title)} help">
     <div class="hhead"><span class="hem">${H.em}</span><h2>${esc(H.title)}</h2><button class="round hclose" id="hSay" aria-label="Read it to me">🔊</button><button class="round hclose" id="hX" aria-label="Close">✖️</button></div>
@@ -3823,6 +3833,7 @@ function renderGrown(){
   document.querySelectorAll("#gTabs button").forEach(b=>b.classList.toggle("on",b.dataset.tab===gTab));
   const B=$("#gBody"); B.innerHTML="";
   ({reports:gReports,voice:gVoice,code:gCode,inbox:gInboxes,photos:gPhotos})[gTab](B);
+  {const r=el("div","rowbtns");const h=el("button","ghost small","💡 Show the help tips again");h.onclick=()=>{try{Object.keys(localStorage).filter(k=>k.startsWith("kp.help.")).forEach(k=>localStorage.removeItem(k))}catch(e){}toast("Help tips will show once more on each screen")};r.append(h);B.append(r)}
 }
 function armed(key,btn,label,action){ // two taps to confirm
   if(gArmed===key){gArmed=null;action();return}
