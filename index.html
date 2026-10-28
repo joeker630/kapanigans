@@ -973,6 +973,40 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
 .numbtn{border-radius:50%!important;background:var(--k)!important;color:#fff;font-family:var(--display);box-shadow:0 5px 0 rgba(43,33,64,.25);width:1.5em!important;height:1.5em!important;font-size:calc(var(--fs)*.8)!important}
 .numbtn.got{background:#2ECC40!important;opacity:.55}
 .numbtn.glow{animation:hintp 1s ease-in-out infinite}
+/* ============ Capture the Flag (#18) ============ */
+.game .tag.beta{background:#FF8A00;color:#fff}
+#ctf{padding-left:0;padding-right:0;background:#BFE3F7;position:relative;overflow:hidden}
+#ctf .ctfhud{display:flex;align-items:center;gap:10px;padding:calc(6px + env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) 4px max(12px,env(safe-area-inset-left,0px))}
+.ctfscore{flex:1;display:flex;align-items:center;justify-content:center;gap:12px;font-weight:900;font-size:26px;color:var(--ink)}
+.ctfscore .tm{display:flex;align-items:center;gap:6px;padding:4px 14px;border-radius:999px;color:#fff;min-width:74px;justify-content:center}
+.ctfscore .tm.blue{background:#2D8CFF}.ctfscore .tm.red{background:#FF3B3B}
+.ctfscore .tm small{font-size:15px;opacity:.95;letter-spacing:-2px}
+.ctftime{font-variant-numeric:tabular-nums;background:#fff;border-radius:14px;padding:2px 12px;box-shadow:0 2px 0 rgba(0,0,0,.08)}
+.ctftime.hurry{color:#E5484D;animation:ctfpulse .6s ease-in-out infinite alternate}
+@keyframes ctfpulse{to{transform:scale(1.1)}}
+.ctfflags{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;padding:0 12px 4px;font-weight:800;font-size:15px}
+.ctfflags span{background:rgba(255,255,255,.85);border-radius:999px;padding:3px 12px;border:3px solid transparent}
+.ctfflags span.blue{border-color:#2D8CFF}.ctfflags span.red{border-color:#FF3B3B}
+.ctfflags span.alarm{background:#FFF1B8;animation:ctfpulse .5s ease-in-out infinite alternate}
+#ctfBody{flex:1;min-height:0;position:relative;width:100%}
+#ctfCv{position:absolute;inset:0;width:100%;height:100%;touch-action:none;display:block}
+.ctfbanner{position:absolute;left:50%;top:10px;transform:translateX(-50%);pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:6px;width:min(92%,640px)}
+.ctfbanner div{background:rgba(43,33,64,.88);color:#fff;font-weight:900;font-size:22px;padding:8px 18px;border-radius:16px;text-align:center;animation:ctfin .25s ease-out;transition:opacity .4s}
+.ctfbanner div.big{font-size:44px;padding:10px 28px}
+.ctfbanner div.gone{opacity:0}
+@keyframes ctfin{from{transform:scale(.6);opacity:0}}
+.ctfpow{position:absolute;left:max(12px,env(safe-area-inset-left,0px));bottom:calc(10px + env(safe-area-inset-bottom,0px));display:flex;gap:8px;pointer-events:none}
+.ctfpow span{background:#fff;border-radius:16px;padding:6px 12px;font-weight:900;font-size:20px;box-shadow:0 3px 0 rgba(0,0,0,.1)}
+.ctfend{position:absolute;inset:0;z-index:5;background:rgba(214,236,255,.92);display:flex;align-items:center;justify-content:center;padding:20px}
+.ctfend .card{background:#fff;border-radius:28px;padding:22px 26px;text-align:center;max-width:520px;width:100%;box-shadow:0 10px 30px rgba(0,0,0,.15)}
+.ctfend h2{font-size:34px;margin:4px 0}
+.ctfend .fs{font-size:40px;font-weight:900;margin:6px 0}
+.ctfend .fs b.blue{color:#2D8CFF}.ctfend .fs b.red{color:#FF3B3B}
+.ctfend .mine{color:var(--ink-soft);font-weight:700;margin:8px 0 14px}
+.ctfend canvas{width:200px;height:120px}
+.ctfend .tbtns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+#ctf.little .ctfbanner div{font-size:28px}
+@media (max-height:520px){.ctfbanner{top:4px}.ctfbanner div,#ctf.little .ctfbanner div{font-size:15px;padding:4px 12px;border-radius:12px}.ctfbanner div.big{font-size:30px}.ctfflags{font-size:12px;padding-bottom:2px}.ctfscore{font-size:20px}}
 </style>
 
 </head>
@@ -1027,6 +1061,7 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
     <button class="game live" id="playColor"><span class="tag">Play</span><span class="icon">🎨</span><h3>Color Together</h3><p>Everyone colors their own part of one big picture.</p></button>
     <button class="game live" id="playStory"><span class="tag">Play</span><span class="icon">🌙</span><h3>Bedtime Story</h3><p>Make a silly story with your own characters and send it as a gift.</p></button>
     <button class="game live" id="playFarm"><span class="tag">Play</span><span class="icon">🥕</span><h3>Kapanigan Farmstand</h3><p>Feed the animals and pick crops on the family farm.</p></button>
+    <button class="game live" id="playCtf"><span class="tag beta">Beta Version</span><span class="icon">🚩</span><h3>Capture the Flag</h3><p>Grab the other team's flag. Watch out for Jeppson's poops!</p></button>
     <button class="game live" id="playInbox"><span class="tag">Play</span><span class="icon">💌</span><h3>Inbox</h3><p>Send stickers, drawings and voice notes to the family.</p></button>
   </div>
 </section>
@@ -1128,6 +1163,17 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
     <button class="round" id="fHome" aria-label="Home">🏠</button>
   </div>
   <div id="farmBody"><canvas id="farmCv"></canvas><div class="coopbar" id="farmCoop" hidden></div><div class="fzoom"><button class="round" id="fZoomIn" aria-label="Zoom in">➕</button><button class="round" id="fZoomOut" aria-label="Zoom out">➖</button></div></div>
+</section>
+<!-- ============ CAPTURE THE FLAG (#18, beta) ============ -->
+<section class="screen" id="ctf" hidden>
+  <div class="ctfhud">
+    <button class="round" id="ctfHome" aria-label="Home">🏠</button>
+    <div class="ctfscore"><span class="tm blue"><small id="ctfFB"></small><b id="ctfSB">0</b></span><span class="ctftime" id="ctfTime">3:00</span><span class="tm red"><b id="ctfSR">0</b><small id="ctfFR"></small></span></div>
+    <button class="round" id="ctfSayBtn" aria-label="What do I do?">🔊</button>
+  </div>
+  <div class="ctfflags" id="ctfFlags"></div>
+  <div id="ctfBody"><canvas id="ctfCv"></canvas><div class="ctfbanner" id="ctfBanner"></div><div class="ctfpow" id="ctfPow"></div></div>
+  <div class="ctfend" id="ctfEnd" hidden></div>
 </section>
 <div class="task" id="task" hidden>
   <div class="thead"><button class="round" id="tClose" aria-label="Stop">✖️</button><h1 id="tTitle"></h1><button class="round" id="tSay" aria-label="Say it again">🔊</button></div>
@@ -1244,7 +1290,7 @@ function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i)
 function rng(seed){let a=seed>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 function esc(s){return String(s).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]))}
 function kidOf(k){return KIDS[k] || (k==="kapanigans"?SYS:KIDS.bear)}
-function show(id){const prevScr=screen;if(screen==="reader"&&id!=="reader")hush();if(screen==="inbox"&&id!=="inbox"&&typeof stopRec==="function")stopRec();for(const s of ["setup","pick","lobby","game","story","reader","inbox","grown","farm","dress"]) $("#"+s).hidden = s!==id; if(id!=="farm"&&tk) closeTask(true); screen=id; if(typeof renderVideoUI==="function") renderVideoUI(); if(id==="pick"&&typeof syncMailBadges==="function"){syncMailBadges();renderPickClaims()}
+function show(id){const prevScr=screen;if(screen==="reader"&&id!=="reader")hush();if(screen==="inbox"&&id!=="inbox"&&typeof stopRec==="function")stopRec();for(const s of ["setup","pick","lobby","game","story","reader","inbox","grown","farm","dress","ctf"]) $("#"+s).hidden = s!==id; if(id!=="farm"&&id!=="ctf"&&tk) closeTask(true); screen=id; if(typeof renderVideoUI==="function") renderVideoUI(); if(id==="pick"&&typeof syncMailBadges==="function"){syncMailBadges();renderPickClaims()}
   if(me&&room&&id!=="game"&&id!=="setup") setPresence(id==="farm"?{scr:id}:{scr:id,act:null});
   if(typeof tickStats==="function") tickStats();
   if(id!==prevScr) showHelp(id); else if(!$("#help").hidden&&helpLast!==id) $("#help").hidden=true}
@@ -1268,6 +1314,8 @@ const HELP={
     faq:[["Who can see it?","Only the person you send it to."],["Voice note won't record?","Allow the microphone in Settings › Safari."]]},
   grown:{em:"🔒",title:"Grown-ups",steps:[["📊","Reports: what the kids played and learned."],["🎙️","Voice: record your voice for the game's words."],["🔑","Code: see and share the family code."],["📸","Photos and inboxes for each person."]],
     faq:[["Can kids get in?","Only by pressing and holding the lock."],["New phone?","Open the site, type the same family code, pick your name."]]},
+  ctf:{em:"🚩",title:"Capture the Flag",steps:[["👆","Tap where you want to go. You walk there and stop."],["🧭","Arrows at the edge point to flags you can't see."],["🚩","Grab the red flag and bring it home to your blue base."],["👋","Touch the other team on YOUR side to tag them."],["🧩","Tagged? Solve a quick puzzle to get back in."],["💩","Dodge Jeppson's poops. They slow you down!"],["🐶","Tap Jeppson to send him after the other team."]],
+    faq:[["Power-ups?","💨 Zoomies make you fast. 🥾 Rain boots stop poop squishes. 🦴 Treat toss sends Jeppson to the other side."],["How do we win?","Most captures when the 3-minute timer runs out."],["Who are the others?","Computer friends. Your teammate is on Blue with you."]]},
   farm:{em:"🥕",title:"Farmstand",steps:[["👆","Tap a crop, animal or building. Your farmer walks there."],["🧩","Solve the little puzzle to do the chore."],["🌱","Plant, water and pick crops. Feed animals for 🥚 🥛 🧶."],["🧺","Sell at the farmstand for 🪙 Moolah. Build at the red barn."],["📋","Fill family orders on the board."],["🤏","Pinch or tap ➕ ➖ to zoom. Press and hold to move buildings."]],
     faq:[["Is it our farm?","Yes, the whole family shares one farm."],["Did I lose anything?","Never. Plants and animals just droop until you help."],["How long?","About 30 minutes is a good farm visit."]]},
 };
@@ -5380,7 +5428,7 @@ function taskApi(A){
       blip(160,.35,"sawtooth",.1);
       if(my.cd) cdStart(my.cd); my.cdDone=true;
       const d=el("div","tdone lost peek",`<div class="lostcard"><h2>😵 You lost</h2><p>${esc(reason)}</p>${my.cd?`<p class="cdnote">⏳ This chore rests for ${Math.round(LOSE_COOLDOWN_MS/60000)} minutes before you can try again.</p>`:""}<div class="tbtns"></div></div>`);
-      const back=el("button","bigbtn","Back to the farm");
+      const back=el("button","bigbtn",my.chore==="ctf"?(typeof C!=="undefined"&&C&&C.me.losses>=1?"Back in the game":"New puzzle"):"Back to the farm");
       back.onclick=()=>{if(tk===my)closeTask(true)};
       d.querySelector(".tbtns").append(back); A.append(d);
     },
@@ -6398,6 +6446,640 @@ $("#fHome").onclick=()=>{closeSheet();hush();goLobby()};
 $("#fBack").onclick=()=>{closeSheet();hush();goLobby()};
 $("#playFarm").onclick=()=>{sayLittle("Kapanigan Farmstand");openFarm()};
 if(/[?&]farmlocal\b/.test(location.search))window.__farm={animAt,fwNow,fmvStart,fmvDrag,fmvEnd,fpOk,STRUCT,FIELD_SPOTS,decorPos,openFamBasket,sellIt,moveGoods,openBasket,farmClamp,fCands,fInfo,fGo,openTask,TASK_TYPES,F,fm,FW,openBank,bankPut,farmZoomTo,fwWalk,farmTapAt:(i,j)=>{const p=fIso(i,j),r=fm.cv.getBoundingClientRect(),d=fm.cv.width/r.width;farmTap({clientX:r.left+p.x/d,clientY:r.top+p.y/d})},CO,coopUpd,coopTick,startTeam,joinTeam,tk:()=>tk,tapPlot,tapAnimal,tapStruct,openStore,openOrders,openJar,openSell,buyIt,storeItems,deliver,sendGift,win:finishTask,quit:()=>closeTask(true)}; // testing only
+/* ================= Capture the Flag (#18) — test build =================
+   Live as a Beta Version card in the lobby. Single device for now:
+   you + 1 bot teammate (Blue) vs 2 bots (Red). Big oval isometric field; the camera follows you, so you only
+   see part of it (edge arrows point to flags that are off screen). Tap a spot and you walk there, then stop. Tag opponents on YOUR side. Tagged = solve a quick puzzle, back in at base.
+   Jeppson wanders and poops; stepping in it slows you for 3 s (rain boots make you immune).
+   Power-ups: 💨 Zoomies (fast 6 s), 🥾 Rain boots (no squish 10 s), 🦴 Treat toss (Jeppson runs to the
+   other side and poops there). Carrying a flag = 75% speed. 3-minute timer, most captures wins. */
+const CTF={N:40,ROUND_MS:180e3,SPEED:2.1,TAG_R:.75,GRAB_R:.8,BASE_R:1.5,POOP_R:.5,POOP_SLOW:.5,POOP_MS:3000,POOP_LIFE:30e3,POOP_MAX:8,
+  CARRY:.75,ZOOM:1.6,ZOOM_MS:6000,BOOTS_MS:10000,DROP_MS:10000,INVULN_MS:2500,PU_MAX:3,PU_LIFE:20e3,J_SPEED:1.75};
+// the field is an oval: u runs base to base, w across. A, B are its half-lengths (in tiles); bases sit at u = ±BASE_U
+const CTF_FIELD={c:20,A:20,B:10.6,BASE_U:15.6,K:1.25}; // K: obstacle spacing scale
+const ctfXY=(u,w)=>({x:CTF_FIELD.c+(u+w)/Math.SQRT2,y:CTF_FIELD.c+(w-u)/Math.SQRT2});
+const ctfUW=p=>({u:(p.x-p.y)/Math.SQRT2,w:(p.x+p.y)/Math.SQRT2-CTF_FIELD.c*Math.SQRT2});
+function ctfInField(x,y,inset){const {u,w}=ctfUW({x,y});return (u/(CTF_FIELD.A-inset))**2+(w/(CTF_FIELD.B-inset))**2<=1}
+const CTF_BASE={blue:ctfXY(-CTF_FIELD.BASE_U,0),red:ctfXY(CTF_FIELD.BASE_U,0)};
+const CTF_TEAM={blue:{name:"Blue",hue:"#2D8CFF",dark:"#1D4ED8"},red:{name:"Red",hue:"#FF3B3B",dark:"#B91C1C"}};
+const CTF_MATES=[{name:"Bear friend",face:"🐻"},{name:"Bunny Bea",face:"🐰"}];
+const CTF_OPPS=[{name:"Fox friend",face:"🦊"},{name:"Farmer Frog",face:"🐸"},{name:"Piggy Pete",face:"🐷"},{name:"Goat Gus",face:"🐐"}];
+// bot strength comes from the human's level: opp/mate = speed vs yours, tag = chance a bot's tag on you counts,
+// avoid = chance a bot routes around poops, wander = chance of a silly detour, think = ms between decisions, out = bot "puzzle" time
+const CTF_DIFF={little:{opp:.5,mate:.8,tag:.35,avoid:.45,wander:.3,think:750,out:[9000,12000],sight:3.5,chase:2200},
+  big:{opp:.78,mate:.85,tag:.85,avoid:.75,wander:.08,think:450,out:[7000,10000],sight:5,chase:3000},
+  grown:{opp:.95,mate:.92,tag:1,avoid:.9,wander:0,think:300,out:[6000,9000],sight:7,chase:4500}};
+// sight = how close an intruder must be before a defender notices; chase = ms a bot chases before it gets tired and rests 1.5 s
+const CTF_PUZZLES=["count","letters","color","pattern","numorder","size","shadow"]; // the short ones (10-20 s)
+const CTF_GROWN=["blackjack","mines","jam"];
+const CTF_ITEMS=[{em:"🦴",one:"bone",many:"bones"},{em:"🚩",one:"flag",many:"flags"},{em:"🎾",one:"ball",many:"balls"}];
+const CTF_PU={zoom:{em:"💨",name:"Zoomies"},boots:{em:"🥾",name:"Rain boots"},treat:{em:"🦴",name:"Treat toss"}};
+// obstacles on Blue's half as [u,w,kind]; Red's half is the mirror image
+const CTF_OBS=[[-9,-3.5,"tree"],[-9.5,3.8,"tree"],[-6,0,"hay"],[-6,1.2,"hay"],[-3.2,-4.2,"bush"],[-3,4.4,"bush"],[-11,-5,"tree"],[-13.6,3.2,"tree"],
+  [-7,-6,"bush"],[-4.6,-1.4,"tree"],[-2.4,1.4,"hay"],[-12,5.5,"bush"],[-14,-2.6,"bush"],[-8,6.6,"tree"],[-5.5,-7.2,"tree"],[-1.6,-6.6,"bush"]];
+const ctfOther=t=>t==="blue"?"red":"blue";
+const ctfSide=p=>p.x-p.y<0?"blue":"red";
+const ctfD=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+const ctfRand=(a,b)=>a+Math.random()*(b-a);
+let C=null;
+
+function ctfLvl(){return isGrown()?"grown":lvl()}
+function ctfRandPt(maxU,maxW){for(let k=0;k<40;k++){const p=ctfXY(ctfRand(-maxU,maxU),ctfRand(-maxW,maxW));if(ctfFreeAt(p.x,p.y))return p}return ctfNearFree(CTF_FIELD.c,CTF_FIELD.c)}
+function ctfFree(i,j){const N=CTF.N;return i>=0&&j>=0&&i<N&&j<N&&!C.block[i*N+j]}
+function ctfFreeAt(x,y){return ctfFree(Math.floor(x),Math.floor(y))}
+function ctfNearFree(x,y){
+  const N=CTF.N;x=clamp(x,.35,N-.35);y=clamp(y,.35,N-.35);
+  if(ctfFreeAt(x,y)) return {x,y};
+  let best=null,bd=1e9;
+  for(let i=0;i<N;i++)for(let j=0;j<N;j++)if(ctfFree(i,j)){const d=Math.hypot(i+.5-x,j+.5-y);if(d<bd){bd=d;best={x:i+.5,y:j+.5}}}
+  return best;
+}
+// line of sight: the whole width of a player fits along the line
+function ctfLos(a,b){
+  const d=ctfD(a,b);if(d<.01)return true;const n=Math.ceil(d/.2),px=-(b.y-a.y)/d*.28,py=(b.x-a.x)/d*.28;
+  for(let k=0;k<=n;k++){const x=a.x+(b.x-a.x)*k/n,y=a.y+(b.y-a.y)*k/n;
+    if(!ctfFreeAt(x,y)||!ctfFreeAt(x+px,y+py)||!ctfFreeAt(x-px,y-py))return false}
+  return true;
+}
+// A* over the grid (8 directions, no corner cutting); poopW adds cost to cells with poop
+function ctfPath(from,to,poopW){
+  const N=CTF.N,tgt=ctfNearFree(to.x,to.y);if(!tgt)return [];
+  if(ctfLos(from,tgt)&&!(poopW&&ctfPoopOnLine(from,tgt)))return [tgt];
+  const s=clamp(Math.floor(from.x),0,N-1)*N+clamp(Math.floor(from.y),0,N-1),g0=Math.floor(tgt.x)*N+Math.floor(tgt.y);
+  const g=new Float32Array(N*N).fill(1e9),came=new Int32Array(N*N).fill(-1),done=new Uint8Array(N*N),f=new Float32Array(N*N).fill(1e9);
+  const h=c=>{const dx=Math.abs((c/N|0)-(g0/N|0)),dy=Math.abs(c%N-g0%N);return Math.max(dx,dy)+.414*Math.min(dx,dy)};
+  g[s]=0;f[s]=h(s);const open=[s];
+  const push=n=>{open.push(n);let i=open.length-1;while(i){const q=(i-1)>>1;if(f[open[q]]<=f[open[i]])break;[open[q],open[i]]=[open[i],open[q]];i=q}};
+  const pop=()=>{const top=open[0],last=open.pop();if(open.length){open[0]=last;let i=0;for(;;){const l=2*i+1,r=l+1;let m=i;
+    if(l<open.length&&f[open[l]]<f[open[m]])m=l;if(r<open.length&&f[open[r]]<f[open[m]])m=r;if(m===i)break;[open[m],open[i]]=[open[i],open[m]];i=m}}return top};
+  while(open.length){
+    const c=pop();if(c===g0)break;if(done[c])continue;done[c]=1;
+    const ci=c/N|0,cj=c%N;
+    for(let di=-1;di<=1;di++)for(let dj=-1;dj<=1;dj++){
+      if(!di&&!dj)continue;const ni=ci+di,nj=cj+dj;if(!ctfFree(ni,nj))continue;
+      if(di&&dj&&(!ctfFree(ci+di,cj)||!ctfFree(ci,cj+dj)))continue;
+      const n=ni*N+nj,cost=g[c]+(di&&dj?1.414:1)+(poopW&&C.poopCell[n]?poopW:0);
+      if(cost<g[n]){g[n]=cost;f[n]=cost+h(n);came[n]=c;push(n)}
+    }
+  }
+  if(came[g0]<0&&g0!==s)return [tgt];
+  const cells=[];for(let c=g0;c!==s&&c>=0;c=came[c])cells.push({x:(c/N|0)+.5,y:c%N+.5});
+  cells.reverse();cells[cells.length-1]=tgt;
+  // pull the string: skip waypoints we can see past
+  const out=[];let cur=from,k=0;
+  while(k<cells.length){let far=k;for(let m=cells.length-1;m>k;m--)if(ctfLos(cur,cells[m])&&!(poopW&&ctfPoopOnLine(cur,cells[m]))){far=m;break}
+    out.push(cells[far]);cur=cells[far];k=far+1}
+  return out;
+}
+function ctfPoopOnLine(a,b){for(const p of C.poops){const t=clamp(((p.x-a.x)*(b.x-a.x)+(p.y-a.y)*(b.y-a.y))/((b.x-a.x)**2+(b.y-a.y)**2||1),0,1);
+  if(Math.hypot(a.x+(b.x-a.x)*t-p.x,a.y+(b.y-a.y)*t-p.y)<.7)return true}return false}
+function ctfPoopCells(){C.poopCell.fill(0);for(const p of C.poops){const i=Math.floor(p.x),j=Math.floor(p.y);if(i>=0&&j>=0&&i<CTF.N&&j<CTF.N)C.poopCell[i*CTF.N+j]=1}}
+
+/* ---------- setup ---------- */
+function openCtf(){
+  if(!me){goLobby();return}
+  const L=ctfLvl(),D=CTF_DIFF[L],N=CTF.N;
+  const block=new Uint8Array(N*N),obs=[];
+  for(let i=0;i<N;i++)for(let j=0;j<N;j++)if(!ctfInField(i+.5,j+.5,.7))block[i*N+j]=1;
+  for(const [u,w,k] of CTF_OBS){const p=ctfXY(u*CTF_FIELD.K,w*CTF_FIELD.K),i=Math.floor(p.x),j=Math.floor(p.y);if(i===j)continue;
+    block[i*N+j]=1;block[j*N+i]=1;obs.push({i,j,k},{i:j,j:i,k})}
+  const mk=(o)=>Object.assign({state:"play",path:[],carry:null,slowUntil:0,zoomUntil:0,bootsUntil:0,invulnUntil:0,tagCd:0,think:0,
+    vx:0,vy:0,step:0,backAt:0,stats:{caps:0,tags:0,poops:0}},o);
+  const opp=shuffle(CTF_OPPS).slice(0,2),mate=pickOne(CTF_MATES),k=kidOf(me);
+  const B=CTF_BASE;
+  const agents=[
+    mk({id:"me",human:true,team:"blue",name:k.name,face:k.face,spd:1,x:B.blue.x+.8,y:B.blue.y-1.4}),
+    mk({id:"mate",team:"blue",name:mate.name,face:mate.face,spd:D.mate,role:"flex",x:B.blue.x+1.8,y:B.blue.y-.2}),
+    mk({id:"o1",team:"red",name:opp[0].name,face:opp[0].face,spd:D.opp,role:"attack",x:B.red.x-.8,y:B.red.y+1.4}),
+    mk({id:"o2",team:"red",name:opp[1].name,face:opp[1].face,spd:D.opp,role:"defend",x:B.red.x-1.8,y:B.red.y+.2}),
+  ];
+  C={L,D,block,obs,agents,me:agents[0],t:0,last:0,phase:"help",count:0,score:{blue:0,red:0},
+    flags:{blue:{team:"blue",state:"home",x:B.blue.x,y:B.blue.y,carrier:null,at:0},red:{team:"red",state:"home",x:B.red.x,y:B.red.y,carrier:null,at:0}},
+    poops:[],prints:[],pus:[],nextPu:6000,poopCell:new Uint8Array(N*N),said30:false,raf:0,lay:null,ground:null,task:null,
+    cam:null,jep:{x:20,y:20,tx:20,ty:20,mode:"wander",until:0,idleUntil:0,nextPoop:2500,squat:0,face:1,run:0,queue:[],tapCd:0,target:null},
+    fx:[],down:false,lastDrag:0};
+  // a few poops to start
+  for(let n=0;n<4;n++){const q=ctfRandPt(11,6),p=ctfPoopSpot(q.x,q.y,1);if(p)C.poops.push({x:p.x,y:p.y,at:-n*4000,sq:false})}
+  ctfPoopCells();
+  $("#ctf").classList.toggle("little",L==="little");
+  $("#ctfEnd").hidden=true;$("#ctfBanner").innerHTML="";
+  $("#ctfFB").textContent=agents.filter(a=>a.team==="blue").map(a=>a.face).join("");
+  $("#ctfFR").textContent=agents.filter(a=>a.team==="red").map(a=>a.face).join("");
+  show("ctf");
+  ctfLayout();
+  cancelAnimationFrame(C.raf);C.last=performance.now();C.raf=requestAnimationFrame(ctfFrame);
+  ctfHud();
+}
+function ctfLayout(){
+  const cv=$("#ctfCv");if(!cv||!C)return;const box=$("#ctfBody").getBoundingClientRect();
+  const W=Math.max(200,box.width),H=Math.max(150,box.height),dpr=Math.min(2,window.devicePixelRatio||1),N=CTF.N;
+  cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);
+  // zoomed in: a tile is about 1/7.5 of the short side of the screen, so only part of the field shows at once
+  const tw=clamp(Math.min(W,H)/7.5,58,110);
+  C.lay={W,H,dpr,tw,hw:tw/2,hh:tw/4};
+  ctfGround();ctfCamera(0,true);
+}
+// iso space: ix,iy in px before the camera; the camera holds the iso point at the middle of the screen
+const ctfIso=(x,y)=>({x:(x-y)*C.lay.hw,y:(x+y)*C.lay.hh});
+const ctfP=(x,y)=>({x:C.lay.W/2+(x-y)*C.lay.hw-C.cam.x,y:C.lay.H/2+(x+y)*C.lay.hh-C.cam.y});
+function ctfWorld(sx,sy){const l=C.lay,dx=(sx-l.W/2+C.cam.x)/l.hw,dy=(sy-l.H/2+C.cam.y)/l.hh;return {x:(dx+dy)/2,y:(dy-dx)/2}}
+function ctfCamera(dt,snap){
+  const l=C.lay,F=CTF_FIELD,m=C.me,focus=m.state==="play"?m:CTF_BASE[m.team],p=ctfIso(focus.x,focus.y);
+  const tx=p.x,ty=p.y-l.tw*.4;
+  if(!C.cam||snap)C.cam={x:tx,y:ty};else{const k=1-Math.exp(-dt*5);C.cam.x+=(tx-C.cam.x)*k;C.cam.y+=(ty-C.cam.y)*k}
+  // keep the view over the field (center it on an axis where the screen is wider than the field)
+  const rx=F.A*Math.SQRT2*l.hw+l.tw*.6,cy=2*F.c*l.hh,ry=F.B*Math.SQRT2*l.hh,top=cy-ry-l.tw*1.6,bot=cy+ry+l.tw*.8;
+  C.cam.x=rx*2<l.W?0:clamp(C.cam.x,-rx+l.W/2,rx-l.W/2);
+  C.cam.y=bot-top<l.H?(top+bot)/2:clamp(C.cam.y,top+l.H/2,bot-l.H/2);
+}
+
+/* ---------- ground (drawn once per resize): an oval field on a pond ---------- */
+function ctfGround(){
+  const l=C.lay,F=CTF_FIELD,N=CTF.N,gd=Math.min(1.25,l.dpr),rx=F.A*Math.SQRT2*l.hw,ry=F.B*Math.SQRT2*l.hh,th=l.tw*.4,pad=l.tw;
+  const cyI=2*F.c*l.hh,minX=-rx-pad,minY=cyI-ry-pad,Wg=2*rx+2*pad,Hg=2*ry+th+2*pad;
+  const g=document.createElement("canvas");g.width=Math.round(Wg*gd);g.height=Math.round(Hg*gd);
+  const c=g.getContext("2d");c.setTransform(gd,0,0,gd,-minX*gd,-minY*gd); // draw in iso space
+  const I=(x,y)=>ctfIso(x,y);
+  const dia=(x,y)=>{const a=I(x,y),b=I(x+1,y),d=I(x+1,y+1),e=I(x,y+1);c.beginPath();c.moveTo(a.x,a.y);c.lineTo(b.x,b.y);c.lineTo(d.x,d.y);c.lineTo(e.x,e.y);c.closePath()};
+  // dirt edge under the grass
+  c.fillStyle="#7E5330";c.beginPath();c.ellipse(0,cyI+th,rx,ry,0,0,6.283);c.fill();
+  c.fillStyle="#9C6B3F";c.beginPath();c.ellipse(0,cyI+th*.5,rx,ry,0,0,6.283);c.fill();
+  c.save();c.beginPath();c.ellipse(0,cyI,rx,ry,0,0,6.283);c.clip();
+  for(let i=0;i<N;i++)for(let j=0;j<N;j++){
+    const odd=(i+j)%2,blue=i-j<0;c.fillStyle=blue?(odd?"#86CF6A":"#7DC663"):(odd?"#8FD06A":"#86C862");dia(i,j);c.fill()}
+  c.fillStyle="rgba(45,140,255,.10)";c.fillRect(-rx,cyI-ry,rx,2*ry);
+  c.fillStyle="rgba(255,59,59,.09)";c.fillRect(0,cyI-ry,rx,2*ry);
+  c.strokeStyle="rgba(255,255,255,.85)";c.lineWidth=Math.max(3,l.tw*.07);c.setLineDash([l.tw*.35,l.tw*.25]);
+  c.beginPath();c.moveTo(0,cyI-ry);c.lineTo(0,cyI+ry);c.stroke();c.setLineDash([]);
+  c.restore();
+  c.strokeStyle="rgba(255,255,255,.6)";c.lineWidth=Math.max(3,l.tw*.06);c.beginPath();c.ellipse(0,cyI,rx-l.tw*.12,ry-l.tw*.06,0,0,6.283);c.stroke();
+  for(const t of ["blue","red"]){const b=I(CTF_BASE[t].x,CTF_BASE[t].y);
+    c.beginPath();c.ellipse(b.x,b.y,CTF.BASE_R*l.tw*.71,CTF.BASE_R*l.tw*.355,0,0,6.283);
+    c.fillStyle=t==="blue"?"rgba(45,140,255,.35)":"rgba(255,59,59,.35)";c.fill();c.lineWidth=3;c.strokeStyle=CTF_TEAM[t].hue;c.stroke()}
+  C.ground=g;C.gOff={x:minX,y:minY,s:gd};
+}
+
+/* ---------- poops ---------- */
+function ctfPoopSpot(x,y,spread){
+  for(let k=0;k<12;k++){
+    const px=clamp(x+ctfRand(-spread,spread),1,CTF.N-1),py=clamp(y+ctfRand(-spread,spread),1,CTF.N-1);
+    if(!ctfFreeAt(px,py))continue;
+    if(ctfD({x:px,y:py},CTF_BASE.blue)<2.2||ctfD({x:px,y:py},CTF_BASE.red)<2.2)continue;
+    if(C.poops.some(p=>ctfD(p,{x:px,y:py})<.9))continue;
+    if(Object.values(C.flags).some(f=>f.state==="dropped"&&ctfD(f,{x:px,y:py})<1.2))continue;
+    return {x:px,y:py};
+  }
+  return null;
+}
+function ctfDropPoop(x,y,spread=.2){
+  const p=ctfPoopSpot(x,y,spread);if(!p)return false;
+  if(C.poops.length>=CTF.POOP_MAX)C.poops.shift(); // oldest one fades early
+  C.poops.push({x:p.x,y:p.y,at:C.t,sq:false});ctfPoopCells();blip(330,.08,"sine",.05);return true;
+}
+
+/* ---------- Jeppson ---------- */
+function ctfJep(dt){
+  const j=C.jep,t=C.t;
+  if(j.squat>t){j.run=0;return}
+  if(j.mode==="treat"){ // run to each spot on the other team's side and poop there
+    const s=j.queue[0];
+    if(!s){j.mode="wander";j.idleUntil=t+800}
+    else if(ctfMove(j,s,3.2,dt)){ctfDropPoop(s.x,s.y,.4);j.queue.shift();j.squat=t+350}
+    return;
+  }
+  if(j.mode==="chase"){
+    const a=j.target;
+    if(!a||a.state!=="play"||t>j.until){j.mode="wander";j.target=null}
+    else{
+      const lead={x:a.x+a.vx*.5,y:a.y+a.vy*.5};
+      if(ctfMove(j,ctfNearFree(lead.x,lead.y)||a,3,dt)||ctfD(j,a)<1.1){ctfDropPoop(lead.x,lead.y,.3);j.squat=t+400;j.mode="wander";j.target=null}
+      return;
+    }
+  }
+  // wander, stopping now and then to sniff; poop every few seconds
+  if(t>=j.nextPoop&&C.poops.length<CTF.POOP_MAX){if(ctfDropPoop(j.x-j.face*.4,j.y+.1,.2))j.squat=t+600;j.nextPoop=t+ctfRand(4000,7500);return}
+  if(t<j.idleUntil){j.run=0;return}
+  if(ctfMove(j,{x:j.tx,y:j.ty},CTF.J_SPEED,dt)){
+    const p=ctfRandPt(CTF_FIELD.A-2,CTF_FIELD.B-1.5);j.tx=p.x;j.ty=p.y;
+    if(Math.random()<.5)j.idleUntil=t+ctfRand(500,1500);
+  }
+}
+// move a thing toward a point along an A* path; true when it arrives
+function ctfMove(o,goal,speed,dt){
+  if(!o.path||!o.goal||ctfD(o.goal,goal)>.6){o.goal={x:goal.x,y:goal.y};o.path=ctfPath(o,goal,0)}
+  const p=o.path[0];if(!p){o.run=0;o.path=null;o.goal=null;return true}
+  const d=ctfD(o,p),step=speed*dt;
+  if(Math.abs(p.x-o.x-(p.y-o.y))>.02)o.face=(p.x-o.x)-(p.y-o.y)>0?1:-1;
+  o.run=1;
+  if(d<=step){o.x=p.x;o.y=p.y;o.path.shift();if(!o.path.length){o.run=0;o.path=null;o.goal=null;return true}return false}
+  o.x+=(p.x-o.x)/d*step;o.y+=(p.y-o.y)/d*step;return false;
+}
+function ctfTreat(team){ // Jeppson runs to the other team's side and leaves a few presents
+  const E=ctfOther(team),b=CTF_BASE[E],j=C.jep,q=[];
+  for(let k=0;k<3;k++){const t=.25+k*.2,x=b.x+(CTF_FIELD.c-b.x)*t,y=b.y+(CTF_FIELD.c-b.y)*t,perp=ctfRand(-2.5,2.5);
+    const p=ctfNearFree(x+perp*.7,y+perp*.7);if(p&&ctfSide(p)===E)q.push(p)}
+  j.mode="treat";j.queue=q;j.path=null;j.squat=0;j.idleUntil=0;
+}
+
+/* ---------- people ---------- */
+function ctfSpeed(a){let s=CTF.SPEED*a.spd;if(a.carry)s*=CTF.CARRY;if(C.t<a.slowUntil)s*=CTF.POOP_SLOW;if(C.t<a.zoomUntil)s*=CTF.ZOOM;return s}
+function ctfGoTo(a,goal,poopW){a.goal=goal;a.path=ctfPath(a,goal,poopW||0)}
+function ctfStep(a,dt){
+  const ox=a.x,oy=a.y;
+  if(a.path.length){const p=a.path[0],d=ctfD(a,p),step=ctfSpeed(a)*dt;
+    if(d<=step){a.x=p.x;a.y=p.y;a.path.shift()}else{a.x+=(p.x-a.x)/d*step;a.y+=(p.y-a.y)/d*step}}
+  a.vx=dt?(a.x-ox)/dt:0;a.vy=dt?(a.y-oy)/dt:0;
+  const moving=Math.hypot(a.vx,a.vy)>.2;
+  if(moving&&Math.abs(a.vx-a.vy)>.05)a.dir=a.vx-a.vy>0?1:-1;
+  if(moving){a.step+=dt;if(C.t<a.slowUntil&&C.t-(a.lastPrint||0)>260){a.lastPrint=C.t;C.prints.push({x:a.x,y:a.y,at:C.t})}}
+  // poop?
+  if(C.t>=a.bootsUntil)for(const p of C.poops)if(ctfD(a,p)<CTF.POOP_R){
+    if(C.t>=a.slowUntil){a.stats.poops++;p.sq=true;if(a.human){blip(140,.22,"sawtooth",.1);ctfSay("Squish! Jeppson's poop!","Squish!")}else blip(160,.12,"sawtooth",.05)}
+    a.slowUntil=C.t+CTF.POOP_MS;
+  }
+  // power-ups
+  for(const u of C.pus.slice())if(ctfD(a,u)<.75){C.pus.splice(C.pus.indexOf(u),1);ctfPower(a,u.k)}
+}
+function ctfPower(a,k){
+  blip(880,.15,"triangle",.1);
+  if(k==="zoom")a.zoomUntil=C.t+CTF.ZOOM_MS;
+  if(k==="boots"){a.bootsUntil=C.t+CTF.BOOTS_MS;a.slowUntil=0}
+  if(k==="treat")ctfTreat(a.team);
+  const who=a.human?"You":a.name,T=CTF_TEAM[ctfOther(a.team)].name;
+  const msg={zoom:"Zoomies! Super fast!",boots:"Rain boots! No more squish!",treat:`Treat toss! Jeppson runs to ${T}'s side!`}[k];
+  if(a.human)ctfSay(`${CTF_PU[k].em} ${msg}`,msg);
+  else if(k==="treat")ctfSay(`${CTF_PU[k].em} ${who}: ${msg}`);
+}
+function ctfFlags(a){
+  const F=C.flags,E=F[ctfOther(a.team)],O=F[a.team];
+  if(!a.carry){
+    if(E.state==="home"&&ctfD(a,CTF_BASE[E.team])<CTF.GRAB_R+.3||E.state==="dropped"&&ctfD(a,E)<CTF.GRAB_R){
+      E.state="carried";E.carrier=a;a.carry=E.team;blip(700,.15,"triangle",.1);
+      if(a.human)ctfSay("🚩 You got the flag! Go home!","You got the flag! Go home!");
+      else if(a.team==="blue")ctfSay(`🚩 ${a.name} has the flag!`);
+      else ctfSay(`😮 ${a.name} took our flag! Tag them on our side!`,"Uh oh! They took our flag! Tag them on our side!");
+    }
+  }
+  if(O.state==="dropped"&&ctfD(a,O)<CTF.GRAB_R){ctfFlagHome(O);if(a.human||a.team==="blue")ctfSay(`🏠 ${a.human?"You":a.name} saved our flag!`)}
+  if(a.carry&&ctfD(a,CTF_BASE[a.team])<CTF.BASE_R)ctfScore(a);
+}
+function ctfFlagHome(f){f.state="home";f.carrier=null;f.x=CTF_BASE[f.team].x;f.y=CTF_BASE[f.team].y}
+function ctfScore(a){
+  const f=C.flags[a.carry];a.carry=null;ctfFlagHome(f);C.score[a.team]++;a.stats.caps++;
+  tada();a.invulnUntil=C.t+1500;
+  if(a.team==="blue")ctfSay(a.human?"🎉 You scored for Blue!":`🎉 ${a.name} scored for Blue!`,"Blue scores! Hooray!",true);
+  else ctfSay(`${a.name} scored for Red!`,"Red scores!",true);
+  ctfHud();
+}
+function ctfTag(b,by){
+  if(b.carry){const f=C.flags[b.carry],p=ctfNearFree(b.x,b.y);f.state="dropped";f.carrier=null;f.x=p.x;f.y=p.y;f.at=C.t;b.carry=null}
+  b.state="out";b.path=[];b.slowUntil=0;b.zoomUntil=0;by.stats.tags++;blip(240,.2,"square",.08);
+  if(b.human){ctfSay(`🧩 Tagged by ${by.name}! Solve a puzzle to get back in.`,"Tagged! Solve a puzzle to get back in.",true);setTimeout(ctfPuzzle,900)}
+  else{b.backAt=C.t+ctfRand(...C.D.out);if(by.human)ctfSay(`👋 You tagged ${b.name}!`,"You tagged them!")}
+}
+function ctfRespawn(a){
+  if(!C||C.phase==="over")return;
+  const b=CTF_BASE[a.team],p=ctfNearFree(b.x+ctfRand(-1,1),b.y+ctfRand(-1,1));
+  a.state="play";a.x=p.x;a.y=p.y;a.path=[];a.invulnUntil=C.t+CTF.INVULN_MS;a.backAt=0;
+  if(a.human)ctfSay("🏃 You're back in!","You're back in! Go go go!");
+}
+// tagged human: a quick age-appropriate puzzle (same engine as the Farmstand chores)
+function ctfPuzzle(){
+  if(!C||C.phase==="over"||screen!=="ctf"||C.me.state!=="out"||tk)return;
+  const L=C.L,type=pickType(L==="grown"?CTF_GROWN:CTF_PUZZLES);
+  openTask({type,lvl:L,chore:"ctf",title:"🧩 Solve it to get back in!",ctx:{item:pickOne(CTF_ITEMS)},
+    onWin:()=>{C.me.losses=0;ctfRespawn(C.me)},
+    onQuit:()=>{if(!C||C.phase==="over")return;
+      const my=C.task;C.task=null;
+      if(my&&my.won){ // grown-up lost the game: a new puzzle; two losses in a row and you're back in anyway
+        C.me.losses=(C.me.losses||0)+1;
+        if(C.me.losses>=2){C.me.losses=0;ctfRespawn(C.me);return}
+        setTimeout(ctfPuzzle,250);return}
+      C.me.backAt=C.t+5000;ctfSay("⏳ Back in 5 seconds…")}}); // closed the puzzle: a short wait instead
+  C.task=tk;
+}
+
+/* ---------- bots ---------- */
+function ctfBot(a){
+  const T=a.team,E=ctfOther(T),F=C.flags,O=F[T],EF=F[E],D=C.D,home=CTF_BASE[T];
+  const foes=C.agents.filter(b=>b.team===E&&b.state==="play"),pals=C.agents.filter(b=>b.team===T&&b!==a&&b.state==="play");
+  const avoid=Math.random()<D.avoid?6:0;let goal=null;
+  let role=a.role;
+  if(role==="flex"){const h=C.me;role=h.state!=="play"||ctfSide(h)===T?"attack":"defend"}
+  if(a.carry)goal=home;
+  else if(O.state==="carried"&&O.carrier&&O.carrier.state==="play"&&(ctfSide(O.carrier)===T||ctfD(a,O.carrier)<3)){const c=O.carrier;goal=ctfNearFree(c.x+c.vx*.4,c.y+c.vy*.4)}
+  else if(O.state==="dropped")goal=O;
+  else if(EF.state==="dropped"&&ctfD(a,EF)<8)goal=EF;
+  if(!goal){const u=C.pus.filter(u=>ctfD(a,u)<4).sort((p,q)=>ctfD(a,p)-ctfD(a,q))[0];if(u&&Math.random()<.7)goal=u}
+  if(!goal&&Math.random()<D.wander)goal=ctfNearFree(a.x+ctfRand(-4,4),a.y+ctfRand(-4,4));
+  if(!goal&&role==="attack"){
+    if(EF.state==="home")goal=CTF_BASE[E];
+    else if(EF.state==="carried"){ // a teammate has it: run alongside between them and home
+      const c=EF.carrier;goal=ctfNearFree((c.x+home.x)/2+ctfRand(-1,1),(c.y+home.y)/2+ctfRand(-1,1))}
+    else goal=EF;
+  }
+  if(!goal){ // defend: chase anyone on our side, else stroll near the flag
+    const tired=C.t<a.restUntil;
+    const intr=tired?null:foes.filter(b=>ctfSide(b)===T&&C.t>=b.invulnUntil&&(ctfD(a,b)<D.sight||b.carry)).sort((p,q)=>ctfD(a,p)-ctfD(a,q))[0];
+    if(intr){if(!a.chaseAt)a.chaseAt=C.t;if(C.t-a.chaseAt>D.chase){a.restUntil=C.t+1500;a.chaseAt=0}goal=ctfNearFree(intr.x+intr.vx*.4,intr.y+intr.vy*.4)}
+    else a.chaseAt=0;
+    if(!intr){if(!a.patrol||ctfD(a,a.patrol)<.6||Math.random()<.1){const ang=Math.random()*6.28,r=ctfRand(2.5,5.5);
+      let p=ctfNearFree(home.x+Math.cos(ang)*r,home.y+Math.sin(ang)*r);if(p&&ctfSide(p)!==T)p=ctfNearFree(home.x,home.y);a.patrol=p}
+      goal=a.patrol}
+  }
+  if(goal)ctfGoTo(a,goal,avoid);
+}
+
+/* ---------- loop ---------- */
+function ctfFrame(now){
+  if(!C||screen!=="ctf"){if(C)C.raf=0;return}
+  C.raf=requestAnimationFrame(ctfFrame);
+  const dt=Math.min(.05,(now-C.last)/1000);C.last=now;
+  if(C.phase==="help"){if($("#help").hidden){C.phase="count";C.count=C.t+3000;ctfSay("3","",true);blip(500,.12)}}
+  else if(C.phase==="count"){
+    C.t+=dt*1000;const left=Math.ceil((C.count-C.t)/1000);
+    if(left!==C.lastCount&&left>0&&left<3){C.lastCount=left;ctfSay(String(left),"",true);blip(500,.12)}
+    if(C.t>=C.count){C.phase="play";C.t0=C.t;blip(900,.25,"triangle",.12);
+      ctfSay("Go! Get the red flag and bring it home!","Go! Get the red flag and bring it home!",true);ctfSay("Watch out for Jeppson's poops! 💩")}
+  }
+  else if(C.phase==="play")ctfUpdate(dt);
+  ctfCamera(dt);ctfDraw(now/1000);
+}
+function ctfUpdate(dt){
+  C.t+=dt*1000;const t=C.t;
+  const left=CTF.ROUND_MS-(t-C.t0);
+  if(left<=30e3&&!C.said30){C.said30=true;ctfSay("⏰ 30 seconds left!","Thirty seconds left!")}
+  if(left<=0){ctfEnd();return}
+  // bots think
+  for(const a of C.agents){
+    if(a.state==="out"){if(a.backAt&&t>=a.backAt)ctfRespawn(a);continue}
+    if(!a.human&&t>=a.think){a.think=t+C.D.think*ctfRand(.7,1.3);ctfBot(a)}
+    ctfStep(a,dt);
+  }
+  for(const a of C.agents)if(a.state==="play")ctfFlags(a);
+  // tags: you can tag someone standing on YOUR side
+  for(const a of C.agents)for(const b of C.agents){
+    if(a.team===b.team||a.state!=="play"||b.state!=="play"||ctfSide(b)!==a.team||t<b.invulnUntil||t<a.tagCd||ctfD(a,b)>CTF.TAG_R)continue;
+    if(b.human&&!a.human&&Math.random()>C.D.tag){a.tagCd=t+1200;continue} // easy bots miss a lot
+    a.tagCd=t+600;ctfTag(b,a);
+  }
+  // dropped flags go home on their own
+  for(const f of Object.values(C.flags))if(f.state==="dropped"&&t-f.at>CTF.DROP_MS){ctfFlagHome(f);ctfSay(`🏠 The ${CTF_TEAM[f.team].name} flag went home.`)}
+  // poops fade, prints fade
+  const n=C.poops.length;C.poops=C.poops.filter(p=>t-p.at<CTF.POOP_LIFE);if(C.poops.length!==n)ctfPoopCells();
+  C.prints=C.prints.filter(p=>t-p.at<4000);
+  // power-ups
+  C.pus=C.pus.filter(u=>t-u.at<CTF.PU_LIFE);
+  if(t-C.t0>C.nextPu){C.nextPu=t-C.t0+ctfRand(9000,14000);
+    if(C.pus.length<CTF.PU_MAX){const ks=["zoom","zoom","boots","boots","treat"];
+      for(let k=0;k<10;k++){const p=ctfRandPt(11,7.5);
+        if(!C.pus.some(u=>ctfD(u,p)<3)&&!C.agents.some(a=>ctfD(a,p)<1.5)){C.pus.push({x:p.x,y:p.y,k:pickOne(ks),at:t});break}}}}
+  ctfJep(dt);
+  if(t-(C.hudAt||0)>250){C.hudAt=t;ctfHud()}
+}
+function ctfHud(){
+  if(!C)return;$("#ctfSB").textContent=C.score.blue;$("#ctfSR").textContent=C.score.red;
+  const left=C.phase==="play"?Math.max(0,CTF.ROUND_MS-(C.t-C.t0)):CTF.ROUND_MS;
+  const tm=$("#ctfTime");tm.textContent=mmss(left);tm.classList.toggle("hurry",C.phase==="play"&&left<=30e3);
+  const st=f=>{const nm=CTF_TEAM[f.team].name;
+    if(f.state==="home")return `<span class="${f.team}">🚩 ${nm} flag: home</span>`;
+    if(f.state==="dropped")return `<span class="${f.team}${f.team==="blue"?" alarm":""}">🚩 ${nm} flag: on the ground!</span>`;
+    const c=f.carrier;return `<span class="${f.team}${f.team==="blue"?" alarm":""}">🚩 ${c.human?"You have":esc(c.name)+" has"} the ${nm} flag!</span>`};
+  $("#ctfFlags").innerHTML=st(C.flags.blue)+st(C.flags.red);
+  const m=C.me,p=[];
+  if(C.t<m.zoomUntil)p.push(`💨 ${Math.ceil((m.zoomUntil-C.t)/1000)}`);
+  if(C.t<m.bootsUntil)p.push(`🥾 ${Math.ceil((m.bootsUntil-C.t)/1000)}`);
+  if(C.t<m.slowUntil&&C.t>=m.bootsUntil)p.push("💩 slow");
+  if(m.carry)p.push("🚩 slow");
+  $("#ctfPow").innerHTML=p.map(s=>`<span>${s}</span>`).join("");
+}
+// banner on screen; Little hears it read aloud
+function ctfSay(text,spoken,big){
+  const b=$("#ctfBanner");if(!b)return;
+  const d=el("div",big&&text.length<5?"big":"",esc(text));b.append(d);
+  while(b.children.length>(innerHeight<520?2:3))b.firstChild.remove();
+  setTimeout(()=>{d.classList.add("gone");setTimeout(()=>d.remove(),450)},big&&text.length<5?800:2600);
+  if(spoken!=="")sayLittle(spoken||text);
+}
+function ctfEnd(){
+  C.phase="over";if(tk&&tk.chore==="ctf")closeTask(false);
+  const s=C.score,m=C.me.stats,win=s.blue>s.red?"blue":s.red>s.blue?"red":null;
+  const title=win?`${CTF_TEAM[win].name} wins!`:"It's a tie!";
+  const sub=win?`Great running, ${CTF_TEAM[ctfOther(win)].name}!`:"Great running, everybody!";
+  const E=$("#ctfEnd");E.hidden=false;
+  E.innerHTML=`<div class="card"><canvas id="ctfWiggle" width="400" height="240"></canvas><h2>${win==="blue"?"🎉 ":""}${title}</h2><p>${sub}</p>
+    <div class="fs"><b class="blue">${s.blue}</b> – <b class="red">${s.red}</b></div>
+    <p class="mine">You: ${m.caps} 🚩 captures · ${m.tags} 👋 tags · ${m.poops} 💩 squishes</p>
+    <div class="tbtns"><button class="bigbtn" id="ctfAgain">Play again</button><button class="bigbtn ghost" id="ctfOut">Home</button></div></div>`;
+  $("#ctfAgain").onclick=()=>openCtf();$("#ctfOut").onclick=()=>goLobby();
+  if(win==="blue")tada();
+  sayLittle(`${title} ${sub}`);
+  // Jeppson does a happy wiggle
+  const cv=$("#ctfWiggle"),c=cv.getContext("2d"),t0=performance.now();
+  const loop=now=>{if(!cv.isConnected)return;const t=(now-t0)/1000;c.clearRect(0,0,400,240);
+    c.save();c.translate(200,200);c.rotate(Math.sin(t*14)*.08);ctfCorgi(c,0,0,170,Math.sin(t*3)>0?1:-1,t,0,true);c.restore();requestAnimationFrame(loop)};
+  requestAnimationFrame(loop);
+  // TODO(#8): push round stats (rounds, captures, tags, poops) once multiplayer is wired
+  C.stats={at:Date.now(),lvl:C.L,score:{...s},me:{...m}};
+}
+
+/* ---------- input: tap a spot and you walk there and stop; tap Jeppson to send him after the other team ---------- */
+function ctfPoint(e){const r=$("#ctfCv").getBoundingClientRect();return {sx:e.clientX-r.left,sy:e.clientY-r.top}}
+function ctfTap(e,first){
+  if(!C||C.phase!=="play"||C.me.state!=="play")return;
+  const {sx,sy}=ctfPoint(e);
+  if(first){const jp=ctfP(C.jep.x,C.jep.y);
+    if(Math.hypot(sx-jp.x,sy-(jp.y-C.lay.tw*.3))<C.lay.tw*.75){
+      if(C.t<C.jep.tapCd){ctfSay("🐶 Jeppson needs a rest!");return}
+      const foe=C.agents.filter(a=>a.team==="red"&&a.state==="play").sort((p,q)=>ctfD(C.jep,p)-ctfD(C.jep,q))[0];
+      if(foe){Object.assign(C.jep,{mode:"chase",target:foe,until:C.t+4000,tapCd:C.t+9000,path:null,squat:0,idleUntil:0});
+        blip(600,.1);setTimeout(()=>blip(750,.1),110);ctfSay(`🐶 Go get ${foe.name}, Jeppson!`,"Go get 'em, Jeppson!")}
+      return}}
+  const w=ctfWorld(sx,sy),g=ctfNearFree(w.x,w.y);if(!g)return;
+  ctfGoTo(C.me,g,0);C.tapMark={x:g.x,y:g.y,at:C.t};
+}
+function ctfInputs(){
+  const cv=$("#ctfCv");
+  cv.addEventListener("pointerdown",e=>{e.preventDefault();ctfTap(e,true)});
+  $("#ctfHome").onclick=()=>{if(C)C.phase="over";goLobby()};
+  $("#ctfSayBtn").onclick=()=>{if(!C)return;const m=C.me;
+    say(m.state!=="play"?"Solve the puzzle to get back in!":m.carry?"You have the flag! Bring it home to your blue base!":
+      C.flags.blue.state==="carried"?"They have our flag! Tag them on our side!":"Tap where you want to go. Get the red flag and bring it home!")};
+  window.addEventListener("resize",()=>{if(C&&screen==="ctf")ctfLayout()});
+}
+
+/* ---------- drawing ---------- */
+function ctfDraw(T){
+  const cv=$("#ctfCv"),c=cv.getContext("2d"),l=C.lay;if(!l)return;
+  c.setTransform(l.dpr,0,0,l.dpr,0,0);c.fillStyle="#8FCFEA";c.fillRect(0,0,l.W,l.H);
+  c.strokeStyle="rgba(255,255,255,.35)";c.lineWidth=2;const wo=(T*12)%60;
+  for(let y=-wo*.5;y<l.H+20;y+=34)for(let x=((y/34|0)%2)*30-wo;x<l.W+60;x+=60){c.beginPath();c.moveTo(x,y);c.quadraticCurveTo(x+8,y-5,x+16,y);c.stroke()}
+  {const g=C.gOff;c.drawImage(C.ground,l.W/2-C.cam.x+g.x,l.H/2-C.cam.y+g.y,C.ground.width/g.s,C.ground.height/g.s)}
+  const tw=l.tw,t=C.t;
+  // base glow when you carry the flag home
+  if(C.me.carry){const p=ctfP(CTF_BASE.blue.x,CTF_BASE.blue.y),k=.5+.5*Math.sin(T*6);
+    c.beginPath();c.ellipse(p.x,p.y,CTF.BASE_R*tw*(.8+.15*k),CTF.BASE_R*tw*(.4+.075*k),0,0,Math.PI*2);c.fillStyle=`rgba(255,214,0,${.25+.3*k})`;c.fill()}
+  // footprints, poops (flat on the ground)
+  for(const p of C.prints){const q=ctfP(p.x,p.y);c.globalAlpha=Math.max(0,1-(t-p.at)/4000)*.6;c.fillStyle="#6B4423";
+    c.beginPath();c.ellipse(q.x,q.y,tw*.07,tw*.04,0,0,Math.PI*2);c.fill()}
+  c.globalAlpha=1;
+  // tap marker
+  if(C.tapMark&&C.me.state==="play"&&(C.me.path.length||t-C.tapMark.at<500)){const q=ctfP(C.tapMark.x,C.tapMark.y),k=(Math.sin(T*6)+1)/2;
+    c.strokeStyle="rgba(255,255,255,.95)";c.fillStyle="rgba(255,214,0,.35)";c.lineWidth=3;c.beginPath();c.ellipse(q.x,q.y,tw*(.3+.06*k),tw*(.15+.03*k),0,0,Math.PI*2);c.fill();c.stroke()}
+  // the arrow on the ground from you toward where to go
+  ctfGuide(c,T);
+  // everything that stands up, back to front
+  const items=[];
+  for(const o of C.obs)items.push({z:o.i+o.j+1.2,f:()=>ctfObs(c,o)});
+  for(const p of C.poops)items.push({z:p.x+p.y-.3,f:()=>ctfPoop(c,p,T)});
+  for(const u of C.pus)items.push({z:u.x+u.y,f:()=>ctfPu(c,u,T)});
+  for(const f of Object.values(C.flags))if(f.state!=="carried")items.push({z:f.x+f.y+.1,f:()=>ctfFlag(c,f,T)});
+  for(const a of C.agents)if(a.state==="play")items.push({z:a.x+a.y,f:()=>ctfAgent(c,a,T)});
+  const j=C.jep;items.push({z:j.x+j.y,f:()=>{const p=ctfP(j.x,j.y);ctfCorgi(c,p.x,p.y,tw*.95,j.face,T,j.squat>t?1:0,j.run)}});
+  items.sort((a,b)=>a.z-b.z);for(const it of items)it.f();
+  // out players wait at their base with a puzzle bubble
+  for(const a of C.agents)if(a.state==="out"){const b=CTF_BASE[a.team],p=ctfP(b.x+(a.id.endsWith("2")||a.id==="mate"?.9:-.9),b.y);
+    c.globalAlpha=.75;c.font=`${tw*.42}px system-ui`;c.textAlign="center";c.textBaseline="middle";
+    c.fillStyle="#fff";c.beginPath();c.arc(p.x,p.y-tw*.5,tw*.32,0,Math.PI*2);c.fill();c.fillText("🧩",p.x,p.y-tw*.5);
+    if(a.backAt){const k=clamp(1-(a.backAt-t)/(C.D.out[1]),0,1);c.strokeStyle=CTF_TEAM[a.team].hue;c.lineWidth=3;c.beginPath();c.arc(p.x,p.y-tw*.5,tw*.36,-Math.PI/2,-Math.PI/2+k*6.28);c.stroke()}
+    c.globalAlpha=1}
+  // beacons: a column of light over each flag, wherever it is
+  for(const f of Object.values(C.flags)){const pos=f.state==="carried"&&f.carrier?f.carrier:f,p=ctfP(pos.x,pos.y),k=.5+.5*Math.sin(T*4);
+    const g=c.createLinearGradient(0,p.y-tw*3.2,0,p.y-tw*.6);const col=f.team==="blue"?"45,140,255":"255,59,59";
+    g.addColorStop(0,`rgba(${col},0)`);g.addColorStop(1,`rgba(${col},${.25+.2*k})`);c.fillStyle=g;c.fillRect(p.x-tw*.16,p.y-tw*3.2,tw*.32,tw*2.6)}
+  // bouncing "go here" pointer
+  const tg=ctfTarget();if(tg&&C.phase==="play"){const p=ctfP(tg.x,tg.y),b=Math.abs(Math.sin(T*5))*tw*.3,s=C.L==="little"?1.5:1,y=p.y-tw*(tg.carried?1.7:1.5)-b;
+    c.fillStyle="#FFD600";c.strokeStyle="#2B2140";c.lineWidth=3;c.beginPath();c.moveTo(p.x,y+tw*.35*s);c.lineTo(p.x-tw*.3*s,y-tw*.05*s);c.lineTo(p.x-tw*.12*s,y-tw*.05*s);
+    c.lineTo(p.x-tw*.12*s,y-tw*.4*s);c.lineTo(p.x+tw*.12*s,y-tw*.4*s);c.lineTo(p.x+tw*.12*s,y-tw*.05*s);c.lineTo(p.x+tw*.3*s,y-tw*.05*s);c.closePath();c.fill();c.stroke()}
+  // arrows on the screen edge for things that are off screen: both flags, and home when you carry one
+  const marks=[];
+  for(const f of Object.values(C.flags)){const pos=f.state==="carried"&&f.carrier?f.carrier:f;
+    if(f.state==="carried"&&f.carrier&&f.carrier.human)continue;
+    marks.push({x:pos.x,y:pos.y,col:CTF_TEAM[f.team].hue,em:"🚩",alarm:f.team==="blue"&&f.state!=="home"})}
+  if(C.me.carry&&C.me.state==="play")marks.push({x:CTF_BASE.blue.x,y:CTF_BASE.blue.y,col:"#FFD600",em:"🏠",alarm:true});
+  for(const mk of marks)ctfEdgeMark(c,mk,T);
+}
+function ctfEdgeMark(c,mk,T){
+  const l=C.lay,p=ctfP(mk.x,mk.y),py=p.y-l.tw*.6,m=34+(C.L==="little"?8:0);
+  if(p.x>m*.5&&p.x<l.W-m*.5&&py>m*.5&&py<l.H-m*.5)return; // on screen: the beacon shows it
+  const cx=l.W/2,cy=l.H/2,dx=p.x-cx,dy=py-cy,k=Math.min((cx-m)/Math.abs(dx||1e-6),(cy-m)/Math.abs(dy||1e-6)),x=cx+dx*k,y=cy+dy*k,a=Math.atan2(dy,dx);
+  const r=C.L==="little"?26:21,pulse=mk.alarm?1+.12*Math.sin(T*8):1;
+  c.save();c.translate(x,y);c.scale(pulse,pulse);
+  c.rotate(a);c.fillStyle=mk.col;c.strokeStyle="#2B2140";c.lineWidth=2.5;c.beginPath();c.moveTo(r+14,0);c.lineTo(r-2,-10);c.lineTo(r-2,10);c.closePath();c.fill();c.stroke();c.rotate(-a);
+  c.fillStyle="#fff";c.lineWidth=4;c.strokeStyle=mk.col;c.beginPath();c.arc(0,0,r,0,6.283);c.fill();c.stroke();
+  c.font=`${r*1.05}px system-ui`;c.textAlign="center";c.textBaseline="middle";c.fillStyle="#2B2140";c.fillText(mk.em,0,1);c.restore();
+}
+// where should YOU go: the red flag, or home if you (or your teammate) have it
+function ctfTarget(){
+  const m=C.me,R=C.flags.red;if(m.state!=="play")return null;
+  if(m.carry)return {...CTF_BASE.blue};
+  if(R.state==="carried")return {...CTF_BASE.blue};
+  if(R.state==="dropped")return {x:R.x,y:R.y};
+  return {...CTF_BASE.red};
+}
+function ctfGuide(c,T){
+  const m=C.me,tg=ctfTarget();if(!tg||C.phase!=="play")return;const d=ctfD(m,tg);if(d<1.4)return;
+  const ux=(tg.x-m.x)/d,uy=(tg.y-m.y)/d,tw=C.lay.tw,n=C.L==="little"?4:3;
+  for(let k=0;k<n;k++){const off=.9+k*.55+((T*1.6)%1)*.55;if(off>d-.8)break;
+    const z=C.L==="little"?1.5:1.15,cx=m.x+ux*off,cy=m.y+uy*off,a=ctfP(cx+ux*.3*z,cy+uy*.3*z),l1=ctfP(cx-ux*.1*z-uy*.32*z,cy-uy*.1*z+ux*.32*z),r1=ctfP(cx-ux*.1*z+uy*.32*z,cy-uy*.1*z-ux*.32*z);
+    c.globalAlpha=.85-k*.18;c.fillStyle="#FFD600";c.strokeStyle="#2B2140";c.lineWidth=2;
+    c.beginPath();c.moveTo(a.x,a.y);c.lineTo(l1.x,l1.y);c.lineTo(r1.x,r1.y);c.closePath();c.fill();c.stroke()}
+  c.globalAlpha=1;
+}
+function ctfObs(c,o){
+  const tw=C.lay.tw,p=ctfP(o.i+.5,o.j+.5);
+  if(o.k==="hay"){const h=tw*.42,a=ctfP(o.i+.1,o.j+.1),b=ctfP(o.i+.9,o.j+.1),d=ctfP(o.i+.9,o.j+.9),e=ctfP(o.i+.1,o.j+.9);
+    c.fillStyle="#D9A93B";c.beginPath();c.moveTo(e.x,e.y);c.lineTo(d.x,d.y);c.lineTo(d.x,d.y-h);c.lineTo(e.x,e.y-h);c.fill();
+    c.fillStyle="#C08F2A";c.beginPath();c.moveTo(d.x,d.y);c.lineTo(b.x,b.y);c.lineTo(b.x,b.y-h);c.lineTo(d.x,d.y-h);c.fill();
+    c.fillStyle="#F2CB5E";c.beginPath();c.moveTo(a.x,a.y-h);c.lineTo(b.x,b.y-h);c.lineTo(d.x,d.y-h);c.lineTo(e.x,e.y-h);c.fill();
+    c.strokeStyle="rgba(120,80,20,.5)";c.lineWidth=1.5;c.beginPath();c.moveTo((e.x+d.x)/2,(e.y+d.y)/2);c.lineTo((e.x+d.x)/2,(e.y+d.y)/2-h);c.stroke()}
+  else if(o.k==="bush"){c.fillStyle="rgba(0,0,0,.15)";c.beginPath();c.ellipse(p.x,p.y,tw*.42,tw*.2,0,0,6.28);c.fill();
+    for(const [dx,dy,r,col] of [[-.18,-.25,.26,"#3E9B48"],[.18,-.25,.26,"#3E9B48"],[0,-.42,.28,"#4DB356"],[0,-.2,.22,"#56BE5E"]]){c.fillStyle=col;c.beginPath();c.arc(p.x+dx*tw,p.y+dy*tw,r*tw,0,6.28);c.fill()}}
+  else{c.fillStyle="rgba(0,0,0,.15)";c.beginPath();c.ellipse(p.x,p.y,tw*.4,tw*.2,0,0,6.28);c.fill();
+    c.fillStyle="#8B5A2B";c.fillRect(p.x-tw*.07,p.y-tw*.7,tw*.14,tw*.7);
+    for(const [dx,dy,r,col] of [[0,-1.0,.42,"#2F8A3E"],[-.2,-.8,.3,"#37984A"],[.22,-.82,.3,"#37984A"],[0,-1.15,.3,"#45AE55"]]){c.fillStyle=col;c.beginPath();c.arc(p.x+dx*tw,p.y+dy*tw,r*tw,0,6.28);c.fill()}}
+}
+function ctfPoop(c,p,T){
+  const tw=C.lay.tw,q=ctfP(p.x,p.y),age=C.t-p.at,fade=clamp((CTF.POOP_LIFE-age)/5000,0,1);
+  c.globalAlpha=fade;c.font=`${tw*(p.sq?.38:.48)}px system-ui`;c.textAlign="center";c.textBaseline="bottom";
+  c.save();c.translate(q.x,q.y+tw*.08);if(p.sq)c.scale(1.3,.6);c.fillText("💩",0,0);c.restore();
+  c.strokeStyle="rgba(110,140,60,.7)";c.lineWidth=1.5;
+  for(let k=-1;k<=1;k++){const x=q.x+k*tw*.12,y=q.y-tw*.5;c.beginPath();c.moveTo(x,y);
+    for(let s=1;s<=4;s++)c.lineTo(x+Math.sin(T*5+s+k)*tw*.04,y-s*tw*.06);c.stroke()}
+  c.globalAlpha=1;
+}
+function ctfPu(c,u,T){
+  const tw=C.lay.tw,p=ctfP(u.x,u.y),b=Math.sin(T*4+u.x)*tw*.08,left=CTF.PU_LIFE-(C.t-u.at);
+  if(left<3000&&Math.floor(T*8)%2)return;
+  c.fillStyle="rgba(0,0,0,.15)";c.beginPath();c.ellipse(p.x,p.y,tw*.25,tw*.12,0,0,6.28);c.fill();
+  c.fillStyle="rgba(255,255,255,.9)";c.strokeStyle="#FFD600";c.lineWidth=3;c.beginPath();c.arc(p.x,p.y-tw*.45+b,tw*.3,0,6.28);c.fill();c.stroke();
+  c.font=`${tw*.36}px system-ui`;c.textAlign="center";c.textBaseline="middle";c.fillText(CTF_PU[u.k].em,p.x,p.y-tw*.45+b);
+}
+function ctfFlagShape(c,x,y,tw,team,T,h){
+  c.strokeStyle="#5B4636";c.lineWidth=Math.max(2,tw*.06);c.beginPath();c.moveTo(x,y);c.lineTo(x,y-h);c.stroke();
+  const w=tw*.55,fh=tw*.32;c.fillStyle=CTF_TEAM[team].hue;c.strokeStyle=CTF_TEAM[team].dark;c.lineWidth=2;c.beginPath();c.moveTo(x,y-h);
+  for(let s=0;s<=6;s++){const xx=x+w*s/6;c.lineTo(xx,y-h+Math.sin(T*7-s*.9)*tw*.04*s/6)}
+  for(let s=6;s>=0;s--){const xx=x+w*s/6;c.lineTo(xx,y-h+fh+Math.sin(T*7-s*.9)*tw*.04*s/6)}
+  c.closePath();c.fill();c.stroke();
+}
+function ctfFlag(c,f,T){
+  const tw=C.lay.tw,p=ctfP(f.x,f.y);
+  if(f.state==="dropped"){ // lying on the ground, with a ring counting down until it goes home
+    c.save();c.translate(p.x,p.y);c.rotate(-.9);ctfFlagShape(c,0,0,tw,f.team,T,tw*.7);c.restore();
+    const k=clamp((C.t-f.at)/CTF.DROP_MS,0,1);c.strokeStyle=CTF_TEAM[f.team].hue;c.lineWidth=3;
+    c.beginPath();c.ellipse(p.x,p.y,tw*.5,tw*.25,0,-Math.PI/2,-Math.PI/2+(1-k)*6.28);c.stroke();return}
+  c.fillStyle="rgba(0,0,0,.18)";c.beginPath();c.ellipse(p.x,p.y,tw*.18,tw*.08,0,0,6.28);c.fill();
+  ctfFlagShape(c,p.x,p.y,tw,f.team,T,tw*1.15);
+}
+function ctfAgent(c,a,T){
+  const tw=C.lay.tw,t=C.t,p=ctfP(a.x,a.y),moving=Math.hypot(a.vx,a.vy)>.2,bob=moving?Math.abs(Math.sin(a.step*14))*tw*.07:0;
+  const r=tw*(a.human?.33:.3),cy=p.y-tw*.38-bob,team=CTF_TEAM[a.team];
+  if(t<a.invulnUntil&&Math.floor(T*10)%2)c.globalAlpha=.45;
+  c.fillStyle="rgba(0,0,0,.2)";c.beginPath();c.ellipse(p.x,p.y,r*.9,r*.42,0,0,6.28);c.fill();
+  if(t<a.zoomUntil&&moving){c.strokeStyle="rgba(255,255,255,.9)";c.lineWidth=2;for(let k=-1;k<=1;k++){c.beginPath();
+    const dir=a.dir||1,bx=-dir*r*1.1;c.moveTo(p.x+bx,cy+k*r*.4);c.lineTo(p.x+bx-dir*r*.8,cy+k*r*.4);c.stroke()}}
+  if(a.human){c.strokeStyle="#FFD600";c.lineWidth=4;c.beginPath();c.ellipse(p.x,p.y,r*1.15,r*.55,0,0,6.28);c.stroke()}
+  c.fillStyle="#fff";c.strokeStyle=team.hue;c.lineWidth=Math.max(3,tw*.1);c.beginPath();c.arc(p.x,cy,r,0,6.28);c.fill();c.stroke();
+  if(t<a.slowUntil){c.fillStyle="rgba(120,80,30,.35)";c.beginPath();c.arc(p.x,cy,r,0,6.28);c.fill()}
+  c.font=`${r*1.25}px system-ui`;c.textAlign="center";c.textBaseline="middle";c.fillStyle="#2B2140";c.fillText(a.face,p.x,cy+r*.06);
+  if(t<a.bootsUntil){c.font=`${tw*.26}px system-ui`;c.fillText("🥾",p.x+r*.8,p.y-tw*.05)}
+  if(t<a.slowUntil&&t>=a.bootsUntil){c.strokeStyle="rgba(110,140,60,.9)";c.lineWidth=2;
+    for(let k=-1;k<=1;k++){const x=p.x+k*r*.6,y=cy-r*1.1;c.beginPath();c.moveTo(x,y);for(let s=1;s<=4;s++)c.lineTo(x+Math.sin(T*6+s+k)*r*.15,y-s*r*.18);c.stroke()}}
+  if(a.carry)ctfFlagShape(c,p.x+r*.75,cy+r*.2,tw,a.carry,T,tw*.95);
+  // name tag
+  const label=a.human?"YOU":a.name;c.font="800 13px system-ui";const w=c.measureText(label).width+12,ny=cy-r-13;
+  c.fillStyle=a.human?"#FFD600":team.hue;c.beginPath();c.roundRect?c.roundRect(p.x-w/2,ny-10,w,20,10):c.rect(p.x-w/2,ny-10,w,20);c.fill();
+  c.fillStyle=a.human?"#2B2140":"#fff";c.fillText(label,p.x,ny+1);
+  c.globalAlpha=1;
+}
+// Jeppson, a tricolor Pembroke corgi, drawn in code until his real art is made (#17)
+function ctfCorgi(c,x,y,s,face,T,squat,run){
+  const bob=run?Math.abs(Math.sin(T*16))*s*.05:0,leg=run?Math.sin(T*16)*s*.06:0,sq=squat?s*.08:0;
+  const TAN="#C97A35",BLK="#2A2422",WHT="#FFF8EE",by=y-s*.3-bob;
+  c.save();c.translate(x,0);c.scale(face,1);
+  c.fillStyle="rgba(0,0,0,.18)";c.beginPath();c.ellipse(0,y,s*.5,s*.14,0,0,6.28);c.fill();
+  // legs
+  c.fillStyle=WHT;for(const [lx,ph] of [[-.3,1],[-.18,-1],[.22,1],[.34,-1]]){c.fillRect(lx*s-s*.05,by+s*.08+(lx<0?sq:0),s*.1,s*.2-(lx<0?sq:0)+ph*leg*(lx<0?1:-1)*.5)}
+  // body
+  c.save();c.beginPath();c.ellipse(0,by+(squat?sq*.5:0),s*.48,s*.22,squat?.15:0,0,6.28);c.fillStyle=TAN;c.fill();c.clip();
+  c.fillStyle=BLK;c.beginPath();c.ellipse(-s*.08,by-s*.2,s*.42,s*.2,0,0,6.28);c.fill();
+  c.fillStyle=WHT;c.beginPath();c.ellipse(s*.3,by+s*.12,s*.22,s*.16,0,0,6.28);c.fill();c.restore();
+  c.fillStyle=TAN;c.beginPath();c.arc(-s*.47,by-s*.05+(squat?sq:0),s*.06,0,6.28);c.fill(); // nub tail
+  // head
+  const hx=s*.42,hy=by-s*.24;
+  c.fillStyle=TAN;c.strokeStyle=BLK;c.lineWidth=Math.max(1,s*.015);
+  for(const ex of [-.11,.09]){c.beginPath();c.moveTo(hx+ex*s-s*.07,hy-s*.1);c.lineTo(hx+ex*s+s*.01,hy-s*.38);c.lineTo(hx+ex*s+s*.08,hy-s*.08);c.closePath();c.fill();c.stroke()}
+  c.beginPath();c.arc(hx,hy,s*.17,0,6.28);c.fill();
+  c.fillStyle=WHT;c.beginPath();c.ellipse(hx+s*.01,hy-s*.02,s*.035,s*.13,0,0,6.28);c.fill();
+  c.beginPath();c.ellipse(hx+s*.13,hy+s*.06,s*.11,s*.07,0,0,6.28);c.fill();
+  c.fillStyle=BLK;c.beginPath();c.arc(hx+s*.23,hy+s*.04,s*.035,0,6.28);c.fill();
+  c.beginPath();c.arc(hx+s*.08,hy-s*.03,s*.022,0,6.28);c.fill();
+  if(run){c.fillStyle="#F27C8A";c.beginPath();c.ellipse(hx+s*.16,hy+s*.13,s*.03,s*.045,0,0,6.28);c.fill()}
+  c.restore();
+}
+$("#playCtf").onclick=()=>{sayLittle("Capture the Flag");openCtf()};
+ctfInputs();
+if(/[?&]farmlocal\b/.test(location.search))window.__ctf={get C(){return C},ctfP,ctfCamera,openCtf,ctfPath,ctfEnd,ctfTag,ctfUpdate,ctfGoTo,ctfTarget,ctfRespawn,ctfDraw,closeTask,get tk(){return tk},CTF};
 })();
 </script>
 </body>

@@ -1002,7 +1002,11 @@ Turn photos of family members into **high-resolution cartoon characters** (in th
 
 ---
 
-## 18. 🆕 New game: Capture the Flag (with Jeppson's poops)
+## 18. 🧪 Capture the Flag (with Jeppson's poops) — Beta live Oct 27
+
+**Beta (Oct 27), single device:** you + 1 bot teammate (Blue) vs 2 bots (Red). Big oval isometric field; the camera follows you, so you see part of it at a time, with edge arrows pointing to off-screen flags (and home when you carry one). Tap a spot to walk there and stop. Tagged players solve a quick age-appropriate puzzle (grown-ups: Blackjack, Minesweeper or Traffic jam; lose 2 in a row and you're back in anyway). Jeppson is drawn in code until his art is made. 3-minute timer, most captures wins. Power-ups: 💨 Zoomies, 🥾 Rain boots, 🦴 Treat toss. The lobby card says **Beta Version**.
+- Still to do: online multiplayer (Firebase), round stats into #8, Jeppson art (#17).
+
 
 A quick, silly **team Capture the Flag** game. Grab the other team's flag and bring it back to your base, while dodging **Jeppson's poops** (#17), which slow you down. **Computer players** fill the teams, so it works with just one kid.
 
