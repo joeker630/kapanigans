@@ -1059,6 +1059,58 @@ A quick, silly **team Capture the Flag** game. Grab the other team's flag and br
 
 ---
 
+## 19. 🆕 New game: Snake Race (competitive multiplayer snake)
+
+A live **multiplayer snake** game: every player steers their own snake around one shared field, eating snacks to grow longer. **You can't hit anyone else's tail**: running into another snake's body ends your run, so you have to steer around each other and try to box others in.
+
+**How it plays**
+- Each player is a colorful snake with their avatar's face (#10) on the head and their name above it.
+- Snacks pop up around the field (apples, carrots and berries, reusing farm art). Eating one makes your snake longer and scores a point.
+- **Crash rules:**
+  - Hitting **another snake's tail or body** = crash.
+  - Two heads bumping = both crash.
+  - Walls: either wrap around to the other side or crash (decision below).
+  - Your own tail: decision below (crash, like classic snake, or pass through, which is easier for little ones).
+- **After a crash:** your snake turns into a trail of sparkly snacks others can eat, and you **respawn** as a short snake after 3 seconds, with a few seconds of see-through safety. Nobody is out for the whole game.
+- **Rounds of 2–3 minutes.** The winner is the **longest snake at the end** (or most snacks eaten), with a podium for everyone.
+
+**Controls**
+- **Swipe** to turn (up, down, left, right), or a big on-screen joystick or arrow pad.
+- Snakes move on a grid at a steady speed. A **speed boost** button (Big and grown-ups) goes faster but shrinks your tail a little.
+
+**By level**
+- **Little (Violet):** a slower snake, big arrow buttons, a gentle glow when another snake's tail is close, and a soft "bonk" bounce for the first few hits before a real crash. Snack names are read aloud as they're eaten.
+- **Big (Quinn):** normal speed, swipe controls, full crash rules and the boost button.
+- **Grown-ups:** faster, with full rules.
+- In mixed games, each player's speed follows their own level, so Violet isn't run over by a grown-up.
+
+**🤖 Computer snakes**
+- Bot snakes fill the field when there are few real players (for example up to 4 snakes total), with difficulty set to the players' levels. They chase snacks and steer around tails, but make mistakes.
+
+**Fun extras**
+- Power-up snacks: a golden apple (grow 3 at once), a star (a few seconds of passing through tails safely) and a turtle (slows everyone else for a moment).
+- Jeppson (#17) can wander across the field, and snakes have to dodge him too (optional).
+
+**Multiplayer**
+- Up to 4 real players, live across devices (synced through Firebase like Color Together), including the Fire tablet.
+- Results go into the stats (#8): rounds, snacks eaten, longest snake and crashes.
+
+**Acceptance criteria**
+- [ ] Up to 4 snakes (real players plus bots) on one shared field, in sync across devices
+- [ ] Hitting another snake's tail or body crashes your snake; head-on bumps crash both
+- [ ] Crashed snakes leave snacks behind and respawn after about 3 seconds with brief safety
+- [ ] Snacks grow your snake; the longest snake at the end of a 2–3 minute round wins
+- [ ] Little players get slower speed, big buttons and gentle bounces before crashes
+- [ ] Swipe and button controls both work on iPad, iPhone and the Fire tablet
+- [ ] Smooth movement with no visible lag between devices
+
+**🔍 Decisions needed**
+- Hitting **your own** tail: crash (classic) or pass through (easier)?
+- Field edges: wrap around, or walls that crash you?
+- Should the winner be the longest snake at the end, or whoever ate the most snacks in total?
+
+---
+
 ## Shared groundwork (needed by #1, #3, #4, #5, #8, #13 and #14)
 
 - ⚠️ **One shared script:** Farmstand and the rest of the game live in the same `<script>`, so two `function` declarations with the same name silently replace each other (this broke story and inbox sending once: `sendGift`, `deliver`). Use unique names; a quick check is to list duplicate `function` names before pushing.
