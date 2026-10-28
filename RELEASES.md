@@ -4,6 +4,15 @@ Newest first. Each release has kid-friendly notes (shown to everyone in the game
 
 ---
 
+## 1.4: Ask for help on the farm ❗
+**October 27, 2026**: night update.
+
+### For everyone
+- ❗ **Asking for help:** when you start a team chore, you glow yellow with a big ❗ over your head on everyone's farm. Tap the ❗ (or the person) to walk over and help.
+- 🤝 **Team chores are for 2:** one person asks, one person helps, and then it's full.
+
+---
+
 ## 1.3: Jeppson comes to the farm 🐶
 **October 27, 2026**: night update.
 

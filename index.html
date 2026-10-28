@@ -1476,7 +1476,7 @@ addEventListener("resize",()=>requestAnimationFrame(fitHelp));
    "## 1.0: Title" starts a release; "### For everyone" / "### For grown-ups" / any other "###" section follow.
    Grown-up sections ("For grown-ups", "How long it took…") are hidden from the kids.
    Bump APP_VERSION together with a new RELEASES.md entry. */
-const APP_VERSION="1.3";
+const APP_VERSION="1.4";
 const WN={rel:null,loading:null};
 function wnGrownOnly(h){return /grown/i.test(h)}
 function wnParse(md){
@@ -4957,6 +4957,7 @@ function fInfo(t){
   if(t.kind==="struct"){const S=STRUCT[t.ref];return {em:S.label,name:S.name,state:""}}
   if(t.kind==="decor"){const D=DECOR[t.ref];return {em:D?D.icon:"✨",name:D?D.name:"decoration",state:""}}
   if(t.kind==="jep") return {em:"🐶",name:"Jeppson",state:"pet him ❤️"};
+  if(t.kind==="help"){const S=CO.sess[t.ref],C=S&&COOP_CHORES[S.chore];return {em:"❗",name:`help ${S?nameOf(S.host):"them"}`,state:C?C.title:""}}
   if(t.kind==="poop") return {em:"💩",name:"poop",state:"scoop it 🧹"};
   return {em:"",name:"",state:""};
 }
@@ -4966,6 +4967,7 @@ function fGround(t){
   if(t.kind==="struct"){const S=STRUCT[t.ref];return [S.i+S.wi/2,S.j+S.wj/2,Math.max(S.wi,S.wj)*.75]}
   if(t.kind==="decor"){const key=t.key||(Object.entries(F.st.decor||{}).find(([,k])=>k===t.ref)||[])[0];const sp=key&&decorPos(key);return sp?[sp[0]+.5,sp[1]+.5,.5]:[0,0,0]}
   if(t.kind==="jep"){const P=jepAt(fwNow());return [P.i,P.j,.55]}
+  if(t.kind==="help"){const S=CO.sess[t.ref],w=S&&S.host,r=w&&(FW.others||{})[w];if(r){const p=fwPos(r);return [p.i,p.j,.6]}return [0,0,0]}
   if(t.kind==="poop"){const p=(F.st.poops||{})[t.ref];return p?[+p.i,+p.j,.35]:[0,0,0]}
   return [0,0,0];
 }
@@ -4978,6 +4980,7 @@ function fGo(t){
   if(t.kind==="struct"){const S=STRUCT[t.ref];return fwWalk(S.i+S.wi/2+.3,S.j+S.wj+.45,()=>tapStruct(t.ref))}
   if(t.kind==="decor"){const [gi,gj]=fGround(t),[si,sj]=fwStandBy(gi,gj,.7);return fwWalk(si,sj,()=>{blip(880,.12,"sine");fPopAt(fIso(gi,gj),"✨")})}
   if(t.kind==="jep"){const P=jepAt(fwNow()),[si,sj]=fwStandBy(P.i,P.j,.9);return fwWalk(si,sj,jepTap)}
+  if(t.kind==="help"){const [hi,hj]=fGround(t),[si,sj]=fwStandBy(hi,hj,.8);return fwWalk(si,sj,()=>joinTeam(t.ref))}
   if(t.kind==="poop"){const p=(F.st.poops||{})[t.ref];if(!p)return;const [si,sj]=fwStandBy(+p.i,+p.j,.6);return fwWalk(si,sj,()=>jepScoop(t.ref))}
 }
 function farmTap(e){
@@ -5346,7 +5349,9 @@ const COOP_CHORES={
     finish:s=>{const up={};for(const w of s.order||Object.keys(s.members||{}))up[`goods/${w}/milk`]=INC(1);fUpd(up);
       if(s.target)fTx("animals/"+s.target,x=>{if(!x)return;x.ready=0;return x})}},
 };
-const COOP_TTL=10*60e3;
+const COOP_TTL=10*60e3, COOP_MAX=2; // team chores are for 2 people at a time
+// who's asking for help right now: host → session id (open, fresh, still room for a helper)
+function coopAsking(){const out={};for(const [sid,s] of Object.entries(CO.sess||{}))if(s&&s.status==="open"&&coopFresh(s)&&s.members&&Object.keys(s.members).length<COOP_MAX&&COOP_CHORES[s.chore]&&KIDS[s.host])out[s.host]=sid;return out}
 const CO={ref:null,sess:{},opened:new Set(),said:new Set(),waiting:null,listeners:new Set()};
 function coopConnect(){
   if(CO.ref)CO.ref.off();CO.sess={};CO.ref=null;
@@ -5377,13 +5382,11 @@ function coopTick(){
 }
 function coopBanner(){
   const b=$("#farmCoop");if(!b)return;
-  const inv=screen==="farm"&&!tk&&Object.entries(CO.sess).find(([,s])=>s&&s.status==="open"&&coopFresh(s)&&s.members&&!s.members[me]&&Object.keys(s.members).length<4&&COOP_CHORES[s.chore]);
+  const inv=screen==="farm"&&!tk&&Object.entries(CO.sess).find(([,s])=>s&&s.status==="open"&&coopFresh(s)&&s.members&&!s.members[me]&&Object.keys(s.members).length<COOP_MAX&&COOP_CHORES[s.chore]);
   if(!inv){b.hidden=true;b.dataset.sid="";return}
   const [sid,s]=inv,H=kidOf(s.host),C=COOP_CHORES[s.chore];
-  if(!b.hidden&&b.dataset.sid===sid)return; // already showing; don't rebuild under a finger
-  b.dataset.sid=sid;b.hidden=false;b.innerHTML=`<span class="cface">${H.face}</span><span class="ctext"><b>${esc(H.name)}</b> wants help: ${esc(C.title)}</span>`;
-  const j=el("button","bigbtn","🤝 Join");j.onclick=()=>joinTeam(sid);b.append(j);
-  if(!CO.said.has(sid)){CO.said.add(sid);blip(660,.15,"triangle");say(`${H.name} wants help to ${C.verb}! Tap Join to help.`)}
+  b.hidden=true; // the ❗ over the person asking is the invite now (see fwItems)
+  if(!CO.said.has(sid)){CO.said.add(sid);blip(660,.15,"triangle");say(`${H.name} needs help to ${C.verb}! Tap the yellow ${little()?"mark":"exclamation mark"} over ${H.name} to help.`)}
 }
 function openTeam(){
   fSheet("🤝 Do a chore together",body=>{
@@ -5399,13 +5402,13 @@ function startTeam(k){
   coopUpd({[sid]:{chore:k,type:C.type,title:C.title,pic:C.pic,target,host:me,at:Date.now(),status:"open",members:{[me]:{lvl:lvl(),at:Date.now()}}}});
   CO.waiting=sid;
   fSheet("🤝 Waiting for a helper…",body=>{
-    body.append(el("div","coopwait",`<span class="em">${C.em}</span><p>${little()?"Waiting for someone to come help!":"Everyone on the farm got an invite. The chore starts when someone joins."}</p>`));
+    body.append(el("div","coopwait",`<span class="em">${C.em}</span><p>${little()?"Waiting for someone to come help!":"A ❗ shows over you on everyone's farm. The chore starts when one person comes to help (2 people per team chore)."}</p>`));
     const x=el("button","ghost","Stop waiting");x.onclick=()=>{coopUpd({[sid]:null});CO.waiting=null;closeSheet()};body.append(x)});
   F.sheet.coop=true;say(little()?"Waiting for someone to help you!":"Waiting for a helper.");
 }
 function joinTeam(sid){
   if(tk)return;
-  coopTx(sid,s=>{if(!s||s.status!=="open"||!s.members||s.members[me]||Object.keys(s.members).length>=4)return;s.members[me]={lvl:lvl(),at:Date.now()};return s})
+  coopTx(sid,s=>{if(!s||s.status!=="open"||!s.members||s.members[me]||Object.keys(s.members).length>=COOP_MAX)return;s.members[me]={lvl:lvl(),at:Date.now()};return s})
     .then(ok=>{if(ok){blip(880,.12,"triangle");say("You joined! Let's do it together!")}else toast("That chore already started.")});
 }
 function openCoopTask(sid,s){
@@ -5516,15 +5519,27 @@ function fwDraw(g,x,y,K,o){
   g.fillStyle=o.me?"#fff":"#2B2140";g.textAlign="center";g.textBaseline="middle";g.fillText(nm,x,ty-th*.05);g.textBaseline="alphabetic";
   if(o.act==="puzzle")bubble(x+H*.32,y-H*.78,"🧩",o.t*1000,x);
 }
+// someone asking for help on a team chore glows yellow with a ❗ over their head; tap them (or the ❗) to help
+function fwAsking(who,i,j,t,fn){
+  const sid=(fwAsking.map||{})[who]; if(!sid) return fn();
+  const g=fm.g,th=fm.th,c=fIso(i,j),pulse=.5+.5*Math.sin(t/220);
+  g.save();g.fillStyle=`rgba(255,214,0,${.25+.25*pulse})`;g.beginPath();g.ellipse(c.x,c.y,fm.tw*.55,th*.55,0,0,7);g.fill();g.restore();
+  g.save();g.shadowColor="rgba(255,200,0,.95)";g.shadowBlur=th*(.5+.6*pulse);fn();g.restore();
+  const y=c.y-th*3.1+Math.sin(t/260)*th*.12;
+  g.save();g.fillStyle="#FFD600";g.strokeStyle="#2B2140";g.lineWidth=Math.max(2,th*.06);g.beginPath();g.arc(c.x,y,th*.42,0,7);g.fill();g.stroke();
+  g.fillStyle="#2B2140";g.font=`900 ${th*.58}px system-ui`;g.textAlign="center";g.textBaseline="middle";g.fillText("!",c.x,y+th*.03);g.textBaseline="alphabetic";g.restore();
+  if(who!==me){const tgt={kind:"help",ref:sid,who};fm.hits.push({kind:"bubble",target:tgt,d:1000+y,x0:c.x-th*.5,x1:c.x+th*.5,y0:y-th*.5,y1:y+th*.5});
+    fm.hits.push({kind:"help",ref:sid,who,d:i+j+.6,x0:c.x-th*.6,x1:c.x+th*.6,y0:c.y-th*2.6,y1:c.y+th*.3})}
+}
 function fwItems(items,dt,t){
-  fwStep(dt);
+  fwStep(dt); fwAsking.map=coopAsking();
   const seen=new Set();
-  if(FW.me&&me){const m=FW.me;seen.add(me);items.push({d:m.i+m.j+.3,draw:()=>fwDraw(fm.g,...Object.values(fIso(m.i,m.j)),kidOf(me),{me:true,walking:m.walking,t:m.t,dir:m.dir,front:m.front,act:m.act})})}
+  if(FW.me&&me){const m=FW.me;seen.add(me);items.push({d:m.i+m.j+.3,draw:()=>fwAsking(me,m.i,m.j,t,()=>fwDraw(fm.g,...Object.values(fIso(m.i,m.j)),kidOf(me),{me:true,walking:m.walking,t:m.t,dir:m.dir,front:m.front,act:m.act}))})}
   for(const [who,r] of Object.entries(FW.others||{})){
     if(who===me||!KIDS[who]||!r||fwNow()-(+r.at||0)>FW_STALE||seen.has(who))continue;
     const p=fwPos(r),o=FW.anim[who]||(FW.anim[who]={t:Math.random()*9,dir:1,front:true});o.t+=dt;
     if(p.walking){const sx=p.di-p.dj,sy=p.di+p.dj;o.front=sy>=-.02;if(Math.abs(sx)>.01)o.dir=sx>0?1:-1}
-    items.push({d:p.i+p.j+.3,draw:()=>fwDraw(fm.g,...Object.values(fIso(p.i,p.j)),kidOf(who),{walking:p.walking,t:o.t,dir:o.dir,front:o.front,act:r.act})})}
+    items.push({d:p.i+p.j+.3,draw:()=>fwAsking(who,p.i,p.j,t,()=>fwDraw(fm.g,...Object.values(fIso(p.i,p.j)),kidOf(who),{walking:p.walking,t:o.t,dir:o.dir,front:o.front,act:r.act}))})}
 }
 FW.anim={};
 
@@ -8318,7 +8333,7 @@ $("#playCtf").onclick=()=>{sayLittle("Capture the Flag");openCtf()};
 ctfInputs();
 $("#playCtf").onclick=()=>{sayLittle("Capture the Flag");openCtf()};
 ctfInputs();
-if(/[?&]farmlocal\b/.test(location.search))window.__jep={get F(){return F},fm,jepAt,fIso,fwNow,get tk(){return tk},closeTask};
+if(/[?&](farmlocal|debugfarm)\b/.test(location.search))window.__jep={get F(){return F},fm,jepAt,fIso,fwNow,get tk(){return tk},closeTask};
 if(/[?&](farmlocal|ctflocal)\b/.test(location.search))window.__ctf={get C(){return C},CN,ctfP,ctfCamera,openCtf,ctfCreate,joinCtf,ctfStart,ctfSwitch,ctfPath,ctfEnd,ctfTag,ctfUpdate,ctfGoTo,ctfTarget,ctfRespawn,ctfDraw,ctfInput,ctfIsHost,closeTask,get tk(){return tk},CTF};
 })();
 </script>
