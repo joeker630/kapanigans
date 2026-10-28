@@ -1025,7 +1025,7 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
 #snake{padding-block:8px;gap:6px}
 .sntime{font-weight:900;font-size:22px;background:var(--paper);border-radius:999px;padding:6px 14px;box-shadow:0 3px 0 var(--sky-deep);font-variant-numeric:tabular-nums}
 .sntime.low{background:#FFD6D6;color:#B91C1C}
-#snField{position:relative;flex:1;min-height:0;border-radius:18px;overflow:hidden;box-shadow:0 4px 0 var(--sky-deep);touch-action:none;user-select:none;-webkit-user-select:none;background:#3F7D2C}
+#snField{position:relative;flex:1;min-height:0;border-radius:18px;overflow:hidden;box-shadow:0 4px 0 var(--sky-deep);touch-action:none;user-select:none;-webkit-user-select:none;background:#000}
 #snCv{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
 #snField.bonk{animation:snbonk .25s}
 @keyframes snbonk{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
@@ -1034,11 +1034,14 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
 .snlb .rk{font-weight:900;width:14px;text-align:center;opacity:.6}.snlb b{flex:1;font-weight:800}
 .snlb img,.snlb .em{width:26px;height:26px;border-radius:50%;object-fit:cover;display:grid;place-items:center;font-size:18px;background:#fff}
 .snlb .mass{font-weight:900;font-variant-numeric:tabular-nums}.snlb.me{background:#FFF7CC}.snlb.out{opacity:.6}
-.snmini{position:absolute;left:8px;bottom:8px;width:150px;height:100px;border-radius:10px;border:2px solid rgba(255,255,255,.7);pointer-events:none}
+.snmini{position:absolute;left:8px;bottom:8px;width:150px;height:100px;border-radius:10px;border:2px solid rgba(255,255,255,.35);pointer-events:none}
 .snfxs{position:absolute;top:8px;left:8px;display:flex;gap:6px;pointer-events:none}
-.snfx{background:#fff;border:3px solid #FFB020;border-radius:10px;padding:2px 8px;font-size:20px;font-weight:900;animation:snpulse 1s infinite}
+.snfx{display:flex;align-items:center;gap:4px;background:#fff;border:4px solid var(--c);box-shadow:0 0 14px var(--c);border-radius:12px;padding:4px 10px;font-size:26px;font-weight:900;animation:snpulse 1s infinite}.snfx small{font-size:16px;font-variant-numeric:tabular-nums}
+.snbanner{position:absolute;left:50%;top:22%;transform:translate(-50%,-50%);display:flex;align-items:center;gap:10px;background:#fff;border:5px solid var(--c);box-shadow:0 0 30px var(--c);border-radius:22px;padding:10px 24px;pointer-events:none}.snbanner span{font-size:52px}.snbanner b{font-size:32px;color:#2B2140}
+.snbanner.go{animation:snban 1.6s ease-out forwards}@keyframes snban{0%{transform:translate(-50%,-50%) scale(.3);opacity:0}15%{transform:translate(-50%,-50%) scale(1.15);opacity:1}25%{transform:translate(-50%,-50%) scale(1)}80%{opacity:1}100%{transform:translate(-50%,-80%) scale(.9);opacity:0}}
+@media (prefers-reduced-motion:reduce){.snbanner.go,.snfx{animation:none}}
 @keyframes snpulse{50%{transform:scale(1.08)}}
-.sntip{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:rgba(43,33,64,.8);color:#fff;font-weight:800;padding:8px 16px;border-radius:999px;pointer-events:none;white-space:nowrap}
+.sntip{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:rgba(255,255,255,.18);color:#fff;font-weight:800;padding:8px 16px;border-radius:999px;pointer-events:none;white-space:nowrap}
 #snake.little .sntip{font-size:20px}
 .snboost{position:absolute;right:14px;bottom:14px;width:84px;height:84px;border-radius:50%;background:rgba(255,255,255,.9);box-shadow:0 4px 0 var(--sky-deep);font-size:32px;display:grid;place-content:center;line-height:1;touch-action:none}
 .snboost small{font-size:12px;font-weight:900}.snboost.on{background:var(--sun);transform:scale(.94)}
@@ -1204,6 +1207,7 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
     <div class="snboard" id="snBoard"></div>
     <canvas class="snmini" id="snMini" width="150" height="100"></canvas>
     <div class="snfxs" id="snFx"></div>
+    <div class="snbanner" id="snBanner" hidden></div>
     <div class="sntip" id="snTip">👆 Hold your finger where you want to go</div>
     <button class="snboost" id="snBoost">⚡<small>Boost</small></button>
     <div class="sncrash" id="snCrash" hidden><b>💥 Crash!</b><button class="bigbtn" id="snCrashBtn">🧩 Get back in</button></div>
@@ -6635,9 +6639,9 @@ $("#playFarm").onclick=()=>{sayLittle("Kapanigan Farmstand");openFarm()};
    families/<CODE>/snake/<e>/s/<i>  {x,y,g,m,p:[x,y,...],a,safe,kl,sc,cr,by,ko,fx,e:["id.gen",...],n}  one snake per seat */
 const SW={w:2400,h:1600}, SN_ROUND=150000, SN_SAFE=3000, SN_SPACE=5, SN_PUB=100, SN_START=10;
 const SN_ORBS=420, SN_FRUITS=30, SN_CUBES=5;
-const SN_SPEED={little:70,big:95,grown:110}, SN_BOTSPEED={little:58,big:82,grown:98}, SN_TURN={little:2.8,big:3.4,grown:3.8};
+const SN_SPEED={little:88,big:120,grown:138}, SN_BOTSPEED={little:72,big:102,grown:122}, SN_TURN={little:3.2,big:3.9,grown:4.3};
 const SN_FOOD=[["🍎","apple"],["🥕","carrot"],["🫐","blueberries"],["🍓","strawberry"],["🌽","corn"],["🍐","pear"]];
-const SN_CUBE={mag:{em:"🧲",name:"magnet",ms:10000},spd:{em:"⚡",name:"speed",ms:8000},x3:{em:"✖️3",name:"triple snacks",ms:10000},star:{em:"⭐",name:"star",ms:6000}};
+const SN_CUBE={mag:{em:"🧲",name:"magnet",ms:10000,col:"#FF4D8D"},spd:{em:"⚡",name:"speed",ms:8000,col:"#FFD60A"},x3:{em:"✖️3",name:"triple snacks",ms:10000,col:"#22D3EE"},star:{em:"⭐",name:"star",ms:6000,col:"#B388FF"}};
 const SN_ORBCOL=["#FF5A5F","#FFB020","#FFE14D","#4ADE80","#38BDF8","#A78BFA","#F472B6","#FFFFFF"];
 const SN_BOTS=[{name:"Wiggles",face:"🐛",hue:"#65A30D"},{name:"Noodle",face:"🐍",hue:"#0EA5E9"},{name:"Zippy",face:"🦎",hue:"#F97316"}];
 const SN_KID_PUZZLES=["count","letters","color","pattern","money","shadow","size","numorder"]; // the quick ones (about 10-20 s)
@@ -6666,7 +6670,7 @@ function snPellet(i){
 function snMakePellet(i,g){
   const r=rng(hash(SNK.meta.seed+":"+i+":"+g)), m=60;
   const x=m+r()*(SW.w-2*m), y=m+r()*(SW.h-2*m);
-  if(i<SN_ORBS) return {id:i,g,x,y,t:"o",v:1,c:SN_ORBCOL[(r()*SN_ORBCOL.length)|0],r:3.5+r()*2.5};
+  if(i<SN_ORBS) return {id:i,g,x,y,t:"o",v:1,c:SN_ORBCOL[(r()*SN_ORBCOL.length)|0],r:6+r()*4};
   if(i<SN_ORBS+SN_FRUITS) return {id:i,g,x,y,t:"f",v:3,k:(r()*SN_FOOD.length)|0};
   return {id:i,g,x,y,t:"c",v:0,k:Object.keys(SN_CUBE)[(r()*4)|0]};
 }
@@ -6819,7 +6823,7 @@ function snMove(i,S,dt,o){ // returns {crash, by, bonk, ate}
     else{S.m+=p.v*mult;S.sc=(S.sc||0)+1;res.ate=p}};
   if(SNK.meta){
     const r2=reach*reach;
-    const rc=(r+18)*(r+18);
+    const rc=(r+30)*(r+30);
     for(let id=0;id<SN_ORBS+SN_FRUITS+SN_CUBES;id++){const p=snPellet(id),dd=snDist2(S.x,S.y,p.x,p.y);if(dd<(p.t==="c"?rc:r2)){const key=id+"."+p.g;snEatId(key);eat(p,key)}}
     for(const id in SNK.drops){const p=SNK.drops[id];if(SNK.gone.has(id)){delete SNK.drops[id];continue}if(snDist2(S.x,S.y,p.x,p.y)<r2){SNK.gone.add(id);delete SNK.drops[id];eat(p,id)}}
   }
@@ -6838,11 +6842,12 @@ function snTickMine(dt){
   const t=performance.now();
   if((res.wall||res.bonk)&&t-SNK.bonkAt>400){SNK.bonkAt=t;blip(220,.15,"triangle",.14);snBonkFx();if(res.bonk)sayLittle(S.bonks?"Bonk! Careful!":"Bonk! Next time it's a crash!")}
   if(res.ate){SNK.snacks++;if(SNK.snacks%10===0)bump("snakeSnacks",10);
-    if(res.ate.t==="f"){blip(880,.1,"sine",.12);sayLittle(SN_FOOD[res.ate.k][1])} else if(t-(SNK.chompAt||0)>90){SNK.chompAt=t;blip(600+Math.min(20,S.m/10)*20,.05,"sine",.07)}}
-  if(res.cube){const C=SN_CUBE[res.cube];blip(1200,.25,"triangle",.14);toast(`${C.em} ${C.name[0].toUpperCase()+C.name.slice(1)}!`);sayLittle(C.name+"!")}
+    if(res.ate.t==="f"){(SNK.bursts=SNK.bursts||[]).push({x:S.x,y:S.y,t0:t,col:"#fff"});blip(880,.1,"sine",.12);sayLittle(SN_FOOD[res.ate.k][1])} else if(t-(SNK.chompAt||0)>90){SNK.chompAt=t;blip(600+Math.min(20,S.m/10)*20,.05,"sine",.07)}}
+  if(res.cube){const C=SN_CUBE[res.cube];blip(1200,.25,"triangle",.14);setTimeout(()=>blip(1500,.25,"triangle",.12),120);(SNK.bursts=SNK.bursts||[]).push({x:S.x,y:S.y,t0:t,col:C.col,em:C.em});snBanner(C);sayLittle(C.name+"!")}
   SNK.best=Math.max(SNK.best,S.m);
   snPub(SNK.seat,S);
 }
+function snBanner(C){const b=$("#snBanner");b.innerHTML=`<span>${C.em}</span><b>${esc(C.name[0].toUpperCase()+C.name.slice(1))}!</b>`;b.style.setProperty("--c",C.col);b.hidden=false;b.classList.remove("go");void b.offsetWidth;b.classList.add("go");clearTimeout(SNK.banT);SNK.banT=setTimeout(()=>{b.hidden=true},1600)}
 function snBonkFx(){const F=$("#snField");F.classList.remove("bonk");void F.offsetWidth;F.classList.add("bonk")}
 function snCrashMine(by){
   const S=snOwn(SNK.seat); if(!S) return; S.kl=snHalf(S.m); S.a=0; S.cr=(S.cr||0)+1; S.by=by; SNK.crashes++; bump("snakeCrashes");
@@ -6952,24 +6957,38 @@ function snDraw(){
   const m=me0?me0.m||SN_START:SN_START, zt=Math.min(W,H)/(560+Math.min(m,300)*2.2)*(snMyLvl()==="little"?.9:1);
   const cam=SNK.cam=SNK.cam||{x:focus.x,y:focus.y,z:zt}; cam.x+=(focus.x-cam.x)*.18; cam.y+=(focus.y-cam.y)*.18; cam.z+=(zt-cam.z)*.05; cam.w=W; cam.h=H;
   const z=cam.z, ox=W/2-cam.x*z, oy=H/2-cam.y*z, now=snNow(), t=performance.now();
-  c.setTransform(d,0,0,d,0,0); c.fillStyle="#3F7D2C"; c.fillRect(0,0,W,H);
+  c.setTransform(d,0,0,d,0,0); c.fillStyle="#000"; c.fillRect(0,0,W,H);
   c.setTransform(d*z,0,0,d*z,d*ox,d*oy);
-  // grass + dot grid
-  c.fillStyle="#9BD771"; c.fillRect(0,0,SW.w,SW.h);
+  // dark field + faint dot grid
+  c.fillStyle="#0B0C16"; c.fillRect(0,0,SW.w,SW.h);
   const x0=Math.max(0,Math.floor((-ox/z)/60)*60), x1=Math.min(SW.w,(W-ox)/z), y0=Math.max(0,Math.floor((-oy/z)/60)*60), y1=Math.min(SW.h,(H-oy)/z);
-  c.fillStyle="#8BCB60"; for(let x=x0;x<=x1;x+=60)for(let y=y0;y<=y1;y+=60){c.beginPath();c.arc(x+((y/60)%2?30:0),y,5,0,7);c.fill()}
+  c.fillStyle="#1B1E30"; for(let x=x0;x<=x1;x+=60)for(let y=y0;y<=y1;y+=60){c.beginPath();c.arc(x+((y/60)%2?30:0),y,5,0,7);c.fill()}
   c.strokeStyle="#E5484D";c.lineWidth=8;c.setLineDash([24,16]);c.strokeRect(0,0,SW.w,SW.h);c.setLineDash([]);
   const vis=(x,y,p)=>x>-ox/z-p&&x<(W-ox)/z+p&&y>-oy/z-p&&y<(H-oy)/z+p;
   // pellets
   c.textAlign="center";c.textBaseline="middle";
   if(SNK.meta){
     for(let id=0;id<SN_ORBS+SN_FRUITS+SN_CUBES;id++){const p=snPellet(id);if(!vis(p.x,p.y,30))continue;const bob=Math.sin(t/300+id)*1.5;
-      if(p.t==="o"){c.fillStyle=p.c;c.globalAlpha=.35;c.beginPath();c.arc(p.x,p.y+bob,p.r*2,0,7);c.fill();c.globalAlpha=1;c.beginPath();c.arc(p.x,p.y+bob,p.r,0,7);c.fill()}
-      else if(p.t==="f"){c.font=`22px system-ui,"Apple Color Emoji","Noto Color Emoji"`;c.fillText(SN_FOOD[p.k][0],p.x,p.y+bob)}
-      else{const s=15+Math.sin(t/200)*1.5;c.fillStyle="rgba(255,255,255,.9)";c.strokeStyle="#FFB020";c.lineWidth=3;c.beginPath();c.roundRect?c.roundRect(p.x-s,p.y-s+bob,s*2,s*2,7):c.rect(p.x-s,p.y-s+bob,s*2,s*2);c.fill();c.stroke();
-        c.font=`${p.k==="x3"?13:18}px system-ui,"Apple Color Emoji","Noto Color Emoji"`;c.fillStyle="#2B2140";c.fillText(SN_CUBE[p.k].em,p.x,p.y+bob+1)}}
-    for(const id in SNK.drops){const p=SNK.drops[id];if(!vis(p.x,p.y,20))continue;c.fillStyle=p.c;c.globalAlpha=.4;c.beginPath();c.arc(p.x,p.y,13+Math.sin(t/150+p.x)*2,0,7);c.fill();c.globalAlpha=1;c.beginPath();c.arc(p.x,p.y,7,0,7);c.fill()}
+      if(p.t==="o"){c.fillStyle=p.c;c.globalAlpha=.22;c.beginPath();c.arc(p.x,p.y+bob,p.r*2.4,0,7);c.fill();c.globalAlpha=.45;c.beginPath();c.arc(p.x,p.y+bob,p.r*1.5,0,7);c.fill();c.globalAlpha=1;c.beginPath();c.arc(p.x,p.y+bob,p.r,0,7);c.fill();
+        c.fillStyle="rgba(255,255,255,.55)";c.beginPath();c.arc(p.x-p.r*.3,p.y+bob-p.r*.3,p.r*.35,0,7);c.fill()}
+      else if(p.t==="f"){c.fillStyle="rgba(255,255,255,.22)";c.beginPath();c.arc(p.x,p.y+bob,26,0,7);c.fill();c.fillStyle="rgba(255,255,255,.35)";c.beginPath();c.arc(p.x,p.y+bob,19,0,7);c.fill();c.font=`34px system-ui,"Apple Color Emoji","Noto Color Emoji"`;c.fillText(SN_FOOD[p.k][0],p.x,p.y+bob)}
+      else{const C=SN_CUBE[p.k],pulse=Math.sin(t/180),s=26+pulse*3;
+        // glowing halo + spinning rays so boxes stand out from across the field
+        c.save();c.translate(p.x,p.y+bob);
+        c.globalAlpha=.18;c.fillStyle=C.col;c.beginPath();c.arc(0,0,s*2.6+pulse*6,0,7);c.fill();
+        c.globalAlpha=.35;c.beginPath();c.arc(0,0,s*1.7,0,7);c.fill();
+        c.globalAlpha=.6;c.strokeStyle=C.col;c.lineWidth=4;c.rotate(t/700);
+        for(let k=0;k<8;k++){c.rotate(Math.PI/4);c.beginPath();c.moveTo(s*1.35,0);c.lineTo(s*1.9+pulse*4,0);c.stroke()}
+        c.restore();c.globalAlpha=1;
+        c.fillStyle="#fff";c.strokeStyle=C.col;c.lineWidth=5;c.beginPath();c.roundRect?c.roundRect(p.x-s,p.y-s+bob,s*2,s*2,10):c.rect(p.x-s,p.y-s+bob,s*2,s*2);c.fill();c.stroke();
+        c.font=`${p.k==="x3"?22:32}px system-ui,"Apple Color Emoji","Noto Color Emoji"`;c.fillStyle="#2B2140";c.fillText(C.em,p.x,p.y+bob+2)}}
+    for(const id in SNK.drops){const p=SNK.drops[id];if(!vis(p.x,p.y,20))continue;c.fillStyle=p.c;c.globalAlpha=.35;c.beginPath();c.arc(p.x,p.y,20+Math.sin(t/150+p.x)*3,0,7);c.fill();c.globalAlpha=1;c.beginPath();c.arc(p.x,p.y,11,0,7);c.fill();c.fillStyle="rgba(255,255,255,.6)";c.beginPath();c.arc(p.x-3,p.y-3,4,0,7);c.fill()}
   }
+  // pickup bursts
+  SNK.bursts=(SNK.bursts||[]).filter(b=>t-b.t0<1200);
+  for(const b of SNK.bursts){const k=(t-b.t0)/1200;c.globalAlpha=1-k;c.strokeStyle=b.col;c.lineWidth=6*(1-k)+1;
+    for(const f of [1,.6]){c.beginPath();c.arc(b.x,b.y,20+k*120*f,0,7);c.stroke()}
+    if(b.em){c.font=`${40+k*30}px system-ui,"Apple Color Emoji","Noto Color Emoji"`;c.fillStyle="#fff";c.fillText(b.em,b.x,b.y-30-k*60)}c.globalAlpha=1}
   // snakes (smaller ones on top)
   const order=[0,1,2,3].filter(i=>SNK.s[i]&&SNK.s[i].a).sort((a,b)=>(SNK.s[b].m||0)-(SNK.s[a].m||0));
   const mine=snBody(SNK.seat), little=snMyLvl()==="little";
@@ -6978,7 +6997,7 @@ function snDraw(){
     if(little&&i!==SNK.seat&&mine){c.fillStyle="rgba(255,120,0,.3)";for(let j=0;j<B.pts.length;j+=2){const q=B.pts[j];if(snDist2(q[0],q[1],mine.x,mine.y)<130*130){c.beginPath();c.arc(q[0],q[1],r*1.7,0,7);c.fill()}}}
     const light=I.hue+"B0";
     for(let j=B.pts.length-1;j>=0;j--){const q=B.pts[j];if(!vis(q[0],q[1],r*2))continue;
-      c.fillStyle="#2B2140";c.beginPath();c.arc(q[0],q[1],r+2,0,7);c.fill()}
+      c.fillStyle="rgba(255,255,255,.28)";c.beginPath();c.arc(q[0],q[1],r+2.5,0,7);c.fill()}
     for(let j=B.pts.length-1;j>=0;j--){const q=B.pts[j];if(!vis(q[0],q[1],r*2))continue;
       c.fillStyle=I.hue;c.beginPath();c.arc(q[0],q[1],r,0,7);c.fill();
       if(j%4<2){c.fillStyle="rgba(255,255,255,.22)";c.beginPath();c.arc(q[0]-r*.25,q[1]-r*.25,r*.55,0,7);c.fill()}}
@@ -7011,12 +7030,12 @@ function snHud(force){
   const tm=$("#snTime"); tm.textContent=pre>0?`Ready… ${Math.ceil(pre/1000)}`:mmss(left); tm.classList.toggle("low",left<15000&&pre<=0);
   const S=SNK.s[SNK.seat], fx=S&&S.fx?Object.keys(S.fx).filter(k=>S.fx[k]>now):[];
   const rows=[0,1,2,3].map(i=>({i,I:snSeatInfo(i),S:SNK.s[i]})).filter(r=>r.I&&r.S&&!(r.S.gone&&!r.S.a)).sort((a,b)=>(b.S.a?b.S.m:b.S.kl||0)-(a.S.a?a.S.m:a.S.kl||0));
-  const sig=JSON.stringify([rows.map(r=>[r.i,r.S.a,r.S.m,r.S.kl]),fx,S&&S.a]);
+  const sig=JSON.stringify([rows.map(r=>[r.i,r.S.a,r.S.m,r.S.kl]),fx.map(k=>Math.ceil((S.fx[k]-now)/1000)),S&&S.a]);
   if(!force&&sig===SNK.hudSig) return; SNK.hudSig=sig;
   const B=$("#snBoard"); B.innerHTML="";
   rows.forEach((r,k)=>{const d=el("div","snlb"+(r.i===SNK.seat?" me":"")+(r.S.a?"":" out"));d.style.setProperty("--k",r.I.hue);
     d.innerHTML=`<span class="rk">${k+1}</span>${r.I.head?`<img src="${r.I.head}" alt="">`:`<span class="em">${r.I.face}</span>`}<b>${esc(r.I.name)}</b><span class="mass">${r.S.a?r.S.m:"💥 "+(r.S.kl||"")}</span>`;B.append(d)});
-  $("#snFx").innerHTML=fx.map(k=>`<span class="snfx">${SN_CUBE[k].em}</span>`).join("");
+  $("#snFx").innerHTML=fx.map(k=>`<span class="snfx" style="--c:${SN_CUBE[k].col}">${SN_CUBE[k].em}<small>${Math.ceil((S.fx[k]-now)/1000)}</small></span>`).join("");
 }
 
 /* ---- frame loop ---- */
