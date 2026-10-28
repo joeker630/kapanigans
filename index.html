@@ -562,7 +562,7 @@ table.everyone .facepic,table.everyone .avatarpic,table.everyone .em{width:26px;
 .xdhead2{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:4px}.xdhead2 h3{flex:1 1 auto;margin:0}
 .xdgrid{display:grid;gap:5px;font-size:13px}.xdgrid .colh{font-size:12px;color:#5E5577;text-align:center;align-self:end;line-height:1.15}.xdgrid .rowh{display:flex;align-items:center;gap:6px;font-size:14px}
 .xdgrid .cell{min-height:42px;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;color:var(--ink)}.xdgrid .cell.dk{color:#fff}.xdgrid .cell small{font-size:11px;font-weight:800}
-.xdgrid .cell.dk small.up{color:#BBF7D0}.xdgrid .cell.dk small.down{color:#FECACA}.xdgrid .cell.dk small.flat{color:#E0E7FF}.xdgrid.wk .cell{min-height:30px}.xdgrid .trend{align-self:center;text-align:center;font-weight:800}
+.xdgrid .cell.dk small.up{color:#BBF7D0}.xdgrid .cell.dk small.down{color:#FECACA}.xdgrid .cell.dk small.flat{color:#E0E7FF}.xdgrid.xdwk .cell{min-height:30px}.xdgrid .trend{align-self:center;text-align:center;font-weight:800}
 .xdkeys{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:10px;font-size:13px}
 .xdheat{display:grid;gap:4px;min-width:480px;font-size:12px}.xdheat .colh{text-align:center;color:#5E5577}.xdheat .rowh{color:#5E5577;align-self:center}.xdheat .hc{height:24px;border-radius:6px}
 .xdtimer{background:#F7F4FD;border-radius:14px;padding:10px 12px;margin-bottom:8px}.xdtimer .t1{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}.xdtimer .t1 small{color:#5E5577}
@@ -4614,7 +4614,7 @@ function drawDash(box,list){
   const wp=people.filter(p=>!!p.K.grown===grownTab);const wrows=[];
   for(const p of wp){const vals=wks.map(w=>{const t2=xdTot(xdSkills(p.d,w,w+7*DAY-1));return t2.n?xdPct(t2.first,t2.n):null});if(vals.some(v=>v!=null))wrows.push([p,vals])}
   if(!wrows.length) sC.append(el("p","xdnote","No puzzles in the last 6 weeks yet."));
-  else{const wg=el("div","xdgrid wk");wg.style.gridTemplateColumns="120px repeat(6,minmax(58px,1fr)) 80px";wg.style.minWidth="640px";
+  else{const wg=el("div","xdgrid xdwk");wg.style.gridTemplateColumns="120px repeat(6,minmax(58px,1fr)) 80px";wg.style.minWidth="640px";
     wg.append(el("span"));for(const w of wks){const d=new Date(w);wg.append(el("span","colh",d.toLocaleDateString(undefined,{month:"short",day:"numeric"})))}wg.append(el("span","colh","Trend"));
     for(const [p,vals] of wrows){wg.append(el("span","rowh",`${xdAv(p.k)} ${esc(p.K.name)}`));
       for(const v of vals){const c=el("span","cell"+(v!=null&&v>=80?" dk":""),v==null?"–":`<b>${v}%</b>`);c.style.background=shade(v);wg.append(c)}
