@@ -4,6 +4,17 @@ Newest first. Each release has kid-friendly notes (shown to everyone in the game
 
 ---
 
+## 1.2: Quinn's play timer ⏰
+**October 27, 2026**: late evening update.
+
+### For everyone
+- ⏰ **Quinn's play timer:** Quinn now gets a countdown and a break screen too, just like Violet.
+
+### For grown-ups
+- ⏰ **Timers in Grown-ups:** a new **⏰ Timers** tab shows each kid's time left or break, with play time, break length and extra time settings. **Only Lisa and Parker can change Quinn's timer.** Any grown-up can still hold the 🔒 on the break screen, or tap **Give more minutes** or **Fresh start** in the tab, and it reaches the kid's iPad right away.
+
+---
+
 ## 1.1: Play time and a quieter inbox ⏰
 **October 27, 2026**: evening update.
 

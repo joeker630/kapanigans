@@ -513,6 +513,11 @@ h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance;l
 .plsub{font-size:24px;margin:0;font-weight:800}.plagain{font-size:20px;margin:6px 0 10px;opacity:.9}.plagain b{font-family:var(--display);font-size:26px}
 .plgrown{display:flex;align-items:center;gap:12px;margin-top:18px;opacity:.75;font-size:13px;text-align:left}
 .holdbtn.small{width:70px;height:70px;background:rgba(255,255,255,.12)}.holdbtn.small .lock{font-size:28px}
+.tcard{background:var(--paper);border-radius:20px;padding:14px 16px;margin:10px 0;border-left:8px solid var(--k);box-shadow:0 4px 0 var(--sky-deep)}
+.tcard h3{display:flex;align-items:center;gap:8px;margin:0 0 4px}.tcard h3 .facepic,.tcard h3 .avatarpic,.tcard h3 .em{width:34px;height:34px}
+.tnow{margin:0 0 8px;font-weight:800;color:#5b5175}
+.trow2{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0;border-top:1px solid #EEE8F8}
+.trow2 select{font:inherit;font-size:16px;padding:6px 10px;border-radius:12px;border:2px solid var(--sky-deep);background:#fff}
 .sentbox{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
 .sentbox .gift{font-size:110px;animation:fly 1.6s ease-in forwards}
 @keyframes fly{0%{transform:scale(.6)}30%{transform:scale(1.15) rotate(-6deg)}60%{transform:scale(1) rotate(4deg)}100%{transform:translateY(-30vh) scale(.4);opacity:0}}
@@ -1087,7 +1092,7 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
 <div class="pllock" id="plLock" hidden>
   <div class="plcard">
     <div class="plmoon">🌙</div><div class="plstars">✨ ⭐ ✨</div>
-    <h2>Great playing, Violet!</h2>
+    <h2 id="plName">Great playing!</h2>
     <p class="plsub">Time for a little break.</p>
     <p class="plagain">We can play again in <b id="plLeft">30:00</b></p>
     <div class="plgrown"><button class="holdbtn small" id="plHold" aria-label="Grown-ups: hold for 15 more minutes"><span class="ring" id="plRing"></span><span class="lock">🔒</span></button><span>Grown-ups: hold 3 seconds<br>for 15 more minutes</span></div>
@@ -1205,7 +1210,7 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
     <button class="round" id="gHome" aria-label="Back to games">🏠</button>
     <h1>🔒 Grown-ups</h1>
   </div>
-  <div class="gtabs" id="gTabs"><button data-tab="reports">📊 Reports</button><button data-tab="voice">🔊 Voice</button><button data-tab="code">🔑 Family code</button><button data-tab="inbox">💌 Inboxes</button><button data-tab="photos">👤 Photos</button></div>
+  <div class="gtabs" id="gTabs"><button data-tab="reports">📊 Reports</button><button data-tab="voice">🔊 Voice</button><button data-tab="code">🔑 Family code</button><button data-tab="inbox">💌 Inboxes</button><button data-tab="photos">👤 Photos</button><button data-tab="timers">⏰ Timers</button></div>
   <div class="gbody" id="gBody"></div>
 </section>
 <div class="gate" id="takeover" hidden>
@@ -1462,7 +1467,7 @@ addEventListener("resize",()=>requestAnimationFrame(fitHelp));
    "## 1.0: Title" starts a release; "### For everyone" / "### For grown-ups" / any other "###" section follow.
    Grown-up sections ("For grown-ups", "How long it took…") are hidden from the kids.
    Bump APP_VERSION together with a new RELEASES.md entry. */
-const APP_VERSION="1.1";
+const APP_VERSION="1.2";
 const WN={rel:null,loading:null};
 function wnGrownOnly(h){return /grown/i.test(h)}
 function wnParse(md){
@@ -4051,11 +4056,22 @@ $("#codeChip").onclick=()=>askGrownUp("code");
    Saved in Firebase at families/<code>/limits/<person> = {used, last, lockUntil}, so it follows her to any device.
    A break of 30+ minutes on her own (not playing) also starts a fresh 30 minutes.
    Grown-ups can hold the lock for 3 seconds to give 15 more minutes. */
-const PLAY_LIMITS={violet:{play:30*60e3,rest:30*60e3,extra:15*60e3}};
-const PL={who:null,st:null,lastTick:0,saveAt:0,warned:{},loading:false};
-function plRule(){return me&&PLAY_LIMITS[me]?PLAY_LIMITS[me]:null}
+const PLAY_LIMITS={violet:{play:30*60e3,rest:30*60e3,extra:15*60e3},quinn:{play:30*60e3,rest:30*60e3,extra:15*60e3}};
+// who may change each kid's timer in Grown-ups › Timers (anyone grown can still give extra time)
+const LIMIT_EDITORS={quinn:["lisa","parker"],violet:null};
+const LIMIT_DEFAULT=JSON.parse(JSON.stringify(PLAY_LIMITS));
+const PL={who:null,st:null,lastTick:0,saveAt:0,warned:{},loading:false,cfgOn:null};
+// timer settings saved by Lisa/Parker: families/<code>/limitCfg/<kid> = {play, rest, extra} in minutes (play 0 = no limit)
+function plCfgListen(){
+  if(!mail.ref||PL.cfgOn===mail.ref) return; PL.cfgOn=mail.ref;
+  mail.ref.child("limitCfg").on("value",s=>{const v=s.val()||{};
+    for(const k of Object.keys(LIMIT_DEFAULT)){const c=v[k],d=LIMIT_DEFAULT[k];
+      PLAY_LIMITS[k]=c&&typeof c==="object"?{play:(+c.play>=0?+c.play:d.play/60e3)*60e3,rest:(+c.rest>0?+c.rest:d.rest/60e3)*60e3,extra:(+c.extra>0?+c.extra:d.extra/60e3)*60e3}:Object.assign({},d)}
+    if(screen==="grown"&&typeof gTab!=="undefined"&&gTab==="timers") renderGrown()},()=>{});
+}
+function plRule(){const r=me&&PLAY_LIMITS[me];return r&&r.play>0?r:null}
 function plRef(){return mail.ref&&PL.who?mail.ref.child("limits/"+PL.who):null}
-function plSave(){const r=PL.loaded?plRef():null;if(r&&PL.st)r.set({used:Math.round(PL.st.used),last:PL.st.last,lockUntil:PL.st.lockUntil||0}).catch(()=>{});try{localStorage.setItem("kp.limit."+PL.who,JSON.stringify(PL.st))}catch(e){}}
+function plSave(){const r=PL.loaded?plRef():null;if(r&&PL.st)r.set({used:Math.round(PL.st.used),last:PL.st.last,lockUntil:PL.st.lockUntil||0,rv:PL.st.rv||0}).catch(()=>{});try{localStorage.setItem("kp.limit."+PL.who,JSON.stringify(PL.st))}catch(e){}}
 function plLoad(who){
   PL.who=who; PL.warned={}; PL.loaded=false; let local=null; try{local=JSON.parse(localStorage.getItem("kp.limit."+who)||"null")}catch(e){}
   PL.st=local&&typeof local.used==="number"?local:{used:0,last:0,lockUntil:0};
@@ -4064,12 +4080,15 @@ function plLoad(who){
 function plFetch(){ // the family copy wins if it's newer or she's on a break; until it's read we don't write over it
   const r=plRef(), who=PL.who; if(!r||PL.loading) return; PL.loading=true;
   r.once("value").then(s=>{const v=s.val();PL.loading=false;if(PL.who!==who)return;
-    if(v&&typeof v.used==="number"&&((+v.lockUntil||0)>Date.now()||(v.last||0)>=(PL.st.last||0))) PL.st={used:+v.used||0,last:+v.last||0,lockUntil:+v.lockUntil||0};
-    PL.loaded=true}).catch(()=>{PL.loading=false});
+    if(v&&typeof v.used==="number"&&((+v.lockUntil||0)>Date.now()||(v.last||0)>=(PL.st.last||0))) PL.st={used:+v.used||0,last:+v.last||0,lockUntil:+v.lockUntil||0,rv:+v.rv||0};
+    PL.loaded=true;
+    // a grown-up changing the time from another device (Grown-ups › Timers) bumps "rv"; take it right away
+    r.on("value",s2=>{const w=s2.val();if(PL.who!==who||!w||!(+w.rv>(PL.st.rv||0)))return;PL.st={used:+w.used||0,last:Date.now(),lockUntil:+w.lockUntil||0,rv:+w.rv};PL.warned={};PL.lastTick=0;if(!(PL.st.lockUntil>Date.now()))plHideLock()},()=>{});
+  }).catch(()=>{PL.loading=false});
 }
 const plFmt=ms=>{const s=Math.max(0,Math.ceil(ms/1000));return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")};
 function plTick(){
-  const rule=plRule(), T=$("#plTimer"), L=$("#plLock");
+  plCfgListen(); const rule=plRule(), T=$("#plTimer"), L=$("#plLock");
   const active=rule&&!["pick","setup"].includes(screen)&&document.visibilityState==="visible";
   if(!rule){if(T)T.hidden=true;if(L&&!L.hidden)L.hidden=true;PL.who=null;return}
   if(PL.who!==me) plLoad(me); else if(!PL.loaded) plFetch();
@@ -4085,14 +4104,14 @@ function plTick(){
   const left=rule.play-st.used;
   T.hidden=false; T.querySelector("b").textContent=plFmt(left);
   T.classList.toggle("soon",left<=5*60e3); T.classList.toggle("last",left<=60e3);
-  if(left<=5*60e3&&left>4.5*60e3&&!PL.warned.five){PL.warned.five=1;say("Five more minutes of playing, Violet!")}
-  if(left<=60e3&&left>50e3&&!PL.warned.one){PL.warned.one=1;say("One more minute, Violet!")}
+  if(left<=5*60e3&&left>4.5*60e3&&!PL.warned.five){PL.warned.five=1;say(`Five more minutes of playing, ${nameOf(me)}!`)}
+  if(left<=60e3&&left>50e3&&!PL.warned.one){PL.warned.one=1;say(`One more minute, ${nameOf(me)}!`)}
   if(left<=0){st.used=0;st.lockUntil=now+rule.rest;PL.warned={};plSave();hush();plShowLock(rule.rest,true);return}
   if(now-PL.saveAt>10000){PL.saveAt=now;plSave()}
 }
 function plShowLock(left,fresh){
-  const L=$("#plLock"); if(L.hidden){L.hidden=false;$("#help").hidden=true;const w=$("#wnBox");if(w)w.hidden=true;
-    if(fresh){blip(523,.2,"sine",.08);setTimeout(()=>blip(392,.3,"sine",.08),220);setTimeout(()=>say("Great playing, Violet! Time for a little break. We'll play again soon."),500)}}
+  const L=$("#plLock"); $("#plName").textContent=`Great playing, ${nameOf(me)}!`; {const r=plRule();$("#plHold").nextElementSibling.innerHTML=`Grown-ups: hold 3 seconds<br>for ${r?Math.round(r.extra/60e3):15} more minutes`} if(L.hidden){L.hidden=false;$("#help").hidden=true;const w=$("#wnBox");if(w)w.hidden=true;
+    if(fresh){blip(523,.2,"sine",.08);setTimeout(()=>blip(392,.3,"sine",.08),220);setTimeout(()=>say(`Great playing, ${nameOf(me)}! Time for a little break. We'll play again soon.`),500)}}
   $("#plLeft").textContent=plFmt(left);
 }
 function plHideLock(){$("#plLock").hidden=true}
@@ -4100,7 +4119,7 @@ function plHideLock(){$("#plLock").hidden=true}
 (()=>{const btn=$("#plHold"),ring=$("#plRing"); let t0=0,raf=0;
   const stop=()=>{cancelAnimationFrame(raf);ring.style.setProperty("--p","0")};
   const step=()=>{const p=Math.min(1,(performance.now()-t0)/3000);ring.style.setProperty("--p",String(p));
-    if(p>=1){stop();const rule=plRule();if(rule&&PL.st){PL.st.lockUntil=0;PL.st.used=Math.max(0,rule.play-rule.extra);PL.st.last=Date.now();PL.warned={five:1};PL.lastTick=0;plSave();plHideLock();blip(880,.15,"triangle",.1);toast("15 more minutes for Violet");sayLittle("Fifteen more minutes!")}return}
+    if(p>=1){stop();const rule=plRule();if(rule&&PL.st){PL.st.lockUntil=0;PL.st.used=Math.max(0,rule.play-rule.extra);PL.st.last=Date.now();PL.warned={five:1};PL.lastTick=0;plSave();plHideLock();blip(880,.15,"triangle",.1);{const m=Math.round(rule.extra/60e3);toast(`${m} more minutes for ${nameOf(me)}`);say(`${m} more minutes!`)}}return}
     raf=requestAnimationFrame(step)};
   btn.addEventListener("pointerdown",e=>{e.preventDefault();t0=performance.now();try{btn.setPointerCapture(e.pointerId)}catch(_){}step()});
   btn.addEventListener("pointerup",stop); btn.addEventListener("pointercancel",stop); btn.addEventListener("contextmenu",e=>e.preventDefault());
@@ -4113,10 +4132,42 @@ $("#wnBtn").onclick=()=>{blip(600,.06);wnShow({})}; $("#appVer").onclick=()=>wnS
 $("#gHome").onclick=()=>{hush();me?goLobby():show("pick")};
 $("#gTabs").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;gTab=b.dataset.tab;gInboxOpen=null;gInboxMsg=null;renderGrown()});
 function openGrown(tab){gTab=tab||"reports";gArmed=null;show("grown");renderGrown()}
+function gTimers(B){
+  B.append(el("p","note","Kids get a countdown at the top of the screen. When it reaches zero, a gentle break screen covers the games (video stays on). Any grown-up can hold the 🔒 on that screen for extra time."));
+  for(const k of Object.keys(LIMIT_DEFAULT)){const K=KIDS[k],R=PLAY_LIMITS[k],ed=LIMIT_EDITORS[k],can=!ed||ed.includes(me);
+    const card=el("div","tcard");card.style.setProperty("--k",K.hue);
+    card.append(el("h3",null,`${faceHTML(K)} ${esc(K.name)}`));
+    const now=el("p","tnow","…");card.append(now);
+    if(mail.ref) mail.ref.child("limits/"+k).once("value").then(s=>{const v=s.val()||{};const n=Date.now();
+      if(!(R.play>0)) now.textContent="No time limit right now.";
+      else if(+v.lockUntil>n) now.textContent=`On a break: can play again in ${plFmt(v.lockUntil-n)}.`;
+      else{const used=n-(+v.last||0)>R.rest?0:(+v.used||0);now.textContent=`${plFmt(R.play-used)} of play time left.`}}).catch(()=>{});
+    const row=(label,key,opts,cur)=>{const r=el("div","trow2");r.append(el("span",null,label));
+      if(can){const sel=el("select");for(const [v,t] of opts){const o=new Option(t,v);if(+v===cur)o.selected=true;sel.append(o)}
+        sel.onchange=()=>{if(!mail.ref)return;const c={play:Math.round(PLAY_LIMITS[k].play/60e3),rest:Math.round(PLAY_LIMITS[k].rest/60e3),extra:Math.round(PLAY_LIMITS[k].extra/60e3)};c[key]=+sel.value;
+          mail.ref.child("limitCfg/"+k).set(c).then(()=>toast(`Saved ${K.name}'s timer`)).catch(()=>toast("Couldn't save. Check the Wi-Fi."))};r.append(sel)}
+      else r.append(el("b",null,esc((opts.find(o=>+o[0]===cur)||[0,cur+" min"])[1])));
+      card.append(r)};
+    row("Play time","play",[[0,"No limit"],[15,"15 minutes"],[20,"20 minutes"],[30,"30 minutes"],[45,"45 minutes"],[60,"1 hour"],[90,"1½ hours"],[120,"2 hours"]],Math.round(R.play/60e3));
+    row("Break","rest",[[10,"10 minutes"],[15,"15 minutes"],[30,"30 minutes"],[45,"45 minutes"],[60,"1 hour"],[120,"2 hours"]],Math.round(R.rest/60e3));
+    row("Extra time (hold 🔒)","extra",[[5,"5 minutes"],[10,"10 minutes"],[15,"15 minutes"],[30,"30 minutes"]],Math.round(R.extra/60e3));
+    if(!can) card.append(el("p","note",`Only ${ed.map(nameOf).join(" and ")} can change ${K.name}'s timer.`));
+    const acts=el("div","rowbtns");
+    const more=el("button","ghost",`➕ Give ${Math.round(R.extra/60e3)} more minutes`);more.onclick=()=>plRemote(k,{extra:true});
+    const fresh=el("button","ghost","🔄 Fresh start (end break)");fresh.onclick=()=>plRemote(k,{fresh:true});
+    acts.append(more,fresh);card.append(acts);B.append(card)}
+}
+// a grown-up's change from the Timers tab reaches the kid's device through "rv"
+function plRemote(k,o){
+  if(!mail.ref) return; const R=PLAY_LIMITS[k], r=mail.ref.child("limits/"+k);
+  r.once("value").then(s=>{const v=s.val()||{};const st={used:o.fresh?0:Math.max(0,R.play-R.extra),last:Date.now(),lockUntil:0,rv:Date.now()};
+    if(o.extra&&!(+v.lockUntil>Date.now())&&Date.now()-(+v.last||0)<R.rest) st.used=Math.max(0,(+v.used||0)-R.extra);
+    return r.set(st)}).then(()=>{toast(o.fresh?`${nameOf(k)} has a fresh start`:`${Math.round(R.extra/60e3)} more minutes for ${nameOf(k)}`);renderGrown()}).catch(()=>toast("Couldn't save. Check the Wi-Fi."));
+}
 function renderGrown(){
   document.querySelectorAll("#gTabs button").forEach(b=>b.classList.toggle("on",b.dataset.tab===gTab));
   const B=$("#gBody"); B.innerHTML="";
-  ({reports:gReports,voice:gVoice,code:gCode,inbox:gInboxes,photos:gPhotos})[gTab](B);
+  ({reports:gReports,voice:gVoice,code:gCode,inbox:gInboxes,photos:gPhotos,timers:gTimers})[gTab](B);
   {const r=el("div","rowbtns");const h=el("button","ghost small","💡 Show the help tips again");h.onclick=()=>{try{Object.keys(localStorage).filter(k=>k.startsWith("kp.help.")).forEach(k=>localStorage.removeItem(k))}catch(e){}toast("Help tips will show once more on each screen")};r.append(h);B.append(r)}
 }
 function armed(key,btn,label,action){ // two taps to confirm
