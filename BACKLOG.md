@@ -1134,7 +1134,18 @@ A live **multiplayer snake** game: every player steers their own snake around on
 
 ---
 
-## 20. 🆕 Release notes: "What's new" in the game
+## 20. ✅ Release notes: "What's new" in the game (live Oct 27, version 1.0)
+
+**✅ Built Oct 27**
+- `APP_VERSION` in index.html (now **1.0**), shown as "v1.0" next to the Kapanigans title on the home screen.
+- `RELEASES.md` is the single source: the game fetches and reads it (`## 1.0: Title`, a bold date line, then `###` sections with bullets and tables). Sections with "grown" in the name are grown-ups only.
+- **What's new card** on the home screen the first time each person opens a new version, after any help tip, never mid-game. Remembered per person in Firebase (`families/<code>/seen/<person>/whatsnew`), so a second device doesn't repeat it.
+  - **Kids (Violet, Quinn, friends):** a picture grid of each new thing (emoji + name), read aloud, with tap-to-hear and a big "Let's play!". No grown-up sections.
+  - **Grown-ups:** the full notes with formatting and tables, "See all updates", and the current version.
+- **📰 button** on the home screen (and tapping "v1.0") opens What's new / all updates anytime.
+- **Update ready:** every 10 minutes and whenever the iPad wakes, the game checks `RELEASES.md`; if it lists a newer version than the page is running, a "✨ A new Kapanigans is ready! Tap to update" button appears and reloads.
+- **To release:** add a new `## x.y: Title` entry at the top of `RELEASES.md` and bump `APP_VERSION` to match, in the same push.
+
 
 Show **release notes** inside Kapanigans so everyone knows what changed: a friendly "What's new" screen after an update, and a history anyone can open anytime.
 
@@ -1158,13 +1169,13 @@ Show **release notes** inside Kapanigans so everyone knows what changed: a frien
 - A gentle **"Update ready"** nudge if a device is still running an old version (the page loaded before a release): "Tap to get the newest Kapanigans," which reloads it.
 
 **Acceptance criteria**
-- [ ] The game has a version number, shown in the lobby
-- [ ] Release notes live in one file in the repo, written in plain, friendly words
-- [ ] A "What's new!" card appears once per person after an update, only in the lobby, never mid-game
-- [ ] Little players get a picture-and-read-aloud version
-- [ ] A What's new button shows the full history anytime
-- [ ] Devices running an old version get an "Update ready" prompt
-- [ ] Grown-up-only notes are hidden from kids
+- [x] The game has a version number, shown in the lobby
+- [x] Release notes live in one file in the repo, written in plain, friendly words
+- [x] A "What's new!" card appears once per person after an update, only in the lobby, never mid-game
+- [x] Little players get a picture-and-read-aloud version
+- [x] A What's new button shows the full history anytime
+- [x] Devices running an old version get an "Update ready" prompt
+- [x] Grown-up-only notes are hidden from kids
 
 **🔍 Decisions needed**
 - ~~First release notes~~ → decided: **1.0 "Welcome to Kapanigans" covers everything built so far**, plus a grown-ups-only table of approximate prompt time per chat (from message send times). Drafted in `RELEASES.md`.

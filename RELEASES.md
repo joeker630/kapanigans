@@ -18,6 +18,7 @@ Newest first. Each release has kid-friendly notes (shown to everyone in the game
 - 💌 **Inbox:** send stickers, quick phrases, notes, drawings, voice messages, colored pictures and story gifts to anyone, even if they're not playing right now.
 - 📹 **Family video:** see and hear each other while you play. Flip between the front and back camera (🔄 and **Show it!**), minimize the bubble without muting anyone, or turn video off for your device. Calls are smoother with 3 or more people.
 - 🚩 **Capture the Flag (Beta):** grab the other team's flag on a big oval field, with bots on your team, power-ups and **Jeppson** leaving poops that slow you down. Get tagged? Solve a quick puzzle to get back in!
+- 🐍 **Snake Race:** everyone steers their own snake on one big field, eating snacks to grow longer. Don't bump into anyone else's tail! Crash, and a quick puzzle gets you right back in. The longest snake wins.
 - 👋 **Who are you!? :)** Pick yourself when you open Kapanigans. Each person plays on one device at a time, and the **Who's on** cards show where everyone is with a one-tap Join.
 - 👨‍👩‍👧 **The whole family's here:** Violet, Quinn, Bear friend, Fox friend, and grown-ups Joe, Layla, Lisa, Parker, Apple G, Uncle Jeff, Gramma Mia, Grandpa George, Oma, Aunt Mimi, Uncle Hammy and Aunt Sara.
 - 🔊 **A friendlier reading voice:** slower and warmer, and it reads to Violet so she doesn't need to read.
@@ -27,6 +28,7 @@ Newest first. Each release has kid-friendly notes (shown to everyone in the game
 - 📊 **Progress reports:** play time per game and day, and every puzzle's skill, speed, wrong tries and hints, with a skills view and struggle spots for each kid. A **weekly summary** arrives in every grown-up's Inbox. Records are kept 90 days, then rolled up weekly, and you can export or clear them.
 - 🔑 **4-character family codes:** easy to type on every device.
 - 💡 **Help tips:** a how-to card on each screen, shown once to grown-ups and never to kids.
+- 📰 **What's new:** after each update, everyone sees what changed (the kids get a picture version read aloud). Tap 📰 on the home screen, or the version number, to see all updates. An iPad left open gets a "Tap to update" button when a new version is ready.
 - 📱 **iPad and iPhone fixes:** no accidental page zoom or sideways scrolling, screens that fit without scrolling, a steadier farm, and quick recovery after dropped connections, with a connection light for each player.
 - 🎨 **Art kit:** free AI-generated farm, avatar and family art (Cloudflare Workers AI), with family cartoons kept private under the family code.
 
@@ -40,11 +42,11 @@ Approximate time Joe spent prompting, from the send times of his messages in eac
 | Image Generation | Art kit, farm and avatar art, family cartoons | 20 | ~1 h 35 m |
 | Backlog | Planning, backlog items #5–#20, decisions | 32 | ~1 h 35 m |
 | Age-appropriate tasks | Kid and grown-up puzzles | 13 | ~1 h 15 m |
-| Snake Race (local preview, not live yet) | Snake Race | 5 | ~35 m |
+| Snake Race | Snake Race | 5 | ~35 m |
 | Capture the Flag | Capture the Flag Beta | 4 | ~20 m |
 | **Total** | | **158** | **~13 h 10 m** |
 
 Several chats ran at the same time, so the actual time on the clock was about **9 h 15 m**, between 8:28 AM and 9:06 PM.
 
 ### Coming soon
-Snake Race, Fashion Show, Jeppson the corgi on the farm, storybook film art, and online multiplayer for Capture the Flag.
+Fashion Show, Jeppson the corgi on the farm, storybook film art, and online multiplayer for Capture the Flag.

@@ -490,6 +490,19 @@ h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance;l
 .colormode button.on{background:var(--sun);border-color:var(--ink)}
 .ghost.small{font-size:13px;padding:6px 12px;min-height:0}
 #reader #rAuto.backpill{background:var(--sun);color:var(--ink)}#reader #rAuto.backpill.playing{background:rgba(255,255,255,.18);color:#fff}
+.help.wn{z-index:72}
+.wncard{--hs:.85;width:min(720px,100%);max-height:min(88vh,100%)}
+.wncard.little{width:min(620px,100%)}
+.wnscroll{flex:1 1 auto;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;font-size:15px;line-height:1.4;padding-right:4px}
+.wnscroll h3{font-family:var(--display);font-size:22px;margin:4px 0 2px}.wnscroll h4{margin:12px 0 4px;font-size:15px;text-transform:uppercase;letter-spacing:.04em;color:#7a6f92}
+.wnscroll ul{margin:0;padding-left:20px}.wnscroll li{margin:4px 0}.wnscroll p{margin:4px 0}
+.wnscroll table{border-collapse:collapse;width:100%;font-size:13px;margin:6px 0}.wnscroll th,.wnscroll td{border-bottom:1px solid #E4DCF5;padding:4px 6px;text-align:left}
+.wndate{color:#6b6283;font-size:14px}.wnver{margin:0;text-align:center;font-size:12px;color:#8a809f}
+.wnkids{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;overflow:auto;min-height:0}
+.wnkid{background:var(--sky);border-radius:18px;padding:10px 6px;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center}
+.wnkid span{font-size:44px;line-height:1}.wnkid b{font-size:14px;line-height:1.15}
+.appver{font-size:12px;font-weight:800;color:#7a6f92;background:none;padding:2px 6px;align-self:flex-end;margin-bottom:6px}
+.wnupdate{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:80;background:var(--ink);color:#fff;border-radius:999px;padding:12px 22px;font-family:var(--display);font-size:18px;box-shadow:0 6px 18px rgba(0,0,0,.25);animation:popin .4s ease-out}
 .sentbox{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
 .sentbox .gift{font-size:110px;animation:fly 1.6s ease-in forwards}
 @keyframes fly{0%{transform:scale(.6)}30%{transform:scale(1.15) rotate(-6deg)}60%{transform:scale(1) rotate(4deg)}100%{transform:translateY(-30vh) scale(.4);opacity:0}}
@@ -1046,11 +1059,12 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
 <!-- ============ LOBBY ============ -->
 <section class="screen" id="lobby" hidden>
   <div class="topbar">
-    <h1>Kapanigans</h1>
+    <h1>Kapanigans</h1><button class="appver" id="appVer" aria-label="What's new"></button>
     <span class="status" id="status"><i></i><span>Connecting…</span></span>
     <button class="codechip" id="codeChip"></button>
     <button class="voicebtn mailbtn" id="mailBtn" aria-label="Inbox">💌<span class="badge" id="mailBadge" hidden></span></button>
     <button class="voicebtn" id="voiceBtn" aria-label="Read aloud on or off">🔊</button>
+    <button class="voicebtn" id="wnBtn" aria-label="What's new">📰</button>
     <button class="voicebtn" id="grownBtn" aria-label="Grown-ups">🔒</button>
     <button class="mechip" id="meChip"></button>
   </div>
@@ -1349,6 +1363,106 @@ function fitHelp(){ // shrink the text until the whole card fits on one screen, 
   while(s>.4&&(c.scrollHeight>c.clientHeight+1||c.scrollWidth>c.clientWidth+1)){s-=.04;c.style.setProperty("--hs",s.toFixed(2))}
 }
 addEventListener("resize",()=>requestAnimationFrame(fitHelp));
+/* ================= WHAT'S NEW (backlog #20) =================
+   RELEASES.md in the repo is the one place release notes live (newest first).
+   "## 1.0: Title" starts a release; "### For everyone" / "### For grown-ups" / any other "###" section follow.
+   Grown-up sections ("For grown-ups", "How long it took…") are hidden from the kids.
+   Bump APP_VERSION together with a new RELEASES.md entry. */
+const APP_VERSION="1.0";
+const WN={rel:null,loading:null};
+function wnGrownOnly(h){return /grown/i.test(h)}
+function wnParse(md){
+  const rels=[]; let r=null, sec=null;
+  for(const raw of md.split(/\r?\n/)){
+    const line=raw.trimEnd();
+    let m=line.match(/^##\s+([\d.]+)\s*:\s*(.+)$/);
+    if(m){r={v:m[1],title:m[2].trim(),date:"",sections:[]};rels.push(r);sec=null;continue}
+    if(!r) continue;
+    m=line.match(/^###\s+(.+)$/); if(m){sec={h:m[1].trim(),lines:[]};r.sections.push(sec);continue}
+    if(!sec){m=line.match(/^\*\*(.+?)\*\*(.*)$/);if(m&&!r.date){r.date=m[1];r.sub=m[2].replace(/^[:\s]+/,"")}continue}
+    if(line.trim()) sec.lines.push(line);
+  }
+  return rels;
+}
+function wnLoad(){
+  if(WN.rel) return Promise.resolve(WN.rel); if(WN.loading) return WN.loading;
+  WN.loading=fetch("RELEASES.md?t="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.text():"").then(t=>{WN.rel=wnParse(t||"");WN.loading=null;return WN.rel}).catch(()=>{WN.loading=null;return[]});
+  return WN.loading;
+}
+const wnVer=v=>String(v).split(".").map(n=>+n||0).reduce((a,n,i)=>a+n*Math.pow(1000,2-i),0);
+function wnInline(t){return esc(t).replace(/\*\*(.+?)\*\*/g,"<b>$1</b>").replace(/`(.+?)`/g,"<code>$1</code>")}
+function wnSectionHTML(sec){
+  const out=[]; let ul=false, table=null;
+  const closeUl=()=>{if(ul){out.push("</ul>");ul=false}}, closeT=()=>{if(table){out.push(`<table>${table.join("")}</table>`);table=null}};
+  for(const l of sec.lines){
+    if(/^\|/.test(l)){closeUl(); if(/^\|[\s|:-]+\|$/.test(l)) continue; const cells=l.replace(/^\||\|$/g,"").split("|").map(c=>c.trim());
+      if(!table){table=[];table.push("<tr>"+cells.map(c=>`<th>${wnInline(c)}</th>`).join("")+"</tr>")} else table.push("<tr>"+cells.map(c=>`<td>${wnInline(c)}</td>`).join("")+"</tr>"); continue}
+    closeT();
+    const b=l.match(/^\s*[-*]\s+(.+)$/);
+    if(b){if(!ul){out.push("<ul>");ul=true}out.push(`<li>${wnInline(b[1])}</li>`);continue}
+    closeUl(); out.push(`<p>${wnInline(l)}</p>`);
+  }
+  closeUl(); closeT(); return out.join("");
+}
+// the kids' version: just the emoji and the bold name of each new thing, read aloud
+function wnKidItems(r){
+  const items=[];
+  for(const sec of r.sections){ if(wnGrownOnly(sec.h)||/coming soon/i.test(sec.h)) continue;
+    for(const l of sec.lines){const m=l.match(/^\s*[-*]\s+(\S+)\s+\*\*(.+?)\*\*/); if(m) items.push([m[1],m[2].replace(/[:.!]+$/,"").replace(/\s*\(.*?\)\s*/g," ").trim()])}}
+  return items;
+}
+function wnShow(opts={}){
+  wnLoad().then(rels=>{
+    if(!rels.length){toast("No release notes yet");return}
+    const grown=!!(me&&KIDS[me]&&KIDS[me].grown);
+    let box=$("#wnBox"); if(!box){box=el("div","help wn");box.id="wnBox";document.body.append(box)}
+    const list=opts.all?rels:rels.slice(0,1), r0=rels[0];
+    let html="";
+    if(!grown){
+      const items=wnKidItems(r0);
+      html=`<div class="hcard wncard little"><div class="hhead"><span class="hem">🎉</span><h2>What's new!</h2><button class="round hclose" id="wnSay" aria-label="Read it to me">🔊</button><button class="round hclose" id="wnX" aria-label="Close">✖️</button></div>
+        <div class="wnkids">${items.map(([e,t])=>`<button class="wnkid" data-say="${esc(t)}"><span>${e}</span><b>${esc(t)}</b></button>`).join("")}</div>
+        <button class="bigbtn" id="wnOk">Let's play! 🎈</button></div>`;
+    } else {
+      html=`<div class="hcard wncard"><div class="hhead"><span class="hem">📰</span><h2>${opts.all?"All updates":"What's new"}</h2><button class="round hclose" id="wnX" aria-label="Close">✖️</button></div><div class="wnscroll">`+
+        list.map(r=>`<section><h3>${esc(r.v)} · ${wnInline(r.title)}</h3>${r.date?`<p class="wndate">${esc(r.date)}${r.sub?" · "+wnInline(r.sub):""}</p>`:""}${r.sections.filter(s=>grown||!wnGrownOnly(s.h)).map(s=>`<h4>${wnInline(s.h)}</h4>${wnSectionHTML(s)}`).join("")}</section>`).join("")+
+        `</div><div class="rowbtns">${opts.all||rels.length<2?"":'<button class="ghost" id="wnAll">See all updates</button>'}<button class="bigbtn" id="wnOk">Got it! 👍</button></div><p class="wnver">You're on Kapanigans ${esc(APP_VERSION)}</p></div>`;
+    }
+    box.innerHTML=html; box.hidden=false;
+    const close=()=>{hush();box.hidden=true;box.innerHTML=""};
+    $("#wnX").onclick=close; $("#wnOk").onclick=close; box.onclick=e=>{if(e.target===box)close()};
+    const all=$("#wnAll"); if(all) all.onclick=()=>wnShow({all:true});
+    box.querySelectorAll(".wnkid").forEach(b=>b.onclick=()=>say("New! "+b.dataset.say));
+    const sayAll=()=>{unlockAudio();say("What's new! "+wnKidItems(r0).map(x=>x[1]).join(". ")+".")};
+    const sb=$("#wnSay"); if(sb) sb.onclick=sayAll;
+    if(!grown&&opts.auto) setTimeout(sayAll,500);
+    if(opts.auto) tada();
+  });
+}
+// once per person (remembered in Firebase, so a second device doesn't show it again), only on the home screen
+let wnChecked=null;
+function wnMaybe(){
+  if(!me||screen!=="lobby"||!mail.ref||wnChecked===me) return;
+  const who=me; wnChecked=who;
+  Promise.all([wnLoad(),mail.ref.child(`seen/${who}/whatsnew`).once("value").then(s=>s.val()).catch(()=>null)]).then(([rels,seen])=>{
+    if(!rels.length||me!==who) return; const latest=rels[0].v;
+    if(seen&&wnVer(seen)>=wnVer(latest)) return;
+    if(!seen&&load("kp.wn."+who)===latest){mail.ref.child(`seen/${who}/whatsnew`).set(latest).catch(()=>{});return}
+    const go=()=>{if(me!==who||screen!=="lobby"){wnChecked=null;return}
+      if(!$("#help").hidden){setTimeout(go,1200);return}
+      mail.ref.child(`seen/${who}/whatsnew`).set(latest).catch(()=>{}); store("kp.wn."+who,latest); wnShow({auto:true})};
+    setTimeout(go,1500);
+  });
+}
+// a device left open across a release gets a gentle "update ready" nudge (checked every 10 minutes and when the iPad wakes)
+function wnUpdateCheck(){
+  if(document.visibilityState!=="visible") return;
+  fetch("RELEASES.md?t="+Date.now(),{cache:"no-store"}).then(r=>r.ok?r.text():"").then(t=>{const rels=wnParse(t||"");if(!rels.length)return;
+    if(wnVer(rels[0].v)>wnVer(APP_VERSION)&&!$("#wnUpdate")){const b=el("button","wnupdate","✨ A new Kapanigans is ready! <b>Tap to update</b>");b.id="wnUpdate";
+      b.onclick=()=>location.reload();document.body.append(b)}}).catch(()=>{});
+}
+setInterval(wnUpdateCheck,10*60*1000); document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")wnUpdateCheck()});
+
 
 /* ---------------- read-aloud helper ---------------- */
 // say(text, {rate, pitch, pause, onWord(charIndex,len), onEnd}) speaks one sentence at a time with short pauses.
@@ -1728,7 +1842,7 @@ function doChooseKid(k){
 }
 function goLobby(){show("lobby");renderLobby();if(!vid.local&&!vid.denied)startMedia()}
 
-function renderLobby(){
+function renderLobby(){ setTimeout(wnMaybe,300); {const v=$("#appVer");if(v)v.textContent="v"+APP_VERSION}
   const K=kidOf(me);
   $("#codeChip").innerHTML=`Family code <b>${esc(familyCode||"")}</b>`;
   const gb=$("#giftbar"); gb.innerHTML="";
@@ -3826,6 +3940,7 @@ function askGrownUp(tab){
 })();
 $("#grownBtn").onclick=()=>askGrownUp("reports");
 $("#codeChip").onclick=()=>askGrownUp("code");
+$("#wnBtn").onclick=()=>{blip(600,.06);wnShow({})}; $("#appVer").onclick=()=>wnShow({all:true});
 $("#gHome").onclick=()=>{hush();me?goLobby():show("pick")};
 $("#gTabs").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;gTab=b.dataset.tab;gInboxOpen=null;gInboxMsg=null;renderGrown()});
 function openGrown(tab){gTab=tab||"reports";gArmed=null;show("grown");renderGrown()}
