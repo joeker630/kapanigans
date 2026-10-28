@@ -982,7 +982,8 @@ Turn photos of family members into **high-resolution cartoon characters** (in th
 - Jeppson stars in Bedtime Stories (#13) and can follow your avatar as a pet (#10).
 
 **Acceptance criteria**
-- [ ] Jeppson appears on the farm, recognizably a tricolor corgi with his markings, and moves the same on every device
+- [ ] Jeppson is always on the farm, recognizably a tricolor corgi with his markings, and moves the same on every device
+- [ ] Approved art of Jeppson in both styles: chunky farm style and storybook film style
 - [ ] At least 5 idle animations and a tap reaction
 - [ ] Poops appear on a timer (max 3 at once) and are shared across devices
 - [ ] Cleanup is a chore puzzle with Little, Big and grown-up versions
@@ -990,8 +991,8 @@ Turn photos of family members into **high-resolution cartoon characters** (in th
 - [ ] Cleanups earn Moolah and are recorded in the stats
 
 **🔍 Decisions needed**
-- **Art style for Jeppson:** the chunky farm style (to match the farm animals), the storybook film style (#14), or both?
-- Should he be on the farm all the time, or show up at random (with a "Jeppson's here!" bark)?
+- ~~Art style~~ → decided: **both**. The chunky farm style for the farm (matching the other animals), and the storybook film style (#14) for Bedtime Stories. Joe still approves each image.
+- ~~When he's on the farm~~ → decided: **always on the farm**.
 
 ---
 
