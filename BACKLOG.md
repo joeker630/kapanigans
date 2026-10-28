@@ -984,6 +984,12 @@ Turn photos of family members into **high-resolution cartoon characters** (in th
 **Acceptance criteria**
 - [ ] Jeppson is always on the farm, recognizably a tricolor corgi with his markings, and moves the same on every device
 - [ ] Approved art of Jeppson in both styles: chunky farm style and storybook film style
+
+**🎨 Next step: test images (to do in the image generation chat)**
+- Joe's photo of Jeppson is the reference (shared in chat; never stored in the repo).
+- 3 versions in the **farm style** (isometric farm sprite, standing, facing bottom left like the cow and pig in `art/iso/farm/`), then the eat, sleep and back poses after approval.
+- 3 versions in the **storybook film style** (full portrait, the approved #16 storybook style).
+- Put all 6 on a private review page for Joe to approve before anything goes into the game.
 - [ ] At least 5 idle animations and a tap reaction
 - [ ] Poops appear on a timer (max 3 at once) and are shared across devices
 - [ ] Cleanup is a chore puzzle with Little, Big and grown-up versions
