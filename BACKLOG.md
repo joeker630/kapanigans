@@ -949,6 +949,52 @@ Turn photos of family members into **high-resolution cartoon characters** (in th
 
 ---
 
+## 17. 🆕 Farm NPC: Jeppson the corgi
+
+**Jeppson** is the family's corgi, and he lives on the farm as a friendly non-player character (NPC). He wanders around, plays, and leaves **poops** that players clean up.
+
+**What Jeppson looks like** (from Joe's photo)
+- A tricolor Pembroke Welsh Corgi: a **black saddle** over his back, **tan/red** face, cheeks, ears and legs, a **white blaze** down the middle of his face, a white muzzle, chest and ruff, and **white paws**.
+- Very big, upright ears, warm brown eyes with a gentle, slightly curious look, a black nose, short legs and a fluffy body.
+- A dark collar with a small tag.
+- The art style needs Joe's pick before anything is made (see Decisions). He's a family member too, so the same rules as #16 apply: Joe decides each image, and the original photo is never stored in the public repo.
+
+**How he behaves**
+- Trots around the farm on the same shared clock schedule as the other animals, so every device sees him in the same place.
+- Fun idle moves: sniffing, tail wiggle (a corgi "butt wiggle"), rolling over, a big ear-perk, chasing chickens (gently, they just flap), napping in the sun, and following a player around for a bit.
+- Tap him for a reaction: a happy bark, a zoomie lap, or rolling over for belly rubs. His name floats above him like the player avatars.
+- Little players hear "Jeppson!" read aloud when they tap him.
+
+**💩 Poop cleanup (a farm chore)**
+- Every so often Jeppson leaves a small, cartoon (not gross) poop somewhere on the farm, with a few flies buzzing and a little stink cloud.
+- Cleaning it up is a chore puzzle like the others, done with a **pooper-scooper** or a bag:
+  - **Little:** tap each poop to scoop it, then drag the bag to the trash can. Count the poops out loud ("1, 2, 3!").
+  - **Big:** find all the hidden poops (some behind crops or the fence), then sort them: compost bin vs trash can, or count and add ("2 by the barn + 3 by the pumpkins").
+  - **Grown-ups:** a quick grown-up puzzle, like the other chores.
+- **Cooldown and pacing:** a poop appears about every 5–10 minutes of farm time, with no more than 3 on the farm at once, so it adds to the 30-minute visit without taking over.
+- **Gentle consequences only:** leftover poops just make the flies buzz louder and the nearby animals hold their noses. Nothing is lost, in line with the farm's "nothing is lost" rule.
+- **Reward:** a few Moolah, and Jeppson does a happy wiggle and follows the cleaner for a bit.
+- Poops are shared on the farm (in Firebase), so any player can clean them up, and every cleanup is logged like other puzzles (`logAttempt`, #8).
+
+**Later ideas**
+- Feed Jeppson and fill his water bowl as a care chore.
+- Teach him tricks (sit, shake, spin) with a puzzle.
+- Jeppson stars in Bedtime Stories (#13) and can follow your avatar as a pet (#10).
+
+**Acceptance criteria**
+- [ ] Jeppson appears on the farm, recognizably a tricolor corgi with his markings, and moves the same on every device
+- [ ] At least 5 idle animations and a tap reaction
+- [ ] Poops appear on a timer (max 3 at once) and are shared across devices
+- [ ] Cleanup is a chore puzzle with Little, Big and grown-up versions
+- [ ] Leftover poops have only gentle effects; nothing is lost
+- [ ] Cleanups earn Moolah and are recorded in the stats
+
+**🔍 Decisions needed**
+- **Art style for Jeppson:** the chunky farm style (to match the farm animals), the storybook film style (#14), or both?
+- Should he be on the farm all the time, or show up at random (with a "Jeppson's here!" bark)?
+
+---
+
 ## Shared groundwork (needed by #1, #3, #4, #5, #8, #13 and #14)
 
 - ⚠️ **One shared script:** Farmstand and the rest of the game live in the same `<script>`, so two `function` declarations with the same name silently replace each other (this broke story and inbox sending once: `sendGift`, `deliver`). Use unique names; a quick check is to list duplicate `function` names before pushing.
