@@ -4,17 +4,6 @@ Newest first. Each release has kid-friendly notes (shown to everyone in the game
 
 ---
 
-## 1.1: Snake Race (Beta) 🐍
-**October 27, 2026**
-
-### For everyone
-- 🐍 **Snake Race (Beta):** steer your snake anywhere on a big dark field full of glowing candy and fruit, and grow the longest snake before time runs out. Hold your finger where you want to go, hold ⚡ to boost, and grab glowing boxes for 🧲 magnet, ⚡ speed, ✖️3 snacks and ⭐ go-through-snakes. Bump into another snake and half of you spills out; solve a quick puzzle to get back in! Computer snakes fill in when there aren't 4 players.
-
-### For grown-ups
-- 🐍 Snake Race respawn puzzles: kids get the quick puzzle types; grown-ups get blackjack or minesweeper, and go back in automatically after losing two in a row. Reports now count snake races, snacks, crashes and longest snake.
-
----
-
 ## 1.0: Welcome to Kapanigans! 🎉
 **October 27, 2026**: everything built so far, made in one day.
 
@@ -29,7 +18,7 @@ Newest first. Each release has kid-friendly notes (shown to everyone in the game
 - 💌 **Inbox:** send stickers, quick phrases, notes, drawings, voice messages, colored pictures and story gifts to anyone, even if they're not playing right now.
 - 📹 **Family video:** see and hear each other while you play. Flip between the front and back camera (🔄 and **Show it!**), minimize the bubble without muting anyone, or turn video off for your device. Calls are smoother with 3 or more people.
 - 🚩 **Capture the Flag (Beta):** grab the other team's flag on a big oval field, with bots on your team, power-ups and **Jeppson** leaving poops that slow you down. Get tagged? Solve a quick puzzle to get back in!
-- 🐍 **Snake Race:** everyone steers their own snake on one big field, eating snacks to grow longer. Don't bump into anyone else's tail! Crash, and a quick puzzle gets you right back in. The longest snake wins.
+- 🐍 **Snake Race (Beta):** steer your snake anywhere on a big dark field full of glowing candy and fruit, and grow the longest snake before time runs out. Hold your finger where you want to go, hold ⚡ to boost, and grab glowing boxes for 🧲 magnet, ⚡ speed, ✖️3 snacks and ⭐ go-through-snakes. Bump into another snake and half of you spills out; solve a quick puzzle to get back in! Computer snakes fill in when there aren't 4 players.
 - 👋 **Who are you!? :)** Pick yourself when you open Kapanigans. Each person plays on one device at a time, and the **Who's on** cards show where everyone is with a one-tap Join.
 - 👨‍👩‍👧 **The whole family's here:** Violet, Quinn, Bear friend, Fox friend, and grown-ups Joe, Layla, Lisa, Parker, Apple G, Uncle Jeff, Gramma Mia, Grandpa George, Oma, Aunt Mimi, Uncle Hammy and Aunt Sara.
 - 🔊 **A friendlier reading voice:** slower and warmer, and it reads to Violet so she doesn't need to read.
@@ -42,6 +31,7 @@ Newest first. Each release has kid-friendly notes (shown to everyone in the game
 - 📰 **What's new:** after each update, everyone sees what changed (the kids get a picture version read aloud). Tap 📰 on the home screen, or the version number, to see all updates. An iPad left open gets a "Tap to update" button when a new version is ready.
 - 📱 **iPad and iPhone fixes:** no accidental page zoom or sideways scrolling, screens that fit without scrolling, a steadier farm, and quick recovery after dropped connections, with a connection light for each player.
 - 🎨 **Art kit:** free AI-generated farm, avatar and family art (Cloudflare Workers AI), with family cartoons kept private under the family code.
+- 🐍 Snake Race respawn puzzles: kids get the quick puzzle types; grown-ups get blackjack or minesweeper, and go back in automatically after losing two in a row. Reports now count snake races, snacks, crashes and longest snake.
 
 ### ⏱️ How long it took (grown-ups only)
 Approximate time Joe spent prompting, from the send times of his messages in each chat. Back-and-forth gaps of up to 15 minutes count as active time; a longer gap counts as a 5-minute wrap-up and then a break. Claude's build time between messages isn't counted on its own.
