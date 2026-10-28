@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>Kapanigans</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -488,6 +488,7 @@ h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance;l
 .colormode button{background:var(--paper);border-radius:999px;padding:10px 16px;font-weight:800;font-size:16px;box-shadow:0 3px 0 var(--sky-deep);border:3px solid transparent}
 .colormode button.on{background:var(--sun);border-color:var(--ink)}
 .ghost.small{font-size:13px;padding:6px 12px;min-height:0}
+#reader #rAuto.backpill{background:var(--sun);color:var(--ink)}#reader #rAuto.backpill.playing{background:rgba(255,255,255,.18);color:#fff}
 .sentbox{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
 .sentbox .gift{font-size:110px;animation:fly 1.6s ease-in forwards}
 @keyframes fly{0%{transform:scale(.6)}30%{transform:scale(1.15) rotate(-6deg)}60%{transform:scale(1) rotate(4deg)}100%{transform:translateY(-30vh) scale(.4);opacity:0}}
@@ -2016,15 +2017,20 @@ document.addEventListener("gesturestart",e=>e.preventDefault());
 // iPad Safari ignores user-scalable=no, so also stop two-finger page zoom here and undo any zoom that slips through
 document.addEventListener("touchmove",e=>{if(e.touches&&e.touches.length>1)e.preventDefault()},{passive:false});
 (()=>{const vp=document.querySelector('meta[name="viewport"]'),vv=window.visualViewport;if(!vp||!vv)return;const base=vp.content;let t=0;
-  const unzoom=()=>{if(vv.scale>1.01){vp.content=base.replace("maximum-scale=1","maximum-scale=1.01");setTimeout(()=>{vp.content=base;window.scrollTo(0,0)},80)}};
-  vv.addEventListener("resize",()=>{clearTimeout(t);t=setTimeout(unzoom,500)});
+  // any zoom at all (even slight) gets reset: re-applying the viewport tag makes Safari snap back to 100%
+  const alt=base.replace("maximum-scale=1","maximum-scale=1.0");
+  const unzoom=()=>{if(vv.scale>1.001||vv.offsetLeft>1){vp.content=alt;setTimeout(()=>{vp.content=base;window.scrollTo(0,window.scrollY);if(vv.scale>1.001)setTimeout(unzoom,250)},60)}};
+  vv.addEventListener("resize",()=>{clearTimeout(t);t=setTimeout(unzoom,250)});
+  vv.addEventListener("scroll",()=>{if(vv.scale>1.001){clearTimeout(t);t=setTimeout(unzoom,250)}});
+  setInterval(()=>{if(document.activeElement&&/INPUT|TEXTAREA/.test(document.activeElement.tagName))return;unzoom()},1500);
   document.addEventListener("focusout",()=>{clearTimeout(t);t=setTimeout(unzoom,300)});})();
+document.addEventListener("dblclick",e=>e.preventDefault(),{passive:false,capture:true});
 // fast tapping: Safari treats two quick taps as "double-tap to zoom". Swallow the second tap's zoom and still deliver its click,
 // so kids can tap buttons as fast as they like. Drawing surfaces, text boxes and the farm handle touches themselves.
 (()=>{let last=0,lastX=0,lastY=0;
   document.addEventListener("touchend",e=>{
     const now=Date.now(),t=e.changedTouches&&e.changedTouches[0]; if(!t||(e.touches&&e.touches.length)) {last=0;return}
-    const quick=now-last<350&&Math.hypot(t.clientX-lastX,t.clientY-lastY)<40; last=now;lastX=t.clientX;lastY=t.clientY;
+    const quick=now-last<500&&Math.hypot(t.clientX-lastX,t.clientY-lastY)<40; last=now;lastX=t.clientX;lastY=t.clientY;
     if(!quick) return; const tg=e.target;
     if(!(tg instanceof Element)||tg.closest("input,textarea,select,canvas,.cstage,.pad,#board,#farm .fwrap,[contenteditable]")) return;
     e.preventDefault(); if(typeof tg.click==="function") tg.click(); else tg.dispatchEvent(new MouseEvent("click",{bubbles:true}));
@@ -2685,7 +2691,7 @@ const rd={g:null,msg:null,ret:"lobby",page:0,auto:false,preview:false,wordSpans:
 (()=>{const s=$("#rStars");for(let i=0;i<60;i++){const st=document.createElement("i");st.style.left=Math.random()*100+"%";st.style.top=Math.random()*70+"%";st.style.animationDelay=(Math.random()*3)+"s";if(Math.random()<.2){st.style.width=st.style.height="4px"}s.append(st)}})();
 function openReader(g,o={}){
   if(screen!=="reader") rd.ret=o.ret||screen; if(o.preview) rd.msg=null; unlockAudio(); rd.vurls={};
-  rd.g=g; rd.page=Math.min(o.page||0,storyPages(g).length-1); rd.preview=!!o.preview; rd.auto=lvl()==="little"&&!g.silent&&!o.page;
+  rd.g=g; rd.page=Math.min(o.page||0,storyPages(g).length-1); rd.preview=!!o.preview; rd.auto=false; // nothing plays until Play is tapped
   show("reader"); $("#rTitle").textContent=storyMeta(g).title+(g.voice?` · 🎤 read by ${nameOf(g.from)}`:g.silent?" · 🤫 no audio":""); $("#rEnd").hidden=true; syncAuto();
   keepAwake();
   if(o.gift){$("#rUnwrapMsg").textContent=`A story from ${nameOf(g.from)}! Tap to open`;$("#rUnwrap").hidden=false;$("#rUnwrap").classList.remove("pop");if(!g.silent)say(`A story from ${nameOf(g.from)}! Tap to open.`)}
@@ -2727,6 +2733,7 @@ function renderPage(){
   readPage(spoken);
 }
 function readPage(text){
+  if(!rd.auto) return; // paused: just show the page
   const spans=rd.wordSpans, rec=rd.g.voice&&rd.g.voice["p"+rd.page];
   if(rec){ // the author's own voice
     const go=()=>{if(rd.auto&&screen==="reader")rd.timer=setTimeout(nextPage,1500)};
@@ -2745,12 +2752,13 @@ function showEnd(){
   const fromOther=!rd.preview&&g.from!==me&&g.id; if(!rd.preview) bump("storiesRead");
   $("#rThanks").hidden=!fromOther;
   $("#rEndMsg").textContent=fromOther?`Tap to say thank you to ${nameOf(g.from)}`:"Sweet dreams!";
-  if(g.silent){} else if(fromOther) say(`The end. Say thank you to ${nameOf(g.from)}!`); else sayClip("the_end","The end. Sweet dreams!");
+  if(g.silent||!rd.auto){} else if(fromOther) say(`The end. Say thank you to ${nameOf(g.from)}!`); else sayClip("the_end","The end. Sweet dreams!");
 }
 $("#rNext").onclick=()=>{blip(520,.06);nextPage()};
 $("#rPrev").onclick=()=>{clearTimeout(rd.timer);if(rd.page>0){rd.page--;renderPage()}};
-function syncAuto(){$("#rAuto").textContent=rd.auto?"⏸️":"▶️"}
-$("#rAuto").onclick=()=>{rd.auto=!rd.auto;syncAuto();if(rd.auto&&!(speech.ok&&speechSynthesis.speaking))nextPage();else if(!rd.auto)clearTimeout(rd.timer)};
+function syncAuto(){const b=$("#rAuto");b.classList.add("backpill");b.innerHTML=rd.auto?"⏸️<span>Pause</span>":"▶️<span>Play</span>";b.classList.toggle("playing",rd.auto)}
+$("#rAuto").onclick=()=>{unlockAudio();rd.auto=!rd.auto;syncAuto();clearTimeout(rd.timer);hush();
+  if(rd.auto){if(!$("#rEnd").hidden){$("#rEnd").hidden=true;rd.page=0}renderPage()}};
 $("#rAgain").onclick=()=>{$("#rEnd").hidden=true;rd.page=0;renderPage()};
 const closeReader=()=>{clearTimeout(rd.timer);hush();if(rd.ret==="grown"){show("grown");renderGrown()}else if(rd.preview||rd.ret==="story"){show("story");renderStory()}else if(rd.ret==="inbox"){show("inbox");ib.view="list";renderInbox()}else goLobby()};
 $("#rClose").onclick=closeReader; $("#rDone").onclick=closeReader;
