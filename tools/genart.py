@@ -77,7 +77,7 @@ def multipart(fields, files):
     return out.getvalue(), f"multipart/form-data; boundary={b}"
 
 
-def generate(prompt, model="klein", ref=None, seed=None, style=None):
+def generate(prompt, model="klein", ref=None, seed=None, style=None, size=(1024, 1024)):
     tok, acct = creds()
     mid, cost = MODELS[model]
     url = f"https://api.cloudflare.com/client/v4/accounts/{acct}/ai/run/{mid}"
@@ -87,7 +87,7 @@ def generate(prompt, model="klein", ref=None, seed=None, style=None):
         if seed is not None: body["seed"] = seed
         data, ctype = json.dumps(body).encode(), "application/json"
     else:
-        fields = {"prompt": full, "width": "1024", "height": "1024"}
+        fields = {"prompt": full, "width": str(size[0]), "height": str(size[1])}
         if seed is not None: fields["seed"] = str(seed)
         files = {}
         if ref:
@@ -311,6 +311,37 @@ def avatar(path, a):
     print(f"avatar batch done: {made} made")
 
 
+STORY_STYLE = ("feature-film quality 3D animated movie look, rich cinematic soft warm lighting, subtle rim light, gentle atmosphere, "
+               "detailed fur, fabric and textures, expressive appealing faces with big warm eyes, gentle stylized proportions, "
+               "cozy bedtime storybook warmth, friendly and never scary, original design, no text, no logo")
+
+
+def storybatch(path, a):
+    """Storybook art (#14). Items: {"prompt", "kind": "bg"|"char"|"page", "versions": n}.
+    bg/page: 1536x1024 full scenes; char: 1024 cutouts on a plain background. Saved to art/story/<dir>/<name>_v<n>.webp."""
+    spec = json.loads(Path(path).read_text()); out = spec.get("dir", "test"); made = 0
+    for name, it in spec["items"].items():
+        kind = it.get("kind", "char")
+        for v in range(1, it.get("versions", 2) + 1):
+            dest = f"story/{out}/{name}_v{v}"
+            if (ART / f"{dest}.webp").exists(): continue
+            t = time.time()
+            if kind == "char":
+                prompt = it["prompt"] + ", full body, centered, whole character in frame, plain soft warm cream studio background"
+                raw = generate(prompt, "klein", None, 100 + v * 7, STORY_STYLE)
+                webp, dims = cutout(raw, False, 768)
+            else:
+                prompt = it["prompt"] + (", wide storybook background scene with open space in the lower middle for characters to stand" if kind == "bg" else ", wide storybook page")
+                raw = generate(prompt, "klein", None, 100 + v * 7, STORY_STYLE, (1536, 1024))
+                from PIL import Image
+                im = Image.open(io.BytesIO(raw)).convert("RGB"); im.thumbnail((1536, 1024))
+                buf = io.BytesIO(); im.save(buf, "WEBP", quality=80, method=6); webp, dims = buf.getvalue(), im.size
+            rd = CFG / "raw" / "story" / out; rd.mkdir(parents=True, exist_ok=True); (rd / f"{name}_v{v}.jpg").write_bytes(raw)
+            save(dest, prompt, "klein", webp, dims, kind != "char"); made += 1
+            print(f"✓ art/{dest}.webp  {dims[0]}x{dims[1]}  {len(webp)//1024}KB  {time.time()-t:.0f}s", flush=True)
+    print(f"story batch done: {made} made")
+
+
 def poses(name, desc, a):
     """art/iso/<name>/<pose>.webp: base pose first, the rest drawn from it as a reference."""
     kind = "crop" if a.crop else "animal"
@@ -350,7 +381,7 @@ def sheet(folder, out=None):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("cmd", choices=["one", "batch", "isobatch", "avatar", "poses", "sheet", "usage"])
+    ap.add_argument("cmd", choices=["one", "batch", "isobatch", "avatar", "storybatch", "poses", "sheet", "usage"])
     ap.add_argument("args", nargs="*")
     ap.add_argument("--model", default="klein", choices=MODELS)
     ap.add_argument("--ref"); ap.add_argument("--seed", type=int)
@@ -369,6 +400,8 @@ def main():
         a.keepbg = a.keepbg or spec.get("options", {}).get("keepbg", False)
         for name, prompt in spec["items"].items():
             make_one(name, prompt, a)
+    elif a.cmd == "storybatch":
+        storybatch(a.args[0], a)
     elif a.cmd == "avatar":
         avatar(a.args[0], a)
     elif a.cmd == "isobatch":

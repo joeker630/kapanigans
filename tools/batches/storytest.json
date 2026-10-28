@@ -1,0 +1,16 @@
+{"about": "Backlog #14 style test: 12 subjects x 2 versions in the approved storybook film style (FLUX.2 klein). Joe approves before any big story batch. Run: python3 tools/genart.py storybatch tools/batches/storytest.json",
+ "dir": "test",
+ "items": {
+  "bg_forest":   {"kind": "bg",   "prompt": "a moonlit forest at night with tall soft pine trees, glowing mushrooms, fireflies and a big friendly moon"},
+  "bg_bedroom":  {"kind": "bg",   "prompt": "a cozy child's bedroom at night with a big window showing the moon and stars, a bed with a quilt, a teddy bear and a warm night light"},
+  "puppy":       {"kind": "char", "prompt": "a fluffy happy golden puppy sitting with its tongue out"},
+  "owl":         {"kind": "char", "prompt": "a round sleepy little owl with big gentle eyes, standing"},
+  "dragon":      {"kind": "char", "prompt": "a small friendly green baby dragon with tiny wings and a big smile, standing"},
+  "unicorn":     {"kind": "char", "prompt": "a gentle white unicorn with a pastel rainbow mane and a golden horn, standing"},
+  "firefighter": {"kind": "char", "prompt": "a smiling woman firefighter in a yellow coat and red helmet holding a hose, no badges, no names, no logos"},
+  "police":      {"kind": "char", "prompt": "a friendly smiling police officer in a navy blue uniform and cap waving hello, no badges, no names, no logos"},
+  "rocket":      {"kind": "char", "prompt": "a cute round red and white toy rocket ship with little round windows, upright"},
+  "chest":       {"kind": "char", "prompt": "a small wooden treasure chest with gold trim, the lid open and gold coins and gems sparkling inside"},
+  "page_owl":    {"kind": "page", "prompt": "a little owl sitting on a branch in a moonlit forest, saying goodnight to the moon"},
+  "page_dragon": {"kind": "page", "prompt": "a small friendly baby dragon curled up asleep on a pile of soft pillows in a cozy castle tower at night"}
+ }}
