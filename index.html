@@ -1092,6 +1092,12 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
 .snrow img,.snrow .em{width:44px;height:44px;border-radius:50%;font-size:30px;display:grid;place-items:center}
 .snrow b{flex:1;text-align:left;font-size:20px}.snrow .len{font-weight:800;display:flex;flex-direction:column;align-items:flex-end}.snrow small{font-weight:600;opacity:.7}
 @media (max-width:600px){.snmini{width:110px;height:74px}.snlb{min-width:0;font-size:13px}.snlb b{display:none}}
+.ppwrap{flex:1;min-height:0;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+.pprow{display:flex;align-items:center;gap:8px;background:#A9DB7E;border-radius:24px;padding:16px;max-width:100%}
+.ppgrid{display:grid;gap:5px;background:#E7C98F;padding:5px;border-radius:16px}
+.pptile{border:0;padding:0;background:#FFF8E7;border-radius:10px;width:var(--t);height:var(--t);display:block}
+.pptile svg{display:block;width:100%;height:100%}
+.ppend{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;font-weight:900;text-align:center;width:64px}
 </style>
 
 </head>
@@ -6925,6 +6931,82 @@ TASKS.tapteam=api=>{
   const check=()=>{const s=CO.sess[sid];if(!s)return;if(order.every(w=>(w===me?mine:+(((s.prog||{})[w]||{}).n)||0)>=TAPTEAM_N))coopComplete(sid)};
   const sync=()=>{if(!api.live())return;const s=CO.sess[sid];if(!s)return;draw();if(s.status==="done"){api.win(500);return}check()};
   CO.listeners.add(sync);api.after(()=>CO.listeners.delete(sync));draw();
+};
+
+/* ================= TEAM CHORE: WATER THE FIELD (pipes) =================
+   Each player turns the pipes on their own screen so water runs from the pump across to the field.
+   Violet (Little): 3 pipes in a row, only 1–2 turned wrong. Quinn (Big): 3×3. Grown-ups: 4×4 with a 45-second timer (can lose).
+   Shared progress: coop/<sid>/prog/<who> = {pct, done}. The chore is done when everyone's water gets through. */
+Object.assign(COOP_CHORES,{water:{type:"pipes",title:"💧 Water the field together",em:"💧",verb:"water the field",find:()=>"farm",none:"",pic:"",
+  finish:s=>{const up={};for(const w of s.order||Object.keys(s.members||{}))up["jars/"+w]=INC(2);fUpd(up)}}});
+PUZZLE_NAMES.pipes="water the field"; SKILL.pipes="logic";
+const PP_N=1,PP_E=2,PP_S=4,PP_W=8, PP_DIRS=[[1,-1,0],[2,0,1],[4,1,0],[8,0,-1]], PP_OPP={1:4,2:8,4:1,8:2};
+const ppRot=m=>((m<<1)|(m>>3))&15;
+function ppMake(rows,cols,little){
+  const r0=rint(0,rows-1),r1=rint(0,rows-1);let path=null;
+  const dfs=(r,c,seen,acc)=>{if(path)return;acc.push([r,c]);seen.add(r*cols+c);
+    if(r===r1&&c===cols-1){path=acc.slice();return}
+    for(const [,dr,dc] of shuffle(PP_DIRS)){const nr=r+dr,nc=c+dc;if(nr<0||nc<0||nr>=rows||nc>=cols||seen.has(nr*cols+nc))continue;dfs(nr,nc,seen,acc)}
+    acc.pop();seen.delete(r*cols+c)};
+  dfs(r0,0,new Set(),[]);
+  const mask=Array(rows*cols).fill(0),onPath=new Set(),dirTo=(a,b)=>PP_DIRS.find(([,dr,dc])=>a[0]+dr===b[0]&&a[1]+dc===b[1])[0];
+  path.forEach(([r,c],i)=>{const pr=path[i-1],nx=path[i+1];mask[r*cols+c]=(pr?dirTo([r,c],pr):PP_W)|(nx?dirTo([r,c],nx):PP_E);onPath.add(r*cols+c)});
+  for(let i=0;i<mask.length;i++)if(!onPath.has(i))mask[i]=pickOne([5,10,3,6,12,9,7,14]);
+  const scr=shuffle([...onPath]).slice(0,little?rint(1,2):onPath.size);
+  for(const i of scr){let k=rint(1,3);if((mask[i]===5||mask[i]===10)&&k===2)k=1;for(let j=0;j<k;j++)mask[i]=ppRot(mask[i])}
+  for(let i=0;i<mask.length;i++)if(!onPath.has(i))for(let j=rint(0,3);j>0;j--)mask[i]=ppRot(mask[i]);
+  return {mask,onPath,r0,r1};
+}
+TASKS.pipes=api=>{
+  const grown=isGrown(), L=api.L, rows=L?1:grown?4:3, cols=L?3:grown?4:3;
+  const sid=api.ctx.coop&&api.ctx.coop.sid, S0=sid&&CO.sess[sid];
+  const order=S0?(S0.order||Object.keys(S0.members||{})):[me], others=order.filter(w=>w!==me), names=others.map(w=>kidOf(w).name);
+  const G=ppMake(rows,cols,L), mask=G.mask; let mineDone=false;
+  api.ask(L?"Tap the pipes to turn them!":"Turn the pipes so the water reaches the field.",
+    L?`Let's water the field${names.length?` with ${names.join(" and ")}`:""}! Tap the pipes to turn them so the water can flow.`:
+    `Water the field${names.length?` with ${names.join(" and ")}`:""}! Turn the pipes so water runs from the pump to the field.`);
+  const wrap=el("div","ppwrap"), row=el("div","pprow"), rowsEl=el("div","taprows");
+  const pump=el("div","ppend",`<svg width="56" height="74" viewBox="0 0 56 74" aria-hidden="true"><rect x="6" y="14" width="34" height="54" rx="7" fill="#7A5AF8"/><rect x="14" y="4" width="18" height="14" rx="3" fill="#5B3FD6"/><rect x="40" y="34" width="16" height="12" fill="#2D8CFF"/><circle cx="23" cy="40" r="8" fill="#C3B5FD"/></svg><span>Pump</span>`);
+  const grid=el("div","ppgrid"), field=el("div","ppend",`<svg width="60" height="48" viewBox="0 0 60 48" aria-hidden="true"><rect x="2" y="14" width="56" height="30" rx="6" fill="#7A4E2D"/><path d="M10 14v-8M22 14v-10M34 14v-8M46 14v-10" stroke="#2E9E4F" stroke-width="4" stroke-linecap="round"/></svg><span>${L&&names.length?esc(names[0])+"'s pipes":"Field"}</span>`);
+  row.append(pump,grid,field); wrap.append(row,rowsEl); api.area.append(wrap);
+  const btns=mask.map((_,i)=>{const b=el("button","pptile");b.onclick=()=>{if(!api.live()||mineDone)return;mask[i]=ppRot(mask[i]);blip(520,.04,"triangle",.06);draw()};grid.append(b);return b});
+  let tsz=80;
+  adFit(api,wrap,r=>{tsz=Math.floor(Math.min((r.width-170)/cols,(r.height-(order.length>1?120:40))/rows,L?130:grown?84:104));tsz=Math.max(46,tsz);
+    grid.style.gridTemplateColumns=`repeat(${cols},${tsz}px)`;grid.style.setProperty("--t",tsz+"px");
+    const off=k=>((k+.5)*(tsz+5)-(rows*(tsz+5))/2);pump.style.transform=`translateY(${off(G.r0)}px)`;field.style.transform=`translateY(${off(G.r1)}px)`});
+  const wet=()=>{const set=new Set(),q=[],s=G.r0*cols;if(mask[s]&PP_W){set.add(s);q.push(s)}
+    while(q.length){const i=q.pop(),r=Math.floor(i/cols),c=i%cols;
+      for(const [d,dr,dc] of PP_DIRS){if(!(mask[i]&d))continue;const nr=r+dr,nc=c+dc;if(nr<0||nc<0||nr>=rows||nc>=cols)continue;const j=nr*cols+nc;
+        if(!set.has(j)&&(mask[j]&PP_OPP[d])){set.add(j);q.push(j)}}}
+    return set};
+  const progOf=w=>{if(w===me)return mineDone?1:api.store.pct||0;const s=CO.sess[sid];const p=s&&s.prog&&s.prog[w];return p?(p.done?1:+p.pct||0):0};
+  const drawRows=()=>{if(order.length<2){rowsEl.hidden=true;return}rowsEl.innerHTML="";
+    for(const w of order){const n=progOf(w),K=kidOf(w);const r=el("div","taprow"+(w===me?" me":""),`<span class="who">${faceHTML(K)} ${esc(w===me?"You":K.name)}</span><span class="bar"><i style="width:${Math.round(n*100)}%"></i></span><span class="n">${n>=1?"💧":Math.round(n*100)+"%"}</span>`);
+      r.style.setProperty("--k",K.hue);rowsEl.append(r)}};
+  let lastSent=-1;
+  function draw(){
+    const w=wet(), last=G.r1*cols+cols-1, through=w.has(last)&&!!(mask[last]&PP_E);
+    btns.forEach((b,i)=>{const m=mask[i],col=w.has(i)?"#2D8CFF":"#A79DBE";
+      const seg=[[1,"M50 50V0"],[2,"M50 50H100"],[4,"M50 50V100"],[8,"M50 50H0"]].filter(([d])=>m&d).map(([,p])=>p).join("");
+      b.innerHTML=`<svg viewBox="0 0 100 100" aria-hidden="true"><path d="${seg}" stroke="${col}" stroke-width="26" fill="none"/><circle cx="50" cy="50" r="13" fill="${col}"/></svg>`;
+      b.setAttribute("aria-label",`Pipe, row ${Math.floor(i/cols)+1}, column ${i%cols+1}${w.has(i)?", has water":""}. Tap to turn.`)});
+    api.store.pct=through?1:Math.min(.95,[...w].filter(i=>G.onPath.has(i)).length/G.onPath.size);
+    if(sid&&Math.round(api.store.pct*20)!==lastSent){lastSent=Math.round(api.store.pct*20);coopUpd({[`${sid}/prog/${me}/pct`]:api.store.pct})}
+    if(through&&!mineDone){mineDone=true;blip(880,.2,"triangle");if(stopClock)stopClock();
+      if(sid){coopUpd({[`${sid}/prog/${me}/done`]:true});if(others.length&&!others.every(o=>progOf(o)>=1))api.ask("Your water is through! Waiting for your team…",`Great job! The water is through. Let's wait for ${names.join(" and ")}.`);check()}
+      else api.win(700)}
+    drawRows();
+  }
+  // grown-ups race a clock; running out loses (and leaves the team chore)
+  let stopClock=null;
+  if(grown){let left=45;adStatus(api,`<span class="jamclock">⏱️ ${left}s</span> <span class="adsm">get the water through before time runs out</span>`);
+    const t=setInterval(()=>{if(!api.live()||mineDone)return clearInterval(t);left--;adStatus(api,`<span class="jamclock${left<=10?" low":""}">⏱️ ${left}s</span> <span class="adsm">get the water through before time runs out</span>`);
+      if(left<=0){clearInterval(t);api.lose("Time ran out before the water reached the field.")}},1000);
+    stopClock=()=>clearInterval(t);api.after(stopClock)}
+  const check=()=>{const s=CO.sess[sid];if(!s)return;if(order.every(w=>progOf(w)>=1))coopComplete(sid)};
+  if(sid){const sync=()=>{if(!api.live())return;const s=CO.sess[sid];if(!s)return;drawRows();if(s.status==="done"){api.win(500);return}if(mineDone)check()};
+    CO.listeners.add(sync);api.after(()=>CO.listeners.delete(sync))}
+  draw();
 };
 
 function openFarm(){if(!me){goLobby();return}if(!fm.cv)farmInit();farmConnect();fwConnect();show("farm");farmHeader();farmFit();requestAnimationFrame(()=>{if(screen==="farm")farmFit()});fm.last=performance.now();if(!fm.raf)fm.raf=requestAnimationFrame(farmFrame);
