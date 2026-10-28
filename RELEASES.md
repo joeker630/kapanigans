@@ -4,6 +4,19 @@ Newest first. Each release has kid-friendly notes (shown to everyone in the game
 
 ---
 
+## 1.1: Play time and a quieter inbox ⏰
+**October 27, 2026**: evening update.
+
+### For everyone
+- ⏰ **Violet's play timer:** Violet plays for 30 minutes at a time, with a countdown at the top of the screen. When it's time for a break, a sleepy moon says "Great playing, Violet!" and the games rest for 30 minutes. Her video chat stays on.
+- 💌 **Simpler sending:** the Inbox now offers Sticker, Drawing, Type it and Voice (the "Say something" choice is gone).
+
+### For grown-ups
+- ⏰ **Grown-up override:** on Violet's break screen, hold the 🔒 for 3 seconds to give her 15 more minutes. Her time follows her to any device, and a 30-minute break away from the game also starts a fresh 30 minutes.
+- 🔇 **Quiet inbox for grown-ups:** messages no longer read themselves aloud or auto-play for grown-ups; tap 🔊 or ▶️ when you want to hear one. The kids still hear theirs.
+
+---
+
 ## 1.0: Welcome to Kapanigans! 🎉
 **October 27, 2026**: everything built so far, made in one day.
 

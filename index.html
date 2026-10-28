@@ -503,6 +503,16 @@ h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance;l
 .wnkid span{font-size:44px;line-height:1}.wnkid b{font-size:14px;line-height:1.15}
 .appver{font-size:12px;font-weight:800;color:#7a6f92;background:none;padding:2px 6px;align-self:flex-end;margin-bottom:6px}
 .wnupdate{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:80;background:var(--ink);color:#fff;border-radius:999px;padding:12px 22px;font-family:var(--display);font-size:18px;box-shadow:0 6px 18px rgba(0,0,0,.25);animation:popin .4s ease-out}
+.pltimer{position:fixed;left:50%;top:calc(8px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:57;background:var(--paper);color:var(--ink);border-radius:999px;padding:6px 16px;font-family:var(--display);font-size:20px;box-shadow:0 3px 0 var(--sky-deep),0 4px 12px rgba(43,33,64,.12);pointer-events:none;white-space:nowrap}
+.pltimer.soon{background:#FFE7B8}.pltimer.last{background:#FFD2D2;animation:fobang 1.6s ease-in-out infinite}
+.pllock{position:fixed;inset:0;z-index:58;background:radial-gradient(ellipse at 50% 0%,#3B3A8C,#141B4D 75%);display:flex;align-items:center;justify-content:center;padding:20px;color:#fff;text-align:center;touch-action:none}
+.plcard{display:flex;flex-direction:column;align-items:center;gap:10px;max-width:560px}
+.plmoon{font-size:clamp(90px,16vw,150px);line-height:1;animation:a-sleep 3.2s ease-in-out infinite}
+.plstars{font-size:28px;letter-spacing:10px;animation:twinkle 3s ease-in-out infinite}
+.pllock h2{font-family:var(--display);font-size:clamp(30px,5vw,46px);margin:0;color:var(--moon,#FFF3C4)}
+.plsub{font-size:24px;margin:0;font-weight:800}.plagain{font-size:20px;margin:6px 0 10px;opacity:.9}.plagain b{font-family:var(--display);font-size:26px}
+.plgrown{display:flex;align-items:center;gap:12px;margin-top:18px;opacity:.75;font-size:13px;text-align:left}
+.holdbtn.small{width:70px;height:70px;background:rgba(255,255,255,.12)}.holdbtn.small .lock{font-size:28px}
 .sentbox{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center}
 .sentbox .gift{font-size:110px;animation:fly 1.6s ease-in forwards}
 @keyframes fly{0%{transform:scale(.6)}30%{transform:scale(1.15) rotate(-6deg)}60%{transform:scale(1) rotate(4deg)}100%{transform:translateY(-30vh) scale(.4);opacity:0}}
@@ -1073,6 +1083,16 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
 </head>
 <body>
 <div class="help" id="help" hidden></div>
+<div class="pltimer" id="plTimer" hidden aria-live="polite">⏰ <b>30:00</b></div>
+<div class="pllock" id="plLock" hidden>
+  <div class="plcard">
+    <div class="plmoon">🌙</div><div class="plstars">✨ ⭐ ✨</div>
+    <h2>Great playing, Violet!</h2>
+    <p class="plsub">Time for a little break.</p>
+    <p class="plagain">We can play again in <b id="plLeft">30:00</b></p>
+    <div class="plgrown"><button class="holdbtn small" id="plHold" aria-label="Grown-ups: hold for 15 more minutes"><span class="ring" id="plRing"></span><span class="lock">🔒</span></button><span>Grown-ups: hold 3 seconds<br>for 15 more minutes</span></div>
+  </div>
+</div>
 <!-- ============ FAMILY CODE (grown-ups) ============ -->
 <section class="screen" id="setup" hidden>
   <div class="setupcard">
@@ -1442,7 +1462,7 @@ addEventListener("resize",()=>requestAnimationFrame(fitHelp));
    "## 1.0: Title" starts a release; "### For everyone" / "### For grown-ups" / any other "###" section follow.
    Grown-up sections ("For grown-ups", "How long it took…") are hidden from the kids.
    Bump APP_VERSION together with a new RELEASES.md entry. */
-const APP_VERSION="1.0";
+const APP_VERSION="1.1";
 const WN={rel:null,loading:null};
 function wnGrownOnly(h){return /grown/i.test(h)}
 function wnParse(md){
@@ -1523,7 +1543,7 @@ function wnMaybe(){
     if(seen&&wnVer(seen)>=wnVer(latest)) return;
     if(!seen&&load("kp.wn."+who)===latest){mail.ref.child(`seen/${who}/whatsnew`).set(latest).catch(()=>{});return}
     const go=()=>{if(me!==who||screen!=="lobby"){wnChecked=null;return}
-      if(!$("#help").hidden){setTimeout(go,1200);return}
+      if(!$("#help").hidden||!$("#plLock").hidden){setTimeout(go,1200);return}
       mail.ref.child(`seen/${who}/whatsnew`).set(latest).catch(()=>{}); store("kp.wn."+who,latest); wnShow({auto:true})};
     setTimeout(go,1500);
   });
@@ -1589,6 +1609,7 @@ function say(text,o={}){
 function sayLittle(text,o){if(me&&lvl()==="little")say(text,o)}
 const sharedAudio=new Audio(); sharedAudio.playsInline=true;
 const SILENT="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=";
+window.__kpSay=t=>say(t);
 function hush(){sayTok++;clearTimeout(sayT);if(speech.ok)speechSynthesis.cancel();try{if(!sharedAudio.paused){sharedAudio.onended=null;sharedAudio.pause()}}catch(e){}}
 const COLOR_NAMES={"#FF3B3B":"Red","#FF8A00":"Orange","#FFD600":"Yellow","#2ECC40":"Green","#2D8CFF":"Blue","#8B5CF6":"Purple","#FF5FA2":"Pink","#8B5A2B":"Brown","#FFFFFF":"White","#9CA3AF":"Grey","#111111":"Black"};
 const REACT_WORDS={"👋":"waves hi","❤️":"sends a heart","😂":"is laughing","⭐":"sends a star"};
@@ -3623,9 +3644,10 @@ function onMail(first){
     if(first||m.at<appStart-10000) continue;
     blip(660,.2,"triangle",.12);setTimeout(()=>blip(990,.25,"triangle",.12),160);
     const mb=$("#mailBtn"); if(mb){mb.classList.remove("bounce");void mb.offsetWidth;mb.classList.add("bounce")}
-    if(m.kind==="story"){toast(`🎁 A bedtime story from ${nameOf(m.from)}!`);sayClip("story",`You got a bedtime story from ${nameOf(m.from)}!`)}
-    else if(m.kind==="react"){floatReaction(m.r||"❤️",m.from);toast(reactLine(m));say(reactLine(m))}
-    else {toast(`💌 New message from ${nameOf(m.from)}!`);sayClip("message",`You got a message from ${nameOf(m.from)}!`)}
+    const quiet=!!(KIDS[me]&&KIDS[me].grown);
+    if(m.kind==="story"){toast(`🎁 A bedtime story from ${nameOf(m.from)}!`);if(!quiet)sayClip("story",`You got a bedtime story from ${nameOf(m.from)}!`)}
+    else if(m.kind==="react"){floatReaction(m.r||"❤️",m.from);toast(reactLine(m));if(!quiet)say(reactLine(m))}
+    else {toast(`💌 New message from ${nameOf(m.from)}!`);if(!quiet)sayClip("message",`You got a message from ${nameOf(m.from)}!`)}
   }
   syncMailBadges();
   if(screen==="lobby") renderLobby();
@@ -3731,7 +3753,7 @@ function renderInbox(){
   else if(ib.view==="what"){
     B.append(el("h2",null,"What do you want to send?"));
     const grid=el("div","choices");
-    const opts=[["sticker","😀","Sticker"],["phrase","💬","Say something"],["draw","🖍️","Drawing"],["voice","🎤","Voice"]];
+    const opts=[["sticker","😀","Sticker"],["draw","🖍️","Drawing"],["voice","🎤","Voice"]];
     if(lvl()!=="little") opts.splice(2,0,["text","✍️","Type it"]);
     for(const [v,e,l] of opts){const b=el("button","choice",`<span class="em">${e}</span>${l}`);b.onclick=()=>{sayLittle(l);ibGo(v)};grid.append(b)}
     B.append(grid);
@@ -3778,11 +3800,12 @@ function sendAttach(){const a=ib.attach;ib.attach=null;deliverMsg(a.msg,a.blob)}
 function thin(strokes){return strokes.map(s=>{if(s.p.length<=600)return s;const q=[];for(let i=0;i<s.p.length;i+=4)q.push(s.p[i],s.p[i+1]);return Object.assign({},s,{p:q})})}
 function renderMsg(B,m){
   const F=kidOf(m.from); markRead(m);
+  const grown=!!(KIDS[me]&&KIDS[me].grown), say=t=>{if(!grown)window.__kpSay(t)};
   const head=el("div","mhead",`${faceHTML(F)}<span><b>${esc(F.name)}</b><small>${esc(ago(m.at))}</small></span>`);head.style.setProperty("--k",F.hue);B.append(head);
   const card=el("div","mcard");B.append(card);
   if(m.kind==="sticker"){const s=el("div","bigsticker");s.textContent=m.emoji||"⭐";card.append(s);say(`${F.name} sent you ${m.name||"a sticker"}!`)}
   else if(m.kind==="phrase"||m.kind==="text"){const t=el("div","mtextbig");if(m.emoji){const e=el("div","bigsticker small");e.textContent=m.emoji;card.append(e)}t.textContent=String(m.text||"").slice(0,200);card.append(t);
-    const rb=el("button","ghost","🔊 Read it to me");rb.onclick=()=>say(`${F.name} says: ${m.text}`);card.append(rb);say(`${F.name} says: ${m.text}`)}
+    const rb=el("button","ghost","🔊 Read it to me");rb.onclick=()=>window.__kpSay(`${F.name} says: ${m.text}`);card.append(rb);say(`${F.name} says: ${m.text}`)}
   else if(m.kind==="report"){const t=el("div","mtextbig report");t.textContent=String(m.text||"").slice(0,1800);card.append(t);
     const go=el("button","bigbtn","📊 Open reports");go.onclick=()=>askGrownUp("reports");card.append(go);B.append(card);
     const row=el("div","rowbtns replies");const del=el("button","round","🗑️");del.setAttribute("aria-label","Delete");del.onclick=()=>{deleteMsg(m);toast("Deleted");ibGo("list")};row.append(del);B.append(row);return}
@@ -3791,7 +3814,7 @@ function renderMsg(B,m){
     getBlob(m.blob||m.id).then(b=>{wait.remove();if(!b){card.append(el("p","empty","This message couldn't be opened."));return}
       if(m.kind==="draw"&&Array.isArray(b.s)){const cv=document.createElement("canvas");cv.width=PAD;cv.height=PAD;cv.className="mdraw";drawStrokes(cv.getContext("2d"),b.s.filter(s=>s&&Array.isArray(s.p)),1);card.append(cv);say(`${F.name} drew you a picture!`)}
       else if(m.kind==="picture"&&typeof b.data==="string"&&b.data.startsWith("data:image/")){const img=new Image();img.src=b.data;img.className="mpic";img.alt="Colored picture";card.append(img);say(`${F.name} sent you a picture they colored!`)}
-      else if(m.kind==="voice"&&typeof b.data==="string"){const a=voicePlayer(b);card.append(a.el);a.play();}
+      else if(m.kind==="voice"&&typeof b.data==="string"){const a=voicePlayer(b);card.append(a.el);if(!grown)a.play();}
       else card.append(el("p","empty","This message couldn't be opened."));});
   }
   const row=el("div","rowbtns replies");
@@ -4021,6 +4044,71 @@ function askGrownUp(tab){
 })();
 $("#grownBtn").onclick=()=>askGrownUp("reports");
 $("#codeChip").onclick=()=>askGrownUp("code");
+
+/* ================= PLAY TIME LIMIT (Violet) =================
+   30 minutes of play, then a 30-minute break. A countdown sits at the top middle of the screen;
+   when time is up a gentle "time for a break" screen covers the games (the family video stays visible).
+   Saved in Firebase at families/<code>/limits/<person> = {used, last, lockUntil}, so it follows her to any device.
+   A break of 30+ minutes on her own (not playing) also starts a fresh 30 minutes.
+   Grown-ups can hold the lock for 3 seconds to give 15 more minutes. */
+const PLAY_LIMITS={violet:{play:30*60e3,rest:30*60e3,extra:15*60e3}};
+const PL={who:null,st:null,lastTick:0,saveAt:0,warned:{},loading:false};
+function plRule(){return me&&PLAY_LIMITS[me]?PLAY_LIMITS[me]:null}
+function plRef(){return mail.ref&&PL.who?mail.ref.child("limits/"+PL.who):null}
+function plSave(){const r=PL.loaded?plRef():null;if(r&&PL.st)r.set({used:Math.round(PL.st.used),last:PL.st.last,lockUntil:PL.st.lockUntil||0}).catch(()=>{});try{localStorage.setItem("kp.limit."+PL.who,JSON.stringify(PL.st))}catch(e){}}
+function plLoad(who){
+  PL.who=who; PL.warned={}; PL.loaded=false; let local=null; try{local=JSON.parse(localStorage.getItem("kp.limit."+who)||"null")}catch(e){}
+  PL.st=local&&typeof local.used==="number"?local:{used:0,last:0,lockUntil:0};
+  plFetch();
+}
+function plFetch(){ // the family copy wins if it's newer or she's on a break; until it's read we don't write over it
+  const r=plRef(), who=PL.who; if(!r||PL.loading) return; PL.loading=true;
+  r.once("value").then(s=>{const v=s.val();PL.loading=false;if(PL.who!==who)return;
+    if(v&&typeof v.used==="number"&&((+v.lockUntil||0)>Date.now()||(v.last||0)>=(PL.st.last||0))) PL.st={used:+v.used||0,last:+v.last||0,lockUntil:+v.lockUntil||0};
+    PL.loaded=true}).catch(()=>{PL.loading=false});
+}
+const plFmt=ms=>{const s=Math.max(0,Math.ceil(ms/1000));return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")};
+function plTick(){
+  const rule=plRule(), T=$("#plTimer"), L=$("#plLock");
+  const active=rule&&!["pick","setup"].includes(screen)&&document.visibilityState==="visible";
+  if(!rule){if(T)T.hidden=true;if(L&&!L.hidden)L.hidden=true;PL.who=null;return}
+  if(PL.who!==me) plLoad(me); else if(!PL.loaded) plFetch();
+  const now=Date.now(), st=PL.st;
+  if(!active){T.hidden=true;PL.lastTick=0;return}
+  if(st.lockUntil&&st.lockUntil>now){ // on a break
+    T.hidden=true; plShowLock(st.lockUntil-now); PL.lastTick=now; return}
+  if(st.lockUntil&&st.lockUntil<=now){st.lockUntil=0;st.used=0;PL.warned={};plSave();plHideLock();sayLittle("Break's over! Let's play!")}
+  if(!L.hidden) plHideLock();
+  if(st.last&&now-st.last>rule.rest){st.used=0;PL.warned={}} // she's been away long enough: a fresh 30 minutes
+  if(PL.lastTick) st.used+=Math.min(now-PL.lastTick,2000);
+  PL.lastTick=now; st.last=now;
+  const left=rule.play-st.used;
+  T.hidden=false; T.querySelector("b").textContent=plFmt(left);
+  T.classList.toggle("soon",left<=5*60e3); T.classList.toggle("last",left<=60e3);
+  if(left<=5*60e3&&left>4.5*60e3&&!PL.warned.five){PL.warned.five=1;say("Five more minutes of playing, Violet!")}
+  if(left<=60e3&&left>50e3&&!PL.warned.one){PL.warned.one=1;say("One more minute, Violet!")}
+  if(left<=0){st.used=0;st.lockUntil=now+rule.rest;PL.warned={};plSave();hush();plShowLock(rule.rest,true);return}
+  if(now-PL.saveAt>10000){PL.saveAt=now;plSave()}
+}
+function plShowLock(left,fresh){
+  const L=$("#plLock"); if(L.hidden){L.hidden=false;$("#help").hidden=true;const w=$("#wnBox");if(w)w.hidden=true;
+    if(fresh){blip(523,.2,"sine",.08);setTimeout(()=>blip(392,.3,"sine",.08),220);setTimeout(()=>say("Great playing, Violet! Time for a little break. We'll play again soon."),500)}}
+  $("#plLeft").textContent=plFmt(left);
+}
+function plHideLock(){$("#plLock").hidden=true}
+// grown-ups: hold the lock 3 seconds for 15 more minutes
+(()=>{const btn=$("#plHold"),ring=$("#plRing"); let t0=0,raf=0;
+  const stop=()=>{cancelAnimationFrame(raf);ring.style.setProperty("--p","0")};
+  const step=()=>{const p=Math.min(1,(performance.now()-t0)/3000);ring.style.setProperty("--p",String(p));
+    if(p>=1){stop();const rule=plRule();if(rule&&PL.st){PL.st.lockUntil=0;PL.st.used=Math.max(0,rule.play-rule.extra);PL.st.last=Date.now();PL.warned={five:1};PL.lastTick=0;plSave();plHideLock();blip(880,.15,"triangle",.1);toast("15 more minutes for Violet");sayLittle("Fifteen more minutes!")}return}
+    raf=requestAnimationFrame(step)};
+  btn.addEventListener("pointerdown",e=>{e.preventDefault();t0=performance.now();try{btn.setPointerCapture(e.pointerId)}catch(_){}step()});
+  btn.addEventListener("pointerup",stop); btn.addEventListener("pointercancel",stop); btn.addEventListener("contextmenu",e=>e.preventDefault());
+})();
+setInterval(plTick,1000);
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState!=="visible"&&PL.st&&PL.who){plSave()}PL.lastTick=0});
+addEventListener("pagehide",()=>{if(PL.st&&PL.who)plSave()});
+
 $("#wnBtn").onclick=()=>{blip(600,.06);wnShow({})}; $("#appVer").onclick=()=>wnShow({all:true});
 $("#gHome").onclick=()=>{hush();me?goLobby():show("pick")};
 $("#gTabs").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;gTab=b.dataset.tab;gInboxOpen=null;gInboxMsg=null;renderGrown()});
