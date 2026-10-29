@@ -4,6 +4,19 @@ Newest first. Each release has kid-friendly notes (shown to everyone in the game
 
 ---
 
+## 1.11: Family videos on every page 📹
+**October 29, 2026**
+
+### For everyone
+- 📹 **Videos everywhere:** the family video column now has its own space on every page: Capture the Flag, reading a story, and the drawing pad in My own story, as well as coloring, the farm, Snake Race, dress up, the Inbox and Grown-ups. Nothing gets covered.
+
+### For grown-ups
+- Capture the Flag's map now shrinks to make room for the videos, and the "Draw your character" pad no longer hides them.
+- Fixed a rare farm hiccup the first time a family opens the farm (the farm and its first orders were saving at the same moment).
+- The home screen still shows everyone's video on their person cards, so the column only appears once you're inside a game.
+
+---
+
 ## 1.10: A quieter reading voice 🔉
 **October 29, 2026**
 

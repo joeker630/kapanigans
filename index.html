@@ -167,7 +167,8 @@ select,input,textarea{font-size:max(16px,1em)}
 #sBody>.cerow .ctool.on{background:var(--sun)}
 .cebot{display:flex;gap:10px;justify-content:center;align-items:center}
 .cthumb{width:52px;height:52px;object-fit:contain}
-.cdrawsheet{position:fixed;inset:0;z-index:66;background:var(--sky);display:flex;flex-direction:column;padding:max(12px,env(safe-area-inset-top,0px)) 14px max(12px,env(safe-area-inset-bottom,0px));overflow:hidden}
+.cdrawsheet{position:fixed;inset:0;z-index:56;background:var(--sky);display:flex;flex-direction:column;padding:max(12px,env(safe-area-inset-top,0px)) 14px max(12px,env(safe-area-inset-bottom,0px));overflow:hidden}
+.cdrawsheet .sbody>h2:first-child{margin-top:30px}
 .cdrawsheet .sbody{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;gap:8px}
 /* the reader */
 .cread{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:3}
@@ -1618,7 +1619,7 @@ addEventListener("resize",()=>requestAnimationFrame(fitHelp));
    "## 1.0: Title" starts a release; "### For everyone" / "### For grown-ups" / any other "###" section follow.
    Grown-up sections ("For grown-ups", "How long it took…") are hidden from the kids.
    Bump APP_VERSION together with a new RELEASES.md entry. */
-const APP_VERSION="1.10";
+const APP_VERSION="1.11";
 const WN={rel:null,loading:null};
 function wnGrownOnly(h){return /grown/i.test(h)}
 function wnParse(md){
@@ -2730,7 +2731,9 @@ function tileFor(p,mine){
 function vidReserve(){
   const box=$("#vid"); if(!box) return; const on=!box.hidden&&!box.dataset.dragged&&innerWidth>=600&&!box.classList.contains("dock");
   const w=on?Math.round(box.getBoundingClientRect().width+28):0;
-  for(const id of ["dress","story","inbox","grown","snake","game"]){const sc=$("#"+id);if(sc)sc.style.paddingRight=(on&&id===screen)?w+"px":""}
+  for(const id of ["dress","story","inbox","grown","snake","game","reader"]){const sc=$("#"+id);if(sc)sc.style.paddingRight=(on&&id===screen)?w+"px":""}
+  for(const D of document.querySelectorAll(".cdrawsheet")) D.style.paddingRight=(on&&!D.hidden)?w+"px":""; // story drawing pad
+  const CB=$("#ctfBody"); if(CB){const want=(on&&screen==="ctf")?`calc(100% - ${w-14}px)`:""; if(CB.style.width!==want){CB.style.width=want; if(screen==="ctf"&&typeof ctfLayout==="function") requestAnimationFrame(ctfLayout)}}
   const T=$("#task"); if(T) T.style.paddingRight=(on&&!T.hidden)?w+"px":"";
   const F=$("#farmBody"); if(F){const want=(on&&screen==="farm")?`calc(100% - ${w-14}px)`:""; if(F.style.width!==want){F.style.width=want; if(screen==="farm"&&typeof farmFit==="function"&&typeof fm!=="undefined"&&fm.cv) requestAnimationFrame(farmFit)}}
 }
@@ -2741,7 +2744,7 @@ function renderVideoUI(){
   const box=$("#vid"); if(!box) return;
   // always visible: everywhere except the home screen, which shows everyone's video on the people cards
   const show=screen!=="lobby"&&!!(vid.local||vid.streams.size);
-  box.hidden=!show; if(!show){if(screen==="game")requestAnimationFrame(fitBoard);for(const id of ["dress","story","inbox","grown","snake","game"]){const sc=$("#"+id);if(sc)sc.style.paddingRight=""}return}
+  box.hidden=!show; if(!show){if(screen==="game")requestAnimationFrame(fitBoard);for(const id of ["dress","story","inbox","grown","snake","game","reader"]){const sc=$("#"+id);if(sc)sc.style.paddingRight=""}for(const D of document.querySelectorAll(".cdrawsheet"))D.style.paddingRight="";{const CB=$("#ctfBody");if(CB&&CB.style.width){CB.style.width="";if(screen==="ctf"&&typeof ctfLayout==="function")requestAnimationFrame(ctfLayout)}}return}
   box.classList.toggle("min",vid.min); box.classList.toggle("ingame",screen==="game"); box.classList.toggle("many",videoPeers().filter(p=>vid.streams.has(p.peer)).length>=2);
   if(screen!=="game"&&box.classList.contains("dock")){box.classList.remove("dock");if(!box.dataset.dragged)box.style.left="";const tr=$("#tray");if(tr)tr.style.marginBottom=""}
   const tiles=$("#vTiles"); tiles.innerHTML="";
@@ -3905,7 +3908,7 @@ function csDrawSheet(onDone,title,start){
   const row=el("div","rowbtns");
   const no=el("button","ghost","Cancel");no.onclick=()=>{sh.hidden=true;sh.innerHTML=""};
   const ok=el("button","bigbtn","Add it ✔️");ok.onclick=()=>{if(!strokes.length){say("Draw something first!");return}sh.hidden=true;sh.innerHTML="";onDone(thin(strokes))};
-  row.append(no,ok); B.append(row); requestAnimationFrame(fitPad); sayLittle(title||"Draw your character!");
+  row.append(no,ok); B.append(row); vidReserve(); requestAnimationFrame(fitPad); sayLittle(title||"Draw your character!");
 }
 
 /* ================= STORY ENGINE: write the story, get the pictures =================
@@ -5603,7 +5606,7 @@ function farmConnect(){
   if(local){F.local=true;F.st=fDefault();fChanged();coopConnect();return}
   try{if(!firebase.apps.length)firebase.initializeApp(FIREBASE)}catch(e){}
   F.local=false;F.ref=firebase.database().ref("families/"+familyCode+"/farm");setTimeout(coopConnect,0);
-  F.ref.on("value",s=>{const v=s.val();if(!v||!v.v){F.ref.transaction(x=>x&&x.v?x:fDefault());return}F.st=v;fChanged()},()=>{});
+  F.ref.on("value",s=>{const v=s.val();if(!v||!v.v){F.ref.transaction(x=>x&&x.v?x:fDefault(),undefined,false).catch(()=>{});return} /* applyLocally=false: no farm writes until the new farm is really saved (avoids a Firebase "removeWrite" crash) */F.st=v;fChanged()},()=>{});
   clearTimeout(F.waitT);F.waitT=setTimeout(()=>{if(!F.st){F.st=fDefault();fChanged();toast("Can't reach the farm. Check the Wi-Fi.")}},5000);
 }
 const myGoods=()=>(F.st&&F.st.goods&&F.st.goods[me])||{};
@@ -9726,6 +9729,7 @@ $("#playCtf").onclick=()=>{sayLittle("Capture the Flag");openCtf()};
 ctfInputs();
 if(/[?&](farmlocal|debugfarm)\b/.test(location.search))window.__jep={get F(){return F},fm,jepAt,fIso,fwNow,get tk(){return tk},closeTask};
 if(/[?&](farmlocal|ctflocal)\b/.test(location.search))window.__ctf={get C(){return C},CN,ctfP,ctfCamera,openCtf,ctfCreate,joinCtf,ctfStart,ctfSwitch,ctfPath,ctfEnd,ctfTag,ctfUpdate,ctfGoTo,ctfTarget,ctfRespawn,ctfDraw,ctfInput,ctfIsHost,closeTask,get tk(){return tk},CTF};
+if(/[?&]vidaudit\b/.test(location.search))window.__nav={STORIES,openReader,draftGift,newDraft,openStory,csDrawSheet,farmPuzzle,closeTask,ctfStart,get draft(){return draft},set draft(v){draft=v}};
 })();
 </script>
 </body>
