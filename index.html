@@ -5081,6 +5081,8 @@ function gVoice(B){
   const c=el("div","rcard");c.append(el("h4",null,"Read-aloud voice"));
   const on=el("label","switchrow",`<input type="checkbox" id="gVoiceOn" ${speech.on?"checked":""}> Read things out loud`);
   on.querySelector("input").onchange=e=>{speech.on=e.target.checked;store("kp.voice",speech.on?"on":"off");syncVoiceBtn()};c.append(on);
+  const jb=el("label","switchrow",`<input type="checkbox" ${load("kp.jepBark")!=="off"?"checked":""}> 🐶 Jeppson's barks on the farm (sound)`);
+  jb.querySelector("input").onchange=e=>store("kp.jepBark",e.target.checked?"on":"off");c.append(jb);
   if(!speech.ok){c.append(el("p","note","This device has no built-in voice."));B.append(c);return}
   pickVoice();
   const lab=el("label","fieldlab","Voice");const sel=el("select","gsel");sel.id="gVoiceSel";
@@ -5783,7 +5785,7 @@ function fGround(t){
   if(t.kind==="plot"){const [pi,pj]=FIELD_SPOTS[t.spot];return [pi+.5,pj+.5,.55]}
   if(t.kind==="struct"){const S=STRUCT[t.ref];return [S.i+S.wi/2,S.j+S.wj/2,Math.max(S.wi,S.wj)*.75]}
   if(t.kind==="decor"){const key=t.key||(Object.entries(F.st.decor||{}).find(([,k])=>k===t.ref)||[])[0];const sp=key&&decorPos(key);return sp?[sp[0]+.5,sp[1]+.5,.5]:[0,0,0]}
-  if(t.kind==="jep"){const P=jepAt(fwNow());return [P.i,P.j,.55]}
+  if(t.kind==="jep"){const P=jepPos(fwNow());return [P.i,P.j,.55]}
   if(t.kind==="help"){const S=CO.sess[t.ref],w=S&&S.host,r=w&&(FW.others||{})[w];if(r){const p=fwPos(r);return [p.i,p.j,.6]}return [0,0,0]}
   if(t.kind==="poop"){const p=(F.st.poops||{})[t.ref];return p?[+p.i,+p.j,.35]:[0,0,0]}
   return [0,0,0];
@@ -5796,7 +5798,7 @@ function fGo(t){
   if(t.kind==="plot"){const [pi,pj]=FIELD_SPOTS[t.spot],[si,sj]=fwStandBy(pi+.5,pj+.5,.75);return fwWalk(si,sj,()=>tapPlot(t.spot))}
   if(t.kind==="struct"){const S=STRUCT[t.ref];return fwWalk(S.i+S.wi/2+.3,S.j+S.wj+.45,()=>tapStruct(t.ref))}
   if(t.kind==="decor"){const [gi,gj]=fGround(t),[si,sj]=fwStandBy(gi,gj,.7);return fwWalk(si,sj,()=>{blip(880,.12,"sine");fPopAt(fIso(gi,gj),"✨")})}
-  if(t.kind==="jep"){const P=jepAt(fwNow()),[si,sj]=fwStandBy(P.i,P.j,.9);return fwWalk(si,sj,jepTap)}
+  if(t.kind==="jep"){const P=jepPos(fwNow()),[si,sj]=fwStandBy(P.i,P.j,.9);return fwWalk(si,sj,jepTap)}
   if(t.kind==="help"){const [hi,hj]=fGround(t),[si,sj]=fwStandBy(hi,hj,.8);return fwWalk(si,sj,()=>joinTeam(t.ref))}
   if(t.kind==="poop"){const p=(F.st.poops||{})[t.ref];if(!p)return;const [si,sj]=fwStandBy(+p.i,+p.j,.6);return fwWalk(si,sj,()=>jepScoop(t.ref))}
 }
@@ -7662,12 +7664,48 @@ function buildCoopJigsaw(api,key){
    Tap a poop: your farmer walks over and you solve a quick puzzle to scoop it (+2 Moolah). Nothing is ever lost. */
 const JEP={slot:20000,speed:.9,happyUntil:0,hop:0,last:0,chk:0};
 const POOP_MAX=3, POOP_MIN=5*60e3, POOP_MAX_GAP=10*60e3;
-function jepWay(slot){const N=fm.N||FARM_SIZE;return [1.5+animRand("jeppson",slot,1)*(N-3),1.5+animRand("jeppson",slot,2)*(N-3)]}
+const jepWaitSlot=slot=>animRand("jeppson",slot,5)<.12; // now and then he sits by the farmstand "waiting for Gramma Mia"
+function jepWay(slot){const N=fm.N||FARM_SIZE;if(jepWaitSlot(slot)&&STRUCT.stand){const S=STRUCT.stand;return [S.i+S.wi/2+.2,S.j+S.wj+1.1]}
+  return [1.5+animRand("jeppson",slot,1)*(N-3),1.5+animRand("jeppson",slot,2)*(N-3)]}
 function jepAt(now){
   const slot=Math.floor(now/JEP.slot),u=now-slot*JEP.slot,A=jepWay(slot),B=jepWay(slot+1),di=B[0]-A[0],dj=B[1]-A[1],d=Math.hypot(di,dj),walk=d/JEP.speed*1000;
   const dir=(di-dj)>0?1:-1;
   if(d>.05&&u<walk){const k=u/walk;return {i:A[0]+di*k,j:A[1]+dj*k,state:"walk",dir}}
+  if(jepWaitSlot(slot+1))return {i:B[0],j:B[1],state:"wait",dir:-1};
   const r=animRand("jeppson",slot,3);return {i:B[0],j:B[1],state:r<.4?"sniff":r<.65?"wiggle":r<.85?"sit":"nap",dir}
+}
+/* ---- Jeppson ❤️ Gramma Mia (backlog #17) ----
+   When Gramma Mia is on the farm, Jeppson runs to her (excited bark + zoomies), then trots right behind her with a small gap
+   so he never covers what she taps. He sits and stares while she does a puzzle and wiggles when she finishes one.
+   He barks "Woof! Woof!" every 10–20 seconds (timed on the shared clock) and when she starts or finishes a chore.
+   Her position comes from the synced farmer walks (farmwalk/grammamia), so everyone sees him following her.
+   Grown-ups can mute the bark sound in Grown-ups › Voice (kp.jepBark). */
+const JF={on:false,i:0,j:0,dir:1,last:0,act:"",barkUntil:0,barkSlot:-1,happyUntil:0,gap:.85};
+const JEP_BARK_SLOT=15000;
+function jepMia(){
+  if(!F.st)return null;
+  if(me==="grammamia"&&FW.me&&screen==="farm"){const m=FW.me;return {i:m.i,j:m.j,walking:m.walking,act:m.act||""}}
+  const r=FW.others&&FW.others.grammamia;if(!r||fwNow()-(+r.at||0)>FW_STALE)return null;
+  const p=fwPos(r);return Number.isFinite(p.i)&&Number.isFinite(p.j)?{i:p.i,j:p.j,walking:p.walking,act:r.act||""}:null;
+}
+function jepBark(excited){JF.barkUntil=Date.now()+(excited?2200:1500);
+  if(screen==="farm"&&load("kp.jepBark")!=="off"){blip(excited?880:700,.07,"square",.05);setTimeout(()=>blip(excited?960:760,.07,"square",.05),150)}}
+function jepPos(now){
+  const M=jepMia(),t=performance.now();
+  if(!M){JF.on=false;return jepAt(now)}
+  if(!JF.on){const P=jepAt(now);JF.on=true;JF.i=P.i;JF.j=P.j;JF.last=t;JF.act=M.act;JF.happyUntil=Date.now()+3500;jepBark(true);
+    if(little()&&load("kp.jepMiaSaid")!=="1"){store("kp.jepMiaSaid","1");setTimeout(()=>say("Jeppson loves Gramma Mia!"),600)}}
+  const dt=Math.min(.1,Math.max(0,(t-JF.last)/1000));JF.last=t;
+  // chore start / finish
+  if(M.act!==JF.act){if(M.act==="puzzle")jepBark(false);else if(JF.act==="puzzle"){JF.happyUntil=Date.now()+3000;jepBark(true)}JF.act=M.act}
+  // a bark every 10-20 seconds, at the same moments on every device
+  const bs=Math.floor(now/JEP_BARK_SLOT),at=bs*JEP_BARK_SLOT+animRand("jepbark",bs,1)*JEP_BARK_SLOT*.6;
+  if(now>=at&&JF.barkSlot!==bs){JF.barkSlot=bs;if(now-at<3000)jepBark(false)}
+  const di=M.i-JF.i,dj=M.j-JF.j,d=Math.hypot(di,dj)||.001,happy=Date.now()<JF.happyUntil;
+  if(d>JF.gap+.06){const speed=d>3?5.5:3.8,step=Math.min(d-JF.gap,speed*dt);JF.i+=di/d*step;JF.j+=dj/d*step;JF.dir=(di-dj)>0?1:-1;
+    return {i:JF.i,j:JF.j,state:"walk",dir:JF.dir,mia:true,happy}}
+  JF.dir=(di-dj)>0?1:-1;
+  return {i:JF.i,j:JF.j,state:M.act==="puzzle"?"sit":happy?"wiggle":(M.walking?"walk":"sit"),dir:JF.dir,mia:true,happy}
 }
 function jepPoops(){return Object.entries((F.st&&F.st.poops)||{}).filter(([,p])=>p&&Number.isFinite(+p.i)&&Number.isFinite(+p.j))}
 // whoever is on the farm when a poop is due drops it (a transaction on poopNext makes sure only one device does)
@@ -7678,14 +7716,14 @@ function jepSchedule(now){
   if(now<next) return;
   fTx("poopNext",v=>(+v||0)>now?undefined:now+POOP_MIN+Math.random()*(POOP_MAX_GAP-POOP_MIN)).then(ok=>{
     if(!ok||jepPoops().length>=POOP_MAX) return;
-    const P=jepAt(fwNow()),id="p"+now.toString(36);
+    const P=jepPos(fwNow()),id="p"+now.toString(36);
     fUpd({["poops/"+id]:{i:Math.round(P.i*100)/100,j:Math.round(P.j*100)/100,at:now}});
   });
 }
 function jepItems(items,t,now,dt){
   if(!F.st) return; jepSchedule(now);
-  const g=fm.g,th=fm.th,tw=fm.tw,P=jepAt(fwNow()); JEP.hop=Math.max(0,JEP.hop-dt*2.5);
-  const happy=now<JEP.happyUntil;
+  const g=fm.g,th=fm.th,tw=fm.tw,P=jepPos(fwNow()); JEP.hop=Math.max(0,JEP.hop-dt*2.5);
+  const happy=now<JEP.happyUntil||!!P.happy;
   for(const [id,p] of jepPoops()){const i=+p.i,j=+p.j,old=now-(+p.at||now)>15*60e3;
     items.push({d:i+j,draw:()=>{const c=fIso(i,j);
       g.font=`${th*.62}px system-ui`;g.textAlign="center";g.textBaseline="bottom";g.fillText("💩",c.x,c.y+th*.12);g.textBaseline="alphabetic";
@@ -7695,13 +7733,22 @@ function jepItems(items,t,now,dt){
       g.fillStyle="#2B2140";for(let k=0;k<(old?3:2);k++){const a=t/(old?180:260)+k*2.1;g.beginPath();g.arc(c.x+Math.cos(a)*th*.38,c.y-th*.55+Math.sin(a*1.7)*th*.18,Math.max(1.5,th*.04),0,7);g.fill()}
       fm.hits.push({kind:"poop",ref:id,d:i+j+.3,x0:c.x-th*.45,x1:c.x+th*.45,y0:c.y-th*.9,y1:c.y+th*.25})}});
   }
+  if(P.mia&&Date.now()<JF.barkUntil)items.push({d:1e6,draw:()=>{const c=fIso(P.i,P.j),s=tw*.75,bx=c.x+P.dir*s*.35,by=c.y-s*1.4,txt="Woof! Woof!";g.font=`900 ${Math.max(12,th*.3)}px system-ui`;const w=g.measureText(txt).width+th*.36;
+      g.fillStyle="#FFF7E6";g.strokeStyle="#C97A35";g.lineWidth=Math.max(1.5,th*.05);g.beginPath();g.roundRect?g.roundRect(bx-w/2,by-th*.24,w,th*.48,th*.24):g.rect(bx-w/2,by-th*.24,w,th*.48);g.fill();g.stroke();
+      g.beginPath();g.moveTo(bx-th*.08,by+th*.22);g.lineTo(bx-P.dir*th*.18,by+th*.45);g.lineTo(bx+th*.1,by+th*.22);g.fill();
+      g.fillStyle="#C2410C";g.textAlign="center";g.textBaseline="middle";g.fillText(txt,bx,by);g.textBaseline="alphabetic"}}); // the bark bubble sits on top of everything
   items.push({d:P.i+P.j,draw:()=>{const c=fIso(P.i,P.j),s=tw*.75;
     const run=P.state==="walk"||happy, T=t/1000;let y=c.y-JEP.hop*th*.5;
     if(P.state==="wiggle"||happy){g.save();g.translate(c.x,y);g.rotate(Math.sin(T*14)*.08);g.translate(-c.x,-y)}
     if(P.state==="nap"){g.save();g.translate(c.x,y);g.scale(1,.82);g.translate(-c.x,-y)}
-    ctfCorgi(g,c.x,y,s,P.dir,T,P.state==="sit"?1:0,run);
+    ctfCorgi(g,c.x,y,s,P.dir,T,(P.state==="sit"||P.state==="wait")?1:0,run);
     if(P.state==="wiggle"||happy||P.state==="nap")g.restore();
     if(P.state==="nap"){g.fillStyle="#3A4A5A";g.textAlign="left";for(let k=0;k<3;k++){const q=(T*.5+k/3)%1;g.globalAlpha=1-q;g.font=`900 ${th*(.26+k*.07)}px system-ui`;g.fillText("z",c.x+s*.3+q*th*.4,c.y-s*.6-q*th*.8)}g.globalAlpha=1}
+    if(P.state==="wait"){const bx=c.x+s*.45,by=c.y-s*1.25;g.fillStyle="rgba(255,255,255,.95)";g.strokeStyle="rgba(43,33,64,.25)";g.lineWidth=Math.max(1,th*.03);
+      for(const [dx,dy,r] of [[-.2,.42,.05],[-.1,.3,.08]]){g.beginPath();g.arc(bx+dx*s,by+dy*s,r*s,0,7);g.fill();g.stroke()}
+      g.beginPath();g.ellipse(bx+s*.12,by,s*.32,s*.24,0,0,7);g.fill();g.stroke();g.font=`${s*.3}px system-ui`;g.textAlign="center";g.textBaseline="middle";g.fillText(KIDS.grammamia?KIDS.grammamia.face:"👵",bx+s*.12,by+s*.02);g.textBaseline="alphabetic"}
+
+    if(P.mia&&P.state!=="walk"&&!(Date.now()<JF.barkUntil)){const q=(T*.6)%1;g.globalAlpha=1-q;g.font=`${th*.3}px system-ui`;g.textAlign="center";g.fillText("❤️",c.x+P.dir*s*.3,c.y-s*.9-q*th*.6);g.globalAlpha=1}
     if(P.state==="sniff"){g.font=`${th*.32}px system-ui`;g.textAlign="center";g.globalAlpha=.5+.5*Math.sin(T*6);g.fillText("👃",c.x+P.dir*s*.55,c.y-s*.2);g.globalAlpha=1}
     // name tag
     g.font=`800 ${Math.max(11,th*.26)}px system-ui`;const tx="Jeppson",w=g.measureText(tx).width+th*.4,ty=c.y-s*.95;
@@ -7710,7 +7757,7 @@ function jepItems(items,t,now,dt){
     fm.hits.push({kind:"jep",ref:"jeppson",d:P.i+P.j+.4,x0:c.x-s*.55,x1:c.x+s*.55,y0:c.y-s*.85,y1:c.y+th*.2})}});
 }
 function jepTap(){
-  JEP.hop=1;JEP.happyUntil=Date.now()+2500;fPopAt(fIso(jepAt(fwNow()).i,jepAt(fwNow()).j),pickOne(["❤️","🐾","🦴"]));
+  JEP.hop=1;JEP.happyUntil=Date.now()+2500;{const P=jepPos(fwNow());fPopAt(fIso(P.i,P.j),pickOne(["❤️","🐾","🦴"]))}
   blip(740,.08,"square",.06);setTimeout(()=>blip(820,.08,"square",.06),140);
   say(little()?"Jeppson! Woof woof!":pickOne(["Woof! Jeppson wiggles his fluffy butt.","Jeppson rolls over for a belly rub!","Woof woof! Jeppson does a zoomie lap."]));
 }
@@ -8722,7 +8769,7 @@ function snWireControls(){
 $("#playSnake").onclick=()=>{sayLittle("Snake race!");startSnake()};
 if(/[?&]snakelocal\b/.test(location.search))window.__snake={SNK,SW,startSnake,enterSnake,joinSnake,snEnd,snRespawn,snCrashMine,snWhoHosts,snPellet,snOwn,snNow,snSeatInfo,tk:()=>tk,win:finishTask,quit:()=>closeTask(true)}; // testing only
 
-if(/[?&]farmlocal\b/.test(location.search))window.__farm={animAt,fwNow,fmvStart,fmvDrag,fmvEnd,fpOk,STRUCT,FIELD_SPOTS,decorPos,openFamBasket,sellIt,moveGoods,openBasket,farmClamp,fCands,fInfo,fGo,openTask,TASK_TYPES,F,fm,FW,openBank,bankPut,farmZoomTo,fwWalk,farmTapAt:(i,j)=>{const p=fIso(i,j),r=fm.cv.getBoundingClientRect(),d=fm.cv.width/r.width;farmTap({clientX:r.left+p.x/d,clientY:r.top+p.y/d})},CO,coopUpd,coopTick,startTeam,joinTeam,tk:()=>tk,tapPlot,tapAnimal,tapStruct,openStore,openOrders,openJar,openSell,buyIt,storeItems,deliver,sendGift,win:finishTask,quit:()=>closeTask(true)}; // testing only
+if(/[?&]farmlocal\b/.test(location.search))window.__farm={jepPos,jepMia,JF,animAt,fwNow,fmvStart,fmvDrag,fmvEnd,fpOk,STRUCT,FIELD_SPOTS,decorPos,openFamBasket,sellIt,moveGoods,openBasket,farmClamp,fCands,fInfo,fGo,openTask,TASK_TYPES,F,fm,FW,openBank,bankPut,farmZoomTo,fwWalk,farmTapAt:(i,j)=>{const p=fIso(i,j),r=fm.cv.getBoundingClientRect(),d=fm.cv.width/r.width;farmTap({clientX:r.left+p.x/d,clientY:r.top+p.y/d})},CO,coopUpd,coopTick,startTeam,joinTeam,tk:()=>tk,tapPlot,tapAnimal,tapStruct,openStore,openOrders,openJar,openSell,buyIt,storeItems,deliver,sendGift,win:finishTask,quit:()=>closeTask(true)}; // testing only
 /* ================= Capture the Flag (#18) — beta, multiplayer =================
    Two teams of 2: Blue (seats 0-1) and Red (seats 2-3). Real players take seats; computer players fill the rest.
    Tap Capture the Flag to open a team room: invite family, switch teams by tapping a computer player, then Start.

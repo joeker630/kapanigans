@@ -985,6 +985,15 @@ Turn photos of family members into **high-resolution cartoon characters** (in th
 - **Poops:** one every 5–10 minutes (random), max 3 on the farm, shared in Firebase (`farm/poops/<id> = {i,j,at}`, `farm/poopNext`; a transaction makes sure only one device drops it). Each has stink lines and flies (more flies after 15 minutes). Tap → walk over → a quick puzzle ("💩 Clean up after Jeppson", any puzzle type; grown-ups get grown-up games) → +2 Moolah and a happy Jeppson. Logged in stats like other chores.
 - Still to do: his approved art (both styles), chicken chasing, following the cleaner, animals holding their noses, the Little drag-to-trash and Big find-and-sort cleanup puzzles.
 
+**✅ Built Oct 29: Jeppson ❤️ Gramma Mia** (`jepPos()`, `jepMia()`)
+- When Gramma Mia is on the farm, Jeppson drops everything and runs to her with an excited "Woof! Woof!" and a wiggle. Then he trots right behind her about a tile back, so he never covers what she taps, and speeds up if she gets far ahead.
+- He sits and stares while she does a chore puzzle (with little ❤️s) and wiggles when she finishes one.
+- He barks every 10–20 seconds and when she starts or finishes a chore: a "Woof! Woof!" bubble on top of everything, plus a short, quiet bark sound.
+- Everyone sees it: her position comes from the synced farmer walks (`farmwalk/grammamia`), bark timing comes from the shared clock, and on her own device he follows her local farmer.
+- When she isn't on the farm, he wanders as before, and now and then (about 1 leg in 8) sits by the farmstand "waiting for Gramma Mia" with a thought bubble of her face.
+- **Mute:** Grown-ups › Voice › "🐶 Jeppson's barks on the farm (sound)" turns the sound off on that device; the bubble still shows. Little players hear "Jeppson loves Gramma Mia!" the first time they see it.
+- Not yet: following other players now and then.
+
 **Team chore placeholders (Oct 27):** 8 new co-op chores in 🤝 (hay, fence, water trough, apples, sweep the barn, giant pumpkin, herd the sheep, Jeppson's bath). Type `tapteam`: everyone, whatever their level, taps a big button 10 times with live team progress bars; when the whole team is done, everyone gets +2 Moolah. Replace each one's `type` in `COOP_CHORES` with its real activity when it's built.
 
 
@@ -1036,8 +1045,8 @@ Turn photos of family members into **high-resolution cartoon characters** (in th
 - 3 versions in the **storybook film style** (full portrait, the approved #16 storybook style).
 - Put all 6 on a private review page for Joe to approve before anything goes into the game.
 - [ ] At least 5 idle animations and a tap reaction
-- [ ] When Gramma Mia is on the farm, Jeppson follows her avatar and barks at her, the same on every device
-- [ ] When she isn't there, he wanders and sometimes waits by the farmhouse door for her
+- [x] When Gramma Mia is on the farm, Jeppson follows her avatar and barks at her, the same on every device
+- [x] When she isn't there, he wanders and sometimes waits by the farmhouse door for her (the farmstand for now; there's no farmhouse yet)
 - [ ] Poops appear on a timer (max 3 at once) and are shared across devices
 - [ ] Cleanup is a chore puzzle with Little, Big and grown-up versions
 - [ ] Leftover poops have only gentle effects; nothing is lost
