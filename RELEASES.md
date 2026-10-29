@@ -4,6 +4,21 @@ Newest first. Each release has kid-friendly notes (shown to everyone in the game
 
 ---
 
+## 1.10: A quieter reading voice 🔉
+**October 29, 2026**
+
+### For everyone
+- 🔉 **Quieter reading voice:** tap the 🔊 button at the top to make the voice softer. Each tap goes Loud › Medium › Quiet › Off, then back to Loud.
+- 📹 **Slimmer video column:** the video buttons now sit in a neat 2 by 2 square, so the family videos take up less room on the right.
+- 🎨 **Videos while coloring:** the family videos now have their own column on the right of the coloring page, so the picture isn't covered and doesn't squeeze under the tools.
+
+### For grown-ups
+- Grown-ups › 🔊 Voice has a volume slider for you and, for grown-ups, for Violet and Quinn. It's saved for the family, so Violet's setting follows her to every device. Violet starts at 50%.
+- The setting also softens recorded voice clips and Inbox voice messages.
+- On iPad and iPhone, Safari doesn't always lower the built-in voice. If it stays loud, turn the device volume down too.
+
+---
+
 ## 1.9: Write it, and the pictures appear ✨
 **October 28, 2026**
 

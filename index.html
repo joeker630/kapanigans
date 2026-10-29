@@ -371,7 +371,7 @@ h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance;l
 .vmsg{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#fff;text-align:center;font-size:13px;padding:8px}
 .vmsg .face{font-size:40px;line-height:1}
 .vmsg button{background:var(--sun);color:var(--ink);border-radius:999px;padding:6px 12px;font-weight:900;font-size:13px}
-.vbtns{display:flex;gap:6px;justify-content:flex-end}
+.vbtns{display:grid;grid-template-columns:repeat(2,40px);gap:6px;justify-content:end}
 .vbtns button{width:40px;height:40px;border-radius:50%;background:var(--paper);font-size:18px;box-shadow:0 3px 0 var(--sky-deep)}
 .vbtns button.off{background:var(--fox)}
 
@@ -758,6 +758,9 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
 .ghost.danger{background:var(--fox);color:#fff}
 .switchrow{display:flex;align-items:center;gap:10px;font-size:16px}
 .switchrow input{width:24px;height:24px}
+.volrow{display:grid;grid-template-columns:minmax(90px,auto) auto minmax(0,1fr) auto 44px;align-items:center;gap:8px;font-weight:800;margin:4px 0}
+.volrow input{width:100%;accent-color:var(--sun-deep)}
+.volrow b{text-align:right;font-size:14px}
 .fieldlab{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:800;color:var(--ink-soft)}
 .gsel{font:inherit;font-size:16px;padding:10px;border-radius:12px;border:3px solid var(--sky-deep);background:#fff;color:var(--ink);max-width:100%}
 .seg{display:flex;gap:6px}
@@ -801,8 +804,8 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
 .vmute{position:absolute;right:6px;bottom:6px;background:rgba(0,0,0,.55);border-radius:999px;padding:2px 6px;font-size:14px}
 .vid{width:auto}
 .vtiles{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
-.vtiles .vtile{width:clamp(110px,17vw,190px)}
-.vtiles .vtile.mine{width:clamp(70px,10vw,110px)}
+.vtiles .vtile{width:clamp(96px,13vw,150px)}
+.vtiles .vtile.mine{width:clamp(64px,8vw,90px)}
 .vid.min .vtiles{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none} /* minimized: tiles keep playing so you still hear everyone */
 .invite{position:fixed;left:50%;top:calc(12px + env(safe-area-inset-top,0px));transform:translateX(-50%);z-index:55;background:var(--ink);color:#fff;border-radius:24px;padding:14px 18px;display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center;font-family:var(--display);font-size:20px;width:min(520px,calc(100% - 32px));box-shadow:0 10px 30px rgba(0,0,0,.3)}
 
@@ -819,7 +822,7 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
 .readtext{font-family:var(--display);font-size:clamp(22px,4vw,34px);text-align:center;max-width:760px;background:var(--paper);border-radius:22px;padding:18px 22px;box-shadow:0 5px 0 var(--sky-deep);text-wrap:balance}
 .showit{font-size:18px}
 .showit.on{background:var(--fox);color:#fff}
-.vbtns .showit{width:auto;border-radius:999px;padding:0 12px;font-weight:900;font-size:15px;background:var(--sun)}
+.vbtns .showit{grid-column:1/-1;width:auto;border-radius:999px;padding:0 6px;font-weight:900;font-size:13px;white-space:nowrap;background:var(--sun)}
 /* dressing room */
 #dress{padding-block:12px;gap:12px;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 .dwrap{display:grid;grid-template-columns:minmax(220px,340px) minmax(0,1fr);gap:18px;align-items:start}
@@ -873,14 +876,14 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
   .sz{width:38px;height:38px}
   .sep{display:none}
   .watchnote{flex-direction:column;font-size:16px}
-  .vid.ingame .vtiles .vtile{width:clamp(96px,12vw,170px)}
+  .vid.ingame .vtiles .vtile{width:clamp(90px,11vw,140px)}
   .vid.dock{right:auto;top:auto;bottom:calc(12px + env(safe-area-inset-bottom,0px));width:var(--colw);background:var(--paper);border-radius:20px;padding:8px;box-shadow:0 5px 0 var(--sky-deep)}
   .vid.dock .vtiles{flex-direction:row;flex-wrap:wrap;align-items:flex-end;justify-content:flex-start}
   .vid.ingame.dock .vtiles .vtile{width:calc(var(--colw) * .54)}
   .vid.ingame.dock .vtiles .vtile.mine{width:calc(var(--colw) * .3)}
   .vid.ingame.dock.many .vtiles .vtile{width:calc(var(--colw) * .44)}
   .vid.ingame.dock.many .vtiles .vtile.mine{width:calc(var(--colw) * .26)}
-  .vid.dock .vbtns{justify-content:flex-start}
+  .vid.dock .vbtns{justify-content:start}
   .vid.ingame .vtiles .vtile.mine{width:clamp(64px,7vw,100px)}
 }
 @media (orientation:landscape) and (max-height:560px){
@@ -1615,7 +1618,7 @@ addEventListener("resize",()=>requestAnimationFrame(fitHelp));
    "## 1.0: Title" starts a release; "### For everyone" / "### For grown-ups" / any other "###" section follow.
    Grown-up sections ("For grown-ups", "How long it took…") are hidden from the kids.
    Bump APP_VERSION together with a new RELEASES.md entry. */
-const APP_VERSION="1.9";
+const APP_VERSION="1.10";
 const WN={rel:null,loading:null};
 function wnGrownOnly(h){return /grown/i.test(h)}
 function wnParse(md){
@@ -1752,7 +1755,7 @@ function say(text,o={}){
     if(i>=parts.length){o.onEnd&&o.onEnd();return}
     const part=parts[i++]; const u=new SpeechSynthesisUtterance(part.t.replace(emojiRe,"").trim()||" ");
     if(speech.voice){u.voice=speech.voice;u.lang=speech.voice.lang} else u.lang="en-US";
-    u.rate=o.rate??baseRate(); u.pitch=o.pitch??1.15;
+    u.rate=o.rate??baseRate(); u.pitch=o.pitch??1.15; u.volume=o.volume??volOf();
     if(o.onWord) u.onboundary=e=>{if(tok===sayTok&&e.name==="word")o.onWord(part.at+e.charIndex,e.charLength||0)};
     let done=false; const fin=()=>{if(done)return;done=true;if(tok!==sayTok)return;sayT=setTimeout(next,i<parts.length?(o.pause??350):0)};
     u.onend=fin; u.onerror=fin; speechSynthesis.speak(u);
@@ -1761,6 +1764,15 @@ function say(text,o={}){
 }
 function sayLittle(text,o){if(me&&lvl()==="little")say(text,o)}
 const sharedAudio=new Audio(); sharedAudio.playsInline=true;
+/* reading-voice volume, one per person: families/<code>/voiceVol/<who> = 0..1. Grown-ups can set the kids' in Grown-ups > Voice. */
+const VOL_DEFAULT={violet:.5}, VOL={map:{},on:null};
+const VOL_STEPS=[[1,"🔊","Loud"],[.6,"🔉","Medium"],[.3,"🔈","Quiet"]];
+function volOf(who){who=who||me;if(!who)return 1;const v=VOL.map[who];if(typeof v==="number")return v;const l=parseFloat(load("kp.vol."+who));return isFinite(l)?l:(VOL_DEFAULT[who]??1)}
+function volStep(who){const v=volOf(who);return VOL_STEPS.reduce((a,b)=>Math.abs(b[0]-v)<Math.abs(a[0]-v)?b:a)}
+function applyVol(){try{sharedAudio.volume=volOf()}catch(e){}}
+function setVol(who,v){v=Math.round(Math.max(.05,Math.min(1,+v))*100)/100;VOL.map[who]=v;store("kp.vol."+who,String(v));if(typeof mail!=="undefined"&&mail.ref)mail.ref.child("voiceVol/"+who).set(v).catch(()=>{});applyVol();syncVoiceBtn()}
+function volListen(){if(typeof mail==="undefined"||!mail.ref||VOL.on===mail.ref)return;VOL.on=mail.ref;
+  mail.ref.child("voiceVol").on("value",s=>{const v=s.val()||{};VOL.map={};for(const k in v)if(typeof v[k]==="number"){VOL.map[k]=v[k];store("kp.vol."+k,String(v[k]))}applyVol();syncVoiceBtn()},()=>{})}
 const SILENT="data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=";
 window.__kpSay=t=>say(t);
 function hush(){sayTok++;clearTimeout(sayT);if(speech.ok)speechSynthesis.cancel();try{if(!sharedAudio.paused){sharedAudio.onended=null;sharedAudio.pause()}}catch(e){}}
@@ -2222,9 +2234,7 @@ function fitBoard(){ requestAnimationFrame(fitTray);
   let [w,h]=fit(st.width,st.height), shift=0;
   // keep the video bubble from covering the picture when there's room to the side
   const vb=$("#vid"), tray=$("#tray"); let dock=false;
-  if(innerWidth>innerHeight&&vb&&!vb.hidden&&!vb.dataset.dragged){
-    const vw=Math.max(Math.min(Math.max(96,innerWidth*.12),170),132)+14;
-    if((st.width-w)/2<vw){const [w2,h2]=fit(st.width-vw,st.height);if(w2>=w*.9){w=w2;h=h2;shift=-vw/2}else dock=true}}
+  // (the camera column now sits in its own reserved space on the right: see vidReserve)
   // not enough room beside the picture: tuck the video under the tools instead of covering the picture
   if(vb){vb.classList.toggle("dock",dock);
     if(dock){const r=tray.getBoundingClientRect();vb.style.setProperty("--colw",Math.round(r.width)+"px");vb.style.left=Math.round(r.left)+"px";
@@ -2467,8 +2477,13 @@ $("#meChip").onclick=()=>show("pick");
 $("#playColor").onclick=()=>{sayLittle("Color Together");openPics(null)};
 $("#playStory").onclick=()=>{sayLittle("Bedtime Story");draft=null;openStory("home")};
 document.querySelectorAll(".game.soon").forEach(b=>b.onclick=()=>{blip(330,.12,"triangle",.08);say(b.dataset.say);toast("Coming soon!")});
-function syncVoiceBtn(){const b=$("#voiceBtn");b.textContent=speech.on?"🔊":"🔇";b.hidden=!speech.ok}
-$("#voiceBtn").onclick=()=>{speech.on=!speech.on;store("kp.voice",speech.on?"on":"off");syncVoiceBtn();if(speech.on)say("Reading out loud is on");else hush()};
+function syncVoiceBtn(){const b=$("#voiceBtn");if(!b)return;const st=volStep();b.textContent=speech.on?st[1]:"🔇";b.setAttribute("aria-label",speech.on?`Reading voice: ${st[2]}`:"Reading voice off");b.hidden=!speech.ok}
+// tap to step the reading voice down: Loud > Medium > Quiet > Off > Loud
+$("#voiceBtn").onclick=()=>{
+  if(!speech.on){speech.on=true;store("kp.voice","on");if(me)setVol(me,1);syncVoiceBtn();say("Loud voice");return}
+  const i=VOL_STEPS.indexOf(volStep());
+  if(i>=VOL_STEPS.length-1){speech.on=false;store("kp.voice","off");syncVoiceBtn();hush();toast("Reading out loud is off");return}
+  const nx=VOL_STEPS[i+1]; if(me)setVol(me,nx[0]); say(nx[2]+" voice")};
 syncVoiceBtn();
 $("#closeSheet").onclick=()=>$("#picSheet").hidden=true;
 $("#picSheet").addEventListener("click",e=>{if(e.target.id==="picSheet")e.target.hidden=true});
@@ -2715,7 +2730,7 @@ function tileFor(p,mine){
 function vidReserve(){
   const box=$("#vid"); if(!box) return; const on=!box.hidden&&!box.dataset.dragged&&innerWidth>=600&&!box.classList.contains("dock");
   const w=on?Math.round(box.getBoundingClientRect().width+28):0;
-  for(const id of ["dress","story","inbox","grown","snake"]){const sc=$("#"+id);if(sc)sc.style.paddingRight=(on&&id===screen)?w+"px":""}
+  for(const id of ["dress","story","inbox","grown","snake","game"]){const sc=$("#"+id);if(sc)sc.style.paddingRight=(on&&id===screen)?w+"px":""}
   const T=$("#task"); if(T) T.style.paddingRight=(on&&!T.hidden)?w+"px":"";
   const F=$("#farmBody"); if(F){const want=(on&&screen==="farm")?`calc(100% - ${w-14}px)`:""; if(F.style.width!==want){F.style.width=want; if(screen==="farm"&&typeof farmFit==="function"&&typeof fm!=="undefined"&&fm.cv) requestAnimationFrame(farmFit)}}
 }
@@ -2726,7 +2741,7 @@ function renderVideoUI(){
   const box=$("#vid"); if(!box) return;
   // always visible: everywhere except the home screen, which shows everyone's video on the people cards
   const show=screen!=="lobby"&&!!(vid.local||vid.streams.size);
-  box.hidden=!show; if(!show){if(screen==="game")requestAnimationFrame(fitBoard);for(const id of ["dress","story","inbox","grown","snake"]){const sc=$("#"+id);if(sc)sc.style.paddingRight=""}return}
+  box.hidden=!show; if(!show){if(screen==="game")requestAnimationFrame(fitBoard);for(const id of ["dress","story","inbox","grown","snake","game"]){const sc=$("#"+id);if(sc)sc.style.paddingRight=""}return}
   box.classList.toggle("min",vid.min); box.classList.toggle("ingame",screen==="game"); box.classList.toggle("many",videoPeers().filter(p=>vid.streams.has(p.peer)).length>=2);
   if(screen!=="game"&&box.classList.contains("dock")){box.classList.remove("dock");if(!box.dataset.dragged)box.style.left="";const tr=$("#tray");if(tr)tr.style.marginBottom=""}
   const tiles=$("#vTiles"); tiles.innerHTML="";
@@ -4499,7 +4514,7 @@ function renderMsg(B,m){
 }
 function voicePlayer(b){
   let url;try{const bin=atob(b.data);const u8=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u8[i]=bin.charCodeAt(i);url=URL.createObjectURL(new Blob([u8],{type:/^audio\/[\w.+-]+/.test(b.mime)?b.mime.split(";")[0]:"audio/mp4"}))}catch(e){url=""}
-  const audio=new Audio(url); audio.playsInline=true;
+  const audio=new Audio(url); audio.playsInline=true; audio.volume=volOf();
   const btn=el("button","voiceplay","▶️");btn.setAttribute("aria-label","Play");
   audio.onplay=()=>btn.textContent="⏸️"; audio.onpause=audio.onended=()=>btn.textContent="▶️";
   btn.onclick=()=>audio.paused?audio.play().catch(()=>{}):audio.pause();
@@ -4747,7 +4762,7 @@ function plFetch(){ // the family copy wins if it's newer or she's on a break; u
 }
 const plFmt=ms=>{const s=Math.max(0,Math.ceil(ms/1000));return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")};
 function plTick(){
-  plCfgListen(); const rule=plRule(), T=$("#plTimer"), L=$("#plLock");
+  plCfgListen(); volListen(); const rule=plRule(), T=$("#plTimer"), L=$("#plLock");
   const active=rule&&!["pick","setup"].includes(screen)&&document.visibilityState==="visible";
   if(!rule){if(T)T.hidden=true;if(L&&!L.hidden)L.hidden=true;PL.who=null;return}
   if(PL.who!==me) plLoad(me); else if(!PL.loaded) plFetch();
@@ -5083,6 +5098,15 @@ function gVoice(B){
   on.querySelector("input").onchange=e=>{speech.on=e.target.checked;store("kp.voice",speech.on?"on":"off");syncVoiceBtn()};c.append(on);
   const jb=el("label","switchrow",`<input type="checkbox" ${load("kp.jepBark")!=="off"?"checked":""}> 🐶 Jeppson's barks on the farm (sound)`);
   jb.querySelector("input").onchange=e=>store("kp.jepBark",e.target.checked?"on":"off");c.append(jb);
+  { // reading-voice volume: your own, plus the kids' (saved for the family, so it follows them to any device)
+    const who=[...new Set([me,...(KIDS[me]&&KIDS[me].grown?["violet","quinn"]:[])].filter(Boolean))];
+    c.append(el("label","fieldlab","How loud the reading voice is"));
+    for(const k of who){const K=kidOf(k);const r=el("div","volrow",`<span>${faceHTML(K)} ${k===me?"You":esc(K.name)}</span><span>🔈</span><input type="range" min="10" max="100" step="5" value="${Math.round(volOf(k)*100)}" aria-label="${esc(K.name)} reading voice volume"><span>🔊</span><b>${Math.round(volOf(k)*100)}%</b>`);
+      const inp=r.querySelector("input"),b=r.querySelector("b");
+      inp.oninput=()=>b.textContent=inp.value+"%";
+      inp.onchange=()=>{setVol(k,inp.value/100);if(k===me)say("This is how loud I'll read");else toast(`Saved ${K.name}'s reading voice`)};c.append(r)}
+    c.append(el("p","note","On iPad and iPhone, if the voice doesn't get quieter, turn down the device volume too."));
+  }
   if(!speech.ok){c.append(el("p","note","This device has no built-in voice."));B.append(c);return}
   pickVoice();
   const lab=el("label","fieldlab","Voice");const sel=el("select","gsel");sel.id="gVoiceSel";
@@ -5152,7 +5176,7 @@ async function startRecorder(max,onTick){
 function clipToUrl(c){try{const bin=atob(c.data);const u8=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u8[i]=bin.charCodeAt(i);return URL.createObjectURL(new Blob([u8],{type:/^audio\/[\w.+-]+$/.test(c.mime||"")?c.mime:"audio/mp4"}))}catch(e){return ""}}
 /* one shared audio element: once a tap has started it, iPad lets it keep playing later pages and clips */
 function unlockAudio(){try{if(!sharedAudio.src||sharedAudio.paused){sharedAudio.src=SILENT;sharedAudio.play().catch(()=>{})}}catch(e){}}
-function playUrl(url,onEnd){hush();sharedAudio.onended=()=>{sharedAudio.onended=null;onEnd&&onEnd()};sharedAudio.onerror=sharedAudio.onended;sharedAudio.src=url;const p=sharedAudio.play();if(p)p.catch(()=>{sharedAudio.onended&&sharedAudio.onended()})}
+function playUrl(url,onEnd){hush();applyVol();sharedAudio.onended=()=>{sharedAudio.onended=null;onEnd&&onEnd()};sharedAudio.onerror=sharedAudio.onended;sharedAudio.src=url;const p=sharedAudio.play();if(p)p.catch(()=>{sharedAudio.onended&&sharedAudio.onended()})}
 function recButton(label){const b=el("button","recbtn small","🎤");b.setAttribute("aria-label",label||"Record");return b}
 
 /* ================= #7 family voice clips ================= */
