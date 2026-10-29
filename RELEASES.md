@@ -4,6 +4,20 @@ Newest first. Each release has kid-friendly notes (shown to everyone in the game
 
 ---
 
+## 1.12: Smoother video, tidy coloring tools 🎨
+**October 29, 2026**
+
+### For everyone
+- 📹 **Smoother video calls:** family videos move more smoothly (24 frames a second, up from 15) and look a little sharper.
+- 🎨 **Coloring tools always fit:** on the coloring page, every tool and color fits in the left column with no scrolling, even with four people coloring. Players' names sit side by side to save room.
+
+### For grown-ups
+- Calls now ask for H.264 video, which iPads and iPhones encode in hardware, so the tablet works less and video stays smooth while games run.
+- When the Wi-Fi or the tablet struggles, the video first gets a smaller picture but keeps moving smoothly. It only lowers the frame rate as a last step, and it waits until the connection has been clean for about 15 seconds before stepping back up, so quality doesn't bounce up and down.
+- Video has a slightly bigger buffer (0.2 seconds) to smooth out bumpy Wi-Fi.
+
+---
+
 ## 1.11: Family videos on every page 📹
 **October 29, 2026**
 

@@ -858,12 +858,12 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
   #game{grid-template-columns:clamp(170px,18vw,250px) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);grid-template-areas:"head stage" "tray stage";column-gap:14px;row-gap:8px}
   .ghead{flex-direction:column;align-items:stretch;gap:6px;flex-wrap:nowrap}
   .ghead>.round{align-self:flex-start}
-  .ghead .seats{flex-direction:column;flex:0 0 auto}
+  .ghead .seats{flex-direction:row;flex-wrap:wrap;gap:4px;flex:0 0 auto} /* players side by side, so 4 people take 2 short lines */
   .ghead .seat{align-self:flex-start}
   .reacts{justify-content:space-between}
   .reacts button{width:38px;height:38px;font-size:19px}
   .donebtn{width:100%;font-size:16px;padding:7px 10px}
-  .tray{overflow-y:auto;min-height:0;padding:8px;gap:6px;align-self:stretch;margin-bottom:env(safe-area-inset-bottom,0px)}
+  .tray{overflow:hidden;min-height:0;padding:8px;gap:6px;align-self:stretch;margin-bottom:env(safe-area-inset-bottom,0px)} /* never scrolls: fitTray shrinks the tools to fit */
   .trow{flex-wrap:wrap;overflow:visible;gap:6px}
   .tool{min-width:50px;height:50px;font-size:22px;border-radius:14px}
   .tool small{font-size:9px}
@@ -1619,7 +1619,7 @@ addEventListener("resize",()=>requestAnimationFrame(fitHelp));
    "## 1.0: Title" starts a release; "### For everyone" / "### For grown-ups" / any other "###" section follow.
    Grown-up sections ("For grown-ups", "How long it took…") are hidden from the kids.
    Bump APP_VERSION together with a new RELEASES.md entry. */
-const APP_VERSION="1.11";
+const APP_VERSION="1.12";
 const WN={rel:null,loading:null};
 function wnGrownOnly(h){return /grown/i.test(h)}
 function wnParse(md){
@@ -2220,9 +2220,13 @@ function leaveGame(){
 }
 // Violet's tray: shrink her tools and colors just enough that every one shows without scrolling
 function fitTray(){
-  const T=$("#tray"); if(!T||!T.classList.contains("little")) return; const rows=[...T.querySelectorAll(".trow")]; if(!rows.length) return;
+  const T=$("#tray"); if(!T) return; const little=T.classList.contains("little"), side=innerWidth>innerHeight;
+  if(!little&&!side) return; // grown-up/Quinn tray along the bottom keeps its sideways-swipe rows
+  const rows=[...T.querySelectorAll(".trow")]; if(!rows.length) return;
   rows.forEach(r=>{r.style.zoom=1;r.style.flexWrap=""});
-  for(let z=1;z>.5&&T.scrollHeight>T.clientHeight+1;z-=.05) rows.forEach(r=>r.style.zoom=z.toFixed(2));
+  // shrink all the tools together until everything fits in the left column with no scrolling
+  for(let z=1;z>.4&&T.scrollHeight>T.clientHeight+1;z-=.04) rows.forEach(r=>r.style.zoom=z.toFixed(2));
+  if(!little){T.scrollTop=0;return}
   for(const r of rows) for(let z=+r.style.zoom||1;z>.5&&r.scrollWidth>r.clientWidth+1;z-=.04) r.style.zoom=z.toFixed(2);
   // phones: too narrow for one line, so let the row wrap onto two lines at a friendly size instead
   for(const r of rows){r.style.flexWrap=""; if(r.scrollWidth>r.clientWidth+1&&(+r.style.zoom)<.75){r.style.flexWrap="wrap";r.style.justifyContent="center";r.style.zoom=.78}}
@@ -2244,6 +2248,7 @@ function fitBoard(){ requestAnimationFrame(fitTray);
   const b=$("#board");b.style.width=Math.floor(w)+"px";b.style.height=Math.floor(h)+"px";b.style.transform=shift?`translateX(${Math.round(shift)}px)`:"";
 }
 new ResizeObserver(()=>{if(screen==="game")fitBoard()}).observe($("#stage"));
+new ResizeObserver(()=>{if(screen==="game")requestAnimationFrame(fitTray)}).observe($("#tray")); // someone joins and the player list grows: refit the tools
 // more cameras make the docked video taller: keep the tools above it and re-fit Violet's tray
 new ResizeObserver(()=>requestAnimationFrame(vidReserve)).observe($("#vid"));
 new ResizeObserver(()=>{const vb=$("#vid"),tray=$("#tray");if(screen!=="game"||!vb||!vb.classList.contains("dock"))return;
@@ -2569,12 +2574,14 @@ function setCalls(on){
   else{setPresence({calls:null});vid.denied=false;startMedia();sayLittle("Video on!")}
   peopleSig=""; renderVideoUI(); if(screen==="lobby") renderPeople();
 }
+// camera: small picture (the tiles are small) but a smooth 24 frames a second
+const CAM_BASE={width:{ideal:480},height:{ideal:360},frameRate:{ideal:24,max:30}};
 function startMedia(){ if(vid.optOut) return;
   if(vid.local||vid.asking||!mediaOK()||!me) return;
   vid.asking=true; renderVideoUI();
   // called straight from a tap where possible, so iPhone/iPad allow it
   navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true},
-      video:{facingMode:"user",width:{ideal:320},height:{ideal:240},frameRate:{ideal:15,max:20}}})
+      video:Object.assign({facingMode:"user"},CAM_BASE)})
     .then(s=>{
       vid.local=s; vid.denied=false; vid.facing="user"; applyTracks(); countCams();
       s.getTracks().forEach(camWatch);
@@ -2589,7 +2596,7 @@ function camWatch(t){t.addEventListener("ended",()=>{if(vid.local&&vid.local.get
 async function flipCamera(){
   if(!vid.local||vid.flipping) return; vid.flipping=true;
   let next=vid.facing==="user"?"environment":"user";
-  const base={width:{ideal:320},height:{ideal:240},frameRate:{ideal:15,max:20}};
+  const base=CAM_BASE;
   const old=vid.local.getVideoTracks()[0]; const oldId=old&&old.getSettings?old.getSettings().deviceId:null;
   if(old){old.stop();vid.local.removeTrack(old)} // tablets can only run one camera at a time
   const grab=c=>navigator.mediaDevices.getUserMedia({video:Object.assign({},base,c)}).then(x=>x.getVideoTracks()[0]).catch(()=>null);
@@ -2638,8 +2645,13 @@ function closePc(peer,bye){
 function newPc(peer){
   const pc=new RTCPeerConnection({iceServers:ICE}), c={pc,pending:[],t:null};
   vid.local.getTracks().forEach(t=>{if(t.kind==="video"&&"contentHint" in t)t.contentHint="motion";pc.addTrack(t,vid.local)});
+  // ask for H.264 first: iPads and iPhones encode it in hardware, far less work than VP8 in software, so video stays smooth while games run.
+  // (each side's list says what it wants to RECEIVE, so everyone asks for H.264 and the iPads end up sending it)
+  try{const caps=RTCRtpReceiver.getCapabilities&&RTCRtpReceiver.getCapabilities("video");
+    if(caps&&pc.getTransceivers){const h=caps.codecs.filter(x=>/h264/i.test(x.mimeType)),o=caps.codecs.filter(x=>!/h264/i.test(x.mimeType));
+      if(h.length) for(const t of pc.getTransceivers()) if(t.sender&&t.sender.track&&t.sender.track.kind==="video"&&t.setCodecPreferences) t.setCodecPreferences([...h,...o])}}catch(_){}
   // a little jitter buffer on what we hear: a touch more delay, far fewer choppy gaps on busy Wi-Fi
-  pc.addEventListener("track",e=>{try{if(e.receiver&&"jitterBufferTarget" in e.receiver)e.receiver.jitterBufferTarget=e.track.kind==="audio"?120:150}catch(_){}});
+  pc.addEventListener("track",e=>{try{if(e.receiver&&"jitterBufferTarget" in e.receiver)e.receiver.jitterBufferTarget=e.track.kind==="audio"?120:200}catch(_){}});
   pc.onicecandidate=e=>{if(e.candidate&&room) room.signal(peer,{y:"ice",c:e.candidate.toJSON()})};
   pc.ontrack=e=>{const st=e.streams[0]||new MediaStream([e.track]);vid.streams.set(peer,st);renderVideoUI()};
   pc.onconnectionstatechange=()=>{
@@ -2662,28 +2674,38 @@ function opusTune(sdp){return sdp.replace(/a=fmtp:(\d+) ([^\r\n]*)/g,(m,pt,p)=>{
   return "a=fmtp:"+pt+" "+Object.entries(kv).map(([k,v])=>k+"="+v).join(";")})}
 function tuneSenders(){
   const n=Math.max(1,vid.pcs.size);
-  const base=[[420,20],[300,15],[220,15],[180,12]][Math.min(3,n)]||[180,12];
-  const kbps=Math.round(base[0]*[1,.65,.4][VQ.level]), fps=[base[1],Math.min(base[1],12),8][VQ.level];
+  // [kbps, fps] for each copy we send, by how many people we're sending to (1, 2, 3, 4+)
+  const base=[[650,24],[650,24],[480,24],[360,20],[280,18]][Math.min(4,n)];
+  // when the Wi-Fi or the tablet struggles: send a smaller picture first and keep it moving smoothly; only the last step lowers the frame rate
+  const kbps=Math.round(base[0]*[1,.6,.35][VQ.level]), fps=[base[1],base[1],Math.min(base[1],15)][VQ.level], scale=[1,1.5,2][VQ.level];
   for(const c of vid.pcs.values()) for(const snd of c.pc.getSenders()){
     if(!snd.track||!snd.getParameters) continue;
     // some browsers reject a field they don't know, so try with everything, then with just the essentials
     const apply=full=>{try{const prm=snd.getParameters(); if(!prm.encodings||!prm.encodings.length) return Promise.resolve();
       const e=prm.encodings[0];
       if(snd.track.kind==="audio"){e.maxBitrate=40000;if(full){e.priority="high";e.networkPriority="high"}}
-      else{e.maxBitrate=kbps*1000;e.maxFramerate=fps;if(full){e.priority="low";e.networkPriority="low";prm.degradationPreference="maintain-framerate"}}
+      else{e.maxBitrate=kbps*1000;e.maxFramerate=fps;e.scaleResolutionDownBy=scale;if(full){e.priority="low";e.networkPriority="low";prm.degradationPreference="maintain-framerate"}}
       return snd.setParameters(prm)}catch(err){return Promise.reject(err)}};
     apply(true).catch(()=>apply(false)).catch(()=>{});
   }
 }
-// every few seconds: if the other end reports lost video packets, step quality down; when it's clean again, step back up
+// every 4 seconds: step quality down if the other end is losing video packets, the Wi-Fi can't carry it,
+// or this tablet's processor can't keep up; step back up only after it's been clean for a while (no see-sawing)
+VQ.good=0;
 setInterval(async()=>{
-  if(!vid.pcs.size) {VQ.level=0;return}
-  let lost=0,cnt=0;
-  for(const c of vid.pcs.values()){try{const st=await c.pc.getStats();st.forEach(r=>{if(r.type==="remote-inbound-rtp"&&r.kind==="video"&&typeof r.fractionLost==="number"){lost+=r.fractionLost;cnt++}})}catch(_){}}
-  if(!cnt) return; const f=lost/cnt, was=VQ.level;
-  if(f>.08&&VQ.level<2) VQ.level++; else if(f<.02&&VQ.level>0) VQ.level--;
+  if(!vid.pcs.size) {VQ.level=0;VQ.good=0;return}
+  let lost=0,cnt=0,cpu=false,bw=false,avail=Infinity;
+  for(const c of vid.pcs.values()){try{const st=await c.pc.getStats();st.forEach(r=>{
+    if(r.type==="remote-inbound-rtp"&&r.kind==="video"&&typeof r.fractionLost==="number"){lost+=r.fractionLost;cnt++}
+    if(r.type==="outbound-rtp"&&r.kind==="video"){if(r.qualityLimitationReason==="cpu")cpu=true;if(r.qualityLimitationReason==="bandwidth")bw=true}
+    if(r.type==="candidate-pair"&&r.nominated&&typeof r.availableOutgoingBitrate==="number")avail=Math.min(avail,r.availableOutgoingBitrate)})}catch(_){}}
+  const f=cnt?lost/cnt:0, was=VQ.level;
+  const short=avail<Infinity&&avail<vid.pcs.size*300000; // not enough upload for everyone at the normal size
+  if((f>.06||cpu||(bw&&short))&&VQ.level<2){VQ.level++;VQ.good=0}
+  else if(f<.02&&!cpu&&!bw){if(++VQ.good>=4&&VQ.level>0){VQ.level--;VQ.good=0}}
+  else VQ.good=0;
   if(VQ.level!==was) tuneSenders();
-},5000);
+},4000);
 function flushIce(c){if(!c.pc.remoteDescription)return;for(const x of c.pending)c.pc.addIceCandidate(x).catch(()=>{});c.pending=[]}
 async function call(peer){
   const c=newPc(peer); const off=await c.pc.createOffer(); await c.pc.setLocalDescription({type:"offer",sdp:opusTune(off.sdp)});
