@@ -4,6 +4,14 @@ Newest first. Each release has kid-friendly notes (shown to everyone in the game
 
 ---
 
+## 1.18: Spider repellent 🧴
+**October 29, 2026**
+
+### For everyone
+- 🧴 **Spider repellent in Snake Race:** grab the green 🧴 box and for 12 seconds the spider can't snip your tail. He just bounces off you like a wall! The spider can't pick up repellent either. He bounces right off the box.
+
+---
+
 ## 1.17: Short voice messages work every time 🎤
 **October 29, 2026**
 

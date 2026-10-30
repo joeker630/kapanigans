@@ -1610,7 +1610,7 @@ const HELP={
     faq:[["Can kids get in?","Only by pressing and holding the lock."],["New phone?","Open the site, type the same family code, pick your name."]]},
   ctf:{em:"🚩",title:"Capture the Flag",steps:[["👋","Invite family and pick a team, then tap Start. Others can join while you play."],["👆","Tap where you want to go. You walk there and stop."],["🧭","Arrows at the edge point to flags you can't see."],["🚩","Grab the red flag and bring it home to your blue base."],["👋","Touch the other team on YOUR side to tag them."],["🧩","Tagged? Solve a quick puzzle to get back in."],["💩","Dodge Jeppson's poops. They slow you down!"],["🐶","Tap Jeppson to send him after the other team."]],
     faq:[["Power-ups?","💨 Zoomies make you fast. 🥾 Rain boots stop poop squishes. 🦴 Treat toss sends Jeppson to the other side."],["How do we win?","Most captures when the 3-minute timer runs out."],["Who are the others?","Family who joined (⭐ name tags) and computer friends filling empty spots."],["Can someone join later?","Yes! Tap 👋 to invite, or they tap Join on your card at Home."]]},
-  snake:{em:"🐍",title:"Snake Race",steps:[["👆","Hold your finger where you want your snake to go."],["🍬","Eat the snacks to grow longer and fatter."],["🚫","Don't run into other snakes. Your own body is OK."],["💥","Crash? Half your snake spills out. Solve a puzzle to get back in."],["🎁","Boxes: 🧲 magnet, ⚡ speed, ✖️3 triple snacks, ⭐ go through snakes."],["🏆","Longest snake when time runs out wins."]],
+  snake:{em:"🐍",title:"Snake Race",steps:[["👆","Hold your finger where you want your snake to go."],["🍬","Eat the snacks to grow longer and fatter."],["🚫","Don't run into other snakes. Your own body is OK."],["💥","Crash? Half your snake spills out. Solve a puzzle to get back in."],["🎁","Boxes: 🧲 magnet, ⚡ speed, ✖️3 triple snacks, ⭐ go through snakes, 🧴 spider repellent (the spider can't snip you)."],["🏆","Longest snake when time runs out wins."]],
     faq:[["Walls?","They just bonk you back."],["⚡ Boost?","Hold it to go faster. It uses up a little of your snake."],["Not enough players?","Computer snakes fill in."]]},
   farm:{em:"🥕",title:"Farmstand",steps:[["👆","Tap a crop, animal or building. Your farmer walks there."],["🧩","Solve the little puzzle to do the chore."],["🌱","Plant, water and pick crops. Feed animals for 🥚 🥛 🧶."],["🧺","Sell at the farmstand for 🪙 Moolah. Build at the red barn."],["📋","Fill family orders on the board."],["🤏","Pinch or tap ➕ ➖ to zoom. Press and hold to move buildings."]],
     faq:[["Is it our farm?","Yes, the whole family shares one farm."],["Did I lose anything?","Never. Plants and animals just droop until you help."],["How long?","About 30 minutes is a good farm visit."]]},
@@ -1650,7 +1650,7 @@ addEventListener("resize",()=>requestAnimationFrame(fitHelp));
    "## 1.0: Title" starts a release; "### For everyone" / "### For grown-ups" / any other "###" section follow.
    Grown-up sections ("For grown-ups", "How long it took…") are hidden from the kids.
    Bump APP_VERSION together with a new RELEASES.md entry. */
-const APP_VERSION="1.17";
+const APP_VERSION="1.18";
 const WN={rel:null,loading:null};
 function wnGrownOnly(h){return /grown/i.test(h)}
 function wnParse(md){
@@ -8464,7 +8464,7 @@ const SW={w:2400,h:1600}, SN_ROUND=150000, SN_SAFE=3000, SN_SPACE=5, SN_PUB=100,
 const SN_ORBS=420, SN_FRUITS=30, SN_CUBES=5;
 const SN_SPEED={little:97,big:132,grown:152}, SN_BOTSPEED={little:79,big:112,grown:134}, SN_TURN={little:3.2,big:3.9,grown:4.3};
 const SN_FOOD=[["🍎","apple"],["🥕","carrot"],["🫐","blueberries"],["🍓","strawberry"],["🌽","corn"],["🍐","pear"]];
-const SN_CUBE={mag:{em:"🧲",name:"magnet",ms:10000,col:"#FF4D8D"},spd:{em:"⚡",name:"speed",ms:8000,col:"#FFD60A"},x3:{em:"✖️3",name:"triple snacks",ms:10000,col:"#22D3EE"},star:{em:"⭐",name:"star",ms:6000,col:"#B388FF"}};
+const SN_CUBE={mag:{em:"🧲",name:"magnet",ms:10000,col:"#FF4D8D"},spd:{em:"⚡",name:"speed",ms:8000,col:"#FFD60A"},x3:{em:"✖️3",name:"triple snacks",ms:10000,col:"#22D3EE"},star:{em:"⭐",name:"star",ms:6000,col:"#B388FF"},rep:{em:"🧴",name:"spider repellent",ms:12000,col:"#34D399"}};
 const SN_ORBCOL=["#FF5A5F","#FFB020","#FFE14D","#4ADE80","#38BDF8","#A78BFA","#F472B6","#FFFFFF"];
 const SN_BOTS=[{name:"Wiggles",face:"🐛",hue:"#65A30D"},{name:"Noodle",face:"🐍",hue:"#0EA5E9"},{name:"Zippy",face:"🦎",hue:"#F97316"}];
 const SN_KID_PUZZLES=["count","letters","color","pattern","money","shadow","size","numorder"]; // the quick ones (about 10-20 s)
@@ -8501,7 +8501,7 @@ function snOnCut(id,v){
   P.forEach((q,k)=>{const did=`c${id}_${k}`;if(!SNK.gone.has(did))SNK.drops[did]={id:did,x:q[0],y:q[1],t:"d",v:2,c:I.hue}});
   (SNK.bursts=SNK.bursts||[]).push({x:P[0]?P[0][0]:0,y:P[0]?P[0][1]:0,t0:performance.now(),col:"#fff",em:"✂️"});
   const mine=v.to===SNK.seat, bot=SNK.host&&I.bot;
-  if(mine||bot){const S=snOwn(v.to);if(S&&S.a){
+  if(mine||bot){const S=snOwn(v.to);if(S&&S.a&&!(S.fx&&S.fx.rep>snNow())){
     const m=Math.max(SN_START,Math.round((v.j*2*SN_SPACE-50)/5));
     if(m<S.m){S.m=m;const keep=Math.ceil(snLen(m)/SN_SPACE);if(S.trail.length>keep)S.trail.length=keep;snPub(v.to,S,true)}}}
   const J=snSeatInfo(v.by);
@@ -8517,12 +8517,13 @@ function snWrapA(a){while(a>Math.PI)a-=2*Math.PI;while(a<-Math.PI)a+=2*Math.PI;r
 function snPellet(i){
   const g=SNK.gen[i]||0, hit=SNK.pc[i]; if(hit&&hit.g===g) return hit; return SNK.pc[i]=snMakePellet(i,g);
 }
+function snCubeKinds(){const sp=SNK.meta&&Array.isArray(SNK.meta.seats)&&SNK.meta.seats.some(st=>st&&!st.bot&&SN_SPIDERS[st.k]);return sp?["mag","spd","x3","star","rep","rep"]:["mag","spd","x3","star"]}
 function snMakePellet(i,g){
   const r=rng(hash(SNK.meta.seed+":"+i+":"+g)), m=60;
   const x=m+r()*(SW.w-2*m), y=m+r()*(SW.h-2*m);
   if(i<SN_ORBS) return {id:i,g,x,y,t:"o",v:1,c:SN_ORBCOL[(r()*SN_ORBCOL.length)|0],r:6+r()*4};
   if(i<SN_ORBS+SN_FRUITS) return {id:i,g,x,y,t:"f",v:3,k:(r()*SN_FOOD.length)|0};
-  return {id:i,g,x,y,t:"c",v:0,k:Object.keys(SN_CUBE)[(r()*4)|0]};
+  return {id:i,g,x,y,t:"c",v:0,k:snCubeKinds()[(r()*snCubeKinds().length)|0]};
 }
 function snEatId(id){ // "12.3" = pellet 12, generation 3; "d..." = a spilled pellet
   if(id[0]==="d"){SNK.gone.add(id);return}
@@ -8637,7 +8638,7 @@ function snPub(i,S,force){
 function snOthers(i){ // bodies that can crash seat i
   const out=[], now=snNow();
   for(let k=0;k<4;k++){if(k===i)continue;const S=SNK.s[k];if(!S||!S.a||(S.safe||0)>now||snIsSpider(k))continue;
-    const pts=S.own?S.trail.filter((_,j)=>j%2===0):S.pts; if(pts&&pts.length) out.push({k,pts,r:snRad(S.m),star:S.fx&&S.fx.star>now})}
+    const pts=S.own?S.trail.filter((_,j)=>j%2===0):S.pts; if(pts&&pts.length) out.push({k,pts,r:snRad(S.m),star:S.fx&&S.fx.star>now,rep:S.fx&&S.fx.rep>now})}
   return out;
 }
 function snMove(i,S,dt,o){ // returns {crash, by, bonk, ate}
@@ -8663,7 +8664,7 @@ function snMove(i,S,dt,o){ // returns {crash, by, bonk, ate}
   if(!((S.safe||0)>now)&&!(S.fx&&S.fx.star>now)){
     for(const B of snOthers(i)){const hit=r*.55+B.r;
       for(let j=0;j<B.pts.length;j++){const q=B.pts[j];if(snDist2(S.x,S.y,q[0],q[1])<hit*hit){
-        if(o.spider){if(j>=2){res.cut={k:B.k,j,pts:B.pts};break}
+        if(o.spider){if(j>=2&&!B.rep){res.cut={k:B.k,j,pts:B.pts};break}if(B.rep)res.repel=true;
           S.g=snWrapA(snAngTo(q[0],q[1],S.x,S.y));S.tgt=S.g;S.x+=Math.cos(S.g)*hit*.6;S.y+=Math.sin(S.g)*hit*.6;res.bonk=true;break} // head to head: just bounce
         if(S.bonks>0){S.bonks--;S.g=snWrapA(snAngTo(q[0],q[1],S.x,S.y));S.tgt=S.g;S.x+=Math.cos(S.g)*hit*.6;S.y+=Math.sin(S.g)*hit*.6;res.bonk=true;break}
         res.crash=true;res.by=B.k;return res}}
@@ -8677,7 +8678,7 @@ function snMove(i,S,dt,o){ // returns {crash, by, bonk, ate}
   if(SNK.meta){
     const r2=reach*reach;
     const rc=(r+30)*(r+30);
-    for(let id=0;id<SN_ORBS+SN_FRUITS+SN_CUBES;id++){const p=snPellet(id),dd=snDist2(S.x,S.y,p.x,p.y);if(dd<(p.t==="c"?rc:r2)){const key=id+"."+p.g;snEatId(key);eat(p,key)}}
+    for(let id=0;id<SN_ORBS+SN_FRUITS+SN_CUBES;id++){const p=snPellet(id),dd=snDist2(S.x,S.y,p.x,p.y);if(dd<(p.t==="c"?rc:r2)){if(o.spider&&p.t==="c"&&p.k==="rep"){const a=snAngTo(p.x,p.y,S.x,S.y);S.g=a;S.tgt=a;const d=Math.sqrt(rc)+2;S.x=p.x+Math.cos(a)*d;S.y=p.y+Math.sin(a)*d;res.bonk=true;res.repel=true;continue}const key=id+"."+p.g;snEatId(key);eat(p,key)}}
     for(const id in SNK.drops){const p=SNK.drops[id];if(SNK.gone.has(id)){delete SNK.drops[id];continue}if(snDist2(S.x,S.y,p.x,p.y)<r2){SNK.gone.add(id);delete SNK.drops[id];eat(p,id)}}
   }
   if(S.fx)for(const k in S.fx)if(S.fx[k]<now)delete S.fx[k];
@@ -8694,6 +8695,7 @@ function snTickMine(dt){
   if(res.cut) snCut(S,res.cut);
   if(res.crash){snCrashMine(res.by);return}
   const t=performance.now();
+  if(res.repel&&t-(SNK.repAt||0)>1500){SNK.repAt=t;toast("🧴 Yuck! Spider repellent!");blip(180,.2,"sawtooth",.1)}
   if((res.wall||res.bonk)&&t-SNK.bonkAt>400){SNK.bonkAt=t;blip(220,.15,"triangle",.14);snBonkFx();if(res.bonk)sayLittle(S.bonks?"Bonk! Careful!":"Bonk! Next time it's a crash!")}
   if(res.ate){SNK.snacks++;if(SNK.snacks%10===0)bump("snakeSnacks",10);
     if(res.ate.t==="f"){(SNK.bursts=SNK.bursts||[]).push({x:S.x,y:S.y,t0:t,col:"#fff"});blip(880,.1,"sine",.12);sayLittle(SN_FOOD[res.ate.k][1])} else if(t-(SNK.chompAt||0)>90){SNK.chompAt=t;blip(600+Math.min(20,S.m/10)*20,.05,"sine",.07)}}
@@ -8848,14 +8850,15 @@ function snDraw(){
   const mine=snBody(SNK.seat), little=snMyLvl()==="little";
   for(const i of order){const B=snBody(i);if(!B||!B.pts.length)continue;const S=SNK.s[i],I=snSeatInfo(i)||{hue:"#888",name:"?"},r=I.spider?snSpR(S.m)/1.35:snRad(S.m);
     if(I.spider) B.pts=[];
-    const ghost=(S.safe||0)>now, star=S.fx&&S.fx.star>now; c.globalAlpha=ghost?.45+.15*Math.sin(t/120):1;
+    const ghost=(S.safe||0)>now, star=S.fx&&S.fx.star>now, rep=S.fx&&S.fx.rep>now; c.globalAlpha=ghost?.45+.15*Math.sin(t/120):1;
     if(little&&i!==SNK.seat&&mine){c.fillStyle="rgba(255,120,0,.3)";for(let j=0;j<B.pts.length;j+=2){const q=B.pts[j];if(snDist2(q[0],q[1],mine.x,mine.y)<130*130){c.beginPath();c.arc(q[0],q[1],r*1.7,0,7);c.fill()}}}
     const light=I.hue+"B0";
     for(let j=B.pts.length-1;j>=0;j--){const q=B.pts[j];if(!vis(q[0],q[1],r*2))continue;
-      c.fillStyle="rgba(255,255,255,.28)";c.beginPath();c.arc(q[0],q[1],r+2.5,0,7);c.fill()}
+      c.fillStyle=rep?"#34D399":"rgba(255,255,255,.28)";c.beginPath();c.arc(q[0],q[1],r+(rep?4:2.5),0,7);c.fill()}
     for(let j=B.pts.length-1;j>=0;j--){const q=B.pts[j];if(!vis(q[0],q[1],r*2))continue;
       c.fillStyle=I.hue;c.beginPath();c.arc(q[0],q[1],r,0,7);c.fill();
       if(j%4<2){c.fillStyle="rgba(255,255,255,.22)";c.beginPath();c.arc(q[0]-r*.25,q[1]-r*.25,r*.55,0,7);c.fill()}}
+    if(rep){c.strokeStyle="rgba(52,211,153,.8)";c.lineWidth=4;c.setLineDash([6,6]);c.lineDashOffset=-t/40;c.beginPath();c.arc(B.x,B.y,r*1.9+Math.sin(t/120)*2,0,7);c.stroke();c.setLineDash([]);c.font=`${Math.round(r*1.1)}px system-ui,"Apple Color Emoji","Noto Color Emoji"`;c.fillText("🧴",B.x+r*1.7,B.y-r*1.7)}
     if(star){c.strokeStyle="#FFD600";c.lineWidth=4;c.beginPath();c.arc(B.x,B.y,r*1.6+Math.sin(t/90)*2,0,7);c.stroke()}
     const hr=r*1.35;
     if(I.spider){ // a glowing white spider: eight wiggly legs and snapping scissors
