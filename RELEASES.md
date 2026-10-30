@@ -4,6 +4,19 @@ Newest first. Each release has kid-friendly notes (shown to everyone in the game
 
 ---
 
+## 1.16: Short voice messages work every time 🎤
+**October 29, 2026**
+
+### For everyone
+- 🎤 **Short voice messages:** in the Inbox, voice messages of any length from 1 to 30 seconds now record and send, including quick 10-second hellos. While you record, a counter shows how many seconds so far.
+
+### For grown-ups
+- Safari sometimes hands over a recording a moment after it stops. Short messages were missing it and showing "That was too short." The game now waits for the recording before checking it.
+- Recording during a video call uses a copy of your microphone. Recording no longer turns your call mic back on if you'd muted it.
+- Voice messages and family voice clips record at slightly higher quality (48 kbps).
+
+---
+
 ## 1.16: Watch out for the spider! 🕷️
 **October 29, 2026**
 

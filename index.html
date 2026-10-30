@@ -4625,8 +4625,26 @@ function voicePlayer(b){
   btn.onclick=()=>audio.paused?audio.play().catch(()=>{}):audio.pause();
   return {el:btn,play:()=>{hush();audio.play().catch(()=>{})}};
 }
-/* voice recording: tap to start, tap to stop, 30 seconds max */
-function stopRec(){const r=ib.rec;if(!r)return;clearInterval(r.tick);if(r.mr&&r.mr.state==="recording")r.mr.stop();if(r.own&&r.stream)r.stream.getTracks().forEach(t=>t.stop());ib.rec=null;applyTracks()}
+/* voice recording helpers, shared by Inbox messages and family voice clips.
+   - records a COPY of the call's microphone when a call is on, so recording never un-mutes you on the call
+   - no timeslice: Safari delivers the whole recording at stop, sometimes just AFTER the stop event,
+     so we wait for the data instead of giving up ("too short" on short messages) */
+function recStream(){
+  const live=vid.local&&vid.local.getAudioTracks().find(t=>t.readyState==="live");
+  if(live){const c=live.clone();c.enabled=true;return Promise.resolve({stream:new MediaStream([c]),own:true})}
+  return navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true,channelCount:1}}).then(stream=>({stream,own:true}));
+}
+function recMake(stream){
+  const type=["audio/mp4","audio/webm;codecs=opus","audio/webm"].find(t=>window.MediaRecorder&&MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(t))||"";
+  let mr;try{mr=new MediaRecorder(stream,type?{mimeType:type,audioBitsPerSecond:48000}:{audioBitsPerSecond:48000})}catch(e){mr=new MediaRecorder(stream)}
+  const chunks=[]; mr.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
+  const mime=()=>(mr.mimeType||type||"audio/mp4").split(";")[0];
+  // after stop: wait (up to 2 seconds) for Safari's last piece of data, then hand back one blob
+  const collect=()=>new Promise(res=>{let n=0;const go=()=>{if(!chunks.length&&n++<20)return setTimeout(go,100);setTimeout(()=>res(new Blob(chunks,{type:mime()})),60)};go()});
+  return {mr,mime,collect};
+}
+/* voice recording: tap to start, tap to stop, 1 to 30 seconds */
+function stopRec(){const r=ib.rec;if(!r)return;clearInterval(r.tick);ib.rec=null;r.mr.onstop=null;try{if(r.mr&&r.mr.state==="recording")r.mr.stop()}catch(e){}if(r.own&&r.stream)r.stream.getTracks().forEach(t=>t.stop());applyTracks()} // leaving the screen: throw the recording away
 function renderVoice(B){
   B.append(el("h2",null,"Say something!"));
   const ok=!!(navigator.mediaDevices&&window.MediaRecorder);
@@ -4637,25 +4655,21 @@ function renderVoice(B){
   big.onclick=async()=>{
     if(ib.rec){ib.rec.mr.stop();return}
     hush(); out.innerHTML=""; result=null;
-    let stream,own=false;const live=vid.local&&vid.local.getAudioTracks().find(t=>t.readyState==="live");
-    if(live){live.enabled=true;stream=new MediaStream([live])}
-    else{try{stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}});own=true}catch(e){lab.textContent="The microphone is blocked. Allow it in Settings › Safari › Microphone.";return}}
-    const type=["audio/mp4","audio/webm;codecs=opus","audio/webm"].find(t=>MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(t))||"";
-    let mr;try{mr=new MediaRecorder(stream,type?{mimeType:type,audioBitsPerSecond:32000}:{audioBitsPerSecond:32000})}catch(e){mr=new MediaRecorder(stream)}
-    const chunks=[];const t0=Date.now();
-    ib.rec={mr,stream,own,tick:setInterval(()=>{const s=Math.floor((Date.now()-t0)/1000);lab.textContent=`Recording… ${30-s}s left. Tap to stop`;if(s>=30)mr.stop()},250)};
-    big.classList.add("on");big.textContent="⏹️";lab.textContent="Recording… tap to stop";
-    mr.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
-    mr.onstop=()=>{const r=ib.rec;if(r){clearInterval(r.tick);if(r.own)r.stream.getTracks().forEach(t=>t.stop())}ib.rec=null;applyTracks();
-      big.classList.remove("on");big.textContent="🎤";
-      const blob=new Blob(chunks,{type:mr.mimeType||type||"audio/mp4"});const dur=Math.max(1,Math.round((Date.now()-t0)/1000));
-      if(blob.size<500){lab.textContent="That was too short. Try again!";return}
-      if(blob.size>700000){lab.textContent="That one is too long to send. Try a shorter one.";return}
-      const fr=new FileReader();fr.onload=()=>{const data=String(fr.result).split(",")[1];result={mime:(mr.mimeType||type||"audio/mp4").split(";")[0],data,dur};
+    let stream,own=false;
+    try{({stream,own}=await recStream())}catch(e){lab.textContent="The microphone is blocked. Allow it in Settings › Safari › Microphone.";return}
+    const {mr,mime,collect}=recMake(stream);const t0=Date.now();
+    ib.rec={mr,stream,own,tick:setInterval(()=>{const s=Math.floor((Date.now()-t0)/1000);lab.textContent=`Recording… ${s}s (up to 30). Tap ⏹️ to stop`;if(s>=30&&mr.state==="recording")mr.stop()},250)};
+    big.classList.add("on");big.textContent="⏹️";lab.textContent="Recording… tap ⏹️ to stop";
+    mr.onstop=async()=>{const r=ib.rec;if(r)clearInterval(r.tick);const dur=Math.max(1,Math.round((Date.now()-t0)/1000));
+      big.classList.remove("on");big.textContent="🎤";lab.textContent="One moment…";
+      const blob=await collect(); if(r&&r.own)r.stream.getTracks().forEach(t=>t.stop()); if(ib.rec===r)ib.rec=null; applyTracks();
+      if(Date.now()-t0<700||blob.size<200){lab.textContent="That was too short. Hold on a little longer!";return}
+      if(blob.size>900000){lab.textContent="That one is too long to send. Try a shorter one.";return}
+      const fr=new FileReader();fr.onload=()=>{const data=String(fr.result).split(",")[1];result={mime:mime(),data,dur};
         lab.textContent="Listen, then send it!";const pl=voicePlayer(result);const re=el("button","ghost","🔁 Again");re.onclick=()=>{out.innerHTML="";lab.textContent="Tap the microphone to start"};
         const send=el("button","bigbtn","Send 💌");send.onclick=()=>deliverMsg({kind:"voice",dur},{type:"voice",mime:result.mime,data:result.data});
         out.innerHTML="";out.append(pl.el,re,send)};fr.readAsDataURL(blob)};
-    mr.start(1000);
+    mr.start();
   };
 }
 
@@ -5262,20 +5276,15 @@ function clearInbox(k){
 
 /* ================= shared recorder (uses the live mic when the camera is on) ================= */
 async function startRecorder(max,onTick){
-  let stream,own=false; const live=vid.local&&vid.local.getAudioTracks().find(t=>t.readyState==="live");
-  if(live){live.enabled=true;stream=new MediaStream([live])}
-  else{stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}});own=true}
-  const type=["audio/mp4","audio/webm;codecs=opus","audio/webm"].find(t=>window.MediaRecorder&&MediaRecorder.isTypeSupported&&MediaRecorder.isTypeSupported(t))||"";
-  let mr;try{mr=new MediaRecorder(stream,type?{mimeType:type,audioBitsPerSecond:32000}:{audioBitsPerSecond:32000})}catch(e){mr=new MediaRecorder(stream)}
-  const chunks=[],t0=Date.now(); let resolveDone; const done=new Promise(r=>resolveDone=r);
+  const {stream,own}=await recStream(); const {mr,mime,collect}=recMake(stream);
+  const t0=Date.now(); let resolveDone; const done=new Promise(r=>resolveDone=r);
   const stop=()=>{if(mr.state==="recording")mr.stop()};
   const tick=setInterval(()=>{const s=(Date.now()-t0)/1000;onTick&&onTick(s);if(s>=max)stop()},250);
-  mr.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
-  mr.onstop=()=>{clearInterval(tick);if(own)stream.getTracks().forEach(t=>t.stop());applyTracks();
-    const blob=new Blob(chunks,{type:mr.mimeType||type||"audio/mp4"}),dur=Math.max(1,Math.round((Date.now()-t0)/1000));
-    if(blob.size<400){resolveDone(null);return}
-    const fr=new FileReader();fr.onload=()=>resolveDone({mime:(mr.mimeType||type||"audio/mp4").split(";")[0],data:String(fr.result).split(",")[1],dur,size:blob.size});fr.readAsDataURL(blob)};
-  mr.start(1000); hush();
+  mr.onstop=async()=>{clearInterval(tick);const dur=Math.max(1,Math.round((Date.now()-t0)/1000));
+    const blob=await collect(); if(own)stream.getTracks().forEach(t=>t.stop()); applyTracks();
+    if(blob.size<200){resolveDone(null);return}
+    const fr=new FileReader();fr.onload=()=>resolveDone({mime:mime(),data:String(fr.result).split(",")[1],dur,size:blob.size});fr.readAsDataURL(blob)};
+  mr.start(); hush();
   return {stop,done};
 }
 function clipToUrl(c){try{const bin=atob(c.data);const u8=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u8[i]=bin.charCodeAt(i);return URL.createObjectURL(new Blob([u8],{type:/^audio\/[\w.+-]+$/.test(c.mime||"")?c.mime:"audio/mp4"}))}catch(e){return ""}}
