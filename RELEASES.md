@@ -4,6 +4,20 @@ Newest first. Each release has kid-friendly notes (shown to everyone in the game
 
 ---
 
+## 1.15: Bigger picture on phones 📱
+**October 29, 2026**
+
+### For everyone
+- 🎨 **Bigger coloring:** with a phone or iPad sideways, the coloring picture now fills the full height. The spare width goes to the tools instead of empty blue space, so the tools are bigger too.
+- 🏠 **Less wasted space:** the home button now shares a line with the players or the reactions.
+- 📹 **Videos fit on short screens:** the video column starts at the top and shrinks the videos as needed, so the buttons are never cut off at the bottom.
+
+### For grown-ups
+- 📲 **Full screen, no Safari bars:** a web page can't hide Safari's address bar and tabs. Add Kapanigans to the Home Screen instead: in Safari, tap Share › **Add to Home Screen**, and turn on **Open as Web App** if you see it. Opening it from that icon runs it full screen. Grown-ups see a one-time tip about this on iPhone and iPad.
+- Added a web app manifest and a see-through status bar, so the home-screen version uses the whole screen.
+
+---
+
 ## 1.14: Neater video buttons and coloring tools ✨
 **October 29, 2026**
 

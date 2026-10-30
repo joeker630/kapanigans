@@ -7,7 +7,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Kapanigans">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#D6ECFF">
 <link rel="apple-touch-icon" href="icon.png">
 <link rel="icon" href="icon.png">
@@ -868,9 +869,10 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
 .tofaces{font-size:72px;line-height:1}
 @media (orientation:landscape){
   #game{grid-template-columns:clamp(170px,18vw,250px) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);grid-template-areas:"head stage" "tray stage";column-gap:14px;row-gap:8px}
-  .ghead{flex-direction:column;align-items:stretch;gap:6px;flex-wrap:nowrap}
+  .ghead{flex-direction:row;align-items:center;gap:6px;flex-wrap:wrap} /* 🏠 shares its line with the players (or the reactions), no row wasted */
   .ghead>.round{align-self:flex-start}
-  .ghead .seats{flex-direction:row;flex-wrap:wrap;gap:4px;flex:0 0 auto} /* players side by side, so 4 people take 2 short lines */
+  .ghead .seats{flex-direction:row;flex-wrap:wrap;gap:4px;flex:1 1 0;min-width:0} /* players side by side, so 4 people take 2 short lines */
+  .ghead .reacts{flex:1 1 auto}
   .ghead .seat{align-self:flex-start}
   .reacts{justify-content:space-between}
   .reacts button{width:38px;height:38px;font-size:19px}
@@ -912,6 +914,10 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
   .little .tool{min-width:80px;height:80px;font-size:40px}
   .little .sw{width:60px;height:60px}
 }
+/* "add to home screen" tip (iPhone/iPad Safari, grown-ups, once per device) */
+.a2hs{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:56;width:min(560px,calc(100% - 32px));background:var(--ink);color:#fff;border-radius:20px;padding:12px 44px 12px 16px;font-weight:700;font-size:15px;line-height:1.35;box-shadow:0 10px 30px rgba(0,0,0,.3)}
+.a2hs b{color:var(--sun)}
+.a2hs button{position:absolute;right:8px;top:8px;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.15);color:#fff;font-size:15px}
 /* coloring tools in the left column: every size follows --ts, which fitTray lowers until everything fits (no scrolling, no overlap) */
 @media (orientation:landscape){
   #tray .trow{gap:calc(6px*var(--ts,1));padding:1px}
@@ -1578,7 +1584,7 @@ function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i)
 function rng(seed){let a=seed>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 function esc(s){return String(s).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]))}
 function kidOf(k){return KIDS[k] || (k==="kapanigans"?SYS:KIDS.bear)}
-function show(id){const prevScr=screen;if(screen==="reader"&&id!=="reader")hush();if(screen==="inbox"&&id!=="inbox"&&typeof stopRec==="function")stopRec();if(prevScr==="snake"&&id!=="snake"&&typeof snLeave==="function")snLeave();if(prevScr==="ctf"&&id!=="ctf"&&typeof ctfLeave==="function")ctfLeave(); for(const s of ["setup","pick","lobby","game","story","reader","inbox","grown","farm","dress","ctf","snake"]) $("#"+s).hidden = s!==id; if(id!=="farm"&&id!=="ctf"&&tk) closeTask(true); screen=id; if(typeof renderVideoUI==="function") renderVideoUI(); if(id==="pick"&&typeof syncMailBadges==="function"){syncMailBadges();renderPickClaims()}
+function show(id){const prevScr=screen;{const t=document.getElementById("a2hs");if(t&&id!=="lobby")t.remove()}if(screen==="reader"&&id!=="reader")hush();if(screen==="inbox"&&id!=="inbox"&&typeof stopRec==="function")stopRec();if(prevScr==="snake"&&id!=="snake"&&typeof snLeave==="function")snLeave();if(prevScr==="ctf"&&id!=="ctf"&&typeof ctfLeave==="function")ctfLeave(); for(const s of ["setup","pick","lobby","game","story","reader","inbox","grown","farm","dress","ctf","snake"]) $("#"+s).hidden = s!==id; if(id!=="farm"&&id!=="ctf"&&tk) closeTask(true); screen=id; if(typeof renderVideoUI==="function") renderVideoUI(); if(id==="pick"&&typeof syncMailBadges==="function"){syncMailBadges();renderPickClaims()}
   if(me&&room&&id!=="game"&&id!=="setup") setPresence(id==="farm"?{scr:id}:{scr:id,act:null});
   if(typeof tickStats==="function") tickStats();
   if(id!==prevScr) showHelp(id); else if(!$("#help").hidden&&helpLast!==id) $("#help").hidden=true}
@@ -1644,7 +1650,7 @@ addEventListener("resize",()=>requestAnimationFrame(fitHelp));
    "## 1.0: Title" starts a release; "### For everyone" / "### For grown-ups" / any other "###" section follow.
    Grown-up sections ("For grown-ups", "How long it took…") are hidden from the kids.
    Bump APP_VERSION together with a new RELEASES.md entry. */
-const APP_VERSION="1.14";
+const APP_VERSION="1.15";
 const WN={rel:null,loading:null};
 function wnGrownOnly(h){return /grown/i.test(h)}
 function wnParse(md){
@@ -2165,7 +2171,15 @@ function doChooseKid(k){
 }
 function goLobby(){show("lobby");renderLobby();if(!vid.local&&!vid.denied)startMedia()}
 
-function renderLobby(){ setTimeout(wnMaybe,300); {const v=$("#appVer");if(v)v.textContent="v"+APP_VERSION}
+// Safari's address bar and tabs can't be hidden from a web page, but opening Kapanigans from a home screen icon runs it full screen with no bars
+function a2hsTip(){
+  const ios=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+  const standalone=navigator.standalone||matchMedia("(display-mode: standalone)").matches||matchMedia("(display-mode: fullscreen)").matches;
+  if(!ios||standalone||screen!=="lobby"||!(me&&KIDS[me]&&KIDS[me].grown)||load("kp.a2hs")||$("#a2hs")) return;
+  const d=el("div","a2hs",`📲 <b>Play full screen, no Safari bars:</b> tap Share <span aria-hidden="true">⬆️</span> › <b>Add to Home Screen</b> (turn on <b>Open as Web App</b> if you see it), then open Kapanigans from the new icon on each iPad and iPhone.<button aria-label="Close">✕</button>`);d.id="a2hs";
+  d.querySelector("button").onclick=()=>{store("kp.a2hs","1");d.remove()}; document.body.append(d);
+}
+function renderLobby(){ setTimeout(wnMaybe,300); setTimeout(a2hsTip,1200); {const v=$("#appVer");if(v)v.textContent="v"+APP_VERSION}
   const K=kidOf(me);
   $("#codeChip").innerHTML=`Family code <b>${esc(familyCode||"")}</b>`;
   const gb=$("#giftbar"); gb.innerHTML="";
@@ -2264,6 +2278,15 @@ function fitTray(){
   if(T.dataset.fit!==sig){T.dataset.fit=sig;if(screen==="game")requestAnimationFrame(()=>{const s0=T.dataset.fit;fitBoard();T.dataset.fit=s0})}
 }
 function fitBoard(){ requestAnimationFrame(fitTray);
+  // sideways: the picture is limited by the height, so give any spare width to the tools column instead of empty blue space
+  { const G=$("#game"), T=$("#tray");
+    if(innerWidth>innerHeight&&G&&T&&!(game&&game.watch)){
+      const s0=$("#stage").getBoundingClientRect(), tw=T.getBoundingClientRect().width, little=G.classList.contains("little");
+      const min=little?Math.min(320,Math.max(250,innerWidth*.25)):Math.min(250,Math.max(170,innerWidth*.18)), max=little?460:420;
+      const want=Math.round(Math.max(min,Math.min(max,tw+s0.width-s0.height*4/3)));
+      if(Math.abs(want-tw)>3){G.style.gridTemplateColumns=want+"px minmax(0,1fr)";return} // the stage resizes and calls fitBoard again
+    } else if(G) G.style.gridTemplateColumns="";
+  }
   const st=$("#stage").getBoundingClientRect(), fit=(a,c)=>{let w=a,h=w*3/4;if(h>c){h=c;w=h*4/3}return[w,h]};
   let [w,h]=fit(st.width,st.height), shift=0;
   // keep the video bubble from covering the picture when there's room to the side
@@ -2786,8 +2809,18 @@ function tileFor(p,mine){
   return t;
 }
 // keep a column on the right for the video bubble, so screens, farm puzzles and the farm itself never sit under it
+// short screens (an iPhone sideways in Safari): start the column near the top and shrink the videos so they and the buttons all fit
+function vidFitHeight(){
+  const box=$("#vid"); if(!box||box.hidden) return; const reserve=!box.dataset.dragged&&innerWidth>=600;
+  if(!box.dataset.dragged) box.style.top=reserve&&!["farm","ctf"].includes(screen)?"calc(10px + env(safe-area-inset-top,0px))":""; // the farm and Capture the Flag keep buttons in the top-right corner
+  const tiles=[...box.querySelectorAll(".vtiles .vtile")]; tiles.forEach(t=>t.style.width="");
+  if(!tiles.length) return;
+  const r=box.getBoundingClientRect(); if(r.bottom<=innerHeight-8) return;
+  const tilesH=tiles.reduce((a,t)=>a+t.getBoundingClientRect().height+6,0), other=r.height-tilesH, avail=innerHeight-8-r.top-other;
+  const k=Math.max(.35,avail/tilesH); tiles.forEach(t=>t.style.width=Math.floor(t.getBoundingClientRect().width*k)+"px");
+}
 function vidReserve(){
-  const box=$("#vid"); if(!box) return; const on=!box.hidden&&!box.dataset.dragged&&innerWidth>=600&&!box.classList.contains("dock");
+  const box=$("#vid"); if(!box) return; vidFitHeight(); const on=!box.hidden&&!box.dataset.dragged&&innerWidth>=600&&!box.classList.contains("dock");
   const w=on?Math.round(box.getBoundingClientRect().width+28):0;
   for(const id of ["dress","story","inbox","grown","snake","game","reader"]){const sc=$("#"+id);if(sc)sc.style.paddingRight=(on&&id===screen)?w+"px":""}
   for(const D of document.querySelectorAll(".cdrawsheet")) D.style.paddingRight=(on&&!D.hidden)?w+"px":""; // story drawing pad

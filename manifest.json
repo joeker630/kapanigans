@@ -1,0 +1,22 @@
+{
+  "name": "Kapanigans",
+  "short_name": "Kapanigans",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "display_override": [
+    "fullscreen",
+    "standalone"
+  ],
+  "orientation": "any",
+  "background_color": "#D6ECFF",
+  "theme_color": "#D6ECFF",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
