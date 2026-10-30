@@ -8,7 +8,7 @@ Newest first. Each release has kid-friendly notes (shown to everyone in the game
 **October 29, 2026**
 
 ### For everyone
-- 🕷️ **Joe is a spider in Snake Race:** he has scissors! If he runs into your snake's tail, ✂️ snip, it's cut off and spills out as snacks. Keep your tail away from the spider!
+- 🕷️ **Joe is a spider in Snake Race:** a glowing white spider with scissors and no tail. He gets bigger as he eats. If he runs into your snake's tail, ✂️ snip, it's cut off and spills out as snacks. He can't knock you out, so bumping into him is safe. Keep your tail away from the spider!
 - 🧩 **One puzzle after a crash:** everyone solves just one puzzle to get back into Snake Race.
 
 ### For grown-ups

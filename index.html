@@ -8477,6 +8477,8 @@ function snSeatInfo(i){const st=SNK.meta&&SNK.meta.seats&&SNK.meta.seats[i];if(!
    The snipped-off part spills out as big pellets. Cuts go through families/<CODE>/snake/<e>/cut/<push> = {to,by,j,p,at};
    whoever moves that snake (its own device, or the host for a computer snake) shortens it. */
 const SN_SPIDERS={joe:true}, SN_CUT_CD=1500;
+const snSpR=m=>Math.min(70,12+Math.sqrt(m||SN_START)*2.2); // the spider has no tail: it just gets bigger
+const snIsSpider=i=>{const I=snSeatInfo(i);return !!(I&&I.spider)};
 function snCut(S,c){
   const now=snNow(); S.cutAt=S.cutAt||{}; if(now-(S.cutAt[c.k]||0)<SN_CUT_CD) return false; S.cutAt[c.k]=now;
   const drop=[];for(let k=c.j;k<c.pts.length;k+=3)drop.push(Math.round(c.pts[k][0]),Math.round(c.pts[k][1]));
@@ -8625,7 +8627,7 @@ function snPub(i,S,force){
 }
 function snOthers(i){ // bodies that can crash seat i
   const out=[], now=snNow();
-  for(let k=0;k<4;k++){if(k===i)continue;const S=SNK.s[k];if(!S||!S.a||(S.safe||0)>now)continue;
+  for(let k=0;k<4;k++){if(k===i)continue;const S=SNK.s[k];if(!S||!S.a||(S.safe||0)>now||snIsSpider(k))continue;
     const pts=S.own?S.trail.filter((_,j)=>j%2===0):S.pts; if(pts&&pts.length) out.push({k,pts,r:snRad(S.m),star:S.fx&&S.fx.star>now})}
   return out;
 }
@@ -8636,7 +8638,7 @@ function snMove(i,S,dt,o){ // returns {crash, by, bonk, ate}
   const turn=(SN_TURN[L]||3.4)*(boosting?.8:1)*dt, d=snWrapA(S.tgt-S.g);
   S.g=snWrapA(S.g+clamp(d,-turn,turn));
   S.x+=Math.cos(S.g)*sp*dt; S.y+=Math.sin(S.g)*sp*dt;
-  const r=snRad(S.m);
+  const r=o.spider?snSpR(S.m):snRad(S.m);
   // walls: bonk back in
   let bonk=false;
   if(S.x<r){S.x=r;S.g=Math.PI-S.g;bonk=true} else if(S.x>SW.w-r){S.x=SW.w-r;S.g=Math.PI-S.g;bonk=true}
@@ -8645,7 +8647,7 @@ function snMove(i,S,dt,o){ // returns {crash, by, bonk, ate}
   // trail
   let h=S.trail[0]; if(!h){S.trail=[[S.x,S.y]];h=S.trail[0]}
   while(Math.sqrt(snDist2(S.x,S.y,h[0],h[1]))>=SN_SPACE){const a=snAngTo(h[0],h[1],S.x,S.y);h=[h[0]+Math.cos(a)*SN_SPACE,h[1]+Math.sin(a)*SN_SPACE];S.trail.unshift(h)}
-  const keep=Math.ceil(snLen(S.m)/SN_SPACE); if(S.trail.length>keep) S.trail.length=keep;
+  const keep=o.spider?2:Math.ceil(snLen(S.m)/SN_SPACE); if(S.trail.length>keep) S.trail.length=keep;
   // boosting costs size
   if(boosting){S.bAcc=(S.bAcc||0)+dt;if(S.bAcc>.45){S.bAcc=0;S.m--}}
   // bumping into others
@@ -8835,7 +8837,8 @@ function snDraw(){
   // snakes (smaller ones on top)
   const order=[0,1,2,3].filter(i=>SNK.s[i]&&SNK.s[i].a).sort((a,b)=>(SNK.s[b].m||0)-(SNK.s[a].m||0));
   const mine=snBody(SNK.seat), little=snMyLvl()==="little";
-  for(const i of order){const B=snBody(i);if(!B||!B.pts.length)continue;const S=SNK.s[i],I=snSeatInfo(i)||{hue:"#888",name:"?"},r=snRad(S.m);
+  for(const i of order){const B=snBody(i);if(!B||!B.pts.length)continue;const S=SNK.s[i],I=snSeatInfo(i)||{hue:"#888",name:"?"},r=I.spider?snSpR(S.m)/1.35:snRad(S.m);
+    if(I.spider) B.pts=[];
     const ghost=(S.safe||0)>now, star=S.fx&&S.fx.star>now; c.globalAlpha=ghost?.45+.15*Math.sin(t/120):1;
     if(little&&i!==SNK.seat&&mine){c.fillStyle="rgba(255,120,0,.3)";for(let j=0;j<B.pts.length;j+=2){const q=B.pts[j];if(snDist2(q[0],q[1],mine.x,mine.y)<130*130){c.beginPath();c.arc(q[0],q[1],r*1.7,0,7);c.fill()}}}
     const light=I.hue+"B0";
@@ -8846,17 +8849,20 @@ function snDraw(){
       if(j%4<2){c.fillStyle="rgba(255,255,255,.22)";c.beginPath();c.arc(q[0]-r*.25,q[1]-r*.25,r*.55,0,7);c.fill()}}
     if(star){c.strokeStyle="#FFD600";c.lineWidth=4;c.beginPath();c.arc(B.x,B.y,r*1.6+Math.sin(t/90)*2,0,7);c.stroke()}
     const hr=r*1.35;
-    if(I.spider){ // eight wiggly legs and snapping scissors
-      c.strokeStyle="#15151C";c.lineWidth=Math.max(3,r*.32);c.lineCap="round";
+    if(I.spider){ // a glowing white spider: eight wiggly legs and snapping scissors
+      const gl=hr*(2.6+Math.sin(t/260)*.15);const g=c.createRadialGradient(B.x,B.y,hr*.5,B.x,B.y,gl);
+      g.addColorStop(0,"rgba(255,255,255,.55)");g.addColorStop(.5,"rgba(255,255,255,.18)");g.addColorStop(1,"rgba(255,255,255,0)");
+      c.fillStyle=g;c.beginPath();c.arc(B.x,B.y,gl,0,7);c.fill();
+      c.strokeStyle="#FFFFFF";c.lineWidth=Math.max(3,hr*.16);c.lineCap="round";c.shadowColor="#fff";c.shadowBlur=12;
       for(let k=0;k<8;k++){const side=k<4?1:-1,n=k%4,base=B.g+side*(0.75+n*0.55),wig=Math.sin(t/90+k)*0.18,
         kx=B.x+Math.cos(base)*hr*1.5,ky=B.y+Math.sin(base)*hr*1.5,fx=B.x+Math.cos(base+side*.35+wig)*hr*2.3,fy=B.y+Math.sin(base+side*.35+wig)*hr*2.3;
         c.beginPath();c.moveTo(B.x,B.y);c.lineTo(kx,ky);c.lineTo(fx,fy);c.stroke()}
       const snap=Math.abs(Math.sin(t/120))*.5, sx=B.x+Math.cos(B.g)*hr*1.9, sy=B.y+Math.sin(B.g)*hr*1.9;
-      c.save();c.translate(sx,sy);c.rotate(B.g+Math.PI/4);c.font=`${Math.round(hr*1.5)}px system-ui,"Apple Color Emoji","Noto Color Emoji"`;c.scale(1,1-snap*.4);c.fillText("✂️",0,0);c.restore()}
-    c.fillStyle=I.spider?"#2A2A34":"#fff";c.beginPath();c.arc(B.x,B.y,hr,0,7);c.fill();
+      c.shadowBlur=0;c.save();c.translate(sx,sy);c.rotate(B.g+Math.PI/4);c.font=`${Math.round(hr*1.5)}px system-ui,"Apple Color Emoji","Noto Color Emoji"`;c.scale(1,1-snap*.4);c.fillText("✂️",0,0);c.restore()}
+    c.fillStyle="#fff";if(I.spider){c.shadowColor="#fff";c.shadowBlur=24}c.beginPath();c.arc(B.x,B.y,hr,0,7);c.fill();c.shadowBlur=0;
     const im=snFace(i); if(im){c.save();c.beginPath();c.arc(B.x,B.y,hr*.92,0,7);c.clip();c.drawImage(im,B.x-hr,B.y-hr,hr*2,hr*2);c.restore()}
     else{c.font=`${Math.round(hr*1.3)}px system-ui,"Apple Color Emoji","Noto Color Emoji"`;c.fillText(I.face||"🙂",B.x,B.y+hr*.06)}
-    c.strokeStyle=I.spider?"#C084FC":I.hue;c.lineWidth=Math.max(3,r*.3);c.beginPath();c.arc(B.x,B.y,hr,0,7);c.stroke();
+    c.strokeStyle=I.spider?"#E9E3FF":I.hue;c.lineWidth=Math.max(3,r*.3);c.beginPath();c.arc(B.x,B.y,hr,0,7);c.stroke();
     // a little arrow showing which way the head is going
     c.fillStyle=I.hue;c.beginPath();const ax=B.x+Math.cos(B.g)*hr*1.25,ay=B.y+Math.sin(B.g)*hr*1.25;
     c.moveTo(ax+Math.cos(B.g)*8,ay+Math.sin(B.g)*8);c.lineTo(ax+Math.cos(B.g+2.3)*7,ay+Math.sin(B.g+2.3)*7);c.lineTo(ax+Math.cos(B.g-2.3)*7,ay+Math.sin(B.g-2.3)*7);c.fill();
