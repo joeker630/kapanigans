@@ -1650,7 +1650,7 @@ addEventListener("resize",()=>requestAnimationFrame(fitHelp));
    "## 1.0: Title" starts a release; "### For everyone" / "### For grown-ups" / any other "###" section follow.
    Grown-up sections ("For grown-ups", "How long it took…") are hidden from the kids.
    Bump APP_VERSION together with a new RELEASES.md entry. */
-const APP_VERSION="1.18";
+const APP_VERSION="1.19";
 const WN={rel:null,loading:null};
 function wnGrownOnly(h){return /grown/i.test(h)}
 function wnParse(md){
@@ -2690,7 +2690,7 @@ function doVideoSync(){ setTimeout(tuneSenders,1500);
 }
 function closePc(peer,bye){
   const c=vid.pcs.get(peer); if(!c) return;
-  try{c.pc.close()}catch(e){} clearTimeout(c.t); vid.pcs.delete(peer); vid.streams.delete(peer);
+  try{c.pc.close()}catch(e){} clearTimeout(c.t); clearTimeout(c.t2); vid.pcs.delete(peer); vid.streams.delete(peer);
   if(bye&&room) room.signal(peer,{y:"bye"});
   renderVideoUI();
 }
@@ -2709,12 +2709,13 @@ function newPc(peer){
   // a little jitter buffer on what we hear: a touch more delay, far fewer choppy gaps on busy Wi-Fi
   pc.addEventListener("track",e=>{try{if(e.receiver&&"jitterBufferTarget" in e.receiver)e.receiver.jitterBufferTarget=e.track.kind==="audio"?150:200}catch(_){}});
   pc.onicecandidate=e=>{if(e.candidate&&room) room.signal(peer,{y:"ice",c:e.candidate.toJSON()})};
-  pc.ontrack=e=>{const st=e.streams[0]||new MediaStream([e.track]);vid.streams.set(peer,st);renderVideoUI()};
+  pc.ontrack=e=>{const st=e.streams[0]||new MediaStream([e.track]);vid.streams.set(peer,st);e.track.addEventListener("mute",()=>renderVideoUI());e.track.addEventListener("unmute",()=>renderVideoUI());renderVideoUI()};
   pc.onconnectionstatechange=()=>{
     if(vid.pcs.get(peer)!==c) return; const s=pc.connectionState;
-    if(s==="connected"){renderVideoUI();tuneSenders()}
-    else if(s==="failed"||s==="closed"){closePc(peer,false);setTimeout(videoSync,2500)}
-    else if(s==="disconnected"){setTimeout(()=>{if(vid.pcs.get(peer)===c&&pc.connectionState!=="connected"){closePc(peer,false);videoSync()}},6000)}
+    if(s==="connected"){c.tries=0;renderVideoUI();tuneSenders()}
+    else if(s==="closed"){closePc(peer,false);setTimeout(videoSync,2500)}
+    else if(s==="failed") repair(peer,c);
+    else if(s==="disconnected") setTimeout(()=>{if(vid.pcs.get(peer)===c&&pc.connectionState==="disconnected")repair(peer,c)},2500);
   };
   vid.pcs.set(peer,c); return c;
 }
@@ -2723,7 +2724,7 @@ function newPc(peer){
    Audio: Opus at 48 kbps with error correction (FEC) plus RED (a spare copy of the last packet), no silence suppression, marked high priority.
    If voices start losing packets or arriving unevenly, the video steps down to leave them room.
    Video: bitrate and frame rate scale with the number of people, and drop further if the network is losing packets. */
-const VQ={level:0}; // 0 normal, 1 reduced, 2 low
+const VQ={level:0}; // 0 normal, 1 reduced, 2 low, 3 video paused (voice only) until the network recovers
 function opusTune(sdp){return sdp.replace(/a=fmtp:(\d+) ([^\r\n]*)/g,(m,pt,p)=>{
   if(!new RegExp("a=rtpmap:"+pt+" opus/","i").test(sdp)) return m;
   const kv=Object.fromEntries(p.split(";").map(x=>x.trim().split("=")).filter(x=>x[0]));
@@ -2734,14 +2735,14 @@ function tuneSenders(){
   // [kbps, fps] for each copy we send, by how many people we're sending to (1, 2, 3, 4+)
   const base=[[650,24],[650,24],[480,24],[360,20],[280,18]][Math.min(4,n)];
   // when the Wi-Fi or the tablet struggles: send a smaller picture first and keep it moving smoothly; only the last step lowers the frame rate
-  const kbps=Math.round(base[0]*[1,.6,.35][VQ.level]), fps=[base[1],base[1],Math.min(base[1],15)][VQ.level], scale=[1,1.5,2][VQ.level];
+  const kbps=Math.round(base[0]*[1,.6,.35,.35][VQ.level]), fps=[base[1],base[1],Math.min(base[1],15),15][VQ.level], scale=[1,1.5,2,2][VQ.level];
   for(const c of vid.pcs.values()) for(const snd of c.pc.getSenders()){
     if(!snd.track||!snd.getParameters) continue;
     // some browsers reject a field they don't know, so try with everything, then with just the essentials
     const apply=full=>{try{const prm=snd.getParameters(); if(!prm.encodings||!prm.encodings.length) return Promise.resolve();
       const e=prm.encodings[0];
-      if(snd.track.kind==="audio"){e.maxBitrate=128000;if(full){e.priority="high";e.networkPriority="high"}}
-      else{e.maxBitrate=kbps*1000;e.maxFramerate=fps;e.scaleResolutionDownBy=scale;if(full){e.priority="low";e.networkPriority="low";prm.degradationPreference="maintain-framerate"}}
+      if(snd.track.kind==="audio"){e.maxBitrate=128000;e.active=true;if(full){e.priority="high";e.networkPriority="high"}}
+      else{e.active=VQ.level<3;e.maxBitrate=kbps*1000;e.maxFramerate=fps;e.scaleResolutionDownBy=scale;if(full){e.priority="low";e.networkPriority="low";prm.degradationPreference="maintain-framerate"}}
       return snd.setParameters(prm)}catch(err){return Promise.reject(err)}};
     apply(true).catch(()=>apply(false)).catch(()=>{});
   }
@@ -2750,7 +2751,7 @@ function tuneSenders(){
 // or this tablet's processor can't keep up; step back up only after it's been clean for a while (no see-sawing)
 VQ.good=0;
 setInterval(async()=>{
-  if(!vid.pcs.size) {VQ.level=0;VQ.good=0;return}
+  if(!vid.pcs.size) {if(VQ.level>=3)setPresence({vp:null});VQ.level=0;VQ.good=0;return}
   let lost=0,cnt=0,cpu=false,bw=false,avail=Infinity,aLost=0,aJit=0;
   for(const c of vid.pcs.values()){try{const st=await c.pc.getStats();st.forEach(r=>{
     if(r.type==="remote-inbound-rtp"&&r.kind==="video"&&typeof r.fractionLost==="number"){lost+=r.fractionLost;cnt++}
@@ -2760,11 +2761,23 @@ setInterval(async()=>{
   const f=cnt?lost/cnt:0, was=VQ.level;
   const short=avail<Infinity&&avail<vid.pcs.size*300000; // not enough upload for everyone at the normal size
   const voiceBad=aLost>.03||aJit>.05; // others are losing our voice or getting it in bumps: give it more room
-  if((f>.06||cpu||(bw&&short)||voiceBad)&&VQ.level<2){VQ.level++;VQ.good=0}
-  else if(f<.02&&!cpu&&!bw&&aLost<.01&&aJit<.03){if(++VQ.good>=4&&VQ.level>0){VQ.level--;VQ.good=0}}
+  if((f>.06||cpu||(bw&&short)||voiceBad)&&VQ.level<3){VQ.level++;VQ.good=0}
+  else if(f<.02&&!cpu&&!bw&&aLost<.01&&aJit<.03){if(VQ.level>0&&++VQ.good>=4){VQ.level--;VQ.good=0}}
   else VQ.good=0;
-  if(VQ.level!==was) tuneSenders();
+  if(VQ.level!==was){tuneSenders();if((VQ.level>=3)!==(was>=3))setPresence({vp:VQ.level>=3?1:null})} // others show your picture while your video is paused
 },4000);
+// a dropped connection (Wi-Fi to cell, a busy network) is patched with an ICE restart on the same call, so nobody's picture or voice starts over.
+// Only the side that placed the call restarts it; after 3 failed tries it hangs up and calls fresh.
+function repair(peer,c){
+  if(vid.pcs.get(peer)!==c||c.fixing||!room) return;
+  if(myPeer>peer){clearTimeout(c.t2);c.t2=setTimeout(()=>{if(vid.pcs.get(peer)===c&&c.pc.connectionState!=="connected"){closePc(peer,false);videoSync()}},20000);return}
+  if((c.tries=(c.tries||0)+1)>3){closePc(peer,false);setTimeout(videoSync,1500);return}
+  c.fixing=true;
+  (async()=>{try{if(c.pc.restartIce)c.pc.restartIce();const off=await c.pc.createOffer({iceRestart:true});await c.pc.setLocalDescription({type:"offer",sdp:opusTune(off.sdp)});
+    room.signal(peer,{y:"offer",r:1,sdp:c.pc.localDescription.sdp})}catch(e){closePc(peer,false);videoSync()}finally{c.fixing=false}})();
+  clearTimeout(c.t);c.t=setTimeout(()=>{if(vid.pcs.get(peer)===c&&c.pc.connectionState!=="connected")repair(peer,c)},8000);
+}
+addEventListener("online",()=>{for(const [p,c] of vid.pcs) if(c.pc.connectionState!=="connected") repair(p,c)});
 function flushIce(c){if(!c.pc.remoteDescription)return;for(const x of c.pending)c.pc.addIceCandidate(x).catch(()=>{});c.pending=[]}
 async function call(peer){
   const c=newPc(peer); const off=await c.pc.createOffer(); await c.pc.setLocalDescription({type:"offer",sdp:opusTune(off.sdp)});
@@ -2776,13 +2789,19 @@ async function onSignal(m){
   const peer=m.f; if(!peer||peer===myPeer) return;
   if(m.y==="offer"&&typeof m.sdp==="string"){
     if(!vid.local) return; // they'll retry once our camera is on
+    const old=vid.pcs.get(peer);
+    if(m.r&&old&&old.pc.signalingState==="stable"){ // a repair of the call we already have
+      await old.pc.setRemoteDescription({type:"offer",sdp:m.sdp}); flushIce(old); clearTimeout(old.t2);
+      const ans=await old.pc.createAnswer(); await old.pc.setLocalDescription({type:"answer",sdp:opusTune(ans.sdp)});
+      room.signal(peer,{y:"answer",sdp:old.pc.localDescription.sdp}); return;
+    }
     closePc(peer,false); const c=newPc(peer);
     for(const x of earlyIce.get(peer)||[]) c.pending.push(x); earlyIce.delete(peer);
     await c.pc.setRemoteDescription({type:"offer",sdp:m.sdp}); flushIce(c);
     const ans=await c.pc.createAnswer(); await c.pc.setLocalDescription({type:"answer",sdp:opusTune(ans.sdp)});
     room.signal(peer,{y:"answer",sdp:c.pc.localDescription.sdp});
   } else if(m.y==="answer"&&typeof m.sdp==="string"){
-    const c=vid.pcs.get(peer); if(c&&c.pc.signalingState==="have-local-offer"){await c.pc.setRemoteDescription({type:"answer",sdp:m.sdp});flushIce(c)}
+    const c=vid.pcs.get(peer); if(c&&c.pc.signalingState==="have-local-offer"){await c.pc.setRemoteDescription({type:"answer",sdp:m.sdp});flushIce(c);if(c.tries)clearTimeout(c.t)}
   } else if(m.y==="ice"&&m.c){
     const c=vid.pcs.get(peer);
     if(c&&c.pc.remoteDescription) c.pc.addIceCandidate(m.c).catch(()=>{});
@@ -2790,21 +2809,30 @@ async function onSignal(m){
     else {const a=earlyIce.get(peer)||[];a.push(m.c);earlyIce.set(peer,a.slice(-40))}
   } else if(m.y==="bye"){ closePc(peer,false); }
 }
-/* one <video> per person, moved between the home screen cards and the floating bubble */
+/* one <video> per person, moved between the home screen cards and the floating bubble. Videos are always muted:
+   voices play from hidden audio players that never move, so changing screens can't make Safari pause someone's voice */
 function videoEl(peer,stream,mine){
   let v=vid.els.get(peer);
-  if(!v){v=document.createElement("video");v.autoplay=true;v.playsInline=true;v.setAttribute("playsinline","");if(mine){v.muted=true;v.classList.add("mirror")}vid.els.set(peer,v)}
+  if(!v){v=document.createElement("video");v.autoplay=true;v.playsInline=true;v.setAttribute("playsinline","");v.muted=true;v.defaultMuted=true;v.setAttribute("muted","");if(mine)v.classList.add("mirror");vid.els.set(peer,v)}
   if(v.srcObject!==stream) v.srcObject=stream;
   return v;
 }
-function playAll(){for(const v of vid.els.values()) if(v.srcObject&&v.paused) v.play().catch(()=>{})}
+function syncVoices(){
+  let h=document.getElementById("vhold"); if(!h){h=document.createElement("div");h.id="vhold";h.setAttribute("aria-hidden","true");h.style.cssText="position:fixed;width:1px;height:1px;left:0;top:0;opacity:0;pointer-events:none;overflow:hidden";document.body.appendChild(h)}
+  vid.auds=vid.auds||new Map();
+  for(const [k,a] of [...vid.auds]) if(!vid.streams.has(k)){a.srcObject=null;a.remove();vid.auds.delete(k)}
+  for(const [k,st] of vid.streams){let a=vid.auds.get(k);
+    if(!a){a=document.createElement("audio");a.autoplay=true;a.setAttribute("playsinline","");h.appendChild(a);vid.auds.set(k,a)}
+    if(a.srcObject!==st) a.srcObject=st; if(a.paused) a.play().catch(()=>{})}
+}
+function playAll(){for(const v of [...vid.els.values(),...(vid.auds?vid.auds.values():[])]) if(v.srcObject&&v.paused) v.play().catch(()=>{})}
 addEventListener("pointerdown",()=>{playAll();if(me&&!vid.local&&!vid.asking&&!vid.tapTried&&!["setup","pick"].includes(screen)){vid.tapTried=true;startMedia()}},{capture:true});
 function tileFor(p,mine){
   const K=kidOf(p.presence.kid), t=el("div","vtile"); t.style.setProperty("--k",K.hue);
   const st=mine?vid.local:vid.streams.get(p.peer);
-  const camOn=mine?vid.cam:p.presence.cam!==false, micOn=mine?vid.mic:p.presence.mic!==false;
+  const rt=!mine&&st&&st.getVideoTracks()[0], camOn=mine?vid.cam:(p.presence.cam!==false&&!p.presence.vp&&!!rt&&!rt.muted), micOn=mine?vid.mic:p.presence.mic!==false;
   if(st&&camOn){const v=videoEl(mine?"me":p.peer,st,mine);if(mine)v.classList.toggle("mirror",vid.facing!=="environment");t.append(v);v.play().catch(()=>{})}
-  else{const f=el("div","vface");f.innerHTML=(K.avatar||K.photo)?faceHTML(K,"vphoto"):"";if(!(K.avatar||K.photo))f.textContent=K.face;t.append(f);if(st&&!mine){const v=videoEl(p.peer,st,false);v.classList.add("audioonly");t.append(v);v.play().catch(()=>{})}}
+  else{const f=el("div","vface");f.innerHTML=(K.avatar||K.photo)?faceHTML(K,"vphoto"):"";if(!(K.avatar||K.photo))f.textContent=K.face;t.append(f)}
   if(!micOn) t.append(el("span","vmute","🔇"));
   return t;
 }
@@ -2839,6 +2867,7 @@ const VI={ // simple line icons for the video toolbar
   off:'<svg viewBox="0 0 24 24"><path d="M12 3v8"/><path d="M6.4 7.2a8 8 0 1 0 11.2 0"/></svg>',
   flip:'<svg viewBox="0 0 24 24"><path d="M4.5 10a8 8 0 0 1 14-3.5L20 8M20 3.5V8h-4.5M19.5 14a8 8 0 0 1-14 3.5L4 16M4 20.5V16h4.5"/></svg>'};
 function renderVideoUI(){
+  syncVoices();
   if(screen==="lobby"&&typeof renderPeople==="function") renderPeople();
   const box=$("#vid"); if(!box) return;
   // always visible: everywhere except the home screen, which shows everyone's video on the people cards
@@ -2889,7 +2918,7 @@ function whereOf(pr){
 function renderPeople(){
   const box=$("#people"); if(!box||!me) return;
   const list=peers().filter(p=>p.presence&&KIDS[p.presence.kid]).sort((a,b)=>(b.sameTab-a.sameTab)||((a.presence.at||0)-(b.presence.at||0)));
-  const sig=JSON.stringify([me,vid.mic,vid.cam,!!vid.local,vid.asking,vid.denied,list.map(p=>[p.peer,p.presence.kid,p.presence.scr,p.presence.act,p.presence.g&&p.presence.g.e,p.presence.seat,p.presence.vr,p.presence.mic,p.presence.cam,p.presence.calls,vid.optOut,vid.streams.has(p.peer)])]);
+  const sig=JSON.stringify([me,vid.mic,vid.cam,!!vid.local,vid.asking,vid.denied,list.map(p=>[p.peer,p.presence.kid,p.presence.scr,p.presence.act,p.presence.g&&p.presence.g.e,p.presence.seat,p.presence.vr,p.presence.mic,p.presence.cam,p.presence.vp,p.presence.calls,vid.optOut,vid.streams.has(p.peer),(()=>{const t=vid.streams.get(p.peer);const v=t&&t.getVideoTracks()[0];return !!v&&!v.muted})()])]);
   if(sig===peopleSig&&box.childElementCount) return; peopleSig=sig;
   box.innerHTML="";
   const head=el("div","peoplehead",`<span>Who's on</span><em>${list.length}</em>`); box.append(head);
@@ -9898,7 +9927,7 @@ $("#playCtf").onclick=()=>{sayLittle("Capture the Flag");openCtf()};
 ctfInputs();
 if(/[?&](farmlocal|debugfarm)\b/.test(location.search))window.__jep={get F(){return F},fm,jepAt,fIso,fwNow,get tk(){return tk},closeTask};
 if(/[?&](farmlocal|ctflocal)\b/.test(location.search))window.__ctf={get C(){return C},CN,ctfP,ctfCamera,openCtf,ctfCreate,joinCtf,ctfStart,ctfSwitch,ctfPath,ctfEnd,ctfTag,ctfUpdate,ctfGoTo,ctfTarget,ctfRespawn,ctfDraw,ctfInput,ctfIsHost,closeTask,get tk(){return tk},CTF};
-if(/[?&]vidaudit\b/.test(location.search))window.__nav={STORIES,openReader,draftGift,newDraft,openStory,csDrawSheet,farmPuzzle,closeTask,ctfStart,get draft(){return draft},set draft(v){draft=v}};
+if(/[?&]vidaudit\b/.test(location.search))window.__nav={STORIES,openReader,draftGift,newDraft,openStory,csDrawSheet,farmPuzzle,closeTask,ctfStart,VQ,tuneSenders,setPresence,repair,vid,get draft(){return draft},set draft(v){draft=v}};
 })();
 </script>
 </body>

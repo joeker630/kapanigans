@@ -4,6 +4,23 @@ Newest first. Each release has kid-friendly notes (shown to everyone in the game
 
 ---
 
+## 1.19: Steadier video calls 📞
+**October 30, 2026**
+
+### For everyone
+- 🔊 **Voices don't cut out:** when you switch screens during a call, everyone's voice keeps playing without a hiccup.
+- 📶 **Calls fix themselves:** if the Wi‑Fi blips, the call patches itself back up in a couple of seconds instead of hanging up and starting over.
+- 🙂 **Voice first on bad Wi‑Fi:** if the internet gets really slow, your video takes a little break and your voice keeps going. Everyone sees your picture until the video comes back.
+
+### For grown-ups
+- Remote voices now play from hidden audio players that never move; the videos are always muted. Moving a video between the home cards and the bubble could pause it in Safari, which cut out the voice.
+- A dropped or failed connection is repaired with an ICE restart on the same call (the side that placed the call restarts it, up to 3 tries, then calls fresh). Also retried when the device comes back online.
+- New fourth quality step: video sending is paused (voice only) when packet loss or jitter persists at the lowest video level. Others see your face picture via presence (`vp`), and video resumes after the network has been clean for a while.
+- A stalled incoming video (muted track) shows the face picture instead of a frozen frame.
+- Video and voice bitrates are unchanged (larger tiles than Thirtyone, so its lower 160×120 setting wasn't brought over).
+
+---
+
 ## 1.18: Spider repellent 🧴
 **October 29, 2026**
 
