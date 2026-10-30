@@ -407,7 +407,7 @@ h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance;l
 .orow .em .gico{width:32px;height:32px}
 /* order board: a corkboard with pinned paper notes, centered on screen */
 .boardsheet{align-items:center;padding:12px;box-sizing:border-box}
-.boardsheet .inner{width:min(820px,100%);max-height:min(92%,720px);border-radius:26px;padding:14px 16px 16px;gap:10px;
+.boardsheet .inner{width:min(656px,80vw);min-width:min(300px,94vw);max-height:min(74dvh,74vh,580px);border-radius:26px;padding:14px 16px 16px;gap:10px;
   background:radial-gradient(circle at 20% 30%,rgba(255,255,255,.12) 0 2px,transparent 3px) 0 0/22px 22px,radial-gradient(circle at 70% 60%,rgba(0,0,0,.08) 0 2px,transparent 3px) 0 0/18px 18px,#C9975F;
   border:10px solid #8A5A32;box-shadow:0 10px 0 #6E4524,0 20px 40px rgba(43,33,64,.35)}
 .boardsheet .row h2{background:#FFFDF5;border-radius:12px;padding:4px 14px;flex:0 1 auto;font-size:24px;box-shadow:0 3px 0 rgba(0,0,0,.15);margin-right:auto}
@@ -439,9 +439,12 @@ h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance;l
 .lface{font-size:26px}.lwhat{flex:1;min-width:0;font-size:15px}.lwhat small{display:block;color:var(--ink-soft);font-weight:600}
 .lamt{font-family:var(--display);font-size:20px}.lamt.in{color:#15803D}.lamt.out{color:#B91C1C}
 @media (max-width:520px){#farmGoods{max-width:34vw;overflow:hidden;text-overflow:ellipsis;font-size:16px;padding:6px 10px}}
-.fsheet{z-index:43;align-items:center;padding:12px;box-sizing:border-box}
+.fsheet{z-index:43;align-items:center;justify-content:center;padding:12px;box-sizing:border-box}
+.fsheet .row .round{width:52px;height:52px;font-size:24px;flex:none;box-shadow:0 3px 0 var(--sky-deep),0 0 0 3px rgba(255,255,255,.9)}
+.fsheet .ftapout{position:absolute;bottom:calc(10px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);color:#fff;font-weight:800;font-size:14px;text-shadow:0 1px 2px rgba(0,0,0,.5);pointer-events:none;white-space:nowrap}
 /* every farm popup is a centered panel on any device (not a sheet from the bottom) */
-.fsheet .inner{border-radius:26px;width:min(900px,100%);max-height:min(88dvh,88vh);box-shadow:0 10px 30px rgba(43,33,64,.3);animation:popin .25s ease-out}
+/* 20% smaller than before (900px / 88%), centered, lots of backdrop to tap to close */
+.fsheet .inner{border-radius:26px;width:min(720px,80vw);min-width:min(300px,94vw);max-height:min(70dvh,70vh);margin:auto;box-shadow:0 10px 30px rgba(43,33,64,.3);animation:popin .25s ease-out}
 
 .fbody{display:flex;flex-direction:column;gap:12px}
 .fbody .choice small{font-size:13px;color:var(--ink-soft);font-weight:700}
@@ -5592,6 +5595,7 @@ const STRUCT={
   stand:{i:1,j:1,wi:2,wj:1,h:.45,top:"#E9C99A",l:"#E5484D",r:"#C23B3B",label:"🧺",name:"Farmstand",say:"The farmstand. Sell your goods here!"},
   board:{i:4.3,j:1.3,wi:.5,wj:.5,h:.55,top:"#B07A45",l:"#9A6A3A",r:"#86592E",label:"📋",name:"Order board",say:"The order board. See what your family wants!"},
   fbasket:{i:5.7,j:1.1,wi:1,wj:1,h:.5,top:"#D9A35B",l:"#C68B42",r:"#AD7533",label:"👨‍👩‍👧",name:"Family Basket",say:"The Family Basket. Put goods in for everyone!"},
+  team:{i:6.15,j:2.7,wi:.7,wj:.7,h:.7,top:"#BBF7D0",l:"#4ADE80",r:"#22C55E",roof:"#15803D",label:"🤝",name:"Team Chores",say:"Team chores! Do a chore together."},
   bank:{i:4.4,j:4.3,wi:1.1,wj:1,h:.75,top:"#E8E0C8",l:"#CFC4A4",r:"#B8AC8A",roof:"#2F6F4E",label:"🏦",name:"Family Bank",say:"The Farm Family Bank. Put Moolah in for the whole family!"},
   barn:{i:1,j:4,wi:2,wj:2,h:.9,top:"#D64545",l:"#C23B3B",r:"#A83232",roof:"#7A2E2E",label:"🔨",name:"Farm Store",say:"The Farm Store. Build your farm here!"},
   coop:{i:7,j:11,wi:1,wj:1,h:.6,top:"#F2D27A",l:"#E0BC5E",r:"#C9A44A",roof:"#C2410C",label:"🐔",name:"Chicken coop",home:"hen",room:3},
@@ -5711,14 +5715,16 @@ function farmInit(){
     fm.drag={x:e.clientX,y:e.clientY,cx:fm.camX,cy:fm.camY,moved:false,id:e.pointerId};
     if(F.st&&!tk){fPickClose();const c=fCands(e.clientX,e.clientY);fm.press=c.list.length?{list:c.list,at:performance.now()}:null;
       clearTimeout(fm.holdT);const t0=c.list[0];
-      if(t0&&!c.sure&&(t0.kind==="struct"||t0.kind==="decor"||t0.kind==="plot")){const pid=e.pointerId,cx=e.clientX,cy=e.clientY;
+      if(little()&&t0&&t0.kind==="struct"&&c.list.length===1){fm.enter={t:t0,start:performance.now(),pid:e.pointerId,fired:false};
+        fm.enterT=setTimeout(()=>{const H=fm.enter;if(H&&H.pid===e.pointerId&&!H.fired&&!tk){H.fired=true;blip(990,.12,"triangle");fGo(H.t)}},2000)}
+      else if(t0&&!c.sure&&!little()&&(t0.kind==="struct"||t0.kind==="decor"||t0.kind==="plot")){const pid=e.pointerId,cx=e.clientX,cy=e.clientY;
         fm.holdT=setTimeout(()=>{const d=fm.drag;if(d&&d.id===pid&&!d.moved&&fm.ptrs.size===1&&!tk)fmvStart(t0,pid,cx,cy)},480)}}});
   fm.cv.addEventListener("pointermove",e=>{if(fm.ptrs.has(e.pointerId))fm.ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
     if(fm.moving&&fm.moving.id===e.pointerId){fmvDrag(e.clientX,e.clientY);return}
     if(fm.pinch&&fm.ptrs.size>=2){const [a,b]=[...fm.ptrs.values()];farmZoomTo(fm.pinch.z*Math.hypot(a.x-b.x,a.y-b.y)/Math.max(1,fm.pinch.d),(a.x+b.x)/2,(a.y+b.y)/2);return}
     const d=fm.drag;if(!d||d.id!==e.pointerId)return;const dx=e.clientX-d.x,dy=e.clientY-d.y;
-    if(!d.moved&&Math.hypot(dx,dy)<12)return;d.moved=true;fm.press=null;clearTimeout(fm.holdT);const k=farmScale();fm.camX=d.cx-dx*k;fm.camY=d.cy-dy*k;farmClamp()});
-  const up=e=>{clearTimeout(fm.holdT);if(fm.moving&&fm.moving.id===e.pointerId){fm.ptrs.delete(e.pointerId);fmvEnd(e.type==="pointerup");return}
+    if(!d.moved&&Math.hypot(dx,dy)<12)return;d.moved=true;fm.press=null;clearTimeout(fm.holdT);clearTimeout(fm.enterT);fm.enter=null;const k=farmScale();fm.camX=d.cx-dx*k;fm.camY=d.cy-dy*k;farmClamp()});
+  const up=e=>{clearTimeout(fm.holdT);clearTimeout(fm.enterT);if(fm.enter&&e.type==="pointercancel")fm.enter=null;if(fm.moving&&fm.moving.id===e.pointerId){fm.ptrs.delete(e.pointerId);fmvEnd(e.type==="pointerup");return}
     fm.ptrs.delete(e.pointerId);if(e.type==="pointercancel")fm.press=null;if(fm.ptrs.size<2)fm.pinch=null;const d=fm.drag;if(d&&d.id===e.pointerId){fm.drag=null;if(!d.moved&&e.type==="pointerup")farmTap(e)}
     if(fm.ptrs.size===1&&!fm.drag){const [id,q]=[...fm.ptrs.entries()][0];fm.drag={x:q.x,y:q.y,cx:fm.camX,cy:fm.camY,moved:true,id}}};
   fm.cv.addEventListener("pointerup",up);fm.cv.addEventListener("pointercancel",up);
@@ -5862,6 +5868,10 @@ function farmTap(e){
   if(!F.st||tk)return;fm.press=null;
   const c=fCands(e.clientX,e.clientY);
   if(!c.list.length){fPickClose();if(c.i>.2&&c.j>.2&&c.i<fm.N-.2&&c.j<fm.N-.2)fwWalk(c.i,c.j);return}
+  // Violet goes into buildings by holding them for 2 seconds (a quick tap just shows how); chores stay one tap
+  if(little()&&c.list.length===1&&c.list[0].kind==="struct"){const H=fm.enter;fm.enter=null;if(H&&H.fired)return;
+    const [gi,gj]=fGround(c.list[0]);fPopAt(fIso(gi,gj),"✋");blip(520,.06,"sine");say(`Hold your finger on the ${STRUCT[c.list[0].ref].name.toLowerCase()} to go in!`);return}
+  fm.enter=null;
   if(c.list.length===1||c.sure)return fGo(c.list[0]);
   fPicker(c.list,e.clientX,e.clientY);
 }
@@ -5914,17 +5924,18 @@ function tapPlot(n){
   say(ps.st==="sprout"?`A little ${GOODS[p.crop].name} sprout. It needs time to grow.`:`The ${GOODS[p.crop].name} is growing. Almost ready!`);
 }
 function tapStruct(id){const s=STRUCT[id];blip(760,.1,"sine");
-  if(id==="stand")return openSell();if(id==="board")return openOrders();if(id==="barn")return openStore();if(id==="bank")return openBank();if(id==="fbasket")return openFamBasket();
+  if(id==="stand")return openSell();if(id==="board")return openOrders();if(id==="barn")return openStore();if(id==="bank")return openBank();if(id==="fbasket")return openFamBasket();if(id==="team")return openTeam();
   const k=s.home;say(`The ${s.name.toLowerCase()}. It has room for ${roomFor(k)} ${roomFor(k)===1?ANIMALS[k].name:ANIMALS[k].names}.`)}
 
 /* ---- sheets ---- */
 function fSheet(title,render,cls){
   closeSheet();const sh=el("div","sheet fsheet"+(cls?" "+cls:"")),inner=el("div","inner"),head=el("div","row"),h=el("h2",null,title),x=el("button","round","✖️"),body=el("div","fbody");
   x.setAttribute("aria-label","Close");x.onclick=closeSheet;head.append(h,x);inner.append(head,body);sh.append(inner);
-  sh.addEventListener("pointerdown",e=>{if(e.target===sh)closeSheet()});document.body.append(sh);
+  sh.addEventListener("pointerdown",e=>{if(e.target===sh)closeSheet()});sh.append(el("div","ftapout","Tap outside to close"));document.body.append(sh);
   F.sheet={el:sh,body,render:()=>{const top=body.scrollTop;body.innerHTML="";render(body);body.scrollTop=top}};F.sheet.render();
 }
 function closeSheet(){if(F.sheet){F.sheet.el.remove();F.sheet=null}}
+addEventListener("keydown",e=>{if(e.key==="Escape"&&F.sheet)closeSheet()});
 function fBtn(cls,em,label,sub,onClick,disabled){const b=el("button","choice "+(cls||""),`<span class="em">${em}</span><span>${esc(label)}</span>${sub?`<small>${sub}</small>`:""}`);
   if(disabled)b.classList.add("off");b.onclick=()=>{if(disabled){blip(220,.12,"square");if(typeof disabled==="string")say(disabled);return}onClick()};return b}
 const coins=n=>`🪙 ${n}`;
@@ -6594,6 +6605,10 @@ function farmDraw(t){
   try{fwItems(items,dt,t)}catch(e){fmErr(e,"farmers")}
   items.sort((a,b)=>a.d-b.d).forEach(it=>{const g=fm.g;g.save();try{it.draw()}catch(e){fmErr(e,"item")}g.restore()});
   fHighlight(t,false);
+  if(fm.enter&&!fm.enter.fired){const H=fm.enter,k=Math.min(1,(performance.now()-H.start)/2000),[gi,gj]=fGround(H.t),c=fIso(gi,gj),th=fm.th,r=th*.75,y=c.y-th*2.4;
+    g.save();g.lineWidth=Math.max(5,th*.16);g.lineCap="round";g.strokeStyle="rgba(255,255,255,.85)";g.beginPath();g.arc(c.x,y,r,0,7);g.stroke();
+    g.strokeStyle="#22C55E";g.beginPath();g.arc(c.x,y,r,-Math.PI/2,-Math.PI/2+k*Math.PI*2);g.stroke();
+    g.font=`${r*1.1}px system-ui`;g.textAlign="center";g.textBaseline="middle";g.fillText(k<1?"✋":"✅",c.x,y);g.textBaseline="alphabetic";g.restore()}
   if(fm.moving){const m=fm.moving,gg0=fm.g,q=[fIso(m.ci,m.cj),fIso(m.ci+m.wi,m.cj),fIso(m.ci+m.wi,m.cj+m.wj),fIso(m.ci,m.cj+m.wj)];gg0.save();gg0.strokeStyle=m.ok?"#16A34A":"#DC2626";gg0.lineWidth=Math.max(3,fm.th*.1);gg0.setLineDash([fm.th*.3,fm.th*.18]);gg0.lineDashOffset=-t/40;gg0.beginPath();q.forEach((p,n)=>n?gg0.lineTo(p.x,p.y):gg0.moveTo(p.x,p.y));gg0.closePath();gg0.stroke();gg0.restore()}
   if(fm.moving){const m=fm.moving,c=fIso(m.ci+m.wi/2,m.cj+m.wj/2),th=fm.th,txt=m.ok?`✋ ${m.name}`:"🚫 doesn't fit here",gg=fm.g;gg.font=`800 ${Math.max(13,th*.32)}px system-ui`;
     const tw=gg.measureText(txt).width+th*.5,y=c.y+th*(m.wj+m.wi)*.25+th*.6;gg.fillStyle=m.ok?"rgba(21,128,61,.92)":"rgba(185,28,28,.92)";gg.beginPath();gg.roundRect?gg.roundRect(c.x-tw/2,y-th*.3,tw,th*.6,th*.3):gg.rect(c.x-tw/2,y-th*.3,tw,th*.6);gg.fill();gg.fillStyle="#fff";gg.textAlign="center";gg.textBaseline="middle";gg.fillText(txt,c.x,y);gg.textBaseline="alphabetic"}

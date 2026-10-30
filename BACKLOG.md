@@ -151,6 +151,10 @@ A **live co-op farm** the kids share. Every farm action is done by solving a sho
   - Planting uses one seed. The seed picker shows how many you have, says when you're out, and has a "Buy seeds" button that walks you to the store.
   - Everyone gets a one-time starter pack: 3 carrot and 1 pumpkin (`farm/starter/<who>`).
   - Seeds live in your basket (`goods/<who>/seed_<crop>`) and show under "My basket". The old crop unlocks are no longer used, and orders can ask for any crop.
+- **Smaller popups, Violet holds to go in, Team Chores spot (Oct 29):**
+  - All farm popups are 20% smaller (720px or 80% of the screen, 70% tall) and centered, with lots of backdrop around them. A "Tap outside to close" hint, a bigger ✖️, and Escape closes them.
+  - **Violet (Little level):** buildings open only after holding them for **2 seconds**, with a green ring filling around a ✋. A quick tap just shows ✋ and says "Hold your finger on the … to go in!". Chores (animals, crops, Jeppson's poops, bubbles) are still one tap. Moving buildings and decorations by press-and-hold is off for Little players.
+  - **🤝 Team Chores** is now a green spot on the farm (`STRUCT.team`, next to the order board) as well as the 🤝 button in the top bar. Both open the list of team chores.
 - **Selling has no puzzle (Oct 27):** tap a good at the farmstand and it's sold. The money puzzle still comes up when other chores borrow it.
 - **Family Basket building (Oct 27):** a wicker crate on the farm next to the order board, with what's inside showing on top. Its menu has:
   - big **⬇️ Put in** buttons and a **Put it all in** button
