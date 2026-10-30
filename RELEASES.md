@@ -4,7 +4,7 @@ Newest first. Each release has kid-friendly notes (shown to everyone in the game
 
 ---
 
-## 1.16: Short voice messages work every time 🎤
+## 1.17: Short voice messages work every time 🎤
 **October 29, 2026**
 
 ### For everyone
