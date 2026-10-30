@@ -1650,7 +1650,7 @@ addEventListener("resize",()=>requestAnimationFrame(fitHelp));
    "## 1.0: Title" starts a release; "### For everyone" / "### For grown-ups" / any other "###" section follow.
    Grown-up sections ("For grown-ups", "How long it took…") are hidden from the kids.
    Bump APP_VERSION together with a new RELEASES.md entry. */
-const APP_VERSION="1.15";
+const APP_VERSION="1.16";
 const WN={rel:null,loading:null};
 function wnGrownOnly(h){return /grown/i.test(h)}
 function wnParse(md){
@@ -8471,7 +8471,32 @@ function snLvl(k){const K=KIDS[k];return !K?"big":K.grown?"grown":K.level}
 function snMyLvl(){return snLvl(me)}
 function snSeatInfo(i){const st=SNK.meta&&SNK.meta.seats&&SNK.meta.seats[i];if(!st)return null;
   if(st.bot){const B=SN_BOTS.find(b=>b.name===st.bot)||SN_BOTS[0];return {bot:true,name:B.name,face:B.face,hue:B.hue,lvl:st.lvl||"big"}}
-  const K=kidOf(st.k);return {bot:false,k:st.k,p:st.p,name:K.name,face:K.face,hue:K.hue,head:K.avatarHead||null,lvl:snLvl(st.k)}}
+  const K=kidOf(st.k);if(SN_SPIDERS[st.k])return {bot:false,k:st.k,p:st.p,name:K.name,face:"🕷️",hue:"#5B4B8A",head:null,lvl:snLvl(st.k),spider:true};
+  return {bot:false,k:st.k,p:st.p,name:K.name,face:K.face,hue:K.hue,head:K.avatarHead||null,lvl:snLvl(st.k)}}
+/* ✂️ Joe plays as a spider with scissors: running into another snake's body snips it off there instead of crashing him.
+   The snipped-off part spills out as big pellets. Cuts go through families/<CODE>/snake/<e>/cut/<push> = {to,by,j,p,at};
+   whoever moves that snake (its own device, or the host for a computer snake) shortens it. */
+const SN_SPIDERS={joe:true}, SN_CUT_CD=1500;
+function snCut(S,c){
+  const now=snNow(); S.cutAt=S.cutAt||{}; if(now-(S.cutAt[c.k]||0)<SN_CUT_CD) return false; S.cutAt[c.k]=now;
+  const drop=[];for(let k=c.j;k<c.pts.length;k+=3)drop.push(Math.round(c.pts[k][0]),Math.round(c.pts[k][1]));
+  const ref=snRef("cut"); if(ref) ref.push({to:c.k,by:SNK.seat,j:c.j,p:drop,at:now}).catch(()=>{});
+  S.ko=(S.ko||0)+1; return true;
+}
+function snOnCut(id,v){
+  if(!v||typeof v.to!=="number"||!Array.isArray(v.p)) return;
+  if(snNow()-(v.at||0)>20000) return; // old news
+  const I=snSeatInfo(v.to)||{hue:"#fff"}, P=snPts(v.p);
+  P.forEach((q,k)=>{const did=`c${id}_${k}`;if(!SNK.gone.has(did))SNK.drops[did]={id:did,x:q[0],y:q[1],t:"d",v:2,c:I.hue}});
+  (SNK.bursts=SNK.bursts||[]).push({x:P[0]?P[0][0]:0,y:P[0]?P[0][1]:0,t0:performance.now(),col:"#fff",em:"✂️"});
+  const mine=v.to===SNK.seat, bot=SNK.host&&I.bot;
+  if(mine||bot){const S=snOwn(v.to);if(S&&S.a){
+    const m=Math.max(SN_START,Math.round((v.j*2*SN_SPACE-50)/5));
+    if(m<S.m){S.m=m;const keep=Math.ceil(snLen(m)/SN_SPACE);if(S.trail.length>keep)S.trail.length=keep;snPub(v.to,S,true)}}}
+  const J=snSeatInfo(v.by);
+  if(mine){blip(1400,.08,"square",.1);setTimeout(()=>blip(1100,.08,"square",.1),90);toast(`✂️ ${J?J.name:"The spider"} snipped your tail!`);sayLittle("Snip! The spider cut your tail!")}
+  else if(v.by===SNK.seat){blip(1600,.07,"square",.12);setTimeout(()=>blip(1900,.07,"square",.12),80);toast(`✂️ Snip! You cut ${I.name||"a snake"}'s tail`)}
+}
 function snBotLevel(seats){const l=seats.filter(s=>s&&!s.bot).map(s=>snLvl(s.k));return l.includes("little")?"little":l.length&&l.every(x=>x==="grown")?"grown":"big"}
 const snDist2=(ax,ay,bx,by)=>(ax-bx)*(ax-bx)+(ay-by)*(ay-by);
 const snAngTo=(ax,ay,bx,by)=>Math.atan2(by-ay,bx-ax);
@@ -8533,6 +8558,7 @@ function enterSnake(e,seat){
     const I=snSeatInfo(i); if(SNK.host&&I&&I.bot&&SNK.s[i]&&SNK.s[i].own) return;
     snTake(i,v)};
   on(r.child("s"),"child_added",sUpd); on(r.child("s"),"child_changed",sUpd);
+  on(r.child("cut"),"child_added",s=>{if(SNK.e===e)snOnCut(s.key,s.val())});
   SNK.last=performance.now(); if(!SNK.raf) SNK.raf=requestAnimationFrame(snFrame);
   sayLittle("Snake race! Hold your finger where you want to go. Eat the snacks to grow!");
 }
@@ -8626,9 +8652,11 @@ function snMove(i,S,dt,o){ // returns {crash, by, bonk, ate}
   if(!((S.safe||0)>now)&&!(S.fx&&S.fx.star>now)){
     for(const B of snOthers(i)){const hit=r*.55+B.r;
       for(let j=0;j<B.pts.length;j++){const q=B.pts[j];if(snDist2(S.x,S.y,q[0],q[1])<hit*hit){
+        if(o.spider){if(j>=2){res.cut={k:B.k,j,pts:B.pts};break}
+          S.g=snWrapA(snAngTo(q[0],q[1],S.x,S.y));S.tgt=S.g;S.x+=Math.cos(S.g)*hit*.6;S.y+=Math.sin(S.g)*hit*.6;res.bonk=true;break} // head to head: just bounce
         if(S.bonks>0){S.bonks--;S.g=snWrapA(snAngTo(q[0],q[1],S.x,S.y));S.tgt=S.g;S.x+=Math.cos(S.g)*hit*.6;S.y+=Math.sin(S.g)*hit*.6;res.bonk=true;break}
         res.crash=true;res.by=B.k;return res}}
-      if(res.bonk) break}
+      if(res.bonk||res.cut) break}
   }
   // eating
   const reach=r+(S.fx&&S.fx.mag>now?110:10), mult=S.fx&&S.fx.x3>now?3:1;
@@ -8651,7 +8679,8 @@ function snTickMine(dt){
   if(SNK.steer&&SNK.cam){const hx=(S.x-SNK.cam.x)*SNK.cam.z+SNK.cam.w/2,hy=(S.y-SNK.cam.y)*SNK.cam.z+SNK.cam.h/2;
     if(Math.hypot(SNK.steer.x-hx,SNK.steer.y-hy)>8) S.tgt=Math.atan2(SNK.steer.y-hy,SNK.steer.x-hx)}
   const K=SNK.keys, kx=(K.r?1:0)-(K.l?1:0), ky=(K.d?1:0)-(K.u?1:0); if(kx||ky) S.tgt=Math.atan2(ky,kx);
-  const res=snMove(SNK.seat,S,dt,{lvl:L,boost:SNK.boost&&L!=="little"});
+  const res=snMove(SNK.seat,S,dt,{lvl:L,boost:SNK.boost&&L!=="little",spider:!!SN_SPIDERS[me]});
+  if(res.cut) snCut(S,res.cut);
   if(res.crash){snCrashMine(res.by);return}
   const t=performance.now();
   if((res.wall||res.bonk)&&t-SNK.bonkAt>400){SNK.bonkAt=t;blip(220,.15,"triangle",.14);snBonkFx();if(res.bonk)sayLittle(S.bonks?"Bonk! Careful!":"Bonk! Next time it's a crash!")}
@@ -8748,7 +8777,7 @@ function snHostTick(dt){
 function snSetup(){
   if(!SNK.cv){SNK.cv=$("#snCv");SNK.cx=SNK.cv.getContext("2d");SNK.mm=$("#snMini").getContext("2d");snWireControls();new ResizeObserver(snFit).observe($("#snField"))}
   const L=snMyLvl(); $("#snake").classList.toggle("little",L==="little"); $("#snBoost").hidden=L==="little";
-  $("#snOver").hidden=true; $("#snCrash").hidden=true; $("#snTip").hidden=false; snFit(); snHud(true);
+  $("#snOver").hidden=true; $("#snCrash").hidden=true; $("#snTip").hidden=false; $("#snTip").textContent=SN_SPIDERS[me]?"🕷️ You're the spider! Run into a snake's tail to ✂️ snip it off":"👆 Hold your finger where you want to go"; snFit(); snHud(true);
 }
 function snFit(){
   const F=$("#snField"), r=F.getBoundingClientRect(); if(!r.width||!r.height) return;
@@ -8816,15 +8845,23 @@ function snDraw(){
       c.fillStyle=I.hue;c.beginPath();c.arc(q[0],q[1],r,0,7);c.fill();
       if(j%4<2){c.fillStyle="rgba(255,255,255,.22)";c.beginPath();c.arc(q[0]-r*.25,q[1]-r*.25,r*.55,0,7);c.fill()}}
     if(star){c.strokeStyle="#FFD600";c.lineWidth=4;c.beginPath();c.arc(B.x,B.y,r*1.6+Math.sin(t/90)*2,0,7);c.stroke()}
-    const hr=r*1.35; c.fillStyle="#fff";c.beginPath();c.arc(B.x,B.y,hr,0,7);c.fill();
+    const hr=r*1.35;
+    if(I.spider){ // eight wiggly legs and snapping scissors
+      c.strokeStyle="#15151C";c.lineWidth=Math.max(3,r*.32);c.lineCap="round";
+      for(let k=0;k<8;k++){const side=k<4?1:-1,n=k%4,base=B.g+side*(0.75+n*0.55),wig=Math.sin(t/90+k)*0.18,
+        kx=B.x+Math.cos(base)*hr*1.5,ky=B.y+Math.sin(base)*hr*1.5,fx=B.x+Math.cos(base+side*.35+wig)*hr*2.3,fy=B.y+Math.sin(base+side*.35+wig)*hr*2.3;
+        c.beginPath();c.moveTo(B.x,B.y);c.lineTo(kx,ky);c.lineTo(fx,fy);c.stroke()}
+      const snap=Math.abs(Math.sin(t/120))*.5, sx=B.x+Math.cos(B.g)*hr*1.9, sy=B.y+Math.sin(B.g)*hr*1.9;
+      c.save();c.translate(sx,sy);c.rotate(B.g+Math.PI/4);c.font=`${Math.round(hr*1.5)}px system-ui,"Apple Color Emoji","Noto Color Emoji"`;c.scale(1,1-snap*.4);c.fillText("✂️",0,0);c.restore()}
+    c.fillStyle=I.spider?"#2A2A34":"#fff";c.beginPath();c.arc(B.x,B.y,hr,0,7);c.fill();
     const im=snFace(i); if(im){c.save();c.beginPath();c.arc(B.x,B.y,hr*.92,0,7);c.clip();c.drawImage(im,B.x-hr,B.y-hr,hr*2,hr*2);c.restore()}
     else{c.font=`${Math.round(hr*1.3)}px system-ui,"Apple Color Emoji","Noto Color Emoji"`;c.fillText(I.face||"🙂",B.x,B.y+hr*.06)}
-    c.strokeStyle=I.hue;c.lineWidth=Math.max(3,r*.3);c.beginPath();c.arc(B.x,B.y,hr,0,7);c.stroke();
+    c.strokeStyle=I.spider?"#C084FC":I.hue;c.lineWidth=Math.max(3,r*.3);c.beginPath();c.arc(B.x,B.y,hr,0,7);c.stroke();
     // a little arrow showing which way the head is going
     c.fillStyle=I.hue;c.beginPath();const ax=B.x+Math.cos(B.g)*hr*1.25,ay=B.y+Math.sin(B.g)*hr*1.25;
     c.moveTo(ax+Math.cos(B.g)*8,ay+Math.sin(B.g)*8);c.lineTo(ax+Math.cos(B.g+2.3)*7,ay+Math.sin(B.g+2.3)*7);c.lineTo(ax+Math.cos(B.g-2.3)*7,ay+Math.sin(B.g-2.3)*7);c.fill();
     c.globalAlpha=1;
-    const label=I.name+(i===SNK.seat?" (you)":""), fs=Math.max(12,14/z*.9); c.font=`800 ${fs}px system-ui,sans-serif`;
+    const label=I.name+(I.spider?" 🕷️✂️":"")+(i===SNK.seat?" (you)":""), fs=Math.max(12,14/z*.9); c.font=`800 ${fs}px system-ui,sans-serif`;
     const w=c.measureText(label).width+12, ly=B.y-hr-fs; c.fillStyle="rgba(255,255,255,.9)";
     c.beginPath();c.roundRect?c.roundRect(B.x-w/2,ly-fs*.7,w,fs*1.4,fs*.7):c.rect(B.x-w/2,ly-fs*.7,w,fs*1.4);c.fill();c.fillStyle=I.hue;c.fillText(label,B.x,ly+1);
   }

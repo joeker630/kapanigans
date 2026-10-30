@@ -4,6 +4,18 @@ Newest first. Each release has kid-friendly notes (shown to everyone in the game
 
 ---
 
+## 1.16: Watch out for the spider! 🕷️
+**October 29, 2026**
+
+### For everyone
+- 🕷️ **Joe is a spider in Snake Race:** he has scissors! If he runs into your snake's tail, ✂️ snip, it's cut off and spills out as snacks. Keep your tail away from the spider!
+- 🧩 **One puzzle after a crash:** everyone solves just one puzzle to get back into Snake Race.
+
+### For grown-ups
+- 🐍 Grown-ups go back into Snake Race after one respawn puzzle, win or lose. Joe's snips count as bumps on the podium; head-to-head with the spider just bounces.
+
+---
+
 ## 1.15: Bigger picture on phones 📱
 **October 29, 2026**
 
