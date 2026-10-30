@@ -4,6 +4,21 @@ Newest first. Each release has kid-friendly notes (shown to everyone in the game
 
 ---
 
+## 1.13: Clearer voices on calls 🎤
+**October 29, 2026**
+
+### For everyone
+- 🎤 **Clearer voices:** voices on family calls cut out less and sound fuller, even on busy Wi-Fi.
+
+### For grown-ups
+- Each voice packet now also carries a spare copy of the one before it (RED). If one goes missing on the Wi-Fi, the next one fills the gap instead of a crackle.
+- Silence suppression is off. It was clipping the first sound of a word after a pause.
+- Voices get more room: 48 kbps (was 32) plus error correction, with a little more buffer (0.15 seconds) to smooth out bumpy Wi-Fi.
+- Voices come first: if others start losing your voice or hearing it in bumps, your video automatically steps down to make room.
+- The microphone asks for a single channel at 48 kHz, the best fit for voice calls.
+
+---
+
 ## 1.12: Smoother video, tidy coloring tools 🎨
 **October 29, 2026**
 

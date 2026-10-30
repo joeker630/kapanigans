@@ -1619,7 +1619,7 @@ addEventListener("resize",()=>requestAnimationFrame(fitHelp));
    "## 1.0: Title" starts a release; "### For everyone" / "### For grown-ups" / any other "###" section follow.
    Grown-up sections ("For grown-ups", "How long it took…") are hidden from the kids.
    Bump APP_VERSION together with a new RELEASES.md entry. */
-const APP_VERSION="1.12";
+const APP_VERSION="1.13";
 const WN={rel:null,loading:null};
 function wnGrownOnly(h){return /grown/i.test(h)}
 function wnParse(md){
@@ -2580,7 +2580,7 @@ function startMedia(){ if(vid.optOut) return;
   if(vid.local||vid.asking||!mediaOK()||!me) return;
   vid.asking=true; renderVideoUI();
   // called straight from a tap where possible, so iPhone/iPad allow it
-  navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true},
+  navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true,channelCount:1,sampleRate:{ideal:48000}},
       video:Object.assign({facingMode:"user"},CAM_BASE)})
     .then(s=>{
       vid.local=s; vid.denied=false; vid.facing="user"; applyTracks(); countCams();
@@ -2650,8 +2650,12 @@ function newPc(peer){
   try{const caps=RTCRtpReceiver.getCapabilities&&RTCRtpReceiver.getCapabilities("video");
     if(caps&&pc.getTransceivers){const h=caps.codecs.filter(x=>/h264/i.test(x.mimeType)),o=caps.codecs.filter(x=>!/h264/i.test(x.mimeType));
       if(h.length) for(const t of pc.getTransceivers()) if(t.sender&&t.sender.track&&t.sender.track.kind==="video"&&t.setCodecPreferences) t.setCodecPreferences([...h,...o])}}catch(_){}
+  // voices: ask for RED first. Each voice packet also carries a copy of the one before, so a lost packet on busy Wi-Fi doesn't become a gap
+  try{const ac=RTCRtpReceiver.getCapabilities&&RTCRtpReceiver.getCapabilities("audio");
+    if(ac&&pc.getTransceivers){const red=ac.codecs.filter(x=>/\/red$/i.test(x.mimeType)),op=ac.codecs.filter(x=>/opus/i.test(x.mimeType)),o=ac.codecs.filter(x=>!/\/red$|opus/i.test(x.mimeType));
+      if(red.length&&op.length) for(const t of pc.getTransceivers()) if(t.sender&&t.sender.track&&t.sender.track.kind==="audio"&&t.setCodecPreferences) t.setCodecPreferences([...red,...op,...o])}}catch(_){}
   // a little jitter buffer on what we hear: a touch more delay, far fewer choppy gaps on busy Wi-Fi
-  pc.addEventListener("track",e=>{try{if(e.receiver&&"jitterBufferTarget" in e.receiver)e.receiver.jitterBufferTarget=e.track.kind==="audio"?120:200}catch(_){}});
+  pc.addEventListener("track",e=>{try{if(e.receiver&&"jitterBufferTarget" in e.receiver)e.receiver.jitterBufferTarget=e.track.kind==="audio"?150:200}catch(_){}});
   pc.onicecandidate=e=>{if(e.candidate&&room) room.signal(peer,{y:"ice",c:e.candidate.toJSON()})};
   pc.ontrack=e=>{const st=e.streams[0]||new MediaStream([e.track]);vid.streams.set(peer,st);renderVideoUI()};
   pc.onconnectionstatechange=()=>{
@@ -2664,13 +2668,14 @@ function newPc(peer){
 }
 /* ---- call quality: voices first, video shares what's left ----
    Every device sends its own copy to each other person (up to 3), so the upload is split by how many are on.
-   Audio: Opus with error correction (FEC) and silence suppression (DTX), marked high priority.
+   Audio: Opus at 48 kbps with error correction (FEC) plus RED (a spare copy of the last packet), no silence suppression, marked high priority.
+   If voices start losing packets or arriving unevenly, the video steps down to leave them room.
    Video: bitrate and frame rate scale with the number of people, and drop further if the network is losing packets. */
 const VQ={level:0}; // 0 normal, 1 reduced, 2 low
 function opusTune(sdp){return sdp.replace(/a=fmtp:(\d+) ([^\r\n]*)/g,(m,pt,p)=>{
   if(!new RegExp("a=rtpmap:"+pt+" opus/","i").test(sdp)) return m;
   const kv=Object.fromEntries(p.split(";").map(x=>x.trim().split("=")).filter(x=>x[0]));
-  Object.assign(kv,{useinbandfec:"1",usedtx:"1",stereo:"0",maxaveragebitrate:"32000"});
+  Object.assign(kv,{useinbandfec:"1",usedtx:"0",stereo:"0",maxaveragebitrate:"48000",maxplaybackrate:"48000",minptime:"10"});
   return "a=fmtp:"+pt+" "+Object.entries(kv).map(([k,v])=>k+"="+v).join(";")})}
 function tuneSenders(){
   const n=Math.max(1,vid.pcs.size);
@@ -2683,7 +2688,7 @@ function tuneSenders(){
     // some browsers reject a field they don't know, so try with everything, then with just the essentials
     const apply=full=>{try{const prm=snd.getParameters(); if(!prm.encodings||!prm.encodings.length) return Promise.resolve();
       const e=prm.encodings[0];
-      if(snd.track.kind==="audio"){e.maxBitrate=40000;if(full){e.priority="high";e.networkPriority="high"}}
+      if(snd.track.kind==="audio"){e.maxBitrate=128000;if(full){e.priority="high";e.networkPriority="high"}}
       else{e.maxBitrate=kbps*1000;e.maxFramerate=fps;e.scaleResolutionDownBy=scale;if(full){e.priority="low";e.networkPriority="low";prm.degradationPreference="maintain-framerate"}}
       return snd.setParameters(prm)}catch(err){return Promise.reject(err)}};
     apply(true).catch(()=>apply(false)).catch(()=>{});
@@ -2694,15 +2699,17 @@ function tuneSenders(){
 VQ.good=0;
 setInterval(async()=>{
   if(!vid.pcs.size) {VQ.level=0;VQ.good=0;return}
-  let lost=0,cnt=0,cpu=false,bw=false,avail=Infinity;
+  let lost=0,cnt=0,cpu=false,bw=false,avail=Infinity,aLost=0,aJit=0;
   for(const c of vid.pcs.values()){try{const st=await c.pc.getStats();st.forEach(r=>{
     if(r.type==="remote-inbound-rtp"&&r.kind==="video"&&typeof r.fractionLost==="number"){lost+=r.fractionLost;cnt++}
+    if(r.type==="remote-inbound-rtp"&&r.kind==="audio"){if(typeof r.fractionLost==="number")aLost=Math.max(aLost,r.fractionLost);if(typeof r.jitter==="number")aJit=Math.max(aJit,r.jitter)}
     if(r.type==="outbound-rtp"&&r.kind==="video"){if(r.qualityLimitationReason==="cpu")cpu=true;if(r.qualityLimitationReason==="bandwidth")bw=true}
     if(r.type==="candidate-pair"&&r.nominated&&typeof r.availableOutgoingBitrate==="number")avail=Math.min(avail,r.availableOutgoingBitrate)})}catch(_){}}
   const f=cnt?lost/cnt:0, was=VQ.level;
   const short=avail<Infinity&&avail<vid.pcs.size*300000; // not enough upload for everyone at the normal size
-  if((f>.06||cpu||(bw&&short))&&VQ.level<2){VQ.level++;VQ.good=0}
-  else if(f<.02&&!cpu&&!bw){if(++VQ.good>=4&&VQ.level>0){VQ.level--;VQ.good=0}}
+  const voiceBad=aLost>.03||aJit>.05; // others are losing our voice or getting it in bumps: give it more room
+  if((f>.06||cpu||(bw&&short)||voiceBad)&&VQ.level<2){VQ.level++;VQ.good=0}
+  else if(f<.02&&!cpu&&!bw&&aLost<.01&&aJit<.03){if(++VQ.good>=4&&VQ.level>0){VQ.level--;VQ.good=0}}
   else VQ.good=0;
   if(VQ.level!==was) tuneSenders();
 },4000);
