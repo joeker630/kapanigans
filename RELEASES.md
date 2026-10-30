@@ -228,7 +228,7 @@ Newest first. Each release has kid-friendly notes (shown to everyone in the game
 - 📰 **What's new:** after each update, everyone sees what changed (the kids get a picture version read aloud). Tap 📰 on the home screen, or the version number, to see all updates. An iPad left open gets a "Tap to update" button when a new version is ready.
 - 📱 **iPad and iPhone fixes:** no accidental page zoom or sideways scrolling, screens that fit without scrolling, a steadier farm, and quick recovery after dropped connections, with a connection light for each player.
 - 🎨 **Art kit:** free AI-generated farm, avatar and family art (Cloudflare Workers AI), with family cartoons kept private under the family code.
-- 🐍 Snake Race respawn puzzles: kids get the quick puzzle types; grown-ups get blackjack or minesweeper, and go back in automatically after losing two in a row. Reports now count snake races, snacks, crashes and longest snake.
+- 🐍 Snake Race respawn puzzles: kids get the quick puzzle types; grown-ups get blackjack or minesweeper, and go back in after one puzzle, win or lose. Reports now count snake races, snacks, crashes and longest snake.
 
 ### ⏱️ How long it took (grown-ups only)
 Approximate time Joe spent prompting, from the send times of his messages in each chat. Back-and-forth gaps of up to 15 minutes count as active time; a longer gap counts as a 5-minute wrap-up and then a break. Claude's build time between messages isn't counted on its own.
