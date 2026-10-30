@@ -330,6 +330,7 @@ h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance;l
 .little .trow{gap:12px}
 .sz{flex:none;width:48px;height:48px;border-radius:14px;background:var(--sky);display:grid;place-items:center;border:3px solid transparent}
 .sz i{display:block;border-radius:50%;background:var(--ink)}
+.stp{font-size:22px}
 .sz.on{background:var(--sun);border-color:var(--ink)}
 .sep{flex:none;width:3px;align-self:stretch;background:var(--sky);border-radius:3px;margin:4px 2px}
 .spacer{flex:1}
@@ -372,9 +373,17 @@ h1,h2,h3{font-family:var(--display);font-weight:800;margin:0;text-wrap:balance;l
 .vmsg{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#fff;text-align:center;font-size:13px;padding:8px}
 .vmsg .face{font-size:40px;line-height:1}
 .vmsg button{background:var(--sun);color:var(--ink);border-radius:999px;padding:6px 12px;font-weight:900;font-size:13px}
-.vbtns{display:grid;grid-template-columns:repeat(2,40px);gap:6px;justify-content:end}
-.vbtns button{width:40px;height:40px;border-radius:50%;background:var(--paper);font-size:18px;box-shadow:0 3px 0 var(--sky-deep)}
-.vbtns button.off{background:var(--fox)}
+/* video controls: one slim toolbar of line icons under the videos */
+.vbtns{display:flex;flex-wrap:wrap;gap:2px;align-self:flex-end;justify-content:center;background:var(--paper);border-radius:22px;padding:4px;box-shadow:0 3px 0 var(--sky-deep);max-width:100%}
+.vbtns button{width:32px;height:32px;border-radius:50%;background:transparent;color:var(--ink);display:grid;place-items:center;padding:0;font-size:11px;font-weight:900;line-height:1}
+.vbtns button svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.vbtns button:active{background:var(--sky)}
+.vbtns button.off{background:var(--fox);color:#fff}
+.vbtns #vOff{color:var(--fox)}
+.vbtns #vOff[data-armed]{background:var(--fox);color:#fff}
+.vtile .vflip{position:absolute;left:4px;top:4px;width:26px;height:26px;border-radius:50%;background:rgba(0,0,0,.45);color:#fff;display:grid;place-items:center;padding:0;z-index:1}
+.vbtns .vflip{position:static;width:32px;height:32px;background:transparent;color:var(--ink)}
+.vtile .vflip svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
 
 
 /* ---------- Bedtime Story ---------- */
@@ -826,7 +835,7 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
 .readtext{font-family:var(--display);font-size:clamp(22px,4vw,34px);text-align:center;max-width:760px;background:var(--paper);border-radius:22px;padding:18px 22px;box-shadow:0 5px 0 var(--sky-deep);text-wrap:balance}
 .showit{font-size:18px}
 .showit.on{background:var(--fox);color:#fff}
-.vbtns .showit{grid-column:1/-1;width:auto;border-radius:999px;padding:0 6px;font-weight:900;font-size:13px;white-space:nowrap;background:var(--sun)}
+.vbtns .showit{flex:1 0 100%;width:auto;height:30px;margin-top:2px;border-radius:999px;padding:0 8px;font-weight:900;font-size:13px;white-space:nowrap;background:var(--sun)}
 /* dressing room */
 #dress{padding-block:12px;gap:12px;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 .dwrap{display:grid;grid-template-columns:minmax(220px,340px) minmax(0,1fr);gap:18px;align-items:start}
@@ -902,6 +911,19 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
   .seat{font-size:12px}
   .little .tool{min-width:80px;height:80px;font-size:40px}
   .little .sw{width:60px;height:60px}
+}
+/* coloring tools in the left column: every size follows --ts, which fitTray lowers until everything fits (no scrolling, no overlap) */
+@media (orientation:landscape){
+  #tray .trow{gap:calc(6px*var(--ts,1));padding:1px}
+  #tray .tool{min-width:calc(50px*var(--ts,1));height:calc(50px*var(--ts,1));font-size:calc(22px*var(--ts,1));border-radius:calc(14px*var(--ts,1));padding:0 calc(5px*var(--ts,1))}
+  #tray .tool small{font-size:calc(9px*var(--ts,1));margin-top:calc(2px*var(--ts,1))}
+  #tray.little .tool{min-width:calc(84px*var(--ts,1));height:calc(84px*var(--ts,1));font-size:calc(42px*var(--ts,1));border-radius:calc(22px*var(--ts,1))}
+  #tray.little .tool small{font-size:calc(12px*var(--ts,1))}
+  #tray .sw{width:calc(30px*var(--ts,1));height:calc(30px*var(--ts,1))}
+  #tray.little .sw{width:calc(58px*var(--ts,1));height:calc(58px*var(--ts,1))}
+  #tray .sz{width:calc(38px*var(--ts,1));height:calc(38px*var(--ts,1));border-radius:calc(12px*var(--ts,1))}
+  #tray .sz i{transform:scale(var(--ts,1))}
+  #tray .stp{font-size:calc(20px*var(--ts,1))}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 /* task overlay */
@@ -1339,7 +1361,7 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
 
 <div class="vid" id="vid" hidden>
   <div class="vtiles" id="vTiles"></div>
-  <div class="vbtns"><button id="vMin" aria-label="Shrink video">➖</button><button id="vOff" aria-label="Turn off video calls">📴</button><button id="vMic" aria-label="Microphone on or off">🎤</button><button id="vCam" aria-label="Camera on or off">📷</button><button id="vFlip" aria-label="Flip camera" hidden>🔄</button><button id="vShow" class="showit" hidden>👀 Show it!</button></div>
+  <div class="vbtns"><button id="vMic" aria-label="Microphone on or off"></button><button id="vCam" aria-label="Camera on or off"></button><button id="vMin" aria-label="Shrink video"></button><button id="vOff" aria-label="Turn off video calls"></button><button id="vFlip" class="vflip" aria-label="Flip camera" hidden></button><button id="vShow" class="showit" hidden>👀 Show it!</button></div>
 </div>
 <div class="invite" id="invite" hidden><span id="inviteMsg"></span><div class="rowbtns"><button class="bigbtn" id="inviteJoin">Join</button><button class="ghost" id="inviteNo">Not now</button></div></div>
 
@@ -1622,7 +1644,7 @@ addEventListener("resize",()=>requestAnimationFrame(fitHelp));
    "## 1.0: Title" starts a release; "### For everyone" / "### For grown-ups" / any other "###" section follow.
    Grown-up sections ("For grown-ups", "How long it took…") are hidden from the kids.
    Bump APP_VERSION together with a new RELEASES.md entry. */
-const APP_VERSION="1.13";
+const APP_VERSION="1.14";
 const WN={rel:null,loading:null};
 function wnGrownOnly(h){return /grown/i.test(h)}
 function wnParse(md){
@@ -2224,12 +2246,16 @@ function leaveGame(){
 // Violet's tray: shrink her tools and colors just enough that every one shows without scrolling
 function fitTray(){
   const T=$("#tray"); if(!T) return; const little=T.classList.contains("little"), side=innerWidth>innerHeight;
-  if(!little&&!side) return; // grown-up/Quinn tray along the bottom keeps its sideways-swipe rows
   const rows=[...T.querySelectorAll(".trow")]; if(!rows.length) return;
+  if(side){ // left column: shrink every tool, color and sticker together (sizes follow --ts) until it all fits, no scrolling
+    rows.forEach(r=>{r.style.zoom="";r.style.flexWrap="";r.style.justifyContent=""});
+    let z=1; T.style.setProperty("--ts","1");
+    while(z>.4&&T.scrollHeight>T.clientHeight+1){z-=.04;T.style.setProperty("--ts",z.toFixed(2))}
+    T.scrollTop=0; return}
+  T.style.removeProperty("--ts");
+  if(!little) return; // grown-up/Quinn tray along the bottom keeps its sideways-swipe rows
   rows.forEach(r=>{r.style.zoom=1;r.style.flexWrap=""});
-  // shrink all the tools together until everything fits in the left column with no scrolling
-  for(let z=1;z>.4&&T.scrollHeight>T.clientHeight+1;z-=.04) rows.forEach(r=>r.style.zoom=z.toFixed(2));
-  if(!little){T.scrollTop=0;return}
+  for(let z=1;z>.5&&T.scrollHeight>T.clientHeight+1;z-=.05) rows.forEach(r=>r.style.zoom=z.toFixed(2));
   for(const r of rows) for(let z=+r.style.zoom||1;z>.5&&r.scrollWidth>r.clientWidth+1;z-=.04) r.style.zoom=z.toFixed(2);
   // phones: too narrow for one line, so let the row wrap onto two lines at a friendly size instead
   for(const r of rows){r.style.flexWrap=""; if(r.scrollWidth>r.clientWidth+1&&(+r.style.zoom)<.75){r.style.flexWrap="wrap";r.style.justifyContent="center";r.style.zoom=.78}}
@@ -2323,7 +2349,7 @@ function buildTray(){
     const r2=row();
     SIZES.forEach((sz,i)=>{const b=document.createElement("button");b.className="sz";b.dataset.sz=i;b.setAttribute("aria-label","size "+(i+1));b.innerHTML=`<i style="width:${6+i*8}px;height:${6+i*8}px"></i>`;b.onclick=()=>{tool.big.size=i;syncTray()};r2.append(b)});
     const st=document.createElement("span");st.className="sep";r2.append(st);
-    for(const n of STAMPS){const b=document.createElement("button");b.className="sz stp";b.dataset.n=n;b.style.fontSize="22px";b.textContent={star:"⭐",heart:"❤️",flower:"🌸",bubble:"🔵"}[n];b.onclick=()=>{tool.big.stamp=n;tool.big.t="stamp";syncTray()};r2.append(b)}
+    for(const n of STAMPS){const b=document.createElement("button");b.className="sz stp";b.dataset.n=n;b.textContent={star:"⭐",heart:"❤️",flower:"🌸",bubble:"🔵"}[n];b.onclick=()=>{tool.big.stamp=n;tool.big.t="stamp";syncTray()};r2.append(b)}
     const r3=row();
     for(const col of BIG_COLORS){const s=document.createElement("button");s.className="sw";s.style.setProperty("--c",col);s.dataset.c=col;s.setAttribute("aria-label","color");s.onclick=()=>{tool.big.c=col;if(tool.big.t==="eraser")tool.big.t="marker";syncTray()};r3.append(s)}
   }
@@ -2771,6 +2797,14 @@ function vidReserve(){
 }
 addEventListener("resize",()=>requestAnimationFrame(vidReserve));
 /* floating bubble everywhere except the home screen (which shows the people cards) */
+const VI={ // simple line icons for the video toolbar
+  mic:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/>',
+  cam:'<rect x="3" y="7" width="12.5" height="10" rx="2.5"/><path d="M15.5 10.5 21 7.5v9l-5.5-3z"/>',
+  slash:'<path d="M3.5 3.5l17 17"/>',
+  shrink:'<svg viewBox="0 0 24 24"><path d="M6 12h12"/></svg>',
+  grow:'<svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>',
+  off:'<svg viewBox="0 0 24 24"><path d="M12 3v8"/><path d="M6.4 7.2a8 8 0 1 0 11.2 0"/></svg>',
+  flip:'<svg viewBox="0 0 24 24"><path d="M4.5 10a8 8 0 0 1 14-3.5L20 8M20 3.5V8h-4.5M19.5 14a8 8 0 0 1-14 3.5L4 16M4 20.5V16h4.5"/></svg>'};
 function renderVideoUI(){
   if(screen==="lobby"&&typeof renderPeople==="function") renderPeople();
   const box=$("#vid"); if(!box) return;
@@ -2779,13 +2813,16 @@ function renderVideoUI(){
   box.hidden=!show; if(!show){if(screen==="game")requestAnimationFrame(fitBoard);for(const id of ["dress","story","inbox","grown","snake","game","reader"]){const sc=$("#"+id);if(sc)sc.style.paddingRight=""}for(const D of document.querySelectorAll(".cdrawsheet"))D.style.paddingRight="";{const CB=$("#ctfBody");if(CB&&CB.style.width){CB.style.width="";if(screen==="ctf"&&typeof ctfLayout==="function")requestAnimationFrame(ctfLayout)}}return}
   box.classList.toggle("min",vid.min); box.classList.toggle("ingame",screen==="game"); box.classList.toggle("many",videoPeers().filter(p=>vid.streams.has(p.peer)).length>=2);
   if(screen!=="game"&&box.classList.contains("dock")){box.classList.remove("dock");if(!box.dataset.dragged)box.style.left="";const tr=$("#tray");if(tr)tr.style.marginBottom=""}
-  const tiles=$("#vTiles"); tiles.innerHTML="";
+  const tiles=$("#vTiles"); $("#vid .vbtns").insertBefore($("#vFlip"),$("#vShow")); tiles.innerHTML="";
   for(const p of videoPeers()) if(vid.streams.has(p.peer)) tiles.append(tileFor(p,false));
   if(!vid.min){const mine=tileFor({peer:myPeer,presence:{kid:me}},true);mine.classList.add("mine");tiles.append(mine)}
-  $("#vMic").textContent=vid.mic?"🎤":"🔇"; $("#vMic").classList.toggle("off",!vid.mic);
-  $("#vCam").classList.toggle("off",!vid.cam);
-  $("#vMin").textContent=vid.min?"📹":"➖";
-  $("#vFlip").hidden=!(vid.local&&(vid.cams||[]).length>1); syncShowIt();
+  $("#vMic").innerHTML='<svg viewBox="0 0 24 24">'+VI.mic+(vid.mic?"":VI.slash)+'</svg>'; $("#vMic").classList.toggle("off",!vid.mic);
+  $("#vCam").innerHTML='<svg viewBox="0 0 24 24">'+VI.cam+(vid.cam?"":VI.slash)+'</svg>'; $("#vCam").classList.toggle("off",!vid.cam);
+  $("#vMin").innerHTML=vid.min?VI.grow:VI.shrink; $("#vMin").setAttribute("aria-label",vid.min?"Show videos":"Shrink videos");
+  if(!$("#vOff").dataset.armed) $("#vOff").innerHTML=VI.off;
+  // flip camera: a little button on your own picture (in the toolbar while the videos are shrunk)
+  const fl=$("#vFlip"), mineT=tiles.querySelector(".vtile.mine"); fl.hidden=!(vid.local&&(vid.cams||[]).length>1); fl.innerHTML=VI.flip;
+  if(mineT) mineT.append(fl); else $("#vid .vbtns").insertBefore(fl,$("#vShow")); syncShowIt();
   if(screen==="game") requestAnimationFrame(fitBoard);
   // keep menus and buttons out from under the bubble on wide screens
   requestAnimationFrame(vidReserve);
@@ -2794,7 +2831,7 @@ function renderVideoUI(){
 $("#vMic").onclick=()=>setMic(!vid.mic);
 $("#vCam").onclick=()=>setCam(!vid.cam);
 $("#vMin").onclick=()=>{vid.min=!vid.min;renderVideoUI()};
-$("#vOff").onclick=()=>{const b=$("#vOff");if(b.dataset.armed){delete b.dataset.armed;b.textContent="📴";setCalls(false);return}b.dataset.armed=1;b.textContent="Off?";setTimeout(()=>{delete b.dataset.armed;b.textContent="📴"},3000)};
+$("#vOff").onclick=()=>{const b=$("#vOff");if(b.dataset.armed){delete b.dataset.armed;b.innerHTML=VI.off;setCalls(false);return}b.dataset.armed=1;b.textContent="Off?";setTimeout(()=>{delete b.dataset.armed;b.innerHTML=VI.off},3000)};
 $("#vFlip").onclick=()=>flipCamera();
 $("#vShow").onclick=()=>startShowIt();
 // drag the bubble out of the way

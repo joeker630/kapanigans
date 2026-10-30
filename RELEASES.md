@@ -4,6 +4,18 @@ Newest first. Each release has kid-friendly notes (shown to everyone in the game
 
 ---
 
+## 1.14: Neater video buttons and coloring tools ✨
+**October 29, 2026**
+
+### For everyone
+- 📹 **Neater video buttons:** the video controls are now one slim bar of simple icons under the videos: microphone, camera, shrink, and turn off (red). A red button means it's off. To flip the camera, tap the little 🔄 in the corner of your own picture.
+- 🎨 **Coloring tools fixed:** on iPads and phones the tools, stickers and colors no longer squeeze together or overlap. Everything shrinks together to fit the left column neatly, with nothing cut off.
+
+### For grown-ups
+- The tools used CSS zoom to shrink, which Safari doesn't apply to everything inside. Every tool, sticker and color now sizes from one scale that the game lowers until it all fits. Checked from big iPads down to phones held sideways.
+
+---
+
 ## 1.13: Clearer voices on calls 🎤
 **October 29, 2026**
 
