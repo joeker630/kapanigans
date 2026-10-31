@@ -948,7 +948,7 @@ Turn photos of family members into **high-resolution cartoon characters** (in th
   - Outfits (10): farmer, pajamas, astronaut, firefighter, chef, pirate, wizard, superhero, winter, beach.
   - "Fighting" is always playful (karate pose, pillow fight), never hurting anyone.
 - **The first approved likeness becomes the master reference** for that person's whole sheet, so every pose stays on model. The sheet is a private page for Joe; nothing goes in this repo.
-- Joe's sheet: master portrait and waving pose done; the other 39 images are drawn after the 7 PM allowance reset on Oct 27.
+- ✅ **Joe's and Violet's sheets are complete (Oct 31):** 30 poses + 10 outfits each, plus the master portrait, as cutouts in the family space (`families/<code>/art/family/joe` and `/violet`, 41 each). Pirates hold a treasure map (no weapon-like props). Original photos deleted.
 - **Where the art is (for the game):** background-free cutouts in the family's private space at `families/<code>/art/family/<person>/<name>` = `{img: "data:image/webp;base64,…", w, h, kind: "master"|"pose"|"outfit", key, style: "storybook", t}`, about 35 KB each (768px). Names: `master`, `pose_<key>` and `outfit_<key>` from the lists above (for example `pose_run`, `outfit_pirate`). The story builder (#13) loads it (1.8, Oct 28): ➕ Add › Family lists people from a shallow read of `art/family`, then one person's names, re-checked at most once a minute, with pictures fetched one at a time as they scroll into view; a placed cartoon can swap pose or outfit. Read one person's folder only when needed (never the whole `art` tree). Joe's master and waving pose are uploaded; the rest follow tonight.
 
 **How it works**
