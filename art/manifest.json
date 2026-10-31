@@ -350,6 +350,105 @@
   "cutout": true,
   "made": "2026-10-27"
  },
+ "iso/farm/bld/bank": {
+  "file": "art/iso/farm/bld/bank.webp",
+  "w": 229,
+  "h": 256,
+  "prompt": "a tiny cute farm bank building with cream walls, a green roof, two little columns at the door and a big gold coin emblem above the door, no writing",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-29"
+ },
+ "iso/farm/bld/board": {
+  "file": "art/iso/farm/bld/board.webp",
+  "w": 233,
+  "h": 256,
+  "prompt": "a small wooden notice board on two posts with a little peaked roof and several paper notes pinned to it, no writing",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-29"
+ },
+ "iso/farm/bld/coop": {
+  "file": "art/iso/farm/bld/coop.webp",
+  "w": 221,
+  "h": 256,
+  "prompt": "a small yellow wooden chicken coop with an orange roof, a little ramp and a round door",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-29"
+ },
+ "iso/farm/bld/fbasket": {
+  "file": "art/iso/farm/bld/fbasket.webp",
+  "w": 256,
+  "h": 228,
+  "prompt": "a giant woven wicker basket on the ground overflowing with eggs, carrots, pumpkins and a ball of wool, with a little heart-shaped wooden sign with no writing",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-29"
+ },
+ "iso/farm/bld/fence": {
+  "file": "art/iso/farm/bld/fence.webp",
+  "w": 256,
+  "h": 159,
+  "prompt": "one single straight row of white wooden picket fence, three posts in a line with pickets between them, standing alone on the ground, not a box, not an enclosure",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-31"
+ },
+ "iso/farm/bld/fencecorner": {
+  "file": "art/iso/farm/bld/fencecorner.webp",
+  "w": 256,
+  "h": 239,
+  "prompt": "one corner piece of white wooden picket farm fence forming an L shape",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-29"
+ },
+ "iso/farm/bld/pen": {
+  "file": "art/iso/farm/bld/pen.webp",
+  "w": 256,
+  "h": 214,
+  "prompt": "a low wooden pig pen fence enclosing a muddy patch with a small wooden trough, open top",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-29"
+ },
+ "iso/farm/bld/shed": {
+  "file": "art/iso/farm/bld/shed.webp",
+  "w": 256,
+  "h": 210,
+  "prompt": "a long low sheep shed with light grey wooden walls and a slate blue roof, wide and low",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-29"
+ },
+ "iso/farm/bld/stable": {
+  "file": "art/iso/farm/bld/stable.webp",
+  "w": 256,
+  "h": 253,
+  "prompt": "a large brown wooden horse and cow stable with a dark roof and a big double door with a hay loft window",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-29"
+ },
+ "iso/farm/bld/stand": {
+  "file": "art/iso/farm/bld/stand.webp",
+  "w": 199,
+  "h": 256,
+  "prompt": "a small wooden farmstand market stall with a red and white striped awning and crates of vegetables on the counter, wide and low",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-29"
+ },
+ "iso/farm/bld/store": {
+  "file": "art/iso/farm/bld/store.webp",
+  "w": 239,
+  "h": 256,
+  "prompt": "a big classic red barn with white trim and big open doors, a hammer and saw hanging by the door, used as the farm's building shop, no writing",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-31"
+ },
  "iso/farm/carrot/growing": {
   "file": "art/iso/farm/carrot/growing.webp",
   "w": 234,
@@ -430,6 +529,78 @@
   "model": "klein",
   "cutout": true,
   "made": "2026-10-27"
+ },
+ "iso/farm/decor/beehive": {
+  "file": "art/iso/farm/decor/beehive.webp",
+  "w": 252,
+  "h": 256,
+  "prompt": "a classic white wooden beehive box on a little stand with a few cute bees",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-29"
+ },
+ "iso/farm/decor/bench": {
+  "file": "art/iso/farm/decor/bench.webp",
+  "w": 211,
+  "h": 256,
+  "prompt": "a small wooden garden bench",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-29"
+ },
+ "iso/farm/decor/flowers": {
+  "file": "art/iso/farm/decor/flowers.webp",
+  "w": 241,
+  "h": 256,
+  "prompt": "a small round patch of colorful tulips in soil",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-29"
+ },
+ "iso/farm/decor/lantern": {
+  "file": "art/iso/farm/decor/lantern.webp",
+  "w": 132,
+  "h": 256,
+  "prompt": "an old fashioned farm lantern on a short wooden post, warm glowing light",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-29"
+ },
+ "iso/farm/decor/mailbox": {
+  "file": "art/iso/farm/decor/mailbox.webp",
+  "w": 149,
+  "h": 256,
+  "prompt": "a classic red farm mailbox on a wooden post with the little flag up, no writing",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-29"
+ },
+ "iso/farm/decor/pond": {
+  "file": "art/iso/farm/decor/pond.webp",
+  "w": 256,
+  "h": 218,
+  "prompt": "a small round blue duck pond with reeds and a little yellow duck floating",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-29"
+ },
+ "iso/farm/decor/sunflower": {
+  "file": "art/iso/farm/decor/sunflower.webp",
+  "w": 232,
+  "h": 256,
+  "prompt": "a small cluster of three tall sunflowers",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-29"
+ },
+ "iso/farm/decor/tree": {
+  "file": "art/iso/farm/decor/tree.webp",
+  "w": 227,
+  "h": 256,
+  "prompt": "a round leafy green apple tree with a few red apples",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-29"
  },
  "iso/farm/food/corn": {
   "file": "art/iso/farm/food/corn.webp",
@@ -769,6 +940,222 @@
   "w": 256,
   "h": 180,
   "prompt": "a plain watering can painted solid pure white all over, white body and white spout",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-28"
+ },
+ "story/test/bg_bedroom_v1": {
+  "file": "art/story/test/bg_bedroom_v1.webp",
+  "w": 1536,
+  "h": 1024,
+  "prompt": "a cozy child's bedroom at night with a big window showing the moon and stars, a bed with a quilt, a teddy bear and a warm night light, wide storybook background scene with open space in the lower middle for characters to stand",
+  "model": "klein",
+  "cutout": false,
+  "made": "2026-10-28"
+ },
+ "story/test/bg_bedroom_v2": {
+  "file": "art/story/test/bg_bedroom_v2.webp",
+  "w": 1536,
+  "h": 1024,
+  "prompt": "a cozy child's bedroom at night with a big window showing the moon and stars, a bed with a quilt, a teddy bear and a warm night light, wide storybook background scene with open space in the lower middle for characters to stand",
+  "model": "klein",
+  "cutout": false,
+  "made": "2026-10-28"
+ },
+ "story/test/bg_forest_v1": {
+  "file": "art/story/test/bg_forest_v1.webp",
+  "w": 1536,
+  "h": 1024,
+  "prompt": "a moonlit forest at night with tall soft pine trees, glowing mushrooms, fireflies and a big friendly moon, empty scene with no people, no characters and no animals, wide storybook background scene with open space in the lower middle for characters to stand",
+  "model": "klein",
+  "cutout": false,
+  "made": "2026-10-28"
+ },
+ "story/test/bg_forest_v2": {
+  "file": "art/story/test/bg_forest_v2.webp",
+  "w": 1536,
+  "h": 1024,
+  "prompt": "a moonlit forest at night with tall soft pine trees, glowing mushrooms, fireflies and a big friendly moon, empty scene with no people, no characters and no animals, wide storybook background scene with open space in the lower middle for characters to stand",
+  "model": "klein",
+  "cutout": false,
+  "made": "2026-10-28"
+ },
+ "story/test/chest_v1": {
+  "file": "art/story/test/chest_v1.webp",
+  "w": 715,
+  "h": 768,
+  "prompt": "a small wooden treasure chest with gold trim, the lid open and gold coins and gems sparkling inside, full body, centered, whole character in frame, plain soft warm cream studio background",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-28"
+ },
+ "story/test/chest_v2": {
+  "file": "art/story/test/chest_v2.webp",
+  "w": 700,
+  "h": 768,
+  "prompt": "a small wooden treasure chest with gold trim, the lid open and gold coins and gems sparkling inside, full body, centered, whole character in frame, plain soft warm cream studio background",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-28"
+ },
+ "story/test/dragon_v1": {
+  "file": "art/story/test/dragon_v1.webp",
+  "w": 700,
+  "h": 768,
+  "prompt": "a small friendly green baby dragon with tiny wings and a big smile, standing, full body, centered, whole character in frame, plain soft warm cream studio background",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-28"
+ },
+ "story/test/dragon_v2": {
+  "file": "art/story/test/dragon_v2.webp",
+  "w": 552,
+  "h": 768,
+  "prompt": "a small friendly green baby dragon with tiny wings and a big smile, standing, full body, centered, whole character in frame, plain soft warm cream studio background",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-28"
+ },
+ "story/test/firefighter_v1": {
+  "file": "art/story/test/firefighter_v1.webp",
+  "w": 335,
+  "h": 768,
+  "prompt": "a smiling woman firefighter in a yellow coat and red helmet holding a hose, no badges, no names, no logos, full body, centered, whole character in frame, plain soft warm cream studio background",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-28"
+ },
+ "story/test/firefighter_v2": {
+  "file": "art/story/test/firefighter_v2.webp",
+  "w": 566,
+  "h": 768,
+  "prompt": "a smiling woman firefighter in a yellow coat and red helmet holding a hose, no badges, no names, no logos, full body, centered, whole character in frame, plain soft warm cream studio background",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-28"
+ },
+ "story/test/owl_v1": {
+  "file": "art/story/test/owl_v1.webp",
+  "w": 569,
+  "h": 768,
+  "prompt": "a round sleepy little owl with big gentle eyes, standing, full body, centered, whole character in frame, plain soft warm cream studio background",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-28"
+ },
+ "story/test/owl_v2": {
+  "file": "art/story/test/owl_v2.webp",
+  "w": 607,
+  "h": 768,
+  "prompt": "a round sleepy little owl with big gentle eyes, standing, full body, centered, whole character in frame, plain soft warm cream studio background",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-28"
+ },
+ "story/test/page_dragon_v1": {
+  "file": "art/story/test/page_dragon_v1.webp",
+  "w": 1536,
+  "h": 1024,
+  "prompt": "a small friendly baby dragon curled up asleep on a pile of soft pillows in a cozy castle tower at night, wide storybook page",
+  "model": "klein",
+  "cutout": false,
+  "made": "2026-10-28"
+ },
+ "story/test/page_dragon_v2": {
+  "file": "art/story/test/page_dragon_v2.webp",
+  "w": 1536,
+  "h": 1024,
+  "prompt": "a small friendly baby dragon curled up asleep on a pile of soft pillows in a cozy castle tower at night, wide storybook page",
+  "model": "klein",
+  "cutout": false,
+  "made": "2026-10-28"
+ },
+ "story/test/page_owl_v1": {
+  "file": "art/story/test/page_owl_v1.webp",
+  "w": 1536,
+  "h": 1024,
+  "prompt": "a little owl sitting on a branch in a moonlit forest, saying goodnight to the moon, wide storybook page",
+  "model": "klein",
+  "cutout": false,
+  "made": "2026-10-28"
+ },
+ "story/test/page_owl_v2": {
+  "file": "art/story/test/page_owl_v2.webp",
+  "w": 1536,
+  "h": 1024,
+  "prompt": "a little owl sitting on a branch in a moonlit forest, saying goodnight to the moon, wide storybook page",
+  "model": "klein",
+  "cutout": false,
+  "made": "2026-10-28"
+ },
+ "story/test/police_v1": {
+  "file": "art/story/test/police_v1.webp",
+  "w": 399,
+  "h": 768,
+  "prompt": "a friendly smiling police officer in a navy blue uniform and cap waving hello, no badges, no names, no logos, full body, centered, whole character in frame, plain soft warm cream studio background",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-28"
+ },
+ "story/test/police_v2": {
+  "file": "art/story/test/police_v2.webp",
+  "w": 360,
+  "h": 768,
+  "prompt": "a friendly smiling police officer in a navy blue uniform and cap waving hello, no badges, no names, no logos, full body, centered, whole character in frame, plain soft warm cream studio background",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-28"
+ },
+ "story/test/puppy_v1": {
+  "file": "art/story/test/puppy_v1.webp",
+  "w": 548,
+  "h": 768,
+  "prompt": "a fluffy happy golden puppy sitting with its tongue out, full body, centered, whole character in frame, plain soft warm cream studio background",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-28"
+ },
+ "story/test/puppy_v2": {
+  "file": "art/story/test/puppy_v2.webp",
+  "w": 502,
+  "h": 768,
+  "prompt": "a fluffy happy golden puppy sitting with its tongue out, full body, centered, whole character in frame, plain soft warm cream studio background",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-28"
+ },
+ "story/test/rocket_v1": {
+  "file": "art/story/test/rocket_v1.webp",
+  "w": 506,
+  "h": 768,
+  "prompt": "a cute round red and white toy rocket ship with little round windows, upright, full body, centered, whole character in frame, plain soft warm cream studio background",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-28"
+ },
+ "story/test/rocket_v2": {
+  "file": "art/story/test/rocket_v2.webp",
+  "w": 665,
+  "h": 768,
+  "prompt": "a cute round red and white toy rocket ship with little round windows, upright, full body, centered, whole character in frame, plain soft warm cream studio background",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-28"
+ },
+ "story/test/unicorn_v1": {
+  "file": "art/story/test/unicorn_v1.webp",
+  "w": 420,
+  "h": 768,
+  "prompt": "a gentle white unicorn with a pastel rainbow mane and a golden horn, standing, full body, centered, whole character in frame, plain soft warm cream studio background",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-10-28"
+ },
+ "story/test/unicorn_v2": {
+  "file": "art/story/test/unicorn_v2.webp",
+  "w": 453,
+  "h": 768,
+  "prompt": "a gentle white unicorn with a pastel rainbow mane and a golden horn, standing, full body, centered, whole character in frame, plain soft warm cream studio background",
   "model": "klein",
   "cutout": true,
   "made": "2026-10-28"

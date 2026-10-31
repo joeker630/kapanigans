@@ -316,13 +316,13 @@ About **48 images** left including retries, which is roughly one day of the free
 - [x] Hiding spots for egg hunt: hay pile, bush — 2
 
 *Batch B — the farm's buildings and shop decorations (19), replacing the code-drawn boxes and emoji labels*
-- Ready: `tools/batches/farmB.json`. Scheduled for Oct 29 after the free allowance rolls over. Files go to `art/iso/farm/bld/` and `art/iso/farm/decor/`, named after the game's `STRUCT` and `DECOR` keys.
-- [ ] Buildings (9): farmstand stall (`stand`), order board (`board`), Family Basket (`fbasket`), Family Bank (`bank`), Farm Store red barn (`store`, the game's `barn`), chicken coop (`coop`), pig pen (`pen`), sheep shed (`shed`), stable (`stable`)
-- [ ] Fence: straight piece and corner (`fence`, `fencecorner`; mirror in code for other directions) — 2
-- [ ] Shop decorations (8, matching `DECOR`): flowers, sunflowers, lantern, bench, mailbox, apple tree, beehive, duck pond
+- Ready: `tools/batches/farmB.json`. ✅ Made Oct 29–31. Files go to `art/iso/farm/bld/` and `art/iso/farm/decor/`, named after the game's `STRUCT` and `DECOR` keys.
+- [x] Buildings (9): farmstand stall (`stand`), order board (`board`), Family Basket (`fbasket`), Family Bank (`bank`), Farm Store red barn (`store`, the game's `barn`), chicken coop (`coop`), pig pen (`pen`), sheep shed (`shed`), stable (`stable`)
+- [x] Fence: straight piece and corner (`fence`, `fencecorner`; mirror in code for other directions) — 2
+- [x] Shop decorations (8, matching `DECOR`): flowers, sunflowers, lantern, bench, mailbox, apple tree, beehive, duck pond
 - **For the Farmstand chat:** draw each sprite at the building's spot in place of its box, bottom-center on the footprint, scaled to the footprint width. Keep the emoji only as a small badge if it helps Little players.
 - ✅ **Wired in the game (Oct 28), waiting on the files:** `drawStruct()` uses `bld/<key>.webp` (the barn reads `store.webp`) and decorations use `decor/<key>.webp` as soon as they load. Each one stands bottom-center on its footprint, scaled to the footprint width, with its label bubble above it and the same tap area. The Family Basket shows what's inside on top. Until a file exists, the code-drawn box or emoji stays. Tested with stand-in sprites.
-- [ ] Fence sprites (`fence`, `fencecorner`): not wired yet. The pasture fence is still drawn in code; place the pieces along the pasture edges once the art is in, so the orientation can be checked.
+- [x] Fence sprites (`fence`, `fencecorner`): not wired yet. The pasture fence is still drawn in code; place the pieces along the pasture edges once the art is in, so the orientation can be checked.
 
 *Batch C — farmstand shop unlocks (about 11)*
 - [ ] Decorations to buy with coins: scarecrow, windmill, flower pot, bench, mailbox, lantern — 6
@@ -861,6 +861,8 @@ The art for the storybooks (#13) should look like a **feature-film animated movi
 | Magical creatures (about 40) | Friendly dragon, unicorn, fairy, mermaid, pegasus, phoenix, gentle giant, wizard, a talking tree, a star sprite, a moon spirit, a little gnome, a friendly troll, a baby griffin, a cloud creature |
 | People and real-world jobs (about 80) | Police officer, firefighter, doctor, nurse, teacher, chef, baker, farmer, astronaut, pilot, train conductor, mail carrier, construction worker, scientist, veterinarian, dentist, librarian, lifeguard, zookeeper, musician, artist, judge, park ranger. A **mix of ages, skin tones, genders and abilities** (for example a firefighter using a wheelchair). Real-world uniforms, but no real department badges, names or logos. |
 | Vehicles and props (about 70) | Police car, fire truck, ambulance, school bus, rocket, hot air balloon, pirate ship, train, tractor; a teddy, magic wand, treasure chest, crown, lantern, books, cake, blanket, toys |
+
+**✅ Style test made (Oct 28):** 12 subjects × 2 versions in `art/story/test/` (`tools/batches/storytest.json`), on a private review page for Joe to pick A/B per subject. No big story batches until he picks.
 
 **Audit before mass-producing (a must)**
 1. **Style test batch first:** generate about 12 test images. 2 backgrounds, 2 animals, 2 magical creatures, 2 people in jobs (for example a police officer and a firefighter), 2 vehicles and props, and 2 "full page" examples combining a character on a background. Make 2–3 versions of each so Joe can compare.
