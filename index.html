@@ -1684,7 +1684,7 @@ addEventListener("resize",()=>requestAnimationFrame(fitHelp));
    "## 1.0: Title" starts a release; "### For everyone" / "### For grown-ups" / any other "###" section follow.
    Grown-up sections ("For grown-ups", "How long it took…") are hidden from the kids.
    Bump APP_VERSION together with a new RELEASES.md entry. */
-const APP_VERSION="1.20";
+const APP_VERSION="1.21";
 const WN={rel:null,loading:null};
 function wnGrownOnly(h){return /grown/i.test(h)}
 function wnParse(md){
@@ -2008,42 +2008,73 @@ function picFromLines(src){
 }
 
 /* ---------------- your own photo -> a coloring page ----------------
-   The photo is cut into a few flat patches of color (k-means on a softened copy), specks are merged into their neighbors,
-   and a line is drawn wherever two patches meet. Every patch is a closed shape, so the paint bucket fills it cleanly.
-   "Light colors" also keeps a pale version of each patch's color underneath, so you know what color goes where. */
-const PH_DETAIL=[{k:5,blur:3,min:.006},{k:8,blur:2,min:.0025},{k:12,blur:1,min:.0009}];
+   1. The photo goes on the page (tall photos keep a square from the top-middle, where faces usually are).
+   2. Smoothing that keeps outlines but flattens skin shading and texture (bilateral filter, in Lab color).
+   3. Flat patches of color (k-means), then neighbors that are nearly the same color are joined and specks are merged away.
+   4. A smooth, even line wherever two patches meet, so every shape is closed and the paint bucket fills it cleanly.
+   5. The strongest edges inside shapes (eyes, nose, mouth) are added as lines too (only the very strongest on Simple).
+   "Light colors" keeps a pale version of each patch's color underneath, so you know what color goes where. */
 function photoLineArt(img,detail){
-  const w=W/2|0,h=H/2|0,N=w*h,cfg=PH_DETAIL[detail]||PH_DETAIL[1];
-  const cv=document.createElement("canvas");cv.width=w;cv.height=h;const t=cv.getContext("2d",{willReadFrequently:true});
-  const iw=img.naturalWidth||img.videoWidth||img.width,ih=img.naturalHeight||img.videoHeight||img.height,sc=Math.max(w/iw,h/ih);
-  t.fillStyle="#fff";t.fillRect(0,0,w,h);t.imageSmoothingQuality="high";t.drawImage(img,(w-iw*sc)/2,(h-ih*sc)/2,iw*sc,ih*sc);
-  const px=t.getImageData(0,0,w,h).data;
-  // soften: box blur, a few passes (keeps big shapes, drops texture and noise)
-  let f=new Float32Array(N*3);for(let i=0;i<N;i++){f[i*3]=px[i*4];f[i*3+1]=px[i*4+1];f[i*3+2]=px[i*4+2]}
-  const blur=(a,r)=>{const b=new Float32Array(N*3);
-    for(let y=0;y<h;y++)for(let ch=0;ch<3;ch++){let s=0,n=0;for(let x=-r;x<w;x++){if(x+r<w){s+=a[(y*w+x+r)*3+ch];n++}if(x-r-1>=0){s-=a[(y*w+x-r-1)*3+ch];n--}if(x>=0)b[(y*w+x)*3+ch]=s/n}}
-    const c2=new Float32Array(N*3);
-    for(let x=0;x<w;x++)for(let ch=0;ch<3;ch++){let s=0,n=0;for(let y=-r;y<h;y++){if(y+r<h){s+=b[((y+r)*w+x)*3+ch];n++}if(y-r-1>=0){s-=b[((y-r-1)*w+x)*3+ch];n--}if(y>=0)c2[(y*w+x)*3+ch]=s/n}}
-    return c2};
-  for(let k=0;k<3;k++) f=blur(f,cfg.blur);
-  // color space where distance looks like what eyes see (rough Lab)
-  const lab=new Float32Array(N*3);
-  for(let i=0;i<N;i++){const r=f[i*3]/255,g=f[i*3+1]/255,b=f[i*3+2]/255;
-    const L=.299*r+.587*g+.114*b;lab[i*3]=L*100*1.2;lab[i*3+1]=(r-g)*90;lab[i*3+2]=((r+g)/2-b)*90}
-  // k-means on a sample, then label every pixel
-  const K=cfg.k,cen=new Float32Array(K*3),R0=rng(12345),S=[];for(let i=0;i<9000;i++)S.push(Math.floor(R0()*N));
-  {const first=S[0];cen.set(lab.subarray(first*3,first*3+3),0);
-    for(let k=1;k<K;k++){let best=-1,bi=S[0];for(const i of S){let m=1e18;for(let j=0;j<k;j++){const d0=lab[i*3]-cen[j*3],d1=lab[i*3+1]-cen[j*3+1],d2=lab[i*3+2]-cen[j*3+2],dd=d0*d0+d1*d1+d2*d2;if(dd<m)m=dd}if(m>best){best=m;bi=i}}cen.set(lab.subarray(bi*3,bi*3+3),k*3)}}
-  const near=i=>{let m=1e18,bk=0;for(let j=0;j<K;j++){const d0=lab[i*3]-cen[j*3],d1=lab[i*3+1]-cen[j*3+1],d2=lab[i*3+2]-cen[j*3+2],dd=d0*d0+d1*d1+d2*d2;if(dd<m){m=dd;bk=j}}return bk};
-  for(let it=0;it<10;it++){const sum=new Float64Array(K*4);for(const i of S){const k=near(i);sum[k*4]+=lab[i*3];sum[k*4+1]+=lab[i*3+1];sum[k*4+2]+=lab[i*3+2];sum[k*4+3]++}
+  const iw=img.naturalWidth||img.videoWidth||img.width,ih=img.naturalHeight||img.videoHeight||img.height;
+  let sx=0,sy=0,sw=iw,sh=ih; if(ih>iw){sh=iw;sy=Math.round((ih-iw)*.35)}
+  const fitIn=sh/sw>.75, sc=fitIn?Math.min(W/sw,H/sh):Math.max(W/sw,H/sh), dw=Math.round(sw*sc),dh=Math.round(sh*sc),dx=Math.round((W-dw)/2),dy=Math.round((H-dh)/2);
+  const pg=document.createElement("canvas");pg.width=W;pg.height=H;const t=pg.getContext("2d",{willReadFrequently:true});
+  t.fillStyle="#fff";t.fillRect(0,0,W,H);t.imageSmoothingQuality="high";t.drawImage(img,sx,sy,sw,sh,dx,dy,dw,dh);
+  const box=[Math.max(0,dx),Math.max(0,dy),Math.min(W,dw),Math.min(H,dh)];
+  const o=phCore(t.getImageData(0,0,W,H).data,W,H,box,detail);
+  const lines=document.createElement("canvas");lines.width=W;lines.height=H;const lt=lines.getContext("2d",{willReadFrequently:true});
+  const L=lt.createImageData(W,H),d=L.data;for(let i=0;i<W*H;i++){const v=255-Math.round(Math.round(o.ink[i]/51)*51*215/255);d[i*4]=d[i*4+1]=d[i*4+2]=v;d[i*4+3]=255}
+  lt.putImageData(L,0,0);
+  const gs=document.createElement("canvas");gs.width=W>>1;gs.height=H>>1;const gst=gs.getContext("2d");gst.putImageData(new ImageData(o.guide,W>>1,H>>1),0,0);
+  const gcv=document.createElement("canvas");gcv.width=W;gcv.height=H;const gt=gcv.getContext("2d");gt.imageSmoothingQuality="high";gt.drawImage(gs,0,0,W,H);
+  return {lines,guide:gcv,patches:o.patches};
+}
+/* photo -> coloring page core. src: RGBA of the page (W x H) with the photo drawn on white; box: [x,y,w,h] photo area.
+   Returns ink (Uint8 0..255 darkness, W x H) and guide (RGBA, W/2 x H/2). */
+function phCore(src,W,H,box,detail){
+  const cfg=[{k:6,merge:16,min:.004,sr:14},{k:10,merge:7.5,min:.0014,sr:11},{k:14,merge:5.5,min:.0006,sr:9}][detail]||{k:10,merge:7.5,min:.0014,sr:11};
+  const w=W>>1,h=H>>1,N=w*h;
+  // half size, Lab
+  const lab=new Float32Array(N*3),rgb=new Float32Array(N*3);
+  const lin=v=>{v/=255;return v<=.04045?v/12.92:Math.pow((v+.055)/1.055,2.4)},LT=new Float32Array(256);for(let i=0;i<256;i++)LT[i]=lin(i);
+  const fx=t=>t>.008856?Math.cbrt(t):7.787*t+16/116;
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){let r=0,g=0,b=0;for(const [dx,dy] of [[0,0],[1,0],[0,1],[1,1]]){const p=((2*y+dy)*W+2*x+dx)*4;r+=src[p];g+=src[p+1];b+=src[p+2]}
+    r/=4;g/=4;b/=4;const i=y*w+x;rgb[i*3]=r;rgb[i*3+1]=g;rgb[i*3+2]=b;
+    const R=LT[r|0],G=LT[g|0],B=LT[b|0];
+    const X=fx((.4124*R+.3576*G+.1805*B)/.9505),Y=fx(.2126*R+.7152*G+.0722*B),Z=fx((.0193*R+.1192*G+.9505*B)/1.089);
+    lab[i*3]=116*Y-16;lab[i*3+1]=500*(X-Y);lab[i*3+2]=200*(Y-Z)}
+  // edge-preserving smoothing (bilateral), keeps outlines, flattens texture and shading
+  const RAD=3,ss=2*2.4*2.4,sr2=2*cfg.sr*cfg.sr,SW=[];for(let dy=-RAD;dy<=RAD;dy++)for(let dx=-RAD;dx<=RAD;dx++){const d=dx*dx+dy*dy;if(d<=RAD*RAD)SW.push(dx,dy,Math.exp(-d/ss))}
+  const RW=new Float32Array(4096);for(let i=0;i<4096;i++)RW[i]=Math.exp(-(i/4)/sr2*1); // index = 4*dist^2 capped
+  let A=lab;
+  for(let it=0;it<3;it++){const B2=new Float32Array(N*3);
+    for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=y*w+x,L0=A[i*3],a0=A[i*3+1],b0=A[i*3+2];let sw=0,s0=0,s1=0,s2=0;
+      for(let k=0;k<SW.length;k+=3){const xx=x+SW[k],yy=y+SW[k+1];if(xx<0||yy<0||xx>=w||yy>=h)continue;const j=(yy*w+xx)*3;
+        const d0=A[j]-L0,d1=A[j+1]-a0,d2=A[j+2]-b0,dd=d0*d0+d1*d1+d2*d2,q=dd*4;const wt=SW[k+2]*(q<4096?RW[q|0]:0);
+        sw+=wt;s0+=wt*A[j];s1+=wt*A[j+1];s2+=wt*A[j+2]}
+      B2[i*3]=s0/sw;B2[i*3+1]=s1/sw;B2[i*3+2]=s2/sw}
+    A=B2}
+  // k-means (chroma counts a bit more than brightness, so shading on a face doesn't become stripes)
+  const WL=.75,WC=1.3,K=cfg.k,cen=new Float32Array(K*3);
+  let seed=12345;const rnd=()=>{seed=(seed*1103515245+12345)&0x7fffffff;return seed/0x7fffffff};
+  const S=[];for(let i=0;i<8000;i++)S.push(Math.floor(rnd()*N));
+  const dist=(i,j)=>{const d0=(A[i*3]-cen[j*3])*WL,d1=(A[i*3+1]-cen[j*3+1])*WC,d2=(A[i*3+2]-cen[j*3+2])*WC;return d0*d0+d1*d1+d2*d2};
+  cen.set(A.subarray(S[0]*3,S[0]*3+3),0);
+  for(let k=1;k<K;k++){let best=-1,bi=S[0];for(const i of S){let m=1e18;for(let j=0;j<k;j++){const d=dist(i,j);if(d<m)m=d}if(m>best){best=m;bi=i}}cen.set(A.subarray(bi*3,bi*3+3),k*3)}
+  const near=i=>{let m=1e18,bk=0;for(let j=0;j<K;j++){const d=dist(i,j);if(d<m){m=d;bk=j}}return bk};
+  for(let it=0;it<12;it++){const sum=new Float64Array(K*4);for(const i of S){const k=near(i);sum[k*4]+=A[i*3];sum[k*4+1]+=A[i*3+1];sum[k*4+2]+=A[i*3+2];sum[k*4+3]++}
     for(let k=0;k<K;k++)if(sum[k*4+3]){cen[k*3]=sum[k*4]/sum[k*4+3];cen[k*3+1]=sum[k*4+1]/sum[k*4+3];cen[k*3+2]=sum[k*4+2]/sum[k*4+3]}}
   let lb=new Uint8Array(N);for(let i=0;i<N;i++)lb[i]=near(i);
-  // tidy ragged edges: each pixel takes the most common label around it
-  for(let pass=0;pass<2;pass++){const o=new Uint8Array(N),cnt=new Int32Array(K);
-    for(let y=0;y<h;y++)for(let x=0;x<w;x++){cnt.fill(0);for(let dy=-2;dy<=2;dy++){const yy=Math.min(h-1,Math.max(0,y+dy));for(let dx=-2;dx<=2;dx++){const xx=Math.min(w-1,Math.max(0,x+dx));cnt[lb[yy*w+xx]]++}}
-      let bk=lb[y*w+x],bm=cnt[bk];for(let k=0;k<K;k++)if(cnt[k]>bm){bm=cnt[k];bk=k}o[y*w+x]=bk}
+  // outside the photo is plain paper
+  const bx0=box[0]>>1,by0=box[1]>>1,bx1=(box[0]+box[2])>>1,by1=(box[1]+box[3])>>1,inPh=i=>{const x=i%w,y=(i-x)/w;return x>=bx0&&x<bx1&&y>=by0&&y<by1};
+  for(let i=0;i<N;i++)if(!inPh(i))lb[i]=255;
+  // tidy ragged edges
+  for(let pass=0;pass<2;pass++){const o=new Uint8Array(N),cnt=new Int32Array(256);
+    for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=y*w+x;if(lb[i]===255){o[i]=255;continue}const seen=[];
+      for(let dy=-2;dy<=2;dy++){const yy=y+dy;if(yy<0||yy>=h)continue;for(let dx=-2;dx<=2;dx++){const xx=x+dx;if(xx<0||xx>=w)continue;const v=lb[yy*w+xx];if(v===255)continue;if(!cnt[v]++)seen.push(v)}}
+      let bk=lb[i],bm=cnt[bk];for(const v of seen){if(cnt[v]>bm){bm=cnt[v];bk=v}cnt[v]=0}o[i]=bk}
     lb=o}
-  // patches: connected pixels with the same label; tiny ones join the neighbor they touch most
+  // patches
   const cid=new Int32Array(N).fill(-1),st=new Int32Array(N);let nc=0;const size=[];
   for(let s0=0;s0<N;s0++){if(cid[s0]>=0)continue;const L=lb[s0];let sp=0,n=0;st[sp++]=s0;cid[s0]=nc;
     while(sp){const q=st[--sp];n++;const x=q%w;
@@ -2052,39 +2083,83 @@ function photoLineArt(img,detail){
       if(q>=w&&cid[q-w]<0&&lb[q-w]===L){cid[q-w]=nc;st[sp++]=q-w}
       if(q<N-w&&cid[q+w]<0&&lb[q+w]===L){cid[q+w]=nc;st[sp++]=q+w}}
     size.push(n);nc++}
+  const paper=new Uint8Array(nc);for(let i=0;i<N;i++)if(lb[i]===255)paper[cid[i]]=1;
   const par=new Int32Array(nc);for(let i=0;i<nc;i++)par[i]=i;
   const find=a=>{while(par[a]!==a){par[a]=par[par[a]];a=par[a]}return a};
-  const start=new Int32Array(nc+1);for(let i=0;i<N;i++)start[cid[i]+1]++;for(let i=0;i<nc;i++)start[i+1]+=start[i];
-  const pos=start.slice(0,nc),list=new Int32Array(N);for(let i=0;i<N;i++)list[pos[cid[i]]++]=i;
-  const minPx=Math.max(30,cfg.min*N),order=[...Array(nc).keys()].filter(i=>size[i]<minPx).sort((a,b)=>size[a]-size[b]);
-  const sz=size.slice();
-  for(const c0 of order){const r=find(c0);if(sz[r]>=minPx)continue;const touch=new Map();
-    const scan=cc=>{for(let k=start[cc];k<start[cc+1];k++){const q=list[k],x=q%w;
-      for(const nb of [x>0?q-1:-1,x<w-1?q+1:-1,q>=w?q-w:-1,q<N-w?q+w:-1]){if(nb<0)continue;const rr=find(cid[nb]);if(rr!==r)touch.set(rr,(touch.get(rr)||0)+1)}}};
-    scan(c0);
-    let best=-1,bm=0;for(const [rr,n] of touch)if(n>bm){bm=n;best=rr}
-    if(best>=0){par[r]=best;sz[best]+=sz[r]}}
+  const sz=new Float64Array(nc),mL=new Float64Array(nc),ma=new Float64Array(nc),mb=new Float64Array(nc);
+  for(let i=0;i<N;i++){const c=cid[i];sz[c]++;mL[c]+=A[i*3];ma[c]+=A[i*3+1];mb[c]+=A[i*3+2]}
+  for(let c=0;c<nc;c++){mL[c]/=sz[c];ma[c]/=sz[c];mb[c]/=sz[c]}
+  const join=(a,b)=>{const t=sz[a]+sz[b];mL[b]=(mL[a]*sz[a]+mL[b]*sz[b])/t;ma[b]=(ma[a]*sz[a]+ma[b]*sz[b])/t;mb[b]=(mb[a]*sz[a]+mb[b]*sz[b])/t;sz[b]=t;par[a]=b};
+  // neighbors: count shared border between patches
+  const edges=new Map();const ek=(a,b)=>a<b?a*nc+b:b*nc+a;
+  for(let i=0;i<N;i++){const x=i%w,a=cid[i];if(x<w-1){const b=cid[i+1];if(a!==b)edges.set(ek(a,b),(edges.get(ek(a,b))||0)+1)}if(i<N-w){const b=cid[i+w];if(a!==b)edges.set(ek(a,b),(edges.get(ek(a,b))||0)+1)}}
+  const nb=Array.from({length:nc},()=>[]);for(const [k,n] of edges){const a=Math.floor(k/nc),b=k%nc;nb[a].push(b);nb[b].push(a)}
+  const de=(a,b)=>{const d0=(mL[a]-mL[b])*WL,d1=(ma[a]-ma[b])*WC,d2=(mb[a]-mb[b])*WC;return Math.sqrt(d0*d0+d1*d1+d2*d2)};
+  // members list per root for neighbor lookup
+  const mem=Array.from({length:nc},(_,i)=>[i]);
+  const rootNb=r=>{const s=new Set();for(const c of mem[r])for(const d of nb[c]){const rr=find(d);if(rr!==r)s.add(rr)}return s};
+  const merge=(a,b)=>{join(a,b);for(const c of mem[a])mem[b].push(c);mem[a]=[]};
+  // 1) join neighbors that are nearly the same color (shading, soft shadows)
+  for(let round=0;round<4;round++){let any=false;
+    const pairs=[];for(const [k] of edges){const a=find(Math.floor(k/nc)),b=find(k%nc);if(a!==b&&!paper[a]&&!paper[b]){const d=de(a,b);if(d<cfg.merge)pairs.push([d,a,b])}}
+    pairs.sort((p,q)=>p[0]-q[0]);
+    for(const [d0,a0,b0] of pairs){const a=find(a0),b=find(b0);if(a===b)continue;if(de(a,b)>=cfg.merge)continue;if(sz[a]>sz[b])merge(b,a);else merge(a,b);any=true}
+    if(!any)break}
+  // 2) specks join the neighbor they're closest to in color
+  const minPx=Math.max(25,cfg.min*N);
+  let changed=true;while(changed){changed=false;
+    const small=[];for(let c=0;c<nc;c++)if(find(c)===c&&!paper[c]&&sz[c]<minPx)small.push(c);small.sort((a,b)=>sz[a]-sz[b]);
+    for(const c of small){if(find(c)!==c||sz[c]>=minPx)continue;let best=-1,bd=1e9;for(const r of rootNb(c)){if(paper[r])continue;const d=de(c,r);if(d<bd){bd=d;best=r}}
+      if(best>=0){merge(c,best);changed=true}}}
   const reg=new Int32Array(N);for(let i=0;i<N;i++)reg[i]=find(cid[i]);
-  // lines where patches meet (2 px here, about 4-5 px on the page once it's scaled up smoothly)
-  const ink=t.createImageData(w,h),id=ink.data,guide=t.createImageData(w,h),gd=guide.data;
-  const sum=new Map();for(let i=0;i<N;i++){const r=reg[i];let a=sum.get(r);if(!a){a=[0,0,0,0];sum.set(r,a)}a[0]+=f[i*3];a[1]+=f[i*3+1];a[2]+=f[i*3+2];a[3]++}
-  const pale=new Map();for(const [r,a] of sum){let R=a[0]/a[3],G=a[1]/a[3],B=a[2]/a[3];const m=(R+G+B)/3;
-    R=m+(R-m)*1.5;G=m+(G-m)*1.5;B=m+(B-m)*1.5; // a little more colorful, then washed out so it's easy to color over
-    const k=.55;pale.set(r,[R*(1-k)+255*k,G*(1-k)+255*k,B*(1-k)+255*k].map(v=>Math.max(0,Math.min(255,v))|0))}
-  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=y*w+x,r=reg[i],p=i*4;
-    const edge=(x<w-1&&reg[i+1]!==r)||(x>0&&reg[i-1]!==r)||(y<h-1&&reg[i+w]!==r)||(y>0&&reg[i-w]!==r);
-    id[p]=id[p+1]=id[p+2]=edge?40:255;id[p+3]=255;const c3=pale.get(r);gd[p]=c3[0];gd[p+1]=c3[1];gd[p+2]=c3[2];gd[p+3]=255}
-  // frame so the page has a clean edge
-  for(let x=0;x<w;x++){for(const y of [0,h-1]){const p=(y*w+x)*4;id[p]=id[p+1]=id[p+2]=40}}for(let y=0;y<h;y++){for(const x of [0,w-1]){const p=(y*w+x)*4;id[p]=id[p+1]=id[p+2]=40}}
-  t.putImageData(ink,0,0);
-  const lines=document.createElement("canvas");lines.width=W;lines.height=H;const lt=lines.getContext("2d",{willReadFrequently:true});
-  lt.imageSmoothingEnabled=true;lt.imageSmoothingQuality="high";lt.drawImage(cv,0,0,W,H);
-  // crisp, even ink: a soft threshold on the smooth scale-up (and only a few gray steps, so the page stays small to send)
-  const L2=lt.getImageData(0,0,W,H),d2=L2.data;for(let p=0;p<d2.length;p+=4){const v=d2[p];const o=v<120?40:v<170?120:v<215?200:255;d2[p]=d2[p+1]=d2[p+2]=o}
-  lt.putImageData(L2,0,0);
-  t.putImageData(guide,0,0);const gcv=document.createElement("canvas");gcv.width=W;gcv.height=H;const gt=gcv.getContext("2d");gt.imageSmoothingQuality="high";gt.drawImage(cv,0,0,W,H);
-  return {lines,guide:gcv,patches:sum.size};
+  // full size: smooth the patch outlines (majority vote), then draw an even, soft-edged line where patches meet
+  const R2=new Int32Array(W*H);for(let y=0;y<H;y++)for(let x=0;x<W;x++)R2[y*W+x]=reg[(y>>1)*w+(x>>1)];
+  let RR=R2;
+  for(let pass=0;pass<2;pass++){const o=new Int32Array(W*H);const vals=new Int32Array(25),cnts=new Int32Array(25);
+    for(let y=0;y<H;y++)for(let x=0;x<W;x++){let n=0;
+      for(let dy=-2;dy<=2;dy++){const yy=Math.min(H-1,Math.max(0,y+dy));for(let dx=-2;dx<=2;dx++){if(dx*dx+dy*dy>5)continue;const xx=Math.min(W-1,Math.max(0,x+dx));const v=RR[yy*W+xx];let k=0;for(;k<n;k++)if(vals[k]===v){cnts[k]++;break}if(k===n){vals[n]=v;cnts[n]=1;n++}}}
+      let bk=0;for(let k=1;k<n;k++)if(cnts[k]>cnts[bk])bk=k;o[y*W+x]=vals[bk]}
+    RR=o}
+  const m=new Float32Array(W*H);
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){const i=y*W+x,r=RR[i];if((x<W-1&&RR[i+1]!==r)||(y<H-1&&RR[i+W]!==r))m[i]=1}
+  // detail lines inside the shapes (eyes, nose, mouth, folds): edges of the smoothed photo, thinned, only the longer ones
+  {
+    const Lh=new Float32Array(N);for(let i=0;i<N;i++)Lh[i]=A[i*3];
+    const G=boxBlur1(boxBlur1(Lh,w,h,1),w,h,1),mag=new Float32Array(N),dir=new Uint8Array(N);
+    for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){const i=y*w+x;
+      const gx=(G[i-w+1]+2*G[i+1]+G[i+w+1])-(G[i-w-1]+2*G[i-1]+G[i+w-1]),gy=(G[i+w-1]+2*G[i+w]+G[i+w+1])-(G[i-w-1]+2*G[i-w]+G[i-w+1]);
+      mag[i]=Math.hypot(gx,gy);const an=Math.atan2(gy,gx)*180/Math.PI,a2=(an+180)%180;dir[i]=a2<22.5||a2>=157.5?0:a2<67.5?1:a2<112.5?2:3}
+    const thin=new Float32Array(N);
+    for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){const i=y*w+x,m0=mag[i],d=dir[i];
+      const [p,q]=d===0?[i-1,i+1]:d===1?[i-w-1,i+w+1]:d===2?[i-w,i+w]:[i-w+1,i+w-1];if(m0>=mag[p]&&m0>=mag[q])thin[i]=m0}
+    const v=[];for(let i=0;i<N;i+=3)if(thin[i]>0&&inPh(i))v.push(thin[i]);v.sort((a,b)=>a-b);
+    const hi=Math.max(12,v[Math.floor(([.91,.86,.80][detail]??.88)*v.length)]||12),lo=hi*.45,minLen=[30,22,14][detail]??24;
+    const E=new Uint8Array(N),st2=[];for(let i=0;i<N;i++)if(thin[i]>=hi&&inPh(i)&&!E[i]){E[i]=1;st2.push(i)}
+    while(st2.length){const q=st2.pop();for(const nq of [q-1,q+1,q-w,q+w,q-w-1,q-w+1,q+w-1,q+w+1]){if(nq<0||nq>=N||E[nq]||thin[nq]<lo||!inPh(nq))continue;E[nq]=1;st2.push(nq)}}
+    const seen=new Uint8Array(N),comp=[];
+    for(let s0=0;s0<N;s0++){if(!E[s0]||seen[s0])continue;comp.length=0;comp.push(s0);seen[s0]=1;
+      for(let k=0;k<comp.length;k++){const q=comp[k];for(const nq of [q-1,q+1,q-w,q+w,q-w-1,q-w+1,q+w-1,q+w+1]){if(nq<0||nq>=N||!E[nq]||seen[nq])continue;seen[nq]=1;comp.push(nq)}}
+      if(comp.length>=minLen)for(const q of comp){const x=q%w,y=(q-x)/w,p=2*y*W+2*x;for(const o of [0,1,W,W+1])m[p+o]=Math.max(m[p+o],.5)}}
+  }
+  // soft, even line: blur the 1 px marks, then a smooth threshold
+  let bl=m;for(let k=0;k<2;k++)bl=boxBlur1(bl,W,H,2);
+  const ink=new Uint8Array(W*H);
+  for(let i=0;i<W*H;i++){const v=bl[i];const t=Math.min(1,Math.max(0,(v-.065)/(.12-.065)));ink[i]=Math.round(t*t*(3-2*t)*255)}
+  // frame around the photo
+  for(let x=box[0];x<box[0]+box[2];x++)for(const y of [box[1],box[1]+1,box[1]+box[3]-2,box[1]+box[3]-1])if(y>=0&&y<H)ink[y*W+x]=255;
+  for(let y=box[1];y<box[1]+box[3];y++)for(const x of [box[0],box[0]+1,box[0]+box[2]-2,box[0]+box[2]-1])if(x>=0&&x<W)ink[y*W+x]=255;
+  // pale guide colors: each patch's average photo color, a bit more colorful, washed toward white
+  const cs=new Map();for(let i=0;i<N;i++){const r=reg[i];let a=cs.get(r);if(!a){a=[0,0,0,0];cs.set(r,a)}a[0]+=rgb[i*3];a[1]+=rgb[i*3+1];a[2]+=rgb[i*3+2];a[3]++}
+  const pale=new Map();for(const [r,a] of cs){if(paper[r]){pale.set(r,[255,255,255]);continue}let R=a[0]/a[3],G=a[1]/a[3],B=a[2]/a[3];const mm=(R+G+B)/3;R=mm+(R-mm)*1.6;G=mm+(G-mm)*1.6;B=mm+(B-mm)*1.6;const k=.5;
+    pale.set(r,[R,G,B].map(v=>Math.max(0,Math.min(255,v*(1-k)+255*k))|0))}
+  const guide=new Uint8ClampedArray(N*4);for(let i=0;i<N;i++){const c=pale.get(reg[i]);guide[i*4]=c[0];guide[i*4+1]=c[1];guide[i*4+2]=c[2];guide[i*4+3]=255}
+  return {ink,guide,patches:cs.size};
 }
+function boxBlur1(a,w,h,r){const b=new Float32Array(w*h),c=new Float32Array(w*h);
+  for(let y=0;y<h;y++){let s=0,n=0;const o=y*w;for(let x=-r;x<w;x++){if(x+r<w){s+=a[o+x+r];n++}if(x-r-1>=0){s-=a[o+x-r-1];n--}if(x>=0)b[o+x]=s/n}}
+  for(let x=0;x<w;x++){let s=0,n=0;for(let y=-r;y<h;y++){if(y+r<h){s+=b[(y+r)*w+x];n++}if(y-r-1>=0){s-=b[(y-r-1)*w+x];n--}if(y>=0)c[y*w+x]=s/n}}
+  return c}
+
 // a photo page: line art (PNG, so every device finds exactly the same shapes) and, for light colors, a pale guide (JPEG)
 function photoPicFrom(linesCv,guideImg){
   const P=picFromLines(linesCv.getContext("2d",{willReadFrequently:true}).getImageData(0,0,W,H));P.guide=guideImg||null;return P}

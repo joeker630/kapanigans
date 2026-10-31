@@ -4,6 +4,22 @@ Newest first. Each release has kid-friendly notes (shown to everyone in the game
 
 ---
 
+## 1.21: Better photo coloring pages ✏️
+**October 31, 2026**
+
+### For everyone
+- ✏️ **Smoother, cleaner lines:** photo coloring pages now have smooth, even lines instead of jagged scribbles, with faces showing eyes, eyebrows and smiles.
+- 🙂 **Tall photos fit better:** a photo taken up and down keeps the face on the page instead of cutting off the top.
+
+### For grown-ups
+- New photo pipeline: Lab color, an edge-preserving (bilateral) smoothing pass, k-means patches, then neighboring patches that are nearly the same color are joined, so skin shading no longer turns into blotchy bands.
+- Patch outlines are smoothed at full size and drawn with an even, anti-aliased line. Every shape is still closed for the paint bucket.
+- Strong edges inside shapes (eyes, mouth, nose) are added as extra lines, using thresholds that adapt to each photo's contrast; Simple keeps only the strongest.
+- Tall photos keep a square from the top-middle with white paper on the sides; wide photos still fill the page.
+- Takes about 1–2 seconds on a phone. The shared page is about 140 KB.
+
+---
+
 ## 1.20: Color your own photo 📷
 **October 31, 2026**
 
