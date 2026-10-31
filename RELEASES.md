@@ -4,6 +4,23 @@ Newest first. Each release has kid-friendly notes (shown to everyone in the game
 
 ---
 
+## 1.20: Color your own photo 📷
+**October 31, 2026**
+
+### For everyone
+- 📷 **Your own photo:** in Color Together, tap **Your own photo**, take a picture (or pick one), and it turns into a coloring page!
+- 🌈 **Light colors or black & white:** choose **Light colors** to see a pale version of the real colors underneath, so you know what color goes where, or **Black & white** for a plain coloring page.
+- ✏️ **Simple, Medium or Lots of lines:** pick how many shapes there are to color. Violet starts on Simple.
+- 🪣 The paint bucket fills each shape cleanly, and everyone coloring with you gets the same page.
+
+### For grown-ups
+- The photo is cropped to the page, softened, split into flat color patches (k-means), with specks merged into neighbors; a line is drawn wherever two patches meet, so every shape is closed for the fill tool. It runs on the device in about half a second.
+- The page is shared through `games/<id>/photo`: the line art as a PNG (about 150–200 KB, so every device finds exactly the same shapes) and the light-color guide as a small JPEG. Like every game, it's removed after 3 days.
+- The light-color guide is a separate layer under the paint: color and fill cover it, the eraser shows it again, and it's included when the finished picture is saved.
+- "Take a picture" uses the device camera app; "Pick a photo" opens the photo library.
+
+---
+
 ## 1.19: Steadier video calls 📞
 **October 30, 2026**
 
