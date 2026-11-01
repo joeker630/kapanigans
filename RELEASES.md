@@ -13,13 +13,18 @@ Newest first. Each release has kid-friendly notes (shown to everyone in the game
 - 🌸 **Make the flowers bloom:** tap a bud, solve a puzzle, and it opens up for everyone.
 - 🌈 **Rainbows:** finish a patch of flowers and a rainbow comes out.
 - 🌺 **The Rainbow Flower:** help it open together for a giant rainbow!
+- 💛 **Team flowers:** flowers with a heart need two fairies. Fly there together and solve one puzzle as a team!
+- 🧚‍♀️ **Fly with me:** tap it and the other fairies follow yours around the garden.
+- 💃 **Fairy dance:** when two fairies meet, they hold hands and twirl.
+- 🌈 **Take turns on the Rainbow Flower:** each fairy opens a petal.
 - 🎨 **Storybook look:** soft watercolor fairies with see-through wings, wildflowers and a tiny fairy door in a tree stump.
 
 ### For grown-ups
 - New co-op mode (backlog #21), marked Beta Version. One shared garden per family, saved in Firebase under `fairy`; each person's fairy under `fairies/<person>`.
 - 9 buds in 3 patches, then the Rainbow Flower (3 more puzzles). Puzzles use the Farmstand engine at each player's level; grown-ups get a new game if they lose.
 - Fairies are drawn in code (layered SVG), so every color choice works and the wings animate. Art direction: vintage botanical watercolor (thin sepia lines, muted petal colors, gauzy veined wings, paper grain), matching a storybook Violet loves; original designs, nothing copied from the book.
-- Stats: Fairy Garden time, "Fairy flowers bloomed" and "Fairy gardens finished"; puzzles are logged with the "(fairy)" tag.
+- Team activities: the middle bud of each patch is a team flower, using the Farmstand team-chore sessions (`coop/<sid>`, chore `fairyteam`) and the team versions of jigsaw, maze, connect-the-dots and trace-the-path, each player at their own level. Alone in the garden, it's a normal bud; a host waiting 25 s can tap again to do it alone. Fly with me writes `fairy/lead` and lasts 3 minutes; tapping anywhere stops following. With friends present, the Rainbow Flower makes everyone take a petal before anyone gets a second. Fairy dances happen on each device when two fairies hover close (25 s cooldown per pair).
+- Stats: Fairy Garden time, "Team flowers bloomed", "Fairy flowers bloomed" and "Fairy gardens finished"; puzzles are logged with the "(fairy)" tag.
 
 ---
 

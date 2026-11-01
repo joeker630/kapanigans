@@ -1422,6 +1422,21 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
 }
 
 
+/* team activities */
+.fgfl .fgbadge{position:absolute;left:50%;top:6%;transform:translateX(-50%);font-size:calc(var(--u)*2.6);filter:drop-shadow(0 0 4px #FFF3C8);animation:fgbeat 1.4s ease-in-out infinite;pointer-events:none}
+.fgfl.bloom .fgbadge{display:none}
+@keyframes fgbeat{50%{transform:translateX(-50%) scale(1.18)}}
+.fgfl .fgwait{position:absolute;left:50%;top:-16%;transform:translateX(-50%);white-space:nowrap;background:rgba(251,244,228,.95);border:1.5px solid #C9A45C;border-radius:999px;padding:2px 10px;font-family:"IM Fell English",Georgia,serif;font-style:italic;font-size:calc(var(--u)*1.7);color:#5E4636;display:none;pointer-events:none}
+.fgfl.waiting .fgwait{display:block;animation:fgpop .4s}
+.fgfl.waiting .fgbadge{animation-duration:.6s}
+.fglead{width:auto!important;padding:0 12px!important;display:flex;align-items:center;gap:6px;font-size:22px}
+.fglead small{font-family:"IM Fell English",Georgia,serif;font-style:italic;font-size:15px}
+.fglead.on{box-shadow:0 0 0 3px #C9A45C,0 0 14px #FFF3C8}
+@media (max-width:600px){.fglead small{display:none}}
+.fgfollow{position:absolute;right:10px;top:10px;z-index:4;background:rgba(251,244,228,.95);border:2px solid #C9A45C;border-radius:999px;padding:5px 14px;font-family:"IM Fell English",Georgia,serif;font-style:italic;font-size:16px;color:#5E4636;cursor:pointer}
+.fgfollow b{margin-left:6px;font-weight:400;text-decoration:underline}
+.fgheart{position:absolute;transform:translate(-50%,-50%);pointer-events:none;animation:fgheart 1.8s ease-out forwards;filter:drop-shadow(0 0 6px #FFF3C8)}
+@keyframes fgheart{0%{opacity:0;transform:translate(-50%,-50%) scale(.3)}25%{opacity:1;transform:translate(-50%,-80%) scale(1.15)}100%{opacity:0;transform:translate(-50%,-200%) scale(.9)}}
 /* storybook watercolor look */
 #fairy{--fgfell:"IM Fell English",Georgia,"Times New Roman",serif;--fggold:#C9A45C;--fgpaper:#FBF4E4;--fgink:#5E4636}
 .fghead h1{font-family:var(--fgfell);font-style:italic;font-weight:400;color:var(--fgink);letter-spacing:.01em}
@@ -1648,6 +1663,7 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
   <div class="shead fghead">
     <button class="round" id="fgHome" aria-label="Home">🏠</button>
     <h1>🧚<span class="fgt"> Violet's Fairy Garden</span></h1>
+    <button class="round fglead" id="fgLead" aria-label="Fly with me" hidden>🧚‍♀️<small>Fly with me</small></button>
     <button class="round" id="fgEdit" aria-label="Change my fairy">✏️</button>
     <button class="round" id="fgSay" aria-label="What do I do?">🔊</button>
   </div>
@@ -1660,6 +1676,7 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
     <div id="fgFairies"></div>
     <div id="fgFx"></div>
     <svg class="fgpaper" aria-hidden="true"><filter id="fgpaperf"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="4"/><feColorMatrix values="0 0 0 0 .45  0 0 0 0 .35  0 0 0 0 .25  0 0 0 .5 0"/></filter><rect width="100%" height="100%" filter="url(#fgpaperf)"/></svg>
+    <button class="fgfollow" id="fgFollow" hidden></button>
     <div class="fgtip" id="fgTip"></div>
     <div class="fgbanner" id="fgBanner" hidden></div>
     <div class="fgdone" id="fgDone" hidden><div class="fgcard">
@@ -1855,7 +1872,7 @@ const HELP={
   farm:{em:"🥕",title:"Farmstand",steps:[["👆","Tap a crop, animal or building. Your farmer walks there."],["🧩","Solve the little puzzle to do the chore."],["🌱","Plant, water and pick crops. Feed animals for 🥚 🥛 🧶."],["🧺","Sell at the farmstand for 🪙 Moolah. Build at the red barn."],["📋","Fill family orders on the board."],["🤏","Pinch or tap ➕ ➖ to zoom. Press and hold to move buildings."]],
     faq:[["Is it our farm?","Yes, the whole family shares one farm."],["Did I lose anything?","Never. Plants and animals just droop until you help."],["How long?","About 30 minutes is a good farm visit."]]},
   fairy:{em:"🧚",title:"Violet's Fairy Garden",steps:[["✨","First, make your fairy: wings, hair, eyes, clothes, shoes and a name. Tap ✏️ to change her later."],["🌷","Tap a flower bud. Your fairy flies there and a puzzle opens."],["🌸","Solve it and the flower blooms for everyone."],["🌈","Finish a patch of 3 for a rainbow, then help the Rainbow Flower open together."]],
-    faq:[["Is it one garden for everyone?","Yes, the whole family shares one garden, and it's saved until it's finished."],["A bud has a colored ring?","Someone else is solving that one. Pick another."],["Lost a grown-up game?","You get a new one for the same flower."]]},
+    faq:[["Is it one garden for everyone?","Yes, the whole family shares one garden, and it's saved until it's finished."],["Flowers with a 💛?","Team flowers: two fairies fly there and solve one puzzle together, each doing their own part. Alone? Do it yourself."],["🧚‍♀️ Fly with me?","Everyone else's fairy follows yours for a few minutes. Tap anywhere to stop following."],["Why are the fairies twirling?","When two fairies meet, they do a fairy dance."],["A bud has a colored ring?","Someone else is solving that one. Pick another."]]},
 };
 let helpLast="";
 // who sees help: grown-ups see each screen's help once (per person, per device); the kids never do (they can't read yet).
@@ -5205,7 +5222,7 @@ document.addEventListener("visibilitychange",()=>{
 const SYS={name:"Kapanigans",face:"📊",hue:"#5E5577"};
 const GAME_NAMES={fairy:"Violet's Fairy Garden",snake:"Snake Race",ctf:"Capture the Flag",color:"Color Together",watch:"Watching",story:"Bedtime Story",inbox:"Inbox",farm:"Farmstand",dress:"Dressing room",grown:"Grown-ups area",lobby:"Menus"};
 const GAME_COLORS={fairy:"#E879F9",snake:"#65A30D",ctf:"#DC2626",dress:"#DB2777",grown:"#64748B",color:"#7C4DFF",watch:"#C3A6FF",story:"#25306B",inbox:"#E5484D",farm:"#2ECC40",lobby:"#B9DCFB"};
-const COUNT_NAMES={sessions:"Times played",fairyBlooms:"Fairy flowers bloomed",fairyGardens:"Fairy gardens finished",snakeRounds:"Snake races",snakeSnacks:"Snake snacks eaten",snakeLongest:"Longest snake",snakeCrashes:"Snake crashes",colorGames:"Coloring games",picturesDone:"Pictures finished",watched:"Games watched",storiesSent:"Stories made",storiesRead:"Stories read",messagesSent:"Messages sent"};
+const COUNT_NAMES={sessions:"Times played",fairyBlooms:"Fairy flowers bloomed",fairyTeamBlooms:"Team flowers bloomed",fairyGardens:"Fairy gardens finished",snakeRounds:"Snake races",snakeSnacks:"Snake snacks eaten",snakeLongest:"Longest snake",snakeCrashes:"Snake crashes",colorGames:"Coloring games",picturesDone:"Pictures finished",watched:"Games watched",storiesSent:"Stories made",storiesRead:"Stories read",messagesSent:"Messages sent"};
 const DEV=(()=>{let d=load("kp.dev");if(!d){d=Math.random().toString(36).slice(2,8);store("kp.dev",d)}return d})();
 const DEV_LABEL=/iPad/.test(navigator.userAgent)||(/Macintosh/.test(navigator.userAgent)&&navigator.maxTouchPoints>1)?"iPad":/iPhone/.test(navigator.userAgent)?"iPhone":/Android/.test(navigator.userAgent)?"Android":"Computer";
 const DAY=86400000;
@@ -7292,7 +7309,7 @@ function taskApi(A){
       if(my.cd) cdStart(my.cd); my.cdDone=true;
       if(my.onLose){A.append(el("div","tdone lost peek",`<div class="lostcard"><h2>😵 You lost</h2><p>${esc(reason)}</p><p>${my.chore==="snake"?"Back to the race anyway!":"Here comes another one…"}</p></div>`));setTimeout(()=>{if(tk===my){closeTask(false);my.onLose()}},2200);return}
       const d=el("div","tdone lost peek",`<div class="lostcard"><h2>😵 You lost</h2><p>${esc(reason)}</p>${my.cd?`<p class="cdnote">⏳ This chore rests for ${Math.round(LOSE_COOLDOWN_MS/60000)} minutes before you can try again.</p>`:""}<div class="tbtns"></div></div>`);
-      const back=el("button","bigbtn",my.chore==="ctf"?(typeof C!=="undefined"&&C&&C.me.losses>=1?"Back in the game":"New puzzle"):"Back to the farm");
+      const back=el("button","bigbtn",String(my.chore).startsWith("fairy")?"Back to the garden":my.chore==="ctf"?(typeof C!=="undefined"&&C&&C.me.losses>=1?"Back in the game":"New puzzle"):"Back to the farm");
       back.onclick=()=>{if(tk===my)closeTask(true)};
       d.querySelector(".tbtns").append(back); A.append(d);
     },
@@ -10624,9 +10641,19 @@ const FG_KINDS=["rose","bell","carnation","daisy","poppy"];
 const FG_COLS=["#E9A3B6","#C9AEDB","#F2D684","#F6F0E4","#E2897A","#EFBA8E","#A9BFE2","#D88FA8"];
 const FG_KID_PUZZLES=["count","letters","color","pattern","shadow","size","numorder","memory","jigsaw","trace"];
 const FG_GROWN_PUZZLES=["blackjack","mines","jam","wordle"];
+/* ---- team activities ----
+   Team flowers: the middle bud of each patch needs two fairies. It uses the Farmstand team-chore sessions
+   (families/<CODE>/coop/<sid>, chore "fairyteam", target = bud, seed = garden) and the team versions of the
+   puzzles, so each player does their own part at their own level. Alone in the garden? It plays as a normal bud.
+   Rainbow Flower: with friends here, each fairy opens a petal before anyone opens a second one.
+   Fly with me: families/<CODE>/fairy/lead = {k,at}; the other fairies follow the leader for a few minutes.
+   Fairy dance: when two fairies hover close together they hold hands and twirl (each device does this itself). */
+const FG_TEAM=[1,4,7], FG_TEAM_PUZZLES=["jigsaw","maze","dots","path"], FG_LEAD_MS=3*60e3, FG_SOLO_AFTER=25e3;
+const fgIsTeam=i=>FG_TEAM.includes(i);
 const FG_ITEMS=[{em:"🌸",one:"flower",many:"flowers"},{em:"🌷",one:"tulip",many:"tulips"},{em:"🦋",one:"butterfly",many:"butterflies"},{em:"🍄",one:"mushroom",many:"mushrooms"},{em:"🐞",one:"ladybug",many:"ladybugs"},{em:"⭐",one:"star",many:"stars"}];
 const FG={on:false,local:false,mem:{},refs:[],look:{},lookSeen:false,g:null,fl:{},cl:{},big:{},done:null,pos:{},fy:{},els:{},st:{},rain:{},
-  W:0,H:0,u:6,raf:0,maker:false,edit:null,tab:"wings",enteredAt:0,celebrated:null,ro:null,partyT:0};
+  W:0,H:0,u:6,raf:0,maker:false,edit:null,tab:"wings",enteredAt:0,celebrated:null,ro:null,partyT:0,
+  fake:new Set(),teamDone:new Set(),saidWait:new Set(),lead:null,noFollow:0,danceAt:{},danceChk:0};
 
 function fgIsLocal(){return /[?&]fairylocal\b/.test(location.search)||!mail.ref}
 function fgPath(p){return "fairy"+(p?"/"+p:"")}
@@ -10640,7 +10667,7 @@ function fgSet(path,val){
 }
 function fgFromMem(){const m=FG.mem;if(m.g&&(!FG.g||FG.g.seed!==m.g.seed)){FG.g=m.g;FG.st={};FG.rain={};fgBuildFlowers()}FG.fl=m.fl||{};FG.cl=m.cl||{};FG.big=m.big||{};FG.done=m.done||null;fgState()}
 function fgHere(){
-  const s=new Set([me]);
+  const s=new Set([me,...FG.fake]);
   for(const q of peers()) if(q.presence&&q.presence.scr==="fairy"&&KIDS[q.presence.kid]) s.add(q.presence.kid);
   return s;
 }
@@ -10671,9 +10698,12 @@ function openFairy(){
     on(r.child("fairy/cl"),"value",s=>{FG.cl=s.val()||{};fgState()});
     on(r.child("fairy/big"),"value",s=>{FG.big=s.val()||{};fgState()});
     on(r.child("fairy/done"),"value",s=>{FG.done=s.val()||null;fgState()});
-    const posFn=s=>{const k=s.key,v=s.val();if(!v||k===me||!KIDS[k])return;FG.pos[k]=v;if(Date.now()-(v.at||0)<20*60e3&&FG.fy[k])fgFlyTo(k,v,null,true)};
+    const posFn=s=>fgOnPos(s.key,s.val());
+    on(r.child("fairy/lead"),"value",s=>{FG.lead=s.val()||null;fgLeadUI();fgFollowLeader()});
+    farmConnect(); // team flowers use the team-chore sessions
     on(r.child("fairy/pos"),"child_added",posFn); on(r.child("fairy/pos"),"child_changed",posFn);
   }
+  CO.listeners.add(fgCoop); fgLeadUI();
   if(!FG.raf) FG.raf=requestAnimationFrame(fgFrame);
 }
 function fgAfterLooks(needsFairy){
@@ -10689,7 +10719,10 @@ function fgLeave(silent){
   if(FG.on&&me){
     for(const [i,c] of Object.entries(FG.cl||{})) if(c&&c.k===me&&!(FG.fl||{})[i]) fgSet("cl/"+i,null);
     if(!FG.local) fgSet("pos/"+me,null);
+    for(const [sid,x] of Object.entries(CO.sess||{})) if(x&&x.chore==="fairyteam"&&x.host===me&&x.status==="open") coopUpd({[sid]:null});
+    if(FG.lead&&FG.lead.k===me) fgSet("lead",null);
   }
+  CO.listeners.delete(fgCoop);
   if(tk&&tk.chore==="fairy") closeTask(false);
   FG.on=false; if(FG.raf){cancelAnimationFrame(FG.raf);FG.raf=0}
   clearTimeout(FG.partyT);
@@ -10707,6 +10740,7 @@ function fgSetup(){
     $("#fgSay").onclick=()=>say(fgHint());
     $("#fgField").addEventListener("click",fgTapField);
     $("#fgNew").onclick=fgNewGarden; $("#fgDoneHome").onclick=fgGoHome;
+    $("#fgLead").onclick=fgToggleLead; $("#fgFollow").addEventListener("click",fgPillTap);
     $("#fgMkDice").onclick=()=>{FG.edit=fyRandom();blip(990,.12,"triangle");fgMakerRender();sayLittle("Surprise!")};
     $("#fgMkDone").onclick=fgSaveLook;
   }
@@ -10817,7 +10851,7 @@ function fgBuildFlowers(){
   const kinds=sh(FG_KINDS), pal=sh(FG_COLS);
   for(let i=0;i<FG_N;i++){
     const p=Math.floor(i/3), col=pal[(p*2+(i%3===1?1:0))%pal.length];
-    const d=el("div","fgfl"); d.dataset.i=i; d.innerHTML=fgFlowerSVG(kinds[p],col,false);
+    const d=el("div","fgfl"+(fgIsTeam(i)?" team":"")); d.dataset.i=i; d.innerHTML=fgFlowerSVG(kinds[p],col,false)+(fgIsTeam(i)?`<div class="fgbadge" aria-label="Team flower">💛</div><div class="fgwait"></div>`:"");
     d.addEventListener("click",e=>{e.stopPropagation();fgTapFlower(i)});
     box.append(d); FG.els[i]=d;
   }
@@ -10843,6 +10877,10 @@ function fgState(){
     if(c) e.style.setProperty("--c",kidOf(c).hue);
     if(b&&was&&was[0]!=="b"&&!first) fgOnBloom(i);
   }
+  // team buds: who's waiting for a friend
+  for(const i of FG_TEAM){const e=FG.els[i];if(!e)continue;const w=fgBloomed(i)?null:fgTeamSess(i);e.classList.toggle("waiting",!!w);
+    const lab=e.querySelector(".fgwait"); if(lab) lab.textContent=w?(w[1].host===me?"Waiting for a friend…":`${fgLookOf(w[1].host).name} needs a friend!`):"";
+    if(w&&w[1].host!==me&&!FG.saidWait.has(w[0])){FG.saidWait.add(w[0]);const n=kidOf(w[1].host).name;blip(660,.15,"triangle",.1);toast(`💛 ${n} needs a friend at the team flower!`);sayLittle(`${n} needs a friend at the team flower! Tap the flower with the heart.`)}}
   // patch rainbows
   for(let p=0;p<3;p++){const d=fgPatchDone(p); if(d&&!FG.rain[p]){FG.rain[p]=first?"now":"new"; if(!first) setTimeout(()=>fgOnRainbow(p),900)} if(!d) delete FG.rain[p]}
   fgDrawRain(false);
@@ -10861,8 +10899,9 @@ function fgState(){
 function fgHint(){
   if(!FG.g) return "Getting the garden ready…";
   const blooms=[...Array(FG_N).keys()].filter(fgBloomed).length;
-  if(blooms>=FG_N&&fgBigCount()<FG_BIG) return "Tap the Rainbow Flower and solve a puzzle to help it bloom!";
+  if(blooms>=FG_N&&fgBigCount()<FG_BIG) return fgHere().size>1?"Each fairy opens a petal of the Rainbow Flower. Take turns!":"Tap the Rainbow Flower and solve a puzzle to help it bloom!";
   if(blooms>=FG_N) return "The whole garden is blooming!";
+  if(fgHere().size>1&&FG_TEAM.some(i=>!fgBloomed(i))) return "💛 Flowers with a heart need two fairies. Fly there together!";
   return blooms?"Tap a flower bud. Solve the puzzle to make it bloom!":"Tap a flower bud to fly there and make it bloom!";
 }
 
@@ -10886,9 +10925,9 @@ function fgDrawRain(instantAll){
 /* ---- tapping ---- */
 function fgTapField(e){
   if(tk||FG.maker||!FG.on||e.target.closest(".fgfl")) return;
-  if(e.target.closest("#fgDone,#fgMaker,.fgbanner")) return;
+  if(e.target.closest("#fgDone,#fgMaker,.fgbanner,#fgFollow")) return;
   const r=$("#fgField").getBoundingClientRect(), x=(e.clientX-r.left)/r.width, y=(e.clientY-r.top)/r.height;
-  fgBurst({x:e.clientX-r.left,y:e.clientY-r.top},5); fgFlyTo(me,{x,y:Math.max(.1,y)});
+  fgBurst({x:e.clientX-r.left,y:e.clientY-r.top},5); fgStopFollow(true); fgFlyTo(me,{x,y:Math.max(.1,y)});
 }
 function fgTapFlower(i){
   if(tk||FG.maker||!FG.on||!FG.g) return;
@@ -10896,13 +10935,18 @@ function fgTapFlower(i){
   if(big){
     if(!FG.els.big.classList.contains("fgon")) return;
     if(fgBigCount()>=FG_BIG){fgWiggle("big");fgChime();return}
-    fgFlyTo(me,fgPerch("big"),()=>fgPuzzle("big")); sayLittle("Let's help the Rainbow Flower!"); return;
+    const here=[...fgHere()];
+    if(here.length>1){const cnt=k=>Object.values(FG.big||{}).filter(v=>v&&v.k===k).length, lo=Math.min(...here.map(cnt));
+      if(cnt(me)>lo){const who=here.filter(k=>k!==me&&cnt(k)===lo).map(k=>fgLookOf(k).name);fgWiggle("big");
+        toast(`💛 Let ${who.join(" or ")} open the next petal!`);sayLittle(`Let ${who[0]} open the next petal!`);return}}
+    fgStopFollow(); fgFlyTo(me,fgPerch("big"),()=>fgPuzzle("big")); sayLittle("Let's help the Rainbow Flower!"); return;
   }
   if(fgBloomed(i)){fgWiggle(i);fgChime();fgBurst(fgFlowerAt(i),6,-FG.u*16);fgFlyTo(me,fgPerch(i));return}
+  if(fgIsTeam(i)&&fgTeamTap(i)) return;
   const c=fgClaimBy(i);
   if(c&&c!==me){const n=kidOf(c).name;toast(`🧚 ${n}'s fairy is helping that flower!`);sayLittle(`${n} is helping that one. Pick another flower!`);fgWiggle(i);return}
   FG.cl[fgKey(i)]={k:me,at:Date.now()}; fgSet("cl/"+fgKey(i),{k:me,at:Date.now()}); fgState();
-  fgFlyTo(me,fgPerch(i),()=>fgPuzzle(i));
+  fgStopFollow(); fgFlyTo(me,fgPerch(i),()=>fgPuzzle(i));
 }
 function fgPuzzle(i){
   if(tk||!FG.on||screen!=="fairy"||FG.maker) return;
@@ -11011,8 +11055,14 @@ function fgFlyLocal(F,x,y,done){
 function fgTrail(F){fgSpark(F.x*FG.W+(Math.random()-.5)*FG.u*3,F.y*FG.H+FG.u*2,pickOne(FY_GLINT),false)}
 function fgFrame(now){
   FG.raf=0; if(!FG.on||screen!=="fairy") return; FG.raf=requestAnimationFrame(fgFrame);
+  if(now-FG.danceChk>400){FG.danceChk=now;fgDanceCheck(now)}
   for(const k in FG.fy){
     const F=FG.fy[k]; let tilt=0;
+    if(F.dance){const d=F.dance,t=(now-d.t0)/d.dur;
+      if(t>=1){F.dance=null;F.inner.classList.remove("fast");fgFlyLocal(F,F.ax,F.ay);F.dur*=1.3}
+      else{const a=d.ph+t*Math.PI*2*1.6;F.x=d.cx+Math.cos(a)*d.rx;F.y=d.cy+Math.sin(a)*d.ry-Math.sin(t*Math.PI)*.03;F.face=Math.sin(a)>0?-1:1;
+        if(now-F.trailAt>70){F.trailAt=now;fgTrail(F)}}
+      F.el.style.transform=`translate(${F.x*FG.W}px,${F.y*FG.H}px)`;F.inner.style.transform=`scaleX(${F.face}) rotate(${Math.sin(now/260)*6}deg)`;continue}
     if(F.t0){
       let p=(now-F.t0)/F.dur; if(p>=1){p=1;F.t0=0;F.inner.classList.remove("fast");F.drift=now+rint(3500,7500);const d=F.done;F.done=null;if(d)setTimeout(d,150)}
       const e=p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2, lift=Math.min(.16,Math.hypot(F.tx-F.sx,F.ty-F.sy)*.35);
@@ -11026,6 +11076,124 @@ function fgFrame(now){
     F.el.style.transform=`translate(${F.x*FG.W}px,${F.y*FG.H}px)`;
     F.inner.style.transform=`scaleX(${F.face}) rotate(${tilt*F.face}deg)`;
   }
+}
+
+
+/* ---- team flowers (two fairies, one shared puzzle) ---- */
+// an open team session for this bud whose host is still in the garden: [sid, session]
+function fgTeamSess(i){
+  if(!FG.g) return null; const here=fgHere();
+  for(const [sid,x] of Object.entries(CO.sess||{}))
+    if(x&&x.chore==="fairyteam"&&x.seed===FG.g.seed&&x.target===i&&(x.status==="open"||x.status==="playing")&&coopFresh(x)&&here.has(x.host)) return [sid,x];
+  return null;
+}
+function fgPerch2(i,side){const p=fgPerch(i),c=(p.x*FG.W-FG.u*7)/FG.W,d=FG.u*9/FG.W;return {x:c+(side?d:-d),y:p.y+.02}}
+// returns true when the tap was handled as a team flower
+function fgTeamTap(i){
+  if(fgHere().size<2){toast("💛 Team flower! Nobody else is here, so you can do this one yourself.");sayLittle("This is a team flower. You can do it by yourself today!");return false}
+  const w=fgTeamSess(i);
+  if(w){const [sid,x]=w;
+    if(x.members&&x.members[me]){
+      if(x.host===me&&x.status==="open"&&Date.now()-(+x.at||0)>FG_SOLO_AFTER){coopUpd({[sid]:null});toast("💛 Nobody came yet, so you can do this one yourself!");return false}
+      toast("💛 Waiting for a friend to fly over…");sayLittle("Waiting for a friend. Someone needs to tap this flower too!");fgWiggle(i);return true}
+    if(x.status!=="open"){toast("💛 Two fairies are already working on that one!");return true}
+    fgStopFollow(); fgFlyTo(me,fgPerch2(i,1),()=>{if(!tk)joinTeam(sid)}); sayLittle(`Let's help ${kidOf(x.host).name}!`); return true}
+  const c=fgClaimBy(i); if(c&&c!==me) return false; // someone is doing it alone: the normal message
+  const sid=CO.ref?CO.ref.push().key:"c"+Date.now();
+  coopUpd({[sid]:{chore:"fairyteam",type:pickType(FG_TEAM_PUZZLES),title:"💛 Team flower! Do it together",pic:pickOne(PIC_KEYS),target:i,seed:FG.g.seed,
+    host:me,at:Date.now(),status:"open",members:{[me]:{lvl:lvl(),at:Date.now()}}}});
+  fgStopFollow(); fgFlyTo(me,fgPerch2(i,0));
+  blip(880,.12,"triangle",.1); toast("💛 Team flower! Waiting for a friend to fly over…");
+  sayLittle("This is a team flower! We need a friend. Wait for someone to fly over!");
+  fgState(); return true;
+}
+// listens to the team sessions while we're in the garden
+function fgCoop(){
+  if(!FG.on||!FG.g) return;
+  for(const [sid,x] of Object.entries(CO.sess||{})){
+    if(!x||x.chore!=="fairyteam"||x.seed!==FG.g.seed) continue;
+    const mine=!!(x.members&&x.members[me]);
+    if(x.status==="playing"&&mine&&!CO.opened.has(sid)&&!tk&&screen==="fairy"&&!FG.maker){CO.opened.add(sid);fgTeamTask(sid,x)}
+    if(x.status==="done"&&mine&&!FG.teamDone.has(sid)){FG.teamDone.add(sid);fgTeamBloom(sid,x)}
+    if((x.status==="off"||x.status==="done")&&x.host===me) setTimeout(()=>{const y=CO.sess[sid];if(y&&(y.status==="off"||y.status==="done"))coopUpd({[sid]:null})},6000);
+  }
+  fgState();
+}
+function fgTeamTask(sid,x){
+  const order=x.order||Object.keys(x.members||{}), side=Math.max(0,order.indexOf(me));
+  fgFlyTo(me,fgPerch2(x.target,side));
+  const mate=order.filter(w=>w!==me).map(w=>fgLookOf(w).name).join(" and ");
+  setTimeout(()=>{if(!FG.on||tk||screen!=="fairy")return;const y=CO.sess[sid];if(!y||y.status!=="playing")return;
+    openTask({type:y.type,lvl:isGrown()?"grown":lvl(),chore:"fairy together",title:`💛 Team flower with ${mate}`,ctx:{pic:y.pic,coop:{sid},item:pickOne(FG_ITEMS)},
+      onWin:()=>{},
+      onQuit:()=>{const z=CO.sess[sid];if(z&&z.status==="playing")coopUpd({[sid+"/status"]:"off",[sid+"/left"]:me})}})},900);
+  sayLittle(`You and ${mate} are a team! Let's make the flower bloom together!`);
+}
+function fgTeamBloom(sid,x){
+  const i=x.target, order=x.order||Object.keys(x.members||{});
+  if(!fgBloomed(i)){bump("fairyBlooms");const v={k:x.host,with:order.filter(w=>w!==x.host),team:true,at:Date.now()};
+    FG.fl[fgKey(i)]=v; fgSet("fl/"+fgKey(i),v); fgSet("cl/"+fgKey(i),null)}
+  bump("fairyTeamBlooms");
+  setTimeout(()=>{if(!FG.on)return;fgBanner("💛 Team flower!");sayLittle("You did it together! Teamwork!");
+    const F=FG.fy[me]; if(F) fgFlyTo(me,fgPerch(i));},1200);
+}
+
+/* ---- fly with me (follow the leader) ---- */
+function fgOnPos(k,v){
+  if(!v||k===me||!KIDS[k]) return; FG.pos[k]=v;
+  if(Date.now()-(v.at||0)<20*60e3&&FG.fy[k]) fgFlyTo(k,v,null,true);
+  if(FG.lead&&FG.lead.k===k) fgFollowLeader();
+}
+const fgLeadOn=()=>FG.lead&&FG.lead.k&&Date.now()-(+FG.lead.at||0)<FG_LEAD_MS&&fgHere().has(FG.lead.k)?FG.lead:null;
+function fgToggleLead(){
+  if(tk||FG.maker) return; const L=fgLeadOn();
+  if(L&&L.k===me){fgSet("lead",null);if(FG.local){FG.lead=null;fgLeadUI()}toast("🧚 You stopped leading.");return}
+  const v={k:me,at:Date.now()}; fgSet("lead",v); if(FG.local){FG.lead=v;fgLeadUI()}
+  blip(990,.15,"triangle",.1); toast("🧚 Fly anywhere! The other fairies follow you."); sayLittle("Fly with me! Everyone follows your fairy!");
+  const F=FG.fy[me]; if(F) fgFlyTo(me,{x:F.ax,y:F.ay}); // tell the others where to go
+}
+function fgFollowLeader(){
+  const L=fgLeadOn(); fgLeadUI(); if(!L||L.k===me||!FG.on||tk||FG.maker||FG.noFollow===L.at) return;
+  const p=FG.pos[L.k]; if(!p) return;
+  if(!FG.saidWait.has("lead"+L.at)){FG.saidWait.add("lead"+L.at);toast(`🧚 Follow ${fgLookOf(L.k).name}! (tap anywhere to stop)`);sayLittle(`Follow ${kidOf(L.k).name}'s fairy!`)}
+  const others=[...fgHere()].filter(k=>k!==L.k).sort(), n=Math.max(0,others.indexOf(me));
+  fgFlyTo(me,{x:p.x+(n%2?.07:-.07)*(1+Math.floor(n/2)),y:p.y+.07+.03*Math.floor(n/2)});
+}
+function fgStopFollow(manual){const L=fgLeadOn();if(L&&L.k!==me&&FG.noFollow!==L.at){FG.noFollow=L.at;if(manual)toast("🧚 You flew off on your own.");fgLeadUI()}}
+function fgLeadUI(){
+  const b=$("#fgLead"), pill=$("#fgFollow"); if(!b||!pill) return;
+  const L=fgLeadOn(), many=fgHere().size>1;
+  b.hidden=!many; b.classList.toggle("on",!!(L&&L.k===me));
+  if(L&&L.k===me){pill.hidden=false;pill.innerHTML=`🧚 You're leading! <b>Stop</b>`}
+  else if(L&&FG.noFollow!==L.at){pill.hidden=false;pill.innerHTML=`🧚 Following ${esc(fgLookOf(L.k).name)} <b>✖</b>`}
+  else if(L){pill.hidden=false;pill.innerHTML=`🧚 ${esc(fgLookOf(L.k).name)} is leading <b>Follow</b>`}
+  else pill.hidden=true;
+}
+function fgPillTap(e){
+  e.stopPropagation(); const L=fgLeadOn(); if(!L) return;
+  if(L.k===me){fgToggleLead();return}
+  if(FG.noFollow===L.at){FG.noFollow=0;fgFollowLeader()} else fgStopFollow(true);
+  fgLeadUI();
+}
+
+/* ---- fairy dance: two fairies hovering close together hold hands and twirl ---- */
+function fgDanceCheck(now){
+  const list=Object.values(FG.fy).filter(F=>!F.t0&&!F.dance&&!(F.k===me&&tk));
+  for(let a=0;a<list.length;a++)for(let b=a+1;b<list.length;b++){
+    const A=list[a],B=list[b],dx=(A.x-B.x)*FG.W,dy=(A.y-B.y)*FG.H;
+    if(dx*dx+dy*dy>(FG.u*15)**2) continue;
+    const key=[A.k,B.k].sort().join("+"); if(now-(FG.danceAt[key]||-1e9)<25e3) continue;
+    FG.danceAt[key]=now; fgDance([A,B],now); return;
+  }
+}
+function fgDance(list,now){
+  const cx=list.reduce((t,F)=>t+F.x,0)/list.length, cy=list.reduce((t,F)=>t+F.y,0)/list.length;
+  const rx=FG.u*8/FG.W, ry=FG.u*4/FG.H;
+  list.forEach((F,j)=>{F.dance={cx,cy,rx,ry,t0:now,dur:2800,ph:j*Math.PI*2/list.length};F.inner.classList.add("fast")});
+  const p={x:cx*FG.W,y:cy*FG.H}; fgBurst(p,12);
+  const fx=$("#fgFx"); if(fx){const h=el("span","fgheart","💛");h.style.cssText=`left:${p.x}px;top:${p.y}px;font-size:${FG.u*4}px`;fx.append(h);setTimeout(()=>h.remove(),1800)}
+  if(list.some(F=>F.k===me)){[659,784,988,784,1175].forEach((f,k)=>setTimeout(()=>blip(f,.16,"triangle",.07),k*110));
+    const mate=list.filter(F=>F.k!==me).map(F=>fgLookOf(F.k).name).join(" and ");sayLittle(`Fairy dance with ${mate}!`)}
 }
 
 /* ---- the fairy maker ---- */
@@ -11089,8 +11257,8 @@ function fgSaveLook(){
   const F=fgFairy(me); if(FG.first){fgArrive()} else fgFlyTo(me,{x:F.ax,y:F.ay});
   tada(); sayLittle(`Here comes ${L.name}! Tap a flower bud to fly there.`); fgBanner(`🧚 ${L.name} is here!`);
 }
-function fgOnPeers(){if(screen==="fairy"&&FG.on){fgSyncFairies();fgState()}}
-if(/[?&]fairylocal\b/.test(location.search))window.__fairy={FG,FY,openFairy,fgTapFlower,fgPuzzle,fgBloom,fgNewGarden,fgOpenMaker,fgSaveLook,fairySVG,fyClean,tk:()=>tk,win:finishTask,quit:()=>closeTask(true)}; // testing only
+function fgOnPeers(){if(screen==="fairy"&&FG.on){fgSyncFairies();fgState();fgLeadUI()}}
+if(/[?&]fairylocal\b/.test(location.search))window.__fairy={fgSyncFairies,fgState,CO,fgOnPos,fgToggleLead,fgDance,joinTeam,coopUpd,FG_TEAM,FG,FY,openFairy,fgTapFlower,fgPuzzle,fgBloom,fgNewGarden,fgOpenMaker,fgSaveLook,fairySVG,fyClean,tk:()=>tk,win:finishTask,quit:()=>closeTask(true)}; // testing only
 
 $("#playFairy").onclick=()=>{sayLittle("Fairy garden!");openFairy()};
 })();

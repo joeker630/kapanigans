@@ -1276,6 +1276,12 @@ A **co-op** game: everyone makes their own fairy, then the family works together
 - Tap anywhere to fly there. Idle fairies flutter around on their own.
 - While someone is working on a bud it gets a ring in their color, so two kids don't pick the same one.
 
+**Team activities (built Nov 1)**
+- 💛 Team flowers: the middle bud of each patch needs two fairies. The first fairy waits there ("Waiting for a friend…"), everyone else hears a call for help, and the second one to fly over joins. Then both get the team version of a puzzle (jigsaw, maze, connect the dots or trace the path), each at their own level, using the Farmstand team-chore sessions. Alone in the garden it's a normal bud; after 25 s of waiting the host can tap again to do it alone.
+- 🧚‍♀️ Fly with me: the other fairies follow the leader for 3 minutes; tapping anywhere stops following, and the pill at the top switches it back on.
+- 💃 Fairy dance: two fairies hovering close together twirl around each other with a heart and a little tune.
+- 🌈 Rainbow Flower turns: with friends here, each fairy opens a petal before anyone opens a second.
+
 **Multiplayer**
 - One shared garden per family in Firebase (`families/<CODE>/fairy`), saved between visits like the farm. Fairies in `families/<CODE>/fairies/<kid>`.
 - Everyone in the garden sees each other's fairies fly around. Home shows "🧚 Join … in the Fairy Garden".
