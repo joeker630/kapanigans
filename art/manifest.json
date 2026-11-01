@@ -445,10 +445,10 @@
   "w": 512,
   "h": 512,
   "prompt": "put a big soft ribbon bow on top of her head, pure white and very pale silver",
-  "model": "klein",
+  "model": "hand-built",
   "cutout": true,
   "made": "2026-11-01",
-  "note": "repaired Nov 1 in the game repo: kept only the two loops and knot (the cutout had lost the right loop and the tails were ragged)"
+  "note": "replaced Nov 1 in the game repo: hand-built bow (two loops, knot, short tails) drawn as white watercolor-style vector art and rendered at 2048, sitting on top of the head; the generated cutout couldn't be repaired cleanly"
  },
  "fairy/crown_flowers": {
   "file": "art/fairy/crown_flowers.webp",

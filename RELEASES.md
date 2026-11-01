@@ -4,6 +4,17 @@ Newest first. Each release has kid-friendly notes (shown to everyone in the game
 
 ---
 
+## 1.29: A brand-new bow 🎀
+**November 1, 2026**
+
+### For everyone
+- 🎀 **New Big bow:** a smooth, neat bow that sits right on top of your fairy's head, in any color.
+
+### For grown-ups
+- `crown_bow` replaced with a hand-built bow (white, tinted in the game like the other parts); the generated cutout was too patchy to repair. Noted in the art status doc so the art chat can make a painted one later if wanted.
+
+---
+
 ## 1.28: Prettier bows and tees 🎀
 **November 1, 2026**
 
