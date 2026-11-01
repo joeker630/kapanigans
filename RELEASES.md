@@ -4,6 +4,19 @@ Newest first. Each release has kid-friendly notes (shown to everyone in the game
 
 ---
 
+## 1.28: Prettier bows and tees 🎀
+**November 1, 2026**
+
+### For everyone
+- 🎀 **Big bow fixed:** the bow is now a neat bow on top of your fairy's head.
+- 👕 **T-shirt and butterfly wings fixed:** no more missing bits.
+- 🙂 **Eyes look right** on every skin color.
+
+### For grown-ups
+- Repaired three generated art files: `crown_bow` (now just the two loops and knot), `top_tee` (filled a notch at the hem) and `wings_butterfly` (right pair mirrored from the intact left pair). Fixed a skin-recolor bug that left a light box around the eyes on darker skin tones. Fairy art URLs now carry the game version so fixed files replace cached ones.
+
+---
+
 ## 1.27: Boy fairies coming soon 👦
 **November 1, 2026**
 

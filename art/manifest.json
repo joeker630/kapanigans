@@ -448,7 +448,7 @@
   "model": "klein",
   "cutout": true,
   "made": "2026-11-01",
-  "note": "cutout repaired Nov 1: gaps filled and the intact left half mirrored to the right (the original cut lost most of the right loop and tails)"
+  "note": "repaired Nov 1 in the game repo: kept only the two loops and knot (the cutout had lost the right loop and the tails were ragged)"
  },
  "fairy/crown_flowers": {
   "file": "art/fairy/crown_flowers.webp",
@@ -826,7 +826,8 @@
   "prompt": "dress her in a simple short-sleeved t-shirt, all in pure white and very pale silver fabric with soft grey watercolor shading, covering the slip",
   "model": "klein",
   "cutout": true,
-  "made": "2026-11-01"
+  "made": "2026-11-01",
+  "note": "repaired Nov 1 in the game repo: filled a notch at the lower right hem"
  },
  "fairy/top_tutu": {
   "file": "art/fairy/top_tutu.webp",
@@ -853,7 +854,8 @@
   "prompt": "add gauzy see-through large rounded butterfly wings with two lobes each side behind her back, pure white and very pale silver, with fine grey veins and a faint pearly shimmer, attached at her shoulder blades and spreading out to both sides symmetrically, both wings fully visible",
   "model": "klein",
   "cutout": true,
-  "made": "2026-11-01"
+  "made": "2026-11-01",
+  "note": "repaired Nov 1 in the game repo: right pair mirrored from the intact left pair (uneven lower right lobe)"
  },
  "fairy/wings_dragonfly": {
   "file": "art/fairy/wings_dragonfly.webp",

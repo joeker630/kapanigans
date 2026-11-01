@@ -1948,7 +1948,7 @@ addEventListener("resize",()=>requestAnimationFrame(fitHelp));
    "## 1.0: Title" starts a release; "### For everyone" / "### For grown-ups" / any other "###" section follow.
    Grown-up sections ("For grown-ups", "How long it took…") are hidden from the kids.
    Bump APP_VERSION together with a new RELEASES.md entry. */
-const APP_VERSION="1.27";
+const APP_VERSION="1.28";
 const WN={rel:null,loading:null};
 function wnGrownOnly(h){return /grown/i.test(h)}
 function wnParse(md){
@@ -11175,7 +11175,7 @@ function faLoadList(have){
   for(const n of [...FA_FAIRY,...FA_FLOWER,...FA_FX,...FA_LATER]){ if(!have(n)) continue;
     const im=new Image(); im.decoding="async";
     im.onload=()=>{FAIRYART.ok[n]=true;faChanged()}; im.onerror=()=>{};
-    im.src=`art/fairy/${n}.webp`; FAIRYART.imgs[n]=im;
+    im.src=`art/fairy/${n}.webp?v=${APP_VERSION}`; FAIRYART.imgs[n]=im; // version in the URL so fixed art isn't stuck in the iPad's cache
   }
 }
 const faHas=(...names)=>names.every(n=>FAIRYART.ok[n]);
@@ -11211,7 +11211,8 @@ function faBase(skin,eye){
   const d=g.getImageData(0,0,512,512),p=d.data,S=hex2rgb(FY.skins[skin]),M=[239,217,196],E=hex2rgb(FY.eyes[eye][0]);
   // the whole base is skin except the eyes (the slip underneath is always covered by clothes): scale each channel
   for(let y=0;y<512;y++) for(let x=0;x<512;x++){ const o=(y*512+x)*4; if(p[o+3]<10) continue;
-    if(FA_EYES.some(([ex,ey])=>Math.abs(x-ex)<8&&Math.abs(y-ey)<6)) continue;
+    if(FA_EYES.some(([ex,ey])=>Math.abs(x-ex)<8&&Math.abs(y-ey)<6)){ // near the eyes: leave the whites, iris and pupil alone, recolor the skin
+      const r=p[o],gg=p[o+1],b=p[o+2]; if(Math.max(r,gg,b)-Math.min(r,gg,b)<28||r<150) continue}
     p[o]=Math.min(255,S[0]*p[o]/M[0]);p[o+1]=Math.min(255,S[1]*p[o+1]/M[1]);p[o+2]=Math.min(255,S[2]*p[o+2]/M[2])}
   for(const [ex,ey] of FA_EYES) for(let y=ey-5;y<=ey+5;y++) for(let x=ex-5;x<=ex+5;x++){
     const dd=Math.hypot(x-ex,y-ey); if(dd>4.4||dd<1.4) continue; const o=(y*512+x)*4;
