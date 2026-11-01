@@ -1918,7 +1918,7 @@ addEventListener("resize",()=>requestAnimationFrame(fitHelp));
    "## 1.0: Title" starts a release; "### For everyone" / "### For grown-ups" / any other "###" section follow.
    Grown-up sections ("For grown-ups", "How long it took…") are hidden from the kids.
    Bump APP_VERSION together with a new RELEASES.md entry. */
-const APP_VERSION="1.24";
+const APP_VERSION="1.25";
 const WN={rel:null,loading:null};
 function wnGrownOnly(h){return /grown/i.test(h)}
 function wnParse(md){
@@ -8184,8 +8184,8 @@ function bjDeck(){const d=[];for(const s of ["♠","♥","♦","♣"])for(const 
 function bjTotal(h){let t=0,a=0;for(const c of h){if(c.r==="A"){a++;t+=11}else t+=/[JQK]/.test(c.r)?10:+c.r}while(t>21&&a){t-=10;a--}return t}
 const bjCard=(c,down)=>down?`<div class="bjc down"></div>`:`<div class="bjc${c.s==="♥"||c.s==="♦"?" red":""}"><b>${c.r}</b><span>${c.s}</span></div>`;
 TASKS.blackjack=api=>{
-  const NEED=2; let me_=0, dl=0, deck=bjDeck(), P=[], D=[], phase="", dbl=false;
-  api.ask("Blackjack: win 2 hands before the dealer does");
+  const NEED=api.ctx.quick?1:2; let me_=0, dl=0, deck=bjDeck(), P=[], D=[], phase="", dbl=false; // quick (Snake Race respawn): one hand
+  api.ask(NEED===1?"Blackjack: win one hand against the dealer":"Blackjack: win 2 hands before the dealer does");
   const stat=()=>adStatus(api,`You <b>${me_}</b> · Dealer <b>${dl}</b> <span class="adsm">first to ${NEED} · dealer stands on 17 · double down counts twice</span>`);stat();
   const table=el("div","bj"), dEl=el("div","bjh"), pEl=el("div","bjh"), msg=el("div","bjmsg"), btns=el("div","bjbtns");
   table.append(el("div","bjl","Dealer"),dEl,msg,pEl,el("div","bjl","You"),btns); api.area.append(table);
@@ -8206,6 +8206,7 @@ TASKS.blackjack=api=>{
     if(r==="win"){me_+=n;blip(880,.15,"triangle")}else if(r==="lose"){dl+=n;blip(200,.2,"sawtooth",.08)}
     msg.innerHTML=`<b>${r==="win"?"You win the hand":r==="lose"?"Dealer wins the hand":"Push"}</b>${dbl&&r!=="push"?" (doubled)":""} · ${esc(why)}`;stat();
     if(me_>=NEED){btns.replaceChildren();return api.win(1100)}
+    if(api.ctx.quick&&r==="push"){btns.replaceChildren(B("Deal again",deal));return}
     if(dl>=NEED){btns.replaceChildren();return setTimeout(()=>api.lose(`The dealer won ${dl} hands to ${me_}.`),1100)}
     btns.replaceChildren(B("Next hand",deal))}
   adKeys(api,e=>{const k=e.key.toLowerCase();if(phase==="play"&&k==="h")hit();else if(phase==="play"&&k==="s")stand();else if(phase==="done"&&(k==="enter"||k===" "))deal();else return false});
@@ -8214,10 +8215,10 @@ TASKS.blackjack=api=>{
 
 /* ---- 4. Minesweeper: 9×9 with 10 mines; tap a mine and you lose ---- */
 TASKS.mines=api=>{
-  const N=6, M=5; let mines=null, open=new Set(), flags=new Set(), flagMode=false;
-  api.ask("Minesweeper: open every safe square (5 mines)");
+  const N=api.ctx.quick?4:6, M=api.ctx.quick?2:5; let mines=null, open=new Set(), flags=new Set(), flagMode=false; // quick (Snake Race respawn): 4×4 with 2
+  api.ask(`Minesweeper: open every safe square (${M} mines)`);
   const stat=()=>adStatus(api,`💣 ${M-flags.size} left <span class="adsm">numbers count the mines touching that square</span>`);stat();
-  const grid=el("div","mns"), tools=el("div","mnt"); api.area.append(grid,tools);
+  const grid=el("div","mns"), tools=el("div","mnt"); grid.style.gridTemplateColumns=grid.style.gridTemplateRows=`repeat(${N},1fr)`; api.area.append(grid,tools);
   const fb=el("button","ghost","🚩 Flag mode: off");fb.onclick=()=>{flagMode=!flagMode;fb.textContent=`🚩 Flag mode: ${flagMode?"on":"off"}`;fb.classList.toggle("on",flagMode)};
   tools.append(fb,el("span","adsm","or long-press to flag"));
   const nb=i=>{const r=Math.floor(i/N),c=i%N,o=[];for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++){if(!dr&&!dc)continue;const rr=r+dr,cc=c+dc;if(rr>=0&&rr<N&&cc>=0&&cc<N)o.push(rr*N+cc)}return o};
@@ -9267,7 +9268,7 @@ function snRespawnPuzzle(){
   if(tk||!SNK.e||SNK.over) return; $("#snCrash").hidden=true;
   const L=snMyLvl(), grown=L==="grown";
   openTask({type:pickType(grown?SN_GROWN_PUZZLES:SN_KID_PUZZLES),lvl:L,chore:"snake",title:"🐍 Solve it to get back in!",
-    ctx:{item:pickOne([{em:"🍎",one:"apple",many:"apples"},{em:"🥕",one:"carrot",many:"carrots"},{em:"🍓",one:"strawberry",many:"strawberries"}])},
+    ctx:{quick:true,item:pickOne([{em:"🍎",one:"apple",many:"apples"},{em:"🥕",one:"carrot",many:"carrots"},{em:"🍓",one:"strawberry",many:"strawberries"}])},
     fast:true,onWin:()=>{SNK.losses=0;snRespawn()},onLose:()=>{if(!SNK.e||SNK.over)return;toast("Back in you go!");snRespawn()},onQuit:()=>{if(SNK.e&&!SNK.over)$("#snCrash").hidden=false}});
 }
 function snSpawnSpot(i){ // an open spot away from everyone

@@ -4,6 +4,14 @@ Newest first. Each release has kid-friendly notes (shown to everyone in the game
 
 ---
 
+## 1.25: Faster back into Snake Race 🐍
+**November 1, 2026**
+
+### For grown-ups
+- ⏱️ **Quicker Snake Race respawns:** after a crash, grown-ups play one hand of blackjack (a tie deals again) or a small 4×4 minesweeper with 2 mines, then they're back in, win or lose. The farm's grown-up games are unchanged.
+
+---
+
 ## 1.24: Rainbows come faster 🌈
 **November 1, 2026**
 
