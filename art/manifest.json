@@ -447,7 +447,8 @@
   "prompt": "put a big soft ribbon bow on top of her head, pure white and very pale silver",
   "model": "klein",
   "cutout": true,
-  "made": "2026-11-01"
+  "made": "2026-11-01",
+  "note": "cutout repaired Nov 1: gaps filled and the intact left half mirrored to the right (the original cut lost most of the right loop and tails)"
  },
  "fairy/crown_flowers": {
   "file": "art/fairy/crown_flowers.webp",
