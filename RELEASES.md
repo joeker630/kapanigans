@@ -4,6 +4,20 @@ Newest first. Each release has kid-friendly notes (shown to everyone in the game
 
 ---
 
+## 1.26: Painted fairies 🎨
+**November 1, 2026**
+
+### For everyone
+- 🧚 **Painted fairies:** your fairy is now a real storybook painting, with see-through wings that still flap. Every hair, dress, shoe and crown choice works, in every color.
+- 🌸 **Painted flowers:** the buds, blooms and the Rainbow Flower are painted too.
+- ✨ **Painted sparkles, butterflies and clouds** float around the garden.
+
+### For grown-ups
+- Fairy Garden now uses the generated art in `art/fairy/` (Batches A, B and D). Each picture falls back to the code-drawn version until every file it needs has loaded, and the game only asks for files listed in `art/manifest.json`, so the garden backgrounds, props and finale rainbow (Batch C, due Nov 2) switch on by themselves when they land.
+- Fairy layers are stacked and tinted on the device (skin tone, eye color and clothing colors), then cached.
+
+---
+
 ## 1.25: Faster back into Snake Race 🐍
 **November 1, 2026**
 

@@ -1423,6 +1423,18 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
 }
 
 
+/* generated art */
+.fgspimg{width:1em;height:1em;object-fit:contain}
+.fgheartimg{width:1.15em;height:1.15em;object-fit:contain;vertical-align:middle}
+.fgbfly img{position:absolute;left:0;top:0;width:1.6em;height:1.6em;object-fit:contain}
+.fgbfly:has(img){width:1.6em;height:1.6em}
+.fgbfly .bo{animation:fgfo .3s steps(1) infinite}.fgbfly .bc{animation:fgfc .3s steps(1) infinite}
+@keyframes fgfo{0%{opacity:1}50%{opacity:0}}@keyframes fgfc{0%{opacity:0}50%{opacity:1}}
+#fgField.faclouds .fgcloud{background:url(art/fairy/fx_cloud1.webp) center/contain no-repeat;filter:none;opacity:.9;border-radius:0;width:calc(var(--u)*20);height:calc(var(--u)*10)}
+#fgField.faclouds .fgcloud.c2,#fgField.faclouds .fgcloud.c3{background-image:url(art/fairy/fx_cloud2.webp)}
+#fgField.faclouds .fgcloud::before,#fgField.faclouds .fgcloud::after{display:none}
+#fgRain .rbimg{opacity:0;animation:fgfade 1.8s ease-out forwards}#fgRain .rbimg.now{animation:none;opacity:1}
+.fyart image{image-rendering:auto}
 /* the Rainbow Flower goal label */
 .fgfl .fggoal{position:absolute;left:50%;top:-6%;transform:translateX(-50%);white-space:nowrap;background:rgba(251,244,228,.95);border:1.5px solid #C9A45C;border-radius:999px;padding:3px 12px;font-family:"IM Fell English",Georgia,serif;font-style:italic;font-size:calc(var(--u)*2);color:#5E4636;pointer-events:none;box-shadow:0 0 12px #FFF3C8}
 .fgfl .fggoal:empty{display:none}
@@ -1918,7 +1930,7 @@ addEventListener("resize",()=>requestAnimationFrame(fitHelp));
    "## 1.0: Title" starts a release; "### For everyone" / "### For grown-ups" / any other "###" section follow.
    Grown-up sections ("For grown-ups", "How long it took…") are hidden from the kids.
    Bump APP_VERSION together with a new RELEASES.md entry. */
-const APP_VERSION="1.25";
+const APP_VERSION="1.26";
 const WN={rel:null,loading:null};
 function wnGrownOnly(h){return /grown/i.test(h)}
 function wnParse(md){
@@ -10529,6 +10541,7 @@ function fyWingPaths(shape){ // the right wing (the left one is mirrored); outli
 }
 function fyCrop(mode){return {head:"58 34 84 84",top:"52 98 96 104",bottom:"58 136 84 84",feet:"62 186 76 42",wings:"-14 40 228 190",eyes:"79 80 42 22"}[mode]||"-16 4 232 232"}
 function fairySVG(L,o={}){
+  if(faFairyReady(fyClean(L))) return fairyArtSVG(fyClean(L),o); // generated art when every layer it needs has loaded
   L=fyClean(L); const id="fy"+(fySeq++);
   const ink=`stroke="${FY_INK}" stroke-width="1.15" stroke-opacity=".78" stroke-linejoin="round" stroke-linecap="round"`;
   const S=FY.skins[L.skin], HCr=FY.hairCs[L.hairC], CC=FY.clothCs[L.topC], BC=FY.clothCs[L.bottomC], SC=FY.clothCs[L.shoeC];
@@ -10707,7 +10720,7 @@ function fgCachedLook(){try{return JSON.parse(load("kp.fairy."+me)||"null")}catc
 function openFairy(){
   if(!me) return;
   fgLeave(true); hush();
-  FG.local=fgIsLocal();
+  FG.local=fgIsLocal(); faLoad();
   Object.assign(FG,{on:true,fl:{},cl:{},big:{},done:null,g:null,pos:{},st:{},rain:{},enteredAt:Date.now(),lookSeen:false,celebrated:null,maker:false});
   if(FG.local) FG.mem=FG.mem&&FG.mem.g?FG.mem:{};
   show("fairy"); setPresence({scr:"fairy",act:null});
@@ -10783,6 +10796,7 @@ function fgLayout(){
   $("#fgBg").innerHTML=fgBgSVG(); fgPlaceFlowers(); fgDrawRain(true);
 }
 function fgBgSVG(){
+  {const art=fgBgArtSVG(); if(art) return art;}
   const W=FG.W,H=FG.H,u=FG.u, hz=H*(FG.tall?.4:.56), r=rng(hash(((FG.g&&FG.g.seed)||"garden")+"bg")), I=FY_INK;
   const hill=(y,amp,n,ph)=>{let d=`M0 ${H} L0 ${y}`;for(let i=0;i<=n;i++){const x=i/n*W;d+=` Q${x-W/n/2} ${y-amp*(1+Math.sin(i*1.7+ph))*.9} ${x} ${y}`}return d+` L${W} ${H} Z`};
   let s=`<defs>
@@ -10845,6 +10859,7 @@ function fgHomeSpot(k){const list=[...fgHere()].sort(),i=Math.max(0,list.indexOf
 /* ---- flowers ---- */
 let fgSeq=0;
 function fgFlowerSVG(kind,col,big){
+  if(faFlowerReady(kind)) return fgFlowerArtSVG(kind,col,big);
   const id="fgf"+(fgSeq++), D=shade(col,-.3), Lt=shade(col,.55), I=FY_INK, ink=`stroke="${I}" stroke-width=".9" stroke-opacity=".75" stroke-linejoin="round"`;
   const pf=`url(#${id}p)`, vein=d=>`<path d="${d}" stroke="${D}" stroke-width=".6" fill="none" opacity=".55"/>`;
   let petals="";
@@ -10880,7 +10895,7 @@ function fgBuildFlowers(){
   const kinds=sh(FG_KINDS), pal=sh(FG_COLS);
   for(let i=0;i<FG_N;i++){
     const col=pal[i%pal.length];
-    const d=el("div","fgfl"+(fgIsTeam(i)?" team":"")); d.dataset.i=i; d.innerHTML=fgFlowerSVG(kinds[i%kinds.length],col,false)+(fgIsTeam(i)?`<div class="fgbadge" aria-label="Team flower">💛</div><div class="fgwait"></div>`:"");
+    const d=el("div","fgfl"+(fgIsTeam(i)?" team":"")); d.dataset.i=i; d.innerHTML=fgFlowerSVG(kinds[i%kinds.length],col,false)+(fgIsTeam(i)?`<div class="fgbadge" aria-label="Team flower">${fgHeartHTML()}</div><div class="fgwait"></div>`:"");
     d.addEventListener("click",e=>{e.stopPropagation();fgTapFlower(i)});
     box.append(d); FG.els[i]=d;
   }
@@ -10943,7 +10958,9 @@ function fgDrawRain(instantAll){
   let s="", u=FG.u;
   for(let p=0;p<3;p++){if(!FG.rain[p])continue;const cx=fgPatch(p)[0]*FG.W, by=fgPatch(p)[1]*FG.H-u*13, r=u*17, bw=u*1.15;
     s+=fgArc(cx,by,r,bw,"rb"+(FG.rain[p]==="now"||instantAll?" now":""),0)}
-  if($("#fgField").classList.contains("fgparty")||FG.bigRain){const r=Math.min(FG.W*.47,FG.H*.52);s=fgArc(FG.W/2,FG.H*(FG.tall?.44:.6),r,r*.05,"rb big"+(FG.bigRain==="now"||instantAll?" now":""),0)+s}
+  if(($("#fgField").classList.contains("fgparty")||FG.bigRain)&&FAIRYART.ok.rainbow_arc){const r=Math.min(FG.W*.47,FG.H*.52),cx=FG.W/2,by=FG.H*(FG.tall?.44:.6);
+    s=`<g class="rbimg${FG.bigRain==="now"||instantAll?" now":""}"><image href="art/fairy/rainbow_arc.webp" x="${cx-r*1.05}" y="${by-r*1.05}" width="${r*2.1}" height="${r*1.05}" preserveAspectRatio="none"/></g>`+s}
+  else if($("#fgField").classList.contains("fgparty")||FG.bigRain){const r=Math.min(FG.W*.47,FG.H*.52);s=fgArc(FG.W/2,FG.H*(FG.tall?.44:.6),r,r*.05,"rb big"+(FG.bigRain==="now"||instantAll?" now":""),0)+s}
   sv.innerHTML=`<defs><filter id="fgrb" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="${(u*.25).toFixed(1)}"/></filter><filter id="fgrb2" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="${(u*.6).toFixed(1)}"/></filter></defs>`+s;
   for(const p in FG.rain) if(FG.rain[p]==="new") FG.rain[p]="drawn";
   if(FG.bigRain==="new") FG.bigRain="drawn";
@@ -10958,6 +10975,7 @@ function fgTapField(e){
 }
 function fgTapFlower(i){
   if(tk||FG.maker||!FG.on||!FG.g) return;
+  if(i!=="big"&&!(i>=0&&i<FG_N)) return;
   const big=i==="big";
   if(big){
     const left=FG_N-[...Array(FG_N).keys()].filter(fgBloomed).length; fgWiggle("big"); fgChime();
@@ -11021,13 +11039,16 @@ function fgWiggle(i){const e=FG.els[i];if(!e)return;e.classList.remove("fgwig");
 function fgBanner(t){const b=$("#fgBanner");b.textContent=t;b.hidden=false;b.classList.remove("pop");void b.offsetWidth;b.classList.add("pop");clearTimeout(b._t);b._t=setTimeout(()=>b.hidden=true,2300)}
 function fgSpark(x,y,col,big){
   const fx=$("#fgFx"); if(!fx||fx.childElementCount>120) return;
-  const s=el("span","fgsp",pickOne(["✦","✧","✦","•","·"]));
-  s.style.cssText=`left:${x}px;top:${y}px;color:${col};font-size:${(big?2.6:1.6)*FG.u*(.7+Math.random()*.6)}px;--dx:${(Math.random()-.5)*FG.u*(big?14:4)}px;--dy:${(big?-1:1)*Math.random()*FG.u*(big?12:5)}px`;
+  const art=["fx_sparkle1","fx_sparkle2","fx_sparkle3"].filter(n=>FAIRYART.ok[n]);
+  const s=art.length?el("img","fgsp fgspimg"):el("span","fgsp",pickOne(["✦","✧","✦","•","·"]));
+  if(art.length){s.src=`art/fairy/${pickOne(art)}.webp`;s.alt=""}
+  s.style.cssText=`left:${x}px;top:${y}px;color:${col};font-size:${(big?2.6:1.6)*FG.u*(.7+Math.random()*.6)*(art.length?1.3:1)}px;--dx:${(Math.random()-.5)*FG.u*(big?14:4)}px;--dy:${(big?-1:1)*Math.random()*FG.u*(big?12:5)}px`;
   fx.append(s); setTimeout(()=>s.remove(),1000);
 }
 function fgBurst(p,n,dy=0){for(let k=0;k<n;k++)fgSpark(p.x,p.y+dy,pickOne(FY_GLINT),true)}
 function fgButterfly(p){
-  const fx=$("#fgFx"); if(!fx) return; const b=el("span","fgbfly","🦋");
+  const fx=$("#fgFx"); if(!fx) return; const two=Math.random()<.5?"2":"", art=faHas("fx_butterfly_open"+two,"fx_butterfly_closed"+two);
+  const b=el("span","fgbfly",art?`<img class="bo" src="art/fairy/fx_butterfly_open${two}.webp" alt=""><img class="bc" src="art/fairy/fx_butterfly_closed${two}.webp" alt="">`:"🦋");
   b.style.cssText=`left:${p.x}px;top:${p.y-FG.u*18}px;font-size:${FG.u*3.4}px;--tx:${(Math.random()-.5)*FG.u*50}px;--ty:${-FG.u*(20+Math.random()*20)}px`;
   fx.append(b); setTimeout(()=>b.remove(),4200);
 }
@@ -11100,6 +11121,160 @@ function fgFrame(now){
   }
 }
 
+
+
+/* ---- generated fairy art (art/fairy/, see the project doc claude/fairygardenartspec.md) ----
+   Every file is checked on its own: a picture is used only when all the files it needs have loaded,
+   otherwise the code-drawn SVG is used (fairySVG, fgFlowerSVG, fgBgSVG).
+   Fairy layers are 512×512, full frame, aligned; they map exactly onto the SVG viewBox (-16 4 232 232).
+   White ("tint") layers are recolored by multiply, like the avatar parts. */
+const FA_FAIRY=["base","wand","crown_flowers","crown_tiara","crown_bow","crown_antennae",
+  ...["butterfly","dragonfly","petal","leaf","heart","moth"].map(w=>"wings_"+w),
+  ...["waves","pigtails","braid","pixie","puff","pony","bob","buns"].map(h=>"hair_"+h),
+  ...["waves","pigtails","braid","puff","pony","bob","buns"].map(h=>"hairback_"+h),
+  ...["petal","tutu","gown","tee","puff","tank"].map(t=>"top_"+t),
+  ...["skirt","leggings","pants","shorts"].map(b=>"bottom_"+b),
+  ...["slippers","boots","sneakers","sandals"].map(s=>"shoes_"+s)];
+const FA_FLOWER=["flower_stem",...["rose","bell","carnation","daisy","poppy"].flatMap(k=>["bud_"+k,"bloom_"+k]),"rainbow_bud","rainbow_petal","rainbow_center"];
+// fx_sparkle4 and fx_cloud3 are being redone; left out until then
+const FA_FX=["fx_sparkle1","fx_sparkle2","fx_sparkle3","fx_butterfly_open","fx_butterfly_closed","fx_butterfly_open2","fx_butterfly_closed2","fx_heart","fx_cloud1","fx_cloud2"];
+// Batch C and the rainbow arc aren't made yet; when they land they're picked up automatically
+const FA_LATER=["garden_wide","garden_tall","prop_stump","prop_toadstool","prop_toadstool2","prop_pond","rainbow_arc"];
+const FAIRYART={imgs:{},ok:{},started:false,tint:new Map(),urls:new Map(),skin:{}};
+const FA_WING_PIVOT={l:[247,215],r:[265,215]};  // measured on the art (px in the 512 frame)
+const FA_EYES=[[238,174],[270,174]];
+const faU=(px,py)=>[-16+px*232/512,4+py*232/512]; // 512 frame → SVG units
+function faLoad(){
+  if(FAIRYART.started) return; FAIRYART.started=true;
+  // only ask for files the art manifest lists (no 404s for art that isn't made yet)
+  fetch("art/manifest.json?d="+dayKey()).then(r=>r.json()).then(m=>faLoadList(n=>!!m["fairy/"+n])).catch(()=>faLoadList(n=>!FA_LATER.includes(n)));
+}
+function faLoadList(have){
+  for(const n of [...FA_FAIRY,...FA_FLOWER,...FA_FX,...FA_LATER]){ if(!have(n)) continue;
+    const im=new Image(); im.decoding="async";
+    im.onload=()=>{FAIRYART.ok[n]=true;faChanged()}; im.onerror=()=>{};
+    im.src=`art/fairy/${n}.webp`; FAIRYART.imgs[n]=im;
+  }
+}
+const faHas=(...names)=>names.every(n=>FAIRYART.ok[n]);
+let faT=0;
+function faChanged(){ // (the flower frame size comes from flower_stem, so flowers redraw once it's in) // new art arrived: redraw whatever is on screen (batched)
+  clearTimeout(faT); faT=setTimeout(()=>{
+    FAIRYART.urls.clear();
+    const f=$("#fgField"); if(f) f.classList.toggle("faclouds",faHas("fx_cloud1","fx_cloud2"));
+    if(screen!=="fairy"||!FG.on) return;
+    for(const k in FG.fy) FG.fy[k].sig=""; fgSyncFairies();
+    if(FG.g){FG.st={};fgBuildFlowers();fgState()}
+    if(FAIRYART.ok.garden_wide||FAIRYART.ok.garden_tall) fgLayout();
+    if(FG.maker) fgMakerRender();
+    for(const b of document.querySelectorAll(".fgbadge")) b.innerHTML=fgHeartHTML();
+  },200);
+}
+function faCanvas(w,h){const c=document.createElement("canvas");c.width=w;c.height=h||w;return c}
+function faGrad(g,w,h,colors,vertical){const gr=vertical?g.createLinearGradient(0,0,0,h):g.createLinearGradient(0,0,w,0);colors.forEach((c,i)=>gr.addColorStop(i/(colors.length-1),c));return gr}
+// a white layer recolored by multiply (rainbow/crystal = a gradient instead of one color)
+function faTinted(name,color,w,h,vertical){
+  const key=name+"|"+color+"|"+w+"x"+(h||w); let c=FAIRYART.tint.get(key); if(c) return c;
+  const im=FAIRYART.imgs[name]; c=faCanvas(w,h); const g=c.getContext("2d"); h=h||w;
+  g.drawImage(im,0,0,w,h);
+  if(color){g.globalCompositeOperation="multiply";
+    g.fillStyle=color==="rainbow"?faGrad(g,w,h,FY_RAINBOW,vertical):color==="crystal"?faGrad(g,w,h,["#FFFFFF","#E4F1FA","#F4E6F7","#E2F7F0","#FFFFFF"],vertical):color;
+    g.fillRect(0,0,w,h); g.globalCompositeOperation="destination-in"; g.drawImage(im,0,0,w,h)}
+  if(FAIRYART.tint.size>400) FAIRYART.tint.clear(); FAIRYART.tint.set(key,c); return c;
+}
+// the bald base with this skin tone and eye color (done once per combination, at full size)
+function faBase(skin,eye){
+  const key=skin+"|"+eye; if(FAIRYART.skin[key]) return FAIRYART.skin[key];
+  const c=faCanvas(512),g=c.getContext("2d"); g.drawImage(FAIRYART.imgs.base,0,0,512,512);
+  const d=g.getImageData(0,0,512,512),p=d.data,S=hex2rgb(FY.skins[skin]),M=[239,217,196],E=hex2rgb(FY.eyes[eye][0]);
+  // the whole base is skin except the eyes (the slip underneath is always covered by clothes): scale each channel
+  for(let y=0;y<512;y++) for(let x=0;x<512;x++){ const o=(y*512+x)*4; if(p[o+3]<10) continue;
+    if(FA_EYES.some(([ex,ey])=>Math.abs(x-ex)<8&&Math.abs(y-ey)<6)) continue;
+    p[o]=Math.min(255,S[0]*p[o]/M[0]);p[o+1]=Math.min(255,S[1]*p[o+1]/M[1]);p[o+2]=Math.min(255,S[2]*p[o+2]/M[2])}
+  for(const [ex,ey] of FA_EYES) for(let y=ey-5;y<=ey+5;y++) for(let x=ex-5;x<=ex+5;x++){
+    const dd=Math.hypot(x-ex,y-ey); if(dd>4.4||dd<1.4) continue; const o=(y*512+x)*4;
+    const r=p[o],gg=p[o+1],b=p[o+2],mx=Math.max(r,gg,b),mn=Math.min(r,gg,b),lum=(r+gg+b)/3;
+    if(lum<95||lum>225||mx-mn>60) continue; // iris only: not the pupil, the white or the skin
+    const f=lum/190; p[o]=Math.min(255,E[0]*f);p[o+1]=Math.min(255,E[1]*f);p[o+2]=Math.min(255,E[2]*f)}
+  g.putImageData(d,0,0); return FAIRYART.skin[key]=c;
+}
+function faFairyNames(L){
+  const n=["base","wings_"+L.wing,"bottom_"+L.bottom,"top_"+L.top,"hair_"+L.hair];
+  if(L.hair!=="pixie") n.push("hairback_"+L.hair); if(L.shoes!=="bare") n.push("shoes_"+L.shoes);
+  if(L.crown!=="none") n.push("crown_"+L.crown); if(L.wand) n.push("wand"); return n;
+}
+const faFairyReady=L=>faHas(...faFairyNames(L));
+function faURL(key,make){let u=FAIRYART.urls.get(key);if(!u){u=make().toDataURL("image/png");if(FAIRYART.urls.size>200)FAIRYART.urls.clear();FAIRYART.urls.set(key,u)}return u}
+function faBodyURL(L,res){
+  const key="body|"+res+"|"+[L.skin,L.eye,L.hair,L.hairC,L.top,L.topC,L.bottom,L.bottomC,L.shoes,L.shoeC,L.crown,L.wand].join(",");
+  return faURL(key,()=>{const c=faCanvas(res),g=c.getContext("2d"),HC=FY.hairCs[L.hairC],CC=FY.clothCs[L.topC];
+    const put=(n,col)=>g.drawImage(col?faTinted(n,col,res,res,true):FAIRYART.imgs[n],0,0,res,res);
+    if(L.hair!=="pixie") put("hairback_"+L.hair,HC);
+    g.drawImage(faBase(L.skin,L.eye),0,0,res,res);
+    put("bottom_"+L.bottom,FY.clothCs[L.bottomC]); put("top_"+L.top,CC);
+    if(L.shoes!=="bare") put("shoes_"+L.shoes,FY.clothCs[L.shoeC]);
+    put("hair_"+L.hair,HC);
+    if(L.crown!=="none") put("crown_"+L.crown,L.crown==="bow"?CC:null);
+    if(L.wand) put("wand",null);
+    return c});
+}
+function faWingURL(L,side,res){ // one half of the wing layer (left half or right half of the frame)
+  return faURL(`wing|${res}|${L.wing}|${L.wingC}|${side}`,()=>{
+    const full=faTinted("wings_"+L.wing,FY.wingCs[L.wingC],res,res,false), c=faCanvas(res/2,res);
+    c.getContext("2d").drawImage(full,side==="l"?0:res/2,0,res/2,res,0,0,res/2,res); return c});
+}
+function fairyArtSVG(L,o){
+  const id="fa"+(fySeq++), res=o.res||(o.crop||o.still?256:384), ws=(FY.wsizes.find(w=>w[0]===L.wsize)||FY.wsizes[1])[2];
+  const [lx,ly]=faU(...FA_WING_PIVOT.l), [rx,ry]=faU(...FA_WING_PIVOT.r);
+  const sc=(x,y)=>`translate(${x.toFixed(1)} ${y.toFixed(1)}) scale(${ws}) translate(${(-x).toFixed(1)} ${(-y).toFixed(1)})`;
+  let s="";
+  if(o.aura) s+=`<defs><radialGradient id="${id}a"><stop offset="0" stop-color="#FFF4D2" stop-opacity=".8"/><stop offset=".55" stop-color="#FFE9B8" stop-opacity=".25"/><stop offset="1" stop-color="#FFF" stop-opacity="0"/></radialGradient></defs><circle cx="100" cy="128" r="98" fill="url(#${id}a)"/>`;
+  const spk=side=>L.sparkle?[[side*40,-10],[side*58,12],[side*30,60]].map(([dx,dy],i)=>`<circle class="fsp" style="animation-delay:${i*.35}s" cx="${100+dx}" cy="${100+dy}" r="1.4" fill="#FFF6D6"/>`).join(""):"";
+  s+=`<g class="fwl" style="transform-origin:${lx.toFixed(1)}px ${ly.toFixed(1)}px"><g transform="${sc(lx,ly)}"><image href="${faWingURL(L,"l",res)}" x="-16" y="4" width="116" height="232" preserveAspectRatio="none"/>${spk(-1)}</g></g>`;
+  s+=`<g class="fwr" style="transform-origin:${rx.toFixed(1)}px ${ry.toFixed(1)}px"><g transform="${sc(rx,ry)}"><image href="${faWingURL(L,"r",res)}" x="100" y="4" width="116" height="232" preserveAspectRatio="none"/>${spk(1)}</g></g>`;
+  s+=`<g class="fbody"><image href="${faBodyURL(L,res)}" x="-16" y="4" width="232" height="232"/></g>`;
+  const vb=o.crop?fyCrop(o.crop):"-16 4 232 232";
+  return `<svg class="fysvg fyart" xmlns="http://www.w3.org/2000/svg" viewBox="${vb}"${o.size?` width="${o.size}" height="${o.size}"`:""}>${s}</svg>`;
+}
+// flowers: 512×800 frames → the flower's 100×160 viewBox (stem base at the bottom, head at about 50,58)
+// stem base at the bottom center; the head sits 360/1024 down a 640×1024 frame (280/800 on the older 512×800 frame)
+function faFrame(){const im=FAIRYART.imgs.flower_stem,w=im&&im.naturalWidth||640,h=im&&im.naturalHeight||1024,fh=h*100/w,fy=160-fh;return {fh,fy,head:[50,fy+(h>=1000?360:280)*100/w]}}
+function faFlowerReady(kind){return kind==="rainbow"?faHas("flower_stem","rainbow_bud","rainbow_petal","rainbow_center"):faHas("flower_stem","bud_"+kind,"bloom_"+kind)}
+function faTintURL(name,col,w,h){return faURL(`t|${name}|${col}|${w}`,()=>faTinted(name,col,w,h,true))}
+function fgFlowerArtSVG(kind,col,big){
+  const F=faFrame(), FA_FH=F.fh, FA_FY=F.fy, [hx,hy]=F.head, id="fgf"+(fgSeq++), img=(href,x,y,w,h,extra="")=>`<image href="${href}" x="${x}" y="${y}" width="${w}" height="${h}" preserveAspectRatio="none"${extra}/>`;
+  const stem=img("art/fairy/flower_stem.webp",0,FA_FY,100,FA_FH);
+  let bud,petals;
+  if(kind==="rainbow"){
+    bud=img("art/fairy/rainbow_bud.webp",hx-24,hy-30,48,48);
+    const pw=34; // petal base on the flower's center, pointing up, 6 copies 60° apart
+    petals=FY_RAINBOW.slice(0,6).map((c,i)=>`<g class="rp rp${Math.floor(i/2)}"><g transform="rotate(${i*60} ${hx} ${hy})">${img(faTintURL("rainbow_petal",c,128,128),hx-pw/2,hy-pw,pw,pw)}</g></g>`).join("")+
+      img("art/fairy/rainbow_center.webp",hx-12,hy-12,24,24)+`<circle class="fgcore" cx="${hx}" cy="${hy}" r="16" fill="#FFF6D8" opacity="0"/>`;
+  } else {
+    bud=img(faTintURL("bud_"+kind,col,320,512),0,FA_FY,100,FA_FH);
+    petals=img(faTintURL("bloom_"+kind,col,320,512),0,FA_FY,100,FA_FH);
+  }
+  const o=`style="transform-origin:${hx}px ${hy.toFixed(1)}px"`;
+  return `<svg viewBox="0 0 100 160"><defs><radialGradient id="${id}g"><stop offset="0" stop-color="#FFF6D8" stop-opacity=".95"/><stop offset="1" stop-color="#FFF6D8" stop-opacity="0"/></radialGradient></defs>
+    <g class="sway">${stem}
+    <circle class="fgglow" cx="${hx}" cy="${hy.toFixed(1)}" r="30" fill="url(#${id}g)"/>
+    <circle class="ring" cx="${hx}" cy="${hy.toFixed(1)}" r="27" fill="none" stroke-width="3" stroke-dasharray="5 6" stroke-linecap="round"/>
+    <g class="bud" ${o}>${bud}</g><g class="petals" ${o}>${petals}</g></g></svg>`;
+}
+function fgHeartHTML(){return FAIRYART.ok.fx_heart?`<img src="art/fairy/fx_heart.webp" alt="" class="fgheartimg">`:"💛"}
+// painted garden background (Batch C), when it exists; the SVG one otherwise
+function fgBgArtSVG(){
+  const W=FG.W,H=FG.H,u=FG.u,hz=H*(FG.tall?.4:.56),bg=FG.tall?"garden_tall":"garden_wide";
+  if(!FAIRYART.ok[bg]) return null;
+  const r=rng(hash(((FG.g&&FG.g.seed)||"garden")+"bg"));
+  let s=`<image href="art/fairy/${bg}.webp" x="0" y="0" width="${W}" height="${H}" preserveAspectRatio="xMidYMid slice"/>`;
+  const prop=(n,cx,by,w,h)=>FAIRYART.ok[n]?`<image href="art/fairy/${n}.webp" x="${cx-w/2}" y="${by-h}" width="${w}" height="${h}"/>`:"";
+  s+=prop("prop_pond",FG.tall?W*.86:W*.09,hz+u*8,u*18,u*7);
+  s+=prop("prop_toadstool",W*.35,hz+u*13,u*6,u*6)+prop("prop_toadstool2",W*.66,hz+u*12,u*5,u*5);
+  s+=prop("prop_stump",FG.tall?W*.12:W*.93,hz+u*(FG.tall?5:7),u*(FG.tall?14:20),u*(FG.tall?14:20));
+  for(let i=0;i<22;i++){const x=r()*W,y=r()*H*.9,k=u*(.25+r()*.4);s+=`<g class="fgtw" style="animation-delay:${(r()*3).toFixed(2)}s"><circle cx="${x}" cy="${y}" r="${k*2.6}" fill="#FFF6D8" opacity=".25"/><circle cx="${x}" cy="${y}" r="${k}" fill="#FFFDF4"/></g>`}
+  return s;
+}
 
 /* ---- team flowers (two fairies, one shared puzzle) ---- */
 // an open team session for this bud whose host is still in the garden: [sid, session]
@@ -11213,7 +11388,7 @@ function fgDance(list,now){
   const rx=FG.u*8/FG.W, ry=FG.u*4/FG.H;
   list.forEach((F,j)=>{F.dance={cx,cy,rx,ry,t0:now,dur:2800,ph:j*Math.PI*2/list.length};F.inner.classList.add("fast")});
   const p={x:cx*FG.W,y:cy*FG.H}; fgBurst(p,12);
-  const fx=$("#fgFx"); if(fx){const h=el("span","fgheart","💛");h.style.cssText=`left:${p.x}px;top:${p.y}px;font-size:${FG.u*4}px`;fx.append(h);setTimeout(()=>h.remove(),1800)}
+  const fx=$("#fgFx"); if(fx){const h=el("span","fgheart",fgHeartHTML());h.style.cssText=`left:${p.x}px;top:${p.y}px;font-size:${FG.u*4}px`;fx.append(h);setTimeout(()=>h.remove(),1800)}
   if(list.some(F=>F.k===me)){[659,784,988,784,1175].forEach((f,k)=>setTimeout(()=>blip(f,.16,"triangle",.07),k*110));
     const mate=list.filter(F=>F.k!==me).map(F=>fgLookOf(F.k).name).join(" and ");sayLittle(`Fairy dance with ${mate}!`)}
 }
@@ -11232,7 +11407,7 @@ function fgSwatch(c,on,lbl){
   return `<button class="fgsw${on?" on":""}" style="background:${bg}" aria-label="${esc(lbl||c)}"></button>`;
 }
 function fgMakerRender(){
-  const L=FG.edit; $("#fgMkPrev").innerHTML=`<div class="fy">${fairySVG(L,{aura:true})}</div>`;
+  const L=FG.edit; $("#fgMkPrev").innerHTML=`<div class="fy">${fairySVG(L,{aura:true,res:512})}</div>`;
   $("#fgMkName").textContent=L.name;
   $("#fgMkTabs").innerHTML=FG_TABS.map(([k,em,t])=>`<button data-t="${k}" class="${FG.tab===k?"on":""}"><span>${em}</span><small>${t}</small></button>`).join("");
   $("#fgMkTabs").querySelectorAll("button").forEach(b=>b.onclick=()=>{FG.tab=b.dataset.t;blip(700,.08,"triangle",.08);fgMakerRender();sayLittle(FG_TABS.find(t=>t[0]===FG.tab)[2])});
@@ -11280,9 +11455,10 @@ function fgSaveLook(){
   tada(); sayLittle(`Here comes ${L.name}! Tap a flower bud to fly there.`); fgBanner(`🧚 ${L.name} is here!`);
 }
 function fgOnPeers(){if(screen==="fairy"&&FG.on){fgSyncFairies();fgState();fgLeadUI()}}
-if(/[?&]fairylocal\b/.test(location.search))window.__fairy={fgSyncFairies,fgState,CO,fgOnPos,fgToggleLead,fgDance,joinTeam,coopUpd,FG_TEAM,FG,FY,openFairy,fgTapFlower,fgPuzzle,fgBloom,fgNewGarden,fgOpenMaker,fgSaveLook,fairySVG,fyClean,tk:()=>tk,win:finishTask,quit:()=>closeTask(true)}; // testing only
+if(/[?&]fairylocal\b/.test(location.search))window.__fairy={FAIRYART,faFairyReady,fgSyncFairies,fgState,CO,fgOnPos,fgToggleLead,fgDance,joinTeam,coopUpd,FG_TEAM,FG,FY,openFairy,fgTapFlower,fgPuzzle,fgBloom,fgNewGarden,fgOpenMaker,fgSaveLook,fairySVG,fyClean,tk:()=>tk,win:finishTask,quit:()=>closeTask(true)}; // testing only
 
 $("#playFairy").onclick=()=>{sayLittle("Fairy garden!");openFairy()};
+setTimeout(()=>{try{faLoad()}catch(e){}},6000); // fetch the fairy art in the background so the garden opens with it
 })();
 </script>
 </body>
