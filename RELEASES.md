@@ -4,6 +4,17 @@ Newest first. Each release has kid-friendly notes (shown to everyone in the game
 
 ---
 
+## 1.27: Boy fairies coming soon 👦
+**November 1, 2026**
+
+### For everyone
+- 👦 **Boy fairies are on the way!** In the fairy maker you'll see a Boy fairy button marked "Coming soon!".
+
+### For grown-ups
+- The fairy maker shows Girl fairy (selected) and a "Boy fairy – Coming soon!" choice; tapping it only says they're coming. The boy fairy art (11 layers: base, 3 hair, 3 tops, 2 bottoms, boots, acorn hat, reusing the wings and wand) is on the art backlog as release 3 in the project doc `claude/fairygardenartspec.md`.
+
+---
+
 ## 1.26: Painted fairies 🎨
 **November 1, 2026**
 

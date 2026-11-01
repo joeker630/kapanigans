@@ -1290,6 +1290,7 @@ A **co-op** game: everyone makes their own fairy, then the family works together
 - Tall phones get a stacked garden layout; iPads get the wide one.
 
 **Still to do**
+- [ ] Boy fairies (Joe, Nov 1): far fewer options than the girl set. "Coming soon" button live in 1.27; art is release 3 in `claude/fairygardenartspec.md` (11 layers, reusing wings and wand). When it lands: switch the button on, store `kind` in the fairy look, and limit the maker to boy hair/tops/bottoms/boots/acorn hat and dragonfly/leaf/moth wings.
 - [ ] Test on the iPads and the Fire tablet with two players at once
 - [ ] Generated art pass (the art chat holds the image token): storybook-quality fairy parts or garden backgrounds, if the code-drawn ones aren't enough
 
