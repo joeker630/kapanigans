@@ -305,6 +305,51 @@
   "cutout": true,
   "made": "2026-11-01"
  },
+ "fairy/bloom_bell": {
+  "file": "art/fairy/bloom_bell.webp",
+  "w": 512,
+  "h": 800,
+  "prompt": "an open bindweed trumpet flower seen from the front, a wide funnel with soft pleats, pure white and very pale cream petals with soft grey watercolor shading and fine sepia outlines, no stem, no leaves",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/bloom_carnation": {
+  "file": "art/fairy/bloom_carnation.webp",
+  "w": 512,
+  "h": 800,
+  "prompt": "a fully open frilly carnation with ruffled serrated petals, seen from the front, pure white and very pale cream petals with soft grey watercolor shading and fine sepia outlines, no stem, no leaves",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/bloom_daisy": {
+  "file": "art/fairy/bloom_daisy.webp",
+  "w": 512,
+  "h": 800,
+  "prompt": "a fully open daisy with many slim petals and a golden yellow center, seen from the front, pure white and very pale cream petals with soft grey watercolor shading and fine sepia outlines, no stem, no leaves",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/bloom_poppy": {
+  "file": "art/fairy/bloom_poppy.webp",
+  "w": 512,
+  "h": 800,
+  "prompt": "a fully open poppy with four crinkled petals and a dark center, seen from the front, pure white and very pale cream petals with soft grey watercolor shading and fine sepia outlines, no stem, no leaves",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/bloom_rose": {
+  "file": "art/fairy/bloom_rose.webp",
+  "w": 512,
+  "h": 800,
+  "prompt": "a fully open wild rose with five rounded petals and golden stamens, seen from the front, pure white and very pale cream petals with soft grey watercolor shading and fine sepia outlines, no stem, no leaves",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
  "fairy/bottom_leggings": {
   "file": "art/fairy/bottom_leggings.webp",
   "w": 512,
@@ -341,6 +386,51 @@
   "cutout": true,
   "made": "2026-11-01"
  },
+ "fairy/bud_bell": {
+  "file": "art/fairy/bud_bell.webp",
+  "w": 512,
+  "h": 800,
+  "prompt": "a closed twisted bindweed bud with green sepals, pure white and very pale cream petal tips with soft grey watercolor shading and fine sepia outlines, no stem",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/bud_carnation": {
+  "file": "art/fairy/bud_carnation.webp",
+  "w": 512,
+  "h": 800,
+  "prompt": "a closed carnation bud with frilly petal tips peeking out of a green calyx, pure white and very pale cream petal tips with soft grey watercolor shading and fine sepia outlines, no stem",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/bud_daisy": {
+  "file": "art/fairy/bud_daisy.webp",
+  "w": 512,
+  "h": 800,
+  "prompt": "a closed daisy bud with green sepals, pure white and very pale cream petal tips with soft grey watercolor shading and fine sepia outlines, no stem",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/bud_poppy": {
+  "file": "art/fairy/bud_poppy.webp",
+  "w": 512,
+  "h": 800,
+  "prompt": "a closed nodding poppy bud with hairy green sepals, pure white and very pale cream petal tips with soft grey watercolor shading and fine sepia outlines, no stem",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/bud_rose": {
+  "file": "art/fairy/bud_rose.webp",
+  "w": 512,
+  "h": 800,
+  "prompt": "a closed wild rose bud with green sepals, pure white and very pale cream petal tips with soft grey watercolor shading and fine sepia outlines, no stem",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
  "fairy/crown_antennae": {
   "file": "art/fairy/crown_antennae.webp",
   "w": 512,
@@ -373,6 +463,15 @@
   "w": 512,
   "h": 512,
   "prompt": "a small delicate golden fairy tiara with tiny pearls and a little central flower shape, seen from the front",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/flower_stem": {
+  "file": "art/fairy/flower_stem.webp",
+  "w": 512,
+  "h": 800,
+  "prompt": "one thin gently curving green flower stem growing straight up with two small veined green leaves near the bottom, no flower, no bud, botanical painting",
   "model": "klein",
   "cutout": true,
   "made": "2026-11-01"
@@ -508,6 +607,33 @@
   "w": 512,
   "h": 512,
   "prompt": "give her long soft wavy hair falling past her shoulders, pure white and very pale silver hair with soft grey watercolor shading and fine strands",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/rainbow_bud": {
+  "file": "art/fairy/rainbow_bud.webp",
+  "w": 512,
+  "h": 512,
+  "prompt": "one large plump closed magical flower bud with green sepals, petals pure white and very pale cream petals with soft grey watercolor shading and fine sepia outlines, no stem",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/rainbow_center": {
+  "file": "art/fairy/rainbow_center.webp",
+  "w": 256,
+  "h": 256,
+  "prompt": "only the round fuzzy golden center disc of a flower, a dome of tiny golden stamens with a soft warm glow, no petals, no stem",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/rainbow_petal": {
+  "file": "art/fairy/rainbow_petal.webp",
+  "w": 256,
+  "h": 256,
+  "prompt": "one single loose flower petal on its own, a soft rounded teardrop shape, wide at the top and narrow at the base, pointing straight up, pure white and very pale cream petals with soft grey watercolor shading and fine sepia outlines, delicate fine petal veins, no stalk, no stem, not a leaf",
   "model": "klein",
   "cutout": true,
   "made": "2026-11-01"
