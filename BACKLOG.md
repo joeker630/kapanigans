@@ -1264,6 +1264,7 @@ A **co-op** game: everyone makes their own fairy, then the family works together
 - **Extras:** flower crown, tiara, big bow or antennae, and a magic wand. **Name:** 16 fairy names.
 - 🎲 Surprise me. Little players hear each choice read aloud.
 - Original designs (not Tinker Bell or any other movie fairy).
+- Art style (Nov 1): vintage botanical watercolor storybook look, matched to a fairy pop-up book Joe shared: thin sepia linework, natural child proportions, gauzy veined wings, muted petal colors, golden-pink painted meadow with paper grain, toadstools and a fairy door in a tree stump. Style only; no characters or art copied.
 
 **The garden**
 - 9 flower buds in 3 patches; flower types and colors change with each new garden.
