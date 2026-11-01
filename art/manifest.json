@@ -296,6 +296,375 @@
   "cutout": true,
   "made": "2026-10-27"
  },
+ "fairy/base": {
+  "file": "art/fairy/base.webp",
+  "w": 512,
+  "h": 512,
+  "prompt": "a five year old girl fairy with natural child proportions, completely bald with a smooth bare round scalp, small pointed elf ears, rosy cheeks, gentle closed-mouth smile, eyes with very pale white irises, mid peach skin, wearing only a plain simple fitted sleeveless cream slip dress ending above the knees, bare feet, standing facing the viewer, arms relaxed at her sides, full body, no wings, plain solid flat medium grey background, no ground, no shadow",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/bottom_leggings": {
+  "file": "art/fairy/bottom_leggings.webp",
+  "w": 512,
+  "h": 512,
+  "prompt": "give her ankle-length fitted leggings over the bottom of the slip, pure white and very pale silver fabric with soft grey watercolor shading",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/bottom_pants": {
+  "file": "art/fairy/bottom_pants.webp",
+  "w": 512,
+  "h": 512,
+  "prompt": "give her loose ankle-length pants over the bottom of the slip, pure white and very pale silver fabric with soft grey watercolor shading",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/bottom_shorts": {
+  "file": "art/fairy/bottom_shorts.webp",
+  "w": 512,
+  "h": 512,
+  "prompt": "give her short shorts over the bottom of the slip, pure white and very pale silver fabric with soft grey watercolor shading",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/bottom_skirt": {
+  "file": "art/fairy/bottom_skirt.webp",
+  "w": 512,
+  "h": 512,
+  "prompt": "give her a short flared skirt over the bottom of the slip, pure white and very pale silver fabric with soft grey watercolor shading",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/crown_antennae": {
+  "file": "art/fairy/crown_antennae.webp",
+  "w": 512,
+  "h": 512,
+  "prompt": "two thin curling butterfly antennae on a thin golden headband, each ending in a small golden ball, seen from the front, symmetrical",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/crown_bow": {
+  "file": "art/fairy/crown_bow.webp",
+  "w": 512,
+  "h": 512,
+  "prompt": "put a big soft ribbon bow on top of her head, pure white and very pale silver",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/crown_flowers": {
+  "file": "art/fairy/crown_flowers.webp",
+  "w": 512,
+  "h": 512,
+  "prompt": "a flower headband: a gentle curved arc of tiny pink, lavender and buttercup yellow wildflowers with little green leaves, like a garland seen from the front, open underneath, no ring",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/crown_tiara": {
+  "file": "art/fairy/crown_tiara.webp",
+  "w": 512,
+  "h": 512,
+  "prompt": "a small delicate golden fairy tiara with tiny pearls and a little central flower shape, seen from the front",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/hair_bob": {
+  "file": "art/fairy/hair_bob.webp",
+  "w": 512,
+  "h": 512,
+  "prompt": "give her a short chin-length bob with straight bangs, pure white and very pale silver hair with soft grey watercolor shading and fine strands",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/hair_braid": {
+  "file": "art/fairy/hair_braid.webp",
+  "w": 512,
+  "h": 512,
+  "prompt": "give her one long thick braid falling forward over her right shoulder (viewer's left) with soft bangs, pure white and very pale silver hair with soft grey watercolor shading and fine strands",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/hair_buns": {
+  "file": "art/fairy/hair_buns.webp",
+  "w": 512,
+  "h": 512,
+  "prompt": "give her two little round buns on top of her head with a few wispy strands, pure white and very pale silver hair with soft grey watercolor shading and fine strands",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/hair_pigtails": {
+  "file": "art/fairy/hair_pigtails.webp",
+  "w": 512,
+  "h": 512,
+  "prompt": "give her two bouncy curly pigtails tied high at the sides, pure white and very pale silver hair with soft grey watercolor shading and fine strands",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/hair_pixie": {
+  "file": "art/fairy/hair_pixie.webp",
+  "w": 512,
+  "h": 512,
+  "prompt": "give her a very short tousled pixie cut, pure white and very pale silver hair with soft grey watercolor shading and fine strands",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/hair_pony": {
+  "file": "art/fairy/hair_pony.webp",
+  "w": 512,
+  "h": 512,
+  "prompt": "give her a high ponytail with a little swoop of bangs, pure white and very pale silver hair with soft grey watercolor shading and fine strands",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/hair_puff": {
+  "file": "art/fairy/hair_puff.webp",
+  "w": 512,
+  "h": 512,
+  "prompt": "give her one big round fluffy curly puff on top of her head, pure white and very pale silver hair with soft grey watercolor shading and fine strands",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/hair_waves": {
+  "file": "art/fairy/hair_waves.webp",
+  "w": 512,
+  "h": 512,
+  "prompt": "give her long soft wavy hair falling past her shoulders, pure white and very pale silver hair with soft grey watercolor shading and fine strands",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/hairback_bob": {
+  "file": "art/fairy/hairback_bob.webp",
+  "w": 512,
+  "h": 512,
+  "prompt": "give her a short chin-length bob with straight bangs, pure white and very pale silver hair with soft grey watercolor shading and fine strands",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/hairback_braid": {
+  "file": "art/fairy/hairback_braid.webp",
+  "w": 512,
+  "h": 512,
+  "prompt": "give her one long thick braid falling forward over her right shoulder (viewer's left) with soft bangs, pure white and very pale silver hair with soft grey watercolor shading and fine strands",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/hairback_buns": {
+  "file": "art/fairy/hairback_buns.webp",
+  "w": 512,
+  "h": 512,
+  "prompt": "give her two little round buns on top of her head with a few wispy strands, pure white and very pale silver hair with soft grey watercolor shading and fine strands",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/hairback_pigtails": {
+  "file": "art/fairy/hairback_pigtails.webp",
+  "w": 512,
+  "h": 512,
+  "prompt": "give her two bouncy curly pigtails tied high at the sides, pure white and very pale silver hair with soft grey watercolor shading and fine strands",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/hairback_pony": {
+  "file": "art/fairy/hairback_pony.webp",
+  "w": 512,
+  "h": 512,
+  "prompt": "give her a high ponytail with a little swoop of bangs, pure white and very pale silver hair with soft grey watercolor shading and fine strands",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/hairback_puff": {
+  "file": "art/fairy/hairback_puff.webp",
+  "w": 512,
+  "h": 512,
+  "prompt": "give her one big round fluffy curly puff on top of her head, pure white and very pale silver hair with soft grey watercolor shading and fine strands",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/hairback_waves": {
+  "file": "art/fairy/hairback_waves.webp",
+  "w": 512,
+  "h": 512,
+  "prompt": "give her long soft wavy hair falling past her shoulders, pure white and very pale silver hair with soft grey watercolor shading and fine strands",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/shoes_boots": {
+  "file": "art/fairy/shoes_boots.webp",
+  "w": 512,
+  "h": 512,
+  "prompt": "put little ankle boots on her feet, pure white and very pale silver with soft grey shading",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/shoes_sandals": {
+  "file": "art/fairy/shoes_sandals.webp",
+  "w": 512,
+  "h": 512,
+  "prompt": "put strappy sandals on her feet, pure white and very pale silver with soft grey shading",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/shoes_slippers": {
+  "file": "art/fairy/shoes_slippers.webp",
+  "w": 512,
+  "h": 512,
+  "prompt": "put soft ballet slippers on her feet, pure white and very pale silver with soft grey shading",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/shoes_sneakers": {
+  "file": "art/fairy/shoes_sneakers.webp",
+  "w": 512,
+  "h": 512,
+  "prompt": "put little sneakers on her feet, pure white and very pale silver with soft grey shading",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/top_gown": {
+  "file": "art/fairy/top_gown.webp",
+  "w": 512,
+  "h": 512,
+  "prompt": "dress her in a long flowing gown down to her ankles with a petal hem, all in pure white and very pale silver fabric with soft grey watercolor shading, covering the slip",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/top_petal": {
+  "file": "art/fairy/top_petal.webp",
+  "w": 512,
+  "h": 512,
+  "prompt": "dress her in a short dress made of overlapping rose petals with a petal skirt, all in pure white and very pale silver fabric with soft grey watercolor shading, covering the slip",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/top_puff": {
+  "file": "art/fairy/top_puff.webp",
+  "w": 512,
+  "h": 512,
+  "prompt": "dress her in a blouse with puffy short sleeves and a round white collar, all in pure white and very pale silver fabric with soft grey watercolor shading, covering the slip",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/top_tank": {
+  "file": "art/fairy/top_tank.webp",
+  "w": 512,
+  "h": 512,
+  "prompt": "dress her in a simple tank top, all in pure white and very pale silver fabric with soft grey watercolor shading, covering the slip",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/top_tee": {
+  "file": "art/fairy/top_tee.webp",
+  "w": 512,
+  "h": 512,
+  "prompt": "dress her in a simple short-sleeved t-shirt, all in pure white and very pale silver fabric with soft grey watercolor shading, covering the slip",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/top_tutu": {
+  "file": "art/fairy/top_tutu.webp",
+  "w": 512,
+  "h": 512,
+  "prompt": "dress her in a ballet leotard top with a fluffy layered tulle tutu skirt, all in pure white and very pale silver fabric with soft grey watercolor shading, covering the slip",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/wand": {
+  "file": "art/fairy/wand.webp",
+  "w": 512,
+  "h": 512,
+  "prompt": "a slender golden fairy wand held diagonally, handle at the lower left, a small softly glowing golden five-point star at the upper right tip, tiny sparkles",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/wings_butterfly": {
+  "file": "art/fairy/wings_butterfly.webp",
+  "w": 512,
+  "h": 512,
+  "prompt": "add gauzy see-through large rounded butterfly wings with two lobes each side behind her back, pure white and very pale silver, with fine grey veins and a faint pearly shimmer, attached at her shoulder blades and spreading out to both sides symmetrically, both wings fully visible",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/wings_dragonfly": {
+  "file": "art/fairy/wings_dragonfly.webp",
+  "w": 512,
+  "h": 512,
+  "prompt": "add gauzy see-through long slender dragonfly wings, two narrow pairs each side behind her back, pure white and very pale silver, with fine grey veins and a faint pearly shimmer, attached at her shoulder blades and spreading out to both sides symmetrically, both wings fully visible",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/wings_heart": {
+  "file": "art/fairy/wings_heart.webp",
+  "w": 512,
+  "h": 512,
+  "prompt": "add gauzy see-through heart-shaped wings behind her back, pure white and very pale silver, with fine grey veins and a faint pearly shimmer, attached at her shoulder blades and spreading out to both sides symmetrically, both wings fully visible",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/wings_leaf": {
+  "file": "art/fairy/wings_leaf.webp",
+  "w": 512,
+  "h": 512,
+  "prompt": "add gauzy see-through wings shaped like pointed leaves with a central rib and side veins behind her back, pure white and very pale silver, with fine grey veins and a faint pearly shimmer, attached at her shoulder blades and spreading out to both sides symmetrically, both wings fully visible",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/wings_moth": {
+  "file": "art/fairy/wings_moth.webp",
+  "w": 512,
+  "h": 512,
+  "prompt": "add gauzy see-through broad soft feathery moth wings with gently scalloped edges behind her back, pure white and very pale silver, with fine grey veins and a faint pearly shimmer, attached at her shoulder blades and spreading out to both sides symmetrically, both wings fully visible",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/wings_petal": {
+  "file": "art/fairy/wings_petal.webp",
+  "w": 512,
+  "h": 512,
+  "prompt": "add gauzy see-through wings shaped like big soft rose petals behind her back, pure white and very pale silver, with fine grey veins and a faint pearly shimmer, attached at her shoulder blades and spreading out to both sides symmetrically, both wings fully visible",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
  "farm/carrot": {
   "file": "art/farm/carrot.webp",
   "w": 275,

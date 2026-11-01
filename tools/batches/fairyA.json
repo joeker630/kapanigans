@@ -1,0 +1,189 @@
+{
+ "dir": "fairy",
+ "style": "fairy",
+ "frame": 512,
+ "seed": 37,
+ "anchor": {
+  "top": 122,
+  "bottom": 477,
+  "cx": 256
+ },
+ "base": "a five year old girl fairy with natural child proportions, completely bald with a smooth bare round scalp, small pointed elf ears, rosy cheeks, gentle closed-mouth smile, eyes with very pale white irises, mid peach skin, wearing only a plain simple fitted sleeveless cream slip dress ending above the knees, bare feet, standing facing the viewer, arms relaxed at her sides, full body, no wings, plain solid flat medium grey background, no ground, no shadow",
+ "items": {
+  "wings_butterfly": {
+   "prompt": "add gauzy see-through large rounded butterfly wings with two lobes each side behind her back, pure white and very pale silver, with fine grey veins and a faint pearly shimmer, attached at her shoulder blades and spreading out to both sides symmetrically, both wings fully visible",
+   "zone": "wings",
+   "white": true
+  },
+  "wings_dragonfly": {
+   "prompt": "add gauzy see-through long slender dragonfly wings, two narrow pairs each side behind her back, pure white and very pale silver, with fine grey veins and a faint pearly shimmer, attached at her shoulder blades and spreading out to both sides symmetrically, both wings fully visible",
+   "zone": "wings",
+   "white": true
+  },
+  "wings_petal": {
+   "prompt": "add gauzy see-through wings shaped like big soft rose petals behind her back, pure white and very pale silver, with fine grey veins and a faint pearly shimmer, attached at her shoulder blades and spreading out to both sides symmetrically, both wings fully visible",
+   "zone": "wings",
+   "white": true
+  },
+  "wings_leaf": {
+   "prompt": "add gauzy see-through wings shaped like pointed leaves with a central rib and side veins behind her back, pure white and very pale silver, with fine grey veins and a faint pearly shimmer, attached at her shoulder blades and spreading out to both sides symmetrically, both wings fully visible",
+   "zone": "wings",
+   "white": true
+  },
+  "wings_heart": {
+   "prompt": "add gauzy see-through heart-shaped wings behind her back, pure white and very pale silver, with fine grey veins and a faint pearly shimmer, attached at her shoulder blades and spreading out to both sides symmetrically, both wings fully visible",
+   "zone": "wings",
+   "white": true
+  },
+  "wings_moth": {
+   "prompt": "add gauzy see-through broad soft feathery moth wings with gently scalloped edges behind her back, pure white and very pale silver, with fine grey veins and a faint pearly shimmer, attached at her shoulder blades and spreading out to both sides symmetrically, both wings fully visible",
+   "zone": "wings",
+   "white": true
+  },
+  "hair_waves": {
+   "prompt": "give her long soft wavy hair falling past her shoulders, pure white and very pale silver hair with soft grey watercolor shading and fine strands",
+   "zone": "hairtop",
+   "white": true,
+   "back": "hairback_waves"
+  },
+  "hair_pigtails": {
+   "prompt": "give her two bouncy curly pigtails tied high at the sides, pure white and very pale silver hair with soft grey watercolor shading and fine strands",
+   "zone": "hairtop",
+   "white": true,
+   "back": "hairback_pigtails"
+  },
+  "hair_braid": {
+   "prompt": "give her one long thick braid falling forward over her right shoulder (viewer's left) with soft bangs, pure white and very pale silver hair with soft grey watercolor shading and fine strands",
+   "zone": "hairtop",
+   "white": true,
+   "back": "hairback_braid"
+  },
+  "hair_puff": {
+   "prompt": "give her one big round fluffy curly puff on top of her head, pure white and very pale silver hair with soft grey watercolor shading and fine strands",
+   "zone": "hairtop",
+   "white": true,
+   "back": "hairback_puff"
+  },
+  "hair_pony": {
+   "prompt": "give her a high ponytail with a little swoop of bangs, pure white and very pale silver hair with soft grey watercolor shading and fine strands",
+   "zone": "hairtop",
+   "white": true,
+   "back": "hairback_pony"
+  },
+  "hair_bob": {
+   "prompt": "give her a short chin-length bob with straight bangs, pure white and very pale silver hair with soft grey watercolor shading and fine strands",
+   "zone": "hairtop",
+   "white": true,
+   "back": "hairback_bob"
+  },
+  "hair_buns": {
+   "prompt": "give her two little round buns on top of her head with a few wispy strands, pure white and very pale silver hair with soft grey watercolor shading and fine strands",
+   "zone": "hairtop",
+   "white": true,
+   "back": "hairback_buns"
+  },
+  "hair_pixie": {
+   "prompt": "give her a very short tousled pixie cut, pure white and very pale silver hair with soft grey watercolor shading and fine strands",
+   "zone": "hairtop",
+   "white": true
+  },
+  "top_petal": {
+   "prompt": "dress her in a short dress made of overlapping rose petals with a petal skirt, all in pure white and very pale silver fabric with soft grey watercolor shading, covering the slip",
+   "zone": "dress",
+   "white": true
+  },
+  "top_tutu": {
+   "prompt": "dress her in a ballet leotard top with a fluffy layered tulle tutu skirt, all in pure white and very pale silver fabric with soft grey watercolor shading, covering the slip",
+   "zone": "dress",
+   "white": true
+  },
+  "top_gown": {
+   "prompt": "dress her in a long flowing gown down to her ankles with a petal hem, all in pure white and very pale silver fabric with soft grey watercolor shading, covering the slip",
+   "zone": "dress",
+   "white": true
+  },
+  "top_tee": {
+   "prompt": "dress her in a simple short-sleeved t-shirt, all in pure white and very pale silver fabric with soft grey watercolor shading, covering the slip",
+   "zone": "dress",
+   "white": true
+  },
+  "top_puff": {
+   "prompt": "dress her in a blouse with puffy short sleeves and a round white collar, all in pure white and very pale silver fabric with soft grey watercolor shading, covering the slip",
+   "zone": "dress",
+   "white": true
+  },
+  "top_tank": {
+   "prompt": "dress her in a simple tank top, all in pure white and very pale silver fabric with soft grey watercolor shading, covering the slip",
+   "zone": "dress",
+   "white": true
+  },
+  "bottom_skirt": {
+   "prompt": "give her a short flared skirt over the bottom of the slip, pure white and very pale silver fabric with soft grey watercolor shading",
+   "zone": "dress",
+   "white": true
+  },
+  "bottom_leggings": {
+   "prompt": "give her ankle-length fitted leggings over the bottom of the slip, pure white and very pale silver fabric with soft grey watercolor shading",
+   "zone": "dress",
+   "white": true
+  },
+  "bottom_pants": {
+   "prompt": "give her loose ankle-length pants over the bottom of the slip, pure white and very pale silver fabric with soft grey watercolor shading",
+   "zone": "dress",
+   "white": true
+  },
+  "bottom_shorts": {
+   "prompt": "give her short shorts over the bottom of the slip, pure white and very pale silver fabric with soft grey watercolor shading",
+   "zone": "dress",
+   "white": true
+  },
+  "shoes_slippers": {
+   "prompt": "put soft ballet slippers on her feet, pure white and very pale silver with soft grey shading",
+   "zone": "feet",
+   "white": true
+  },
+  "shoes_boots": {
+   "prompt": "put little ankle boots on her feet, pure white and very pale silver with soft grey shading",
+   "zone": "feet",
+   "white": true
+  },
+  "shoes_sneakers": {
+   "prompt": "put little sneakers on her feet, pure white and very pale silver with soft grey shading",
+   "zone": "feet",
+   "white": true
+  },
+  "shoes_sandals": {
+   "prompt": "put strappy sandals on her feet, pure white and very pale silver with soft grey shading",
+   "zone": "feet",
+   "white": true
+  },
+  "crown_flowers": {
+   "prompt": "put a small crown of tiny pink, lavender and yellow wildflowers and green leaves on her head",
+   "zone": "crown",
+   "white": false
+  },
+  "crown_tiara": {
+   "prompt": "put a small delicate golden tiara with tiny pearls on her head",
+   "zone": "crown",
+   "white": false
+  },
+  "crown_bow": {
+   "prompt": "put a big soft ribbon bow on top of her head, pure white and very pale silver",
+   "zone": "crown",
+   "white": true
+  },
+  "crown_antennae": {
+   "prompt": "give her two thin curling butterfly antennae with little golden tips rising from her head",
+   "zone": "crown",
+   "white": false
+  },
+  "wand": {
+   "prompt": "she holds a slender golden wand with a small softly glowing golden star at the tip in her right hand (viewer's right), arm still relaxed",
+   "zone": "wand",
+   "white": false
+  }
+ },
+ "fgonly": true,
+ "keep": ". Keep the exact same plain solid flat medium grey background, completely even, with no paint washes, splashes, paper texture or shadow",
+ "key": true
+}

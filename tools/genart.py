@@ -220,7 +220,8 @@ def isobatch(path, a):
 
 
 AV_STYLE = ISO.replace("plain solid flat light grey background", "plain solid flat medium grey background")
-AV_ZONES = {"hair": (0, .74), "head": (0, .56), "torso": (.45, .88), "feet": (.80, 1.0), "face": (.15, .56), "all": (0, 1)}
+AV_ZONES = {"wings": (-.35, 1.1), "hairtop": (-.3, .8), "crown": (-.3, .32), "dress": (.16, 1.0), "wand": (.15, .9),
+            "hair": (0, .74), "head": (0, .56), "torso": (.45, .88), "feet": (.80, 1.0), "face": (.15, .56), "all": (0, 1)}
 AV_FRAME = 320
 
 
@@ -252,7 +253,17 @@ def solid_cut(raw):
     return Image.fromarray(np.dstack([rgb, a]).astype("uint8"), "RGBA")
 
 
-def _layer(raw, base_raw, zone, white):
+def _fgmask(raw):
+    """Figure mask from rembg (ignores painterly background blotches)."""
+    import numpy as np
+    from PIL import Image
+    from rembg import remove, new_session
+    global _SESSION
+    if "_SESSION" not in globals(): _SESSION = new_session("isnet-general-use")
+    return np.array(remove(Image.open(io.BytesIO(raw)).convert("RGB"), session=_SESSION).getchannel("A")) > 100
+
+
+def _layer(raw, base_raw, zone, white, fgonly=False):
     """Pull one dress-up part out of an edit of the base body by diffing, kept full-frame so layers stack."""
     import numpy as np
     from PIL import Image
@@ -261,15 +272,28 @@ def _layer(raw, base_raw, zone, white):
     B = np.array(Image.open(io.BytesIO(base_raw)).convert("RGB")).astype(int)
     bgc = np.median(np.concatenate([E[0], E[-1], E[:, 0], E[:, -1]]), axis=0)
     notbg = np.abs(E - bgc).max(axis=2) > 16
-    m = (gaussian_filter(np.abs(E - B).max(axis=2).astype(float), 2) > 25) & notbg
+    dd = np.abs(E - B).sum(axis=2) if fgonly else np.abs(E - B).max(axis=2)
+    m = (gaussian_filter(dd.astype(float), 2) > (22 if fgonly else 25)) & notbg
+    if fgonly: m &= binary_dilation(_fgmask(raw), iterations=2)
     bnb = np.abs(B - bgc).max(axis=2) > 16
     ys = np.where(bnb.any(axis=1))[0]; top, bot = ys.min(), ys.max(); z0, z1 = AV_ZONES[zone]
-    zm = np.zeros_like(m); zm[int(top + (bot - top) * z0):int(top + (bot - top) * z1) + 1] = True; m &= zm
+    zm = np.zeros_like(m); zm[max(0, int(top + (bot - top) * z0)):max(0, int(top + (bot - top) * z1) + 1)] = True; m &= zm
     if white:  # tintable parts: only near-white pixels (+ their outline), never skin or shirt
         mx, mn = E.max(axis=2), E.min(axis=2)
-        wh = (mn > 165) & (mx - mn < 40)
+        wh = ((mn > 110) & (mx - mn < 26)) if fgonly else ((mn > 165) & (mx - mn < 40))
         m &= binary_dilation(wh & m, iterations=3)
-    m = binary_opening(m, iterations=5); m = binary_closing(m, iterations=3); m = binary_fill_holes(m)
+    m = binary_opening(m, iterations=3 if fgonly else 5); m = binary_closing(m, iterations=8 if fgonly else 3); m = binary_fill_holes(m)
+    if fgonly: m &= binary_dilation(_fgmask(raw), iterations=1)
+    if fgonly and zone == "hairtop":  # inside the face only keep strong changes (bangs), never the eyes or mouth
+        from scipy.ndimage import binary_erosion
+        skin = (B[..., 0] - B[..., 2] > 15) & bnb
+        hz = np.zeros_like(skin); hz[top:int(top + (bot - top) * .26)] = True
+        face = binary_erosion(binary_fill_holes(skin & hz), iterations=6)
+        above = np.zeros_like(m); above[:int(top + (bot - top) * .095)] = True
+        bangs = wh & (B[..., 0] - B[..., 2] > 15) & above & (dd > 30)
+        m &= ~face | binary_closing(binary_opening(bangs, iterations=2), iterations=3)
+        R = binary_fill_holes(bnb); R[:int(top + (bot - top) * .21)] = False   # over the body below the chin
+        m = (m & ~R) | binary_opening(m & R, iterations=6)
     lab, k = label(m)
     if k:
         sz = np.bincount(lab.ravel()); sz[0] = 0; m = (sz > sz.max() * .08)[lab]
@@ -277,9 +301,76 @@ def _layer(raw, base_raw, zone, white):
     return im
 
 
-def _frame(im):
+KEY_COLOR = "solid bright vivid turquoise blue"
+
+
+def _keyed(raw, base_raw, zone):
+    """Tint layer by colour key: the part was painted turquoise, so pick it out by hue (nothing else in
+    the picture is turquoise), then turn it into white with the same watercolour shading."""
+    import numpy as np, colorsys
     from PIL import Image
-    im = im.resize((AV_FRAME, AV_FRAME), Image.LANCZOS)
+    from scipy.ndimage import binary_opening, binary_closing, binary_fill_holes, binary_dilation, label
+    E = np.array(Image.open(io.BytesIO(raw)).convert("RGB")).astype(float) / 255
+    B = np.array(Image.open(io.BytesIO(base_raw)).convert("RGB")).astype(int)
+    mx, mn = E.max(axis=2), E.min(axis=2); sat = (mx - mn) / np.maximum(mx, 1e-3)
+    r, g, b = E[..., 0], E[..., 1], E[..., 2]
+    blue = (b >= r + .04) & (g >= r) & (sat > .12) & (mx > .2)
+    bgc = np.median(np.concatenate([B[0], B[-1], B[:, 0], B[:, -1]]), axis=0)
+    bnb = np.abs(B - bgc).max(axis=2) > 16
+    ys = np.where(bnb.any(axis=1))[0]; top, bot = ys.min(), ys.max(); z0, z1 = AV_ZONES[zone]
+    zm = np.zeros_like(blue); zm[max(0, int(top + (bot - top) * z0)):max(0, int(top + (bot - top) * z1) + 1)] = True
+    if zone == "hairtop":  # never the face below the bangs (pale grey-blue eyes would pass the key)
+        from scipy.ndimage import binary_erosion
+        skin = (B[..., 0] - B[..., 2] > 15) & bnb
+        hz = np.zeros_like(skin); hz[top:int(top + (bot - top) * .26)] = True
+        face = binary_erosion(binary_fill_holes(skin & hz), iterations=4)
+        face[:int(top + (bot - top) * .105)] = False
+        blue &= ~face
+    m = binary_opening(blue & zm, iterations=2)
+    lab, k = label(m)
+    if k: sz = np.bincount(lab.ravel()); sz[0] = 0; m = (sz > sz.max() * .03)[lab]
+    m = binary_fill_holes(binary_closing(m, iterations=3))
+    ring = binary_dilation(m, iterations=3) & ~m & (mx < .5)          # dark pencil outline around the part
+    m = m | ring
+    v = mx / max(np.percentile(mx[m], 97), 1e-3) if m.any() else mx
+    grey = (np.clip(v, 0, 1) * 255).astype("uint8")
+    return Image.fromarray(np.dstack([grey, grey, grey, (m * 255).astype("uint8")]), "RGBA")
+
+
+def _keep(raw, base_raw, zone):
+    """Coloured accessory (tiara, flowers, wand): new, saturated or strongly changed pixels only, so a
+    slightly re-shaded face or body never comes along."""
+    import numpy as np
+    from PIL import Image
+    from scipy.ndimage import binary_opening, binary_closing, binary_fill_holes, binary_dilation, label, gaussian_filter
+    E = np.array(Image.open(io.BytesIO(raw)).convert("RGB")).astype(int)
+    B = np.array(Image.open(io.BytesIO(base_raw)).convert("RGB")).astype(int)
+    dd = gaussian_filter(np.abs(E - B).sum(axis=2).astype(float), 1.5)
+    mx, mn = E.max(axis=2), E.min(axis=2); sat = (mx - mn) / np.maximum(mx, 1)
+    skinlike = (E[..., 0] >= E[..., 1]) & (E[..., 1] >= E[..., 2] - 5) & (sat < .42)
+    bgc = np.median(np.concatenate([B[0], B[-1], B[:, 0], B[:, -1]]), axis=0)
+    bnb = np.abs(B - bgc).max(axis=2) > 16
+    ys = np.where(bnb.any(axis=1))[0]; top, bot = ys.min(), ys.max(); z0, z1 = AV_ZONES[zone]
+    zm = np.zeros_like(bnb); zm[max(0, int(top + (bot - top) * z0)):max(0, int(top + (bot - top) * z1) + 1)] = True
+    m = (dd > 90) & zm & ~skinlike & binary_dilation(_fgmask(raw), iterations=2)
+    m = binary_opening(m, iterations=2)
+    lab, k = label(m)
+    if k: sz = np.bincount(lab.ravel()); sz[0] = 0; m = (sz > max(sz.max() * .04, 60))[lab]
+    m = binary_fill_holes(binary_closing(m, iterations=3))
+    m = m | (binary_dilation(m, iterations=2) & (mx < 120))
+    return Image.fromarray(np.dstack([E, m * 255]).astype("uint8"), "RGBA")
+
+
+def _frame(im, size=None, fit=None):
+    from PIL import Image
+    if fit:  # fit = (scale, dx, dy): same affine for every layer so they stay aligned
+        s, dx, dy = fit
+        out = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+        sm = im.resize((round(im.width * s), round(im.height * s)), Image.LANCZOS)
+        out.paste(sm, (round(dx), round(dy)), sm)
+        im = out
+    else:
+        im = im.resize((size or AV_FRAME, size or AV_FRAME), Image.LANCZOS)
     buf = io.BytesIO(); im.save(buf, "WEBP", quality=85, method=6); return buf.getvalue()
 
 
@@ -287,33 +378,70 @@ def avatar(path, a):
     """Avatar parts batch. {"base": prompt, "items": {"hair/pigtails": {"prompt":..., "zone":"head", "white":true}}}
     Every layer is saved full-frame (same size, same position) in art/avatar/ so the game just stacks them."""
     from PIL import Image
+    import numpy as np
     spec = json.loads(Path(path).read_text())
-    rd = CFG / "raw" / "avatar"; rd.mkdir(parents=True, exist_ok=True)
+    D = spec.get("dir", "avatar"); style = {"fairy": FAIRY_STYLE}.get(spec.get("style"), AV_STYLE)
+    F = spec.get("frame", AV_FRAME); only = set(a.only.split(",")) if getattr(a, "only", None) else None
+    rd = CFG / "raw" / D; rd.mkdir(parents=True, exist_ok=True)
     bp = rd / "base.jpg"
     if not bp.exists():
-        bp.write_bytes(generate(spec["base"], "klein", None, spec.get("seed", 31), AV_STYLE))
+        ref = str(ROOT / spec["base_ref"]) if spec.get("base_ref") else None
+        bp.write_bytes(generate(spec["base"], "klein", ref, spec.get("seed", 31), style))
     base_raw = bp.read_bytes()
-    if not (ART / "avatar/base.webp").exists():
-        cut = solid_cut(base_raw)
-        save("avatar/base", spec["base"], "klein", _frame(cut), (AV_FRAME, AV_FRAME), False)
-        print("✓ art/avatar/base.webp")
+    cut = solid_cut(base_raw)
+    fit = None
+    if spec.get("anchor"):  # place the body so head top / feet / centre land on the game's anchor points
+        an = spec["anchor"]; al = np.array(cut.getchannel("A")) > 128
+        ys = np.where(al.any(axis=1))[0]; top, bot = ys.min(), ys.max()
+        xs = np.where(al[int(top + (bot - top) * .3):int(top + (bot - top) * .6)].any(axis=0))[0]
+        s_ = (an["bottom"] - an["top"]) / (bot - top); cx = (xs.min() + xs.max()) / 2
+        fit = (s_, an["cx"] - cx * s_, an["top"] - top * s_)
+    if not (ART / f"{D}/base.webp").exists():
+        save(f"{D}/base", spec["base"], "klein", _frame(cut, F, fit), (F, F), False)
+        print(f"✓ art/{D}/base.webp")
     made = 0
     for name, it in spec["items"].items():
-        if (ART / f"avatar/{name}.webp").exists(): continue
+        if only and name not in only: continue
+        outs = [name] + ([it["back"]] if it.get("back") else [])
+        if all((ART / f"{D}/{o}.webp").exists() for o in outs): continue
         t = time.time()
-        raw = generate("Edit the reference image: " + it["prompt"] + ". Change nothing else" + SAME,
-                       "klein", str(bp), it.get("seed", spec.get("seed", 31)), AV_STYLE)
-        (rd / name.replace("/", "_")).with_suffix(".jpg").write_bytes(raw)
-        lay = _layer(raw, base_raw, it.get("zone", "head"), it.get("white", False))
-        save(f"avatar/{name}", it["prompt"], "klein", _frame(lay), (AV_FRAME, AV_FRAME), False)
+        rp = (rd / name.replace("/", "_")).with_suffix(".jpg")
+        if rp.exists(): raw = rp.read_bytes()
+        else:
+            pr = it["prompt"]
+            if it.get("white") and spec.get("key"):
+                pr = pr.replace("pure white and very pale silver", KEY_COLOR).replace("soft grey", "darker blue")
+            raw = generate("Edit the reference image: " + pr + ". Change nothing else" + spec.get("keep", "") + SAME,
+                           "klein", str(bp), it.get("seed", spec.get("seed", 31)), style)
+            rp.write_bytes(raw)
+        if it.get("white") and spec.get("key"): lay = _keyed(raw, base_raw, it.get("zone", "head"))
+        elif spec.get("key"): lay = _keep(raw, base_raw, it.get("zone", "head"))
+        else: lay = _layer(raw, base_raw, it.get("zone", "head"), it.get("white", False), spec.get("fgonly", False))
+        if it.get("back"):  # split hair: hanging part outside the body below the chin goes to the back layer
+            al = np.array(lay.getchannel("A")); body = np.array(cut.getchannel("A")) > 128
+            ys = np.where(body.any(axis=1))[0]; chin = int(ys.min() + (ys.max() - ys.min()) * .2)
+            back = (~body) & (al > 0); back[:chin] = False
+            front = al.copy(); front[back] = 0
+            back[chin - 10:chin] = ((~body) & (al > 0))[chin - 10:chin]   # small overlap so no seam shows at the chin line
+            bk = np.where(back, al, 0).astype("uint8")
+            rgb = np.array(lay)[..., :3]
+            save(f"{D}/{it['back']}", it["prompt"], "klein",
+                 _frame(Image.fromarray(np.dstack([rgb, bk]), "RGBA"), F, fit), (F, F), False)
+            lay = Image.fromarray(np.dstack([rgb, front]), "RGBA")
+        save(f"{D}/{name}", it["prompt"], "klein", _frame(lay, F, fit), (F, F), False)
         made += 1
-        print(f"✓ art/avatar/{name}.webp  {time.time()-t:.0f}s")
-    print(f"avatar batch done: {made} made")
+        print(f"✓ art/{D}/{name}.webp  {time.time()-t:.0f}s")
+    print(f"{D} batch done: {made} made")
 
 
 STORY_STYLE = ("feature-film quality 3D animated movie look, rich cinematic soft warm lighting, subtle rim light, gentle atmosphere, "
                "detailed fur, fabric and textures, expressive appealing faces with big warm eyes, gentle stylized proportions, "
                "cozy bedtime storybook warmth, friendly and never scary, original design, no text, no logo")
+
+
+FAIRY_STYLE = ("vintage botanical watercolor storybook illustration, soft transparent watercolor washes, fine thin sepia pencil outlines, "
+               "delicate realistic children's-book painting, warm golden soft light, muted petal colors (dusty rose, lavender, sage green, "
+               "buttercup yellow, cream), gentle and sweet, original character design, no text, no letters, no logo")
 
 
 def storybatch(path, a):
