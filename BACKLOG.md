@@ -1267,6 +1267,7 @@ A **co-op** game: everyone makes their own fairy, then the family works together
 - Art style (Nov 1): vintage botanical watercolor storybook look, matched to a fairy pop-up book Joe shared: thin sepia linework, natural child proportions, gauzy veined wings, muted petal colors, golden-pink painted meadow with paper grain, toadstools and a fairy door in a tree stump. Style only; no characters or art copied.
 
 **The garden**
+- ✅ Changed Nov 1 (1.24, Joe: 9 was far too long): each garden is 3 buds; the Rainbow Flower is visible from the start as the goal, each bloom opens two of its petals with a "N more flowers!" label, and the third bloom brings the giant rainbow. The notes below describe the original 9-bud version.
 - 9 flower buds in 3 patches; flower types and colors change with each new garden.
 - Tap a bud: your fairy flies there (sparkle trail, fast wings), then an **age-appropriate puzzle** opens (same puzzle engine as the Farmstand; grown-ups get grown-up games and a new one if they lose).
 - Solve it and the flower **blooms** for everyone, with a butterfly and a chime.

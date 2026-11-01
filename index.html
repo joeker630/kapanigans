@@ -1366,7 +1366,7 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
 .fgbfly{position:absolute;pointer-events:none;animation:fgbfly 4.2s ease-in-out forwards}
 @keyframes fgbfly{0%{opacity:0;transform:translate(-50%,0) scale(.3)}15%{opacity:1;transform:translate(-50%,-20px) scale(1)}100%{opacity:0;transform:translate(calc(-50% + var(--tx)),var(--ty)) scale(.8) rotate(15deg)}}
 .fgtip{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);background:rgba(255,255,255,.88);border-radius:18px;padding:6px 16px;font-weight:800;font-size:clamp(13px,2vw,17px);pointer-events:none;width:max-content;max-width:88%;text-align:center}
-.fgbanner{position:absolute;left:50%;top:22%;transform:translate(-50%,-50%);background:#fff;border-radius:24px;padding:12px 26px;font-weight:900;font-size:clamp(24px,5vw,44px);box-shadow:0 6px 0 #C3A6FF,0 0 40px #fff;pointer-events:none;white-space:nowrap;z-index:3}
+.fgbanner{position:absolute;left:50%;top:13%;transform:translate(-50%,-50%);background:#fff;border-radius:24px;padding:12px 26px;font-weight:900;font-size:clamp(24px,5vw,44px);box-shadow:0 6px 0 #C3A6FF,0 0 40px #fff;pointer-events:none;white-space:nowrap;z-index:3}
 .fgbanner.pop{animation:fgpop .5s cubic-bezier(.34,1.56,.64,1)}
 @keyframes fgpop{from{transform:translate(-50%,-50%) scale(.3);opacity:0}}
 .fgdone{position:absolute;inset:0;z-index:4;display:grid;place-items:center;background:rgba(255,240,250,.35);padding:12px}
@@ -1423,6 +1423,14 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
 }
 
 
+/* the Rainbow Flower goal label */
+.fgfl .fggoal{position:absolute;left:50%;top:-6%;transform:translateX(-50%);white-space:nowrap;background:rgba(251,244,228,.95);border:1.5px solid #C9A45C;border-radius:999px;padding:3px 12px;font-family:"IM Fell English",Georgia,serif;font-style:italic;font-size:calc(var(--u)*2);color:#5E4636;pointer-events:none;box-shadow:0 0 12px #FFF3C8}
+.fgfl .fggoal:empty{display:none}
+.fgfl.fgbig:not(.full) .bud{animation:fgbudglow 2.2s ease-in-out infinite;transform-box:view-box;transform-origin:50px 74px}
+#fgFlowers .fgfl{width:calc(var(--u)*20);height:calc(var(--u)*32)}
+#fgFlowers .fgfl.fgbig{width:calc(var(--u)*27);height:calc(var(--u)*42)}
+#fgFlowers .fgfl .fggoal{font-size:calc(var(--u)*2.5)}
+@keyframes fgbudglow{0%,100%{filter:drop-shadow(0 0 2px #FFF3C8)}50%{filter:drop-shadow(0 0 10px #FFE7A0)}}
 /* team activities */
 .fgfl .fgbadge{position:absolute;left:50%;top:6%;transform:translateX(-50%);font-size:calc(var(--u)*2.6);filter:drop-shadow(0 0 4px #FFF3C8);animation:fgbeat 1.4s ease-in-out infinite;pointer-events:none}
 .fgfl.bloom .fgbadge{display:none}
@@ -1872,7 +1880,7 @@ const HELP={
     faq:[["Walls?","They just bonk you back."],["⚡ Boost?","Hold it to go faster. It uses up a little of your snake."],["Not enough players?","Computer snakes fill in."]]},
   farm:{em:"🥕",title:"Farmstand",steps:[["👆","Tap a crop, animal or building. Your farmer walks there."],["🧩","Solve the little puzzle to do the chore."],["🌱","Plant, water and pick crops. Feed animals for 🥚 🥛 🧶."],["🧺","Sell at the farmstand for 🪙 Moolah. Build at the red barn."],["📋","Fill family orders on the board."],["🤏","Pinch or tap ➕ ➖ to zoom. Press and hold to move buildings."]],
     faq:[["Is it our farm?","Yes, the whole family shares one farm."],["Did I lose anything?","Never. Plants and animals just droop until you help."],["How long?","About 30 minutes is a good farm visit."]]},
-  fairy:{em:"🧚",title:"Violet's Fairy Garden",steps:[["✨","First, make your fairy: wings, hair, eyes, clothes, shoes and a name. Tap ✏️ to change her later."],["🌷","Tap a flower bud. Your fairy flies there and a puzzle opens."],["🌸","Solve it and the flower blooms for everyone."],["🌈","Finish a patch of 3 for a rainbow, then help the Rainbow Flower open together."]],
+  fairy:{em:"🧚",title:"Violet's Fairy Garden",steps:[["✨","First, make your fairy: wings, hair, eyes, clothes, shoes and a name. Tap ✏️ to change her later."],["🌷","Tap a flower bud. Your fairy flies there and a puzzle opens."],["🌸","Solve it and the flower blooms for everyone."],["🌈","Every flower you bloom opens part of the big Rainbow Flower. Bloom all 3 and the rainbow comes out!"]],
     faq:[["Is it one garden for everyone?","Yes, the whole family shares one garden, and it's saved until it's finished."],["Flowers with a 💛?","Team flowers: two fairies fly there and solve one puzzle together, each doing their own part. Alone? Do it yourself."],["🧚‍♀️ Fly with me?","Everyone else's fairy follows yours for a few minutes. Tap anywhere to stop following."],["Why are the fairies twirling?","When two fairies meet, they do a fairy dance."],["A bud has a colored ring?","Someone else is solving that one. Pick another."]]},
 };
 let helpLast="";
@@ -1910,7 +1918,7 @@ addEventListener("resize",()=>requestAnimationFrame(fitHelp));
    "## 1.0: Title" starts a release; "### For everyone" / "### For grown-ups" / any other "###" section follow.
    Grown-up sections ("For grown-ups", "How long it took…") are hidden from the kids.
    Bump APP_VERSION together with a new RELEASES.md entry. */
-const APP_VERSION="1.23";
+const APP_VERSION="1.24";
 const WN={rel:null,loading:null};
 function wnGrownOnly(h){return /grown/i.test(h)}
 function wnParse(md){
@@ -10654,7 +10662,7 @@ function fairySVG(L,o={}){
 }
 
 /* ---- the garden ---- */
-const FG_N=9, FG_BIG=3, FG_CLAIM_MS=90e3;
+const FG_N=3, FG_BIG=3, FG_CLAIM_MS=90e3; // 3 flowers per garden; each one opens a third of the Rainbow Flower
 const FG_PATCH=[[.2,.79],[.5,.88],[.8,.79]], FG_PATCH_TALL=[[.3,.6],[.7,.75],[.3,.9]]; // wide screens / tall phones
 const fgPatch=p=>(FG.tall?FG_PATCH_TALL:FG_PATCH)[p];
 const FG_KINDS=["rose","bell","carnation","daisy","poppy"];
@@ -10668,7 +10676,7 @@ const FG_GROWN_PUZZLES=["blackjack","mines","jam","wordle"];
    Rainbow Flower: with friends here, each fairy opens a petal before anyone opens a second one.
    Fly with me: families/<CODE>/fairy/lead = {k,at}; the other fairies follow the leader for a few minutes.
    Fairy dance: when two fairies hover close together they hold hands and twirl (each device does this itself). */
-const FG_TEAM=[1,4,7], FG_TEAM_PUZZLES=["jigsaw","maze","dots","path"], FG_LEAD_MS=3*60e3, FG_SOLO_AFTER=25e3;
+const FG_TEAM=[1], FG_TEAM_PUZZLES=["jigsaw","maze","dots","path"], FG_LEAD_MS=3*60e3, FG_SOLO_AFTER=25e3;
 const fgIsTeam=i=>FG_TEAM.includes(i);
 const FG_ITEMS=[{em:"🌸",one:"flower",many:"flowers"},{em:"🌷",one:"tulip",many:"tulips"},{em:"🦋",one:"butterfly",many:"butterflies"},{em:"🍄",one:"mushroom",many:"mushrooms"},{em:"🐞",one:"ladybug",many:"ladybugs"},{em:"⭐",one:"star",many:"stars"}];
 const FG={on:false,local:false,mem:{},refs:[],look:{},lookSeen:false,g:null,fl:{},cl:{},big:{},done:null,pos:{},fy:{},els:{},st:{},rain:{},
@@ -10822,15 +10830,15 @@ function fgBgSVG(){
   return s;
 }
 function fgFlowerAt(i){
-  if(i==="big") return {x:FG.W*(FG.tall?.72:.5),y:FG.H*(FG.tall?.52:.6)};
-  const p=fgPatch(Math.floor(i/3)), j=i%3;
-  return {x:p[0]*FG.W+[-1,0,1][j]*FG.u*12.5, y:p[1]*FG.H+[0,-FG.u*4.5,0][j]};
+  if(i==="big") return {x:FG.W*.5,y:FG.H*(FG.tall?.5:.62)};
+  const P=FG.tall?[[.24,.74],[.5,.9],[.76,.74]]:[[.24,.86],[.5,.92],[.76,.86]];
+  return {x:P[i][0]*FG.W,y:P[i][1]*FG.H};
 }
 function fgPlaceFlowers(){
   for(const k in FG.els){const e=FG.els[k],p=fgFlowerAt(k==="big"?"big":+k);e.style.left=p.x+"px";e.style.top=p.y+"px"}
 }
 // where my fairy hovers above a flower (fractions of the garden)
-function fgPerch(i){const p=fgFlowerAt(i),big=i==="big";return {x:(p.x+FG.u*(big?9:7))/FG.W,y:(p.y-FG.u*(big?30:22))/FG.H}}
+function fgPerch(i){const p=fgFlowerAt(i),big=i==="big";return {x:(p.x+FG.u*(big?11:9))/FG.W,y:(p.y-FG.u*(big?37:29))/FG.H}}
 function fgHomeSpot(k){const list=[...fgHere()].sort(),i=Math.max(0,list.indexOf(k));return {x:.18+((i*.21)%.64),y:(FG.tall?.2:.3)+(i%2)*.06}}
 
 /* ---- flowers ---- */
@@ -10870,12 +10878,12 @@ function fgBuildFlowers(){
   const r=rng(hash(FG.g.seed)), sh=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}; // same garden on every device
   const kinds=sh(FG_KINDS), pal=sh(FG_COLS);
   for(let i=0;i<FG_N;i++){
-    const p=Math.floor(i/3), col=pal[(p*2+(i%3===1?1:0))%pal.length];
-    const d=el("div","fgfl"+(fgIsTeam(i)?" team":"")); d.dataset.i=i; d.innerHTML=fgFlowerSVG(kinds[p],col,false)+(fgIsTeam(i)?`<div class="fgbadge" aria-label="Team flower">💛</div><div class="fgwait"></div>`:"");
+    const col=pal[i%pal.length];
+    const d=el("div","fgfl"+(fgIsTeam(i)?" team":"")); d.dataset.i=i; d.innerHTML=fgFlowerSVG(kinds[i%kinds.length],col,false)+(fgIsTeam(i)?`<div class="fgbadge" aria-label="Team flower">💛</div><div class="fgwait"></div>`:"");
     d.addEventListener("click",e=>{e.stopPropagation();fgTapFlower(i)});
     box.append(d); FG.els[i]=d;
   }
-  const b=el("div","fgfl fgbig"); b.dataset.i="big"; b.innerHTML=fgFlowerSVG("rainbow","#FF8AD8",true);
+  const b=el("div","fgfl fgbig fgon"); b.dataset.i="big"; b.innerHTML=fgFlowerSVG("rainbow","#FF8AD8",true)+`<div class="fggoal"></div>`;
   b.addEventListener("click",e=>{e.stopPropagation();fgTapFlower("big")}); box.append(b); FG.els.big=b;
   FG.builtAt=Date.now(); fgPlaceFlowers();
 }
@@ -10901,17 +10909,16 @@ function fgState(){
   for(const i of FG_TEAM){const e=FG.els[i];if(!e)continue;const w=fgBloomed(i)?null:fgTeamSess(i);e.classList.toggle("waiting",!!w);
     const lab=e.querySelector(".fgwait"); if(lab) lab.textContent=w?(w[1].host===me?"Waiting for a friend…":`${fgLookOf(w[1].host).name} needs a friend!`):"";
     if(w&&w[1].host!==me&&!FG.saidWait.has(w[0])){FG.saidWait.add(w[0]);const n=kidOf(w[1].host).name;blip(660,.15,"triangle",.1);toast(`💛 ${n} needs a friend at the team flower!`);sayLittle(`${n} needs a friend at the team flower! Tap the flower with the heart.`)}}
-  // patch rainbows
-  for(let p=0;p<3;p++){const d=fgPatchDone(p); if(d&&!FG.rain[p]){FG.rain[p]=first?"now":"new"; if(!first) setTimeout(()=>fgOnRainbow(p),900)} if(!d) delete FG.rain[p]}
-  fgDrawRain(false);
-  // the Rainbow Flower
-  const all=blooms>=FG_N, n=fgBigCount(), B=FG.els.big;
-  if(B){const was=B.classList.contains("fgon"); B.classList.toggle("fgon",all); for(let k=0;k<3;k++) B.classList.toggle("p"+k,n>k); B.classList.toggle("full",n>=FG_BIG);
-    if(all&&!was&&!first){setTimeout(()=>{fgBanner("🌈 A Rainbow Flower!");sayLittle("A Rainbow Flower grew! Everyone help it bloom!")},2600)}
-    if(FG.st.big!=null&&n>FG.st.big&&!first){fgBurst(fgFlowerAt("big"),14);fgChime()} FG.st.big=n}
-  $("#fgCount").innerHTML=`🌸 ${blooms}/${FG_N} <span>🌈 ${[0,1,2].filter(fgPatchDone).length}/3</span>`;
+  // the Rainbow Flower: always there as the goal; each bloom opens two of its petals
+  const n=Math.min(blooms,FG_BIG), B=FG.els.big;
+  if(B){for(let k=0;k<3;k++) B.classList.toggle("p"+k,n>k); B.classList.toggle("full",n>=FG_BIG);
+    const g=B.querySelector(".fggoal"); if(g) g.textContent=n>=FG_BIG?"":FG_BIG-n===1?"🌈 1 more flower!":`🌈 ${FG_BIG-n} more flowers!`;
+    if(FG.st.big!=null&&n>FG.st.big&&!first){setTimeout(()=>{fgBurst(fgFlowerAt("big"),14);fgChime();
+      if(n<FG_BIG){fgBanner(FG_BIG-n===1?"🌈 1 more to go!":`🌈 ${FG_BIG-n} more to go!`);sayLittle(FG_BIG-n===1?"One more flower and the rainbow comes out!":"The Rainbow Flower opened a little! Two more flowers!")}},1300)}
+    FG.st.big=n}
+  $("#fgCount").innerHTML=`🌸 ${blooms}/${FG_N} <span>→ 🌈</span>`;
   // done?
-  const finished=all&&n>=FG_BIG;
+  const finished=blooms>=FG_N;
   if(finished&&FG.celebrated!==FG.g.seed){FG.celebrated=FG.g.seed; fgFinale(first)}
   if(!finished){$("#fgDone").hidden=true;$("#fgField").classList.remove("fgparty");FG.bigRain=null}
   const tip=$("#fgTip"); if(tip) tip.textContent=fgHint();
@@ -10919,10 +10926,9 @@ function fgState(){
 function fgHint(){
   if(!FG.g) return "Getting the garden ready…";
   const blooms=[...Array(FG_N).keys()].filter(fgBloomed).length;
-  if(blooms>=FG_N&&fgBigCount()<FG_BIG) return fgHere().size>1?"Each fairy opens a petal of the Rainbow Flower. Take turns!":"Tap the Rainbow Flower and solve a puzzle to help it bloom!";
   if(blooms>=FG_N) return "The whole garden is blooming!";
   if(fgHere().size>1&&FG_TEAM.some(i=>!fgBloomed(i))) return "💛 Flowers with a heart need two fairies. Fly there together!";
-  return blooms?"Tap a flower bud. Solve the puzzle to make it bloom!":"Tap a flower bud to fly there and make it bloom!";
+  return blooms?`Bloom ${FG_N-blooms} more and the rainbow comes out!`:"Tap a flower bud. Each one you bloom opens the Rainbow Flower!";
 }
 
 /* ---- rainbows ---- */
@@ -10953,13 +10959,9 @@ function fgTapFlower(i){
   if(tk||FG.maker||!FG.on||!FG.g) return;
   const big=i==="big";
   if(big){
-    if(!FG.els.big.classList.contains("fgon")) return;
-    if(fgBigCount()>=FG_BIG){fgWiggle("big");fgChime();return}
-    const here=[...fgHere()];
-    if(here.length>1){const cnt=k=>Object.values(FG.big||{}).filter(v=>v&&v.k===k).length, lo=Math.min(...here.map(cnt));
-      if(cnt(me)>lo){const who=here.filter(k=>k!==me&&cnt(k)===lo).map(k=>fgLookOf(k).name);fgWiggle("big");
-        toast(`💛 Let ${who.join(" or ")} open the next petal!`);sayLittle(`Let ${who[0]} open the next petal!`);return}}
-    fgStopFollow(); fgFlyTo(me,fgPerch("big"),()=>fgPuzzle("big")); sayLittle("Let's help the Rainbow Flower!"); return;
+    const left=FG_N-[...Array(FG_N).keys()].filter(fgBloomed).length; fgWiggle("big"); fgChime();
+    if(left>0){toast(`🌈 Bloom ${left} more flower${left>1?"s":""} to open the Rainbow Flower!`);sayLittle(left===1?"Bloom one more flower and the Rainbow Flower opens!":`Bloom ${left} more flowers and the Rainbow Flower opens!`)}
+    return;
   }
   if(fgBloomed(i)){fgWiggle(i);fgChime();fgBurst(fgFlowerAt(i),6,-FG.u*16);fgFlyTo(me,fgPerch(i));return}
   if(fgIsTeam(i)&&fgTeamTap(i)) return;
@@ -11032,7 +11034,6 @@ function fgFinale(instant){
   FG.bigRain=instant?"now":"new"; $("#fgField").classList.add("fgparty"); fgDrawRain(false);
   const box=$("#fgDoneWho"), counts={};
   for(const v of Object.values(FG.fl||{})) if(v&&v.k) counts[v.k]=(counts[v.k]||0)+1;
-  for(const v of Object.values(FG.big||{})) if(v&&v.k) counts[v.k]=(counts[v.k]||0)+1;
   box.innerHTML=Object.entries(counts).sort((a,b)=>b[1]-a[1]).map(([k,n])=>`<div class="fgwho"><div class="fy still">${fairySVG(fgLookOf(k),{crop:"head"})}</div><b>${esc(fgLookOf(k).name)}</b><small>${esc(kidOf(k).name)} · 🌸 ${n}</small></div>`).join("");
   if(instant){$("#fgDone").hidden=false;return}
   bump("fairyGardens"); tada(); setTimeout(()=>{[1047,1319,1568].forEach((f,k)=>setTimeout(()=>blip(f,.3,"triangle",.1),k*140))},700);

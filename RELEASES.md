@@ -4,6 +4,19 @@ Newest first. Each release has kid-friendly notes (shown to everyone in the game
 
 ---
 
+## 1.24: Rainbows come faster 🌈
+**November 1, 2026**
+
+### For everyone
+- 🌈 **3 flowers, then a rainbow:** each fairy garden now has 3 flower buds. Bloom all 3 and the rainbow comes out!
+- 🌺 **See what you're working toward:** the big Rainbow Flower is in the garden from the start. Every flower you bloom opens more of its petals, and it tells you how many flowers are left.
+
+### For grown-ups
+- Fairy Garden went from 9 buds plus 3 Rainbow Flower puzzles (12 puzzles) to 3 buds (3 puzzles). The Rainbow Flower no longer has its own puzzles; each bloom opens two of its six petals, and the third bloom starts the giant rainbow finale.
+- The middle bud is the team flower when more than one fairy is in the garden.
+
+---
+
 ## 1.23: Picket fence and brown eggs 🥚
 **November 1, 2026**
 
