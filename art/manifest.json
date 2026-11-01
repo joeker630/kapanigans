@@ -476,6 +476,114 @@
   "cutout": true,
   "made": "2026-11-01"
  },
+ "fairy/fx_butterfly_closed": {
+  "file": "art/fairy/fx_butterfly_closed.webp",
+  "w": 128,
+  "h": 128,
+  "prompt": "a small delicate pale lilac and cream butterfly with wings folded up together, seen from the side",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/fx_butterfly_closed2": {
+  "file": "art/fairy/fx_butterfly_closed2.webp",
+  "w": 128,
+  "h": 128,
+  "prompt": "a small delicate pale buttercup yellow and peach butterfly with wings folded up together, seen from the side",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/fx_butterfly_open": {
+  "file": "art/fairy/fx_butterfly_open.webp",
+  "w": 128,
+  "h": 128,
+  "prompt": "a small delicate pale lilac and cream butterfly with wings spread wide open, seen from above",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/fx_butterfly_open2": {
+  "file": "art/fairy/fx_butterfly_open2.webp",
+  "w": 128,
+  "h": 128,
+  "prompt": "a small delicate pale buttercup yellow and peach butterfly with wings spread wide open, seen from above",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/fx_cloud1": {
+  "file": "art/fairy/fx_cloud1.webp",
+  "w": 512,
+  "h": 256,
+  "prompt": "a soft fluffy white and pale pink watercolor cloud",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/fx_cloud2": {
+  "file": "art/fairy/fx_cloud2.webp",
+  "w": 512,
+  "h": 256,
+  "prompt": "a soft fluffy white and pale pink watercolor cloud",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/fx_cloud3": {
+  "file": "art/fairy/fx_cloud3.webp",
+  "w": 512,
+  "h": 256,
+  "prompt": "a soft fluffy white and pale pink watercolor cloud",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/fx_heart": {
+  "file": "art/fairy/fx_heart.webp",
+  "w": 128,
+  "h": 128,
+  "prompt": "a small soft painted golden heart with a gentle glow",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/fx_sparkle1": {
+  "file": "art/fairy/fx_sparkle1.webp",
+  "w": 64,
+  "h": 64,
+  "prompt": "a single small four-point golden star glint with soft glow",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/fx_sparkle2": {
+  "file": "art/fairy/fx_sparkle2.webp",
+  "w": 64,
+  "h": 64,
+  "prompt": "a tiny round soft white and golden sparkle of light",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/fx_sparkle3": {
+  "file": "art/fairy/fx_sparkle3.webp",
+  "w": 64,
+  "h": 64,
+  "prompt": "a small six-point white starburst glint",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
+ "fairy/fx_sparkle4": {
+  "file": "art/fairy/fx_sparkle4.webp",
+  "w": 64,
+  "h": 64,
+  "prompt": "a cluster of three tiny golden sparkles",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-01"
+ },
  "fairy/hair_bob": {
   "file": "art/fairy/hair_bob.webp",
   "w": 512,
