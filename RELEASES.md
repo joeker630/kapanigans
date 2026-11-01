@@ -4,6 +4,22 @@ Newest first. Each release has kid-friendly notes (shown to everyone in the game
 
 ---
 
+## 1.23: Picket fence and brown eggs 🥚
+**November 1, 2026**
+
+### For everyone
+- 🏡 **A real fence:** once you build the fence, a white picket fence goes all the way around the animals' pasture. The animals walk behind the far side and in front of the near side.
+- 🥚 **Brown eggs:** some hens lay brown eggs now! The same hens always lay brown ones.
+- 🧺 **A real basket:** the "Put the carrots in the basket" counting puzzle shows a wicker basket.
+
+### For grown-ups
+- Wired the ready art from `ART.md`: `bld/fence`, `goods/egg_brown` and `tools/basket`. `ART.md` is updated.
+- The fence file is really a corner post with a short run and a long run, so the game crops out the long run and mirrors it for the other two sides. Each piece is depth-sorted with the animals. `fencecorner` came out as a small square pen, so it isn't used.
+- Brown eggs are cosmetic for now: they show in the hen's bubble and still count as eggs. Sorting them by color needs the Big egg-sort puzzle, which isn't built yet.
+- Still waiting for the features they belong to: `food/corn` (Feed puzzle picture choices), `tools/bucket` (co-op milking), `hide/haypile` and `hide/bush` (egg hunt). The Bedtime Story test art is still waiting on Joe's picks.
+
+---
+
 ## 1.22: Violet's Fairy Garden 🧚
 **November 1, 2026**
 

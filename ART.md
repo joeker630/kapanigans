@@ -1,6 +1,6 @@
 # Kapanigans art inventory
 
-Every finished image, where it lives and whether the game uses it yet. Updated Nov 1, 2026.
+Every finished image, where it lives and whether the game uses it yet. Updated Nov 1, 2026 (1.23 wired the fence, brown eggs and basket).
 
 - **In game** = `index.html` already loads it.
 - **Ready, not wired** = the file exists; the game doesn't use it yet. This is the main build's to-do list.
@@ -26,19 +26,20 @@ Every finished image, where it lives and whether the game uses it yet. Updated N
 | Files | Status |
 |---|---|
 | `goods/egg_white`, `goods/milk`, `goods/wool` | In game |
-| `goods/egg_brown` (for the Big "sort eggs by color" puzzle; sizes in code) | **Ready, not wired** |
+| `goods/egg_brown` (about half the hens always lay brown eggs; shown in their ready bubble. Also meant for the Big "sort eggs by color" puzzle, not built yet) | In game |
 | `food/hay`, `food/slop`, `food/feed` | In game |
-| `food/corn` (corn pile, the Feed puzzle's CORN choice) | **Ready, not wired** |
+| `food/corn` (corn pile, the Feed puzzle's CORN choice; that picture choice isn't built yet) | **Ready, not wired** |
 | `tools/wateringcan` (white, tint in code) | In game |
-| `tools/bucket` (empty bucket, co-op milking) | **Ready, not wired** |
-| `tools/basket` (harvest basket) | **Ready, not wired** |
-| `hide/haypile`, `hide/bush` (egg-hunt hiding spots) | **Ready, not wired** |
+| `tools/bucket` (empty bucket, for co-op milking, not built yet) | **Ready, not wired** |
+| `tools/basket` (harvest basket; the "Put N in the basket" counting puzzle) | In game |
+| `hide/haypile`, `hide/bush` (egg-hunt hiding spots; the egg hunt isn't built yet) | **Ready, not wired** |
 
 ### Buildings: `bld/` (named after `STRUCT` keys; `barn` uses `store`)
 | Files | Status |
 |---|---|
 | `stand` `board` `fbasket` `bank` `store` `coop` `pen` `shed` `stable` | In game |
-| `fence` (straight piece), `fencecorner` (L corner); mirror for other directions | **Ready, not wired** (the pasture fence is still drawn in code) |
+| `fence`: the picket fence around the pasture once it's bought. The file is really a corner post with a short run and a long run, so the game crops out the long run (source x 66–256) and mirrors it for the other direction | In game |
+| `fencecorner`: came out as a small square pen, not an L corner, so it isn't used. Regenerate it if a corner piece is needed | Not usable |
 
 ### Decorations: `decor/` (named after `DECOR` keys)
 | Files | Status |
