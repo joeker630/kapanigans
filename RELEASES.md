@@ -4,6 +4,24 @@ Newest first. Each release has kid-friendly notes (shown to everyone in the game
 
 ---
 
+## 1.22: Violet's Fairy Garden 🧚
+**November 1, 2026**
+
+### For everyone
+- 🧚 **Make your own fairy:** pick the wings, hair, eyes, dress or shirt, skirt or pants, shoes, a crown and a magic wand. Give her a fairy name!
+- 🦋 **Flapping wings:** your fairy flies around the garden with a sparkle trail.
+- 🌸 **Make the flowers bloom:** tap a bud, solve a puzzle, and it opens up for everyone.
+- 🌈 **Rainbows:** finish a patch of flowers and a rainbow comes out.
+- 🌺 **The Rainbow Flower:** help it open together for a giant rainbow!
+
+### For grown-ups
+- New co-op mode (backlog #21), marked Beta Version. One shared garden per family, saved in Firebase under `fairy`; each person's fairy under `fairies/<person>`.
+- 9 buds in 3 patches, then the Rainbow Flower (3 more puzzles). Puzzles use the Farmstand engine at each player's level; grown-ups get a new game if they lose.
+- Fairies are drawn in code (layered SVG), so every color choice works and the wings animate.
+- Stats: Fairy Garden time, "Fairy flowers bloomed" and "Fairy gardens finished"; puzzles are logged with the "(fairy)" tag.
+
+---
+
 ## 1.21: Better photo coloring pages ✏️
 **October 31, 2026**
 

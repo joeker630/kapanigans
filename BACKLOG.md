@@ -1251,6 +1251,42 @@ Show **release notes** inside Kapanigans so everyone knows what changed: a frien
 
 ---
 
+## 21. 🛠️ New game: Violet's Fairy Garden (built Nov 1, Beta Version)
+
+A **co-op** game: everyone makes their own fairy, then the family works together to make one shared garden bloom.
+
+**Make your fairy (first visit, ✏️ to change anytime)**
+- Drawn in code as layered pictures, so every part can be recolored and the wings really flap.
+- **Wings:** 6 shapes (butterfly, dragonfly, petal, leaf, heart, moon moth), 3 sizes, 10 colors including rainbow and crystal, sparkles on or off.
+- **Hair:** 8 styles (long waves, pigtails, side braid, pixie cut, curly puff, ponytail, bob, two buns), 12 colors including rainbow.
+- **Eyes:** 8 colors. **Skin:** 6 tones.
+- **Dress or shirt:** petal dress, tutu dress, long gown, T-shirt, puffy blouse, tank top. **Skirt or pants:** petal skirt, leggings, pants, shorts. **Shoes:** ballet slippers, boots, sneakers, sandals, bare feet. 14 clothing colors each.
+- **Extras:** flower crown, tiara, big bow or antennae, and a magic wand. **Name:** 16 fairy names.
+- 🎲 Surprise me. Little players hear each choice read aloud.
+- Original designs (not Tinker Bell or any other movie fairy).
+
+**The garden**
+- 9 flower buds in 3 patches; flower types and colors change with each new garden.
+- Tap a bud: your fairy flies there (sparkle trail, fast wings), then an **age-appropriate puzzle** opens (same puzzle engine as the Farmstand; grown-ups get grown-up games and a new one if they lose).
+- Solve it and the flower **blooms** for everyone, with a butterfly and a chime.
+- All 3 flowers in a patch → a **rainbow** draws itself over that patch.
+- All 3 patches → the **Rainbow Flower** grows in the middle; 3 more puzzles (anyone can help) open its petals.
+- Then a **giant rainbow**, the sun smiles, every fairy does a happy loop, and a thank-you card shows who helped. 🌱 Grow a new garden starts over.
+- Tap anywhere to fly there. Idle fairies flutter around on their own.
+- While someone is working on a bud it gets a ring in their color, so two kids don't pick the same one.
+
+**Multiplayer**
+- One shared garden per family in Firebase (`families/<CODE>/fairy`), saved between visits like the farm. Fairies in `families/<CODE>/fairies/<kid>`.
+- Everyone in the garden sees each other's fairies fly around. Home shows "🧚 Join … in the Fairy Garden".
+- Stats: time in the garden, "Fairy flowers bloomed", "Fairy gardens finished", and every puzzle is logged like the farm ones.
+- Tall phones get a stacked garden layout; iPads get the wide one.
+
+**Still to do**
+- [ ] Test on the iPads and the Fire tablet with two players at once
+- [ ] Generated art pass (the art chat holds the image token): storybook-quality fairy parts or garden backgrounds, if the code-drawn ones aren't enough
+
+---
+
 ## Shared groundwork (needed by #1, #3, #4, #5, #8, #13 and #14)
 
 - ⚠️ **One shared script:** Farmstand and the rest of the game live in the same `<script>`, so two `function` declarations with the same name silently replace each other (this broke story and inbox sending once: `sendGift`, `deliver`). Use unique names; a quick check is to list duplicate `function` names before pushing.

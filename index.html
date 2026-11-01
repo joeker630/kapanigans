@@ -1280,6 +1280,147 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
 .tpmover{pointer-events:none}
 .tpslip{animation:tpshake .35s}
 @keyframes tpshake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+
+/* ===== Violet's Fairy Garden (#21) ===== */
+.game .icon.fgicon{position:relative}
+.fghead h1{font-size:clamp(20px,3.8vw,34px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fgcount{position:absolute;left:10px;top:10px;z-index:3;pointer-events:none;font-weight:900;font-size:clamp(15px,2.4vw,20px);background:#fff;border-radius:999px;padding:4px 12px;box-shadow:0 2px 0 #E3D5FF;white-space:nowrap}
+.fgcount span{margin-left:8px}
+#fgField{position:relative;flex:1;min-height:0;border-radius:22px;overflow:hidden;touch-action:manipulation;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;
+  background:#BFE6FF;box-shadow:0 4px 0 #A98BF0;margin-bottom:max(10px,env(safe-area-inset-bottom,0px));--u:6px}
+#fgBg,#fgRain{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#fgFlowers,#fgFairies,#fgFx{position:absolute;inset:0;pointer-events:none}
+#fgFlowers .fgfl{pointer-events:auto}
+.fgsun{animation:fgspin 40s linear infinite}
+@keyframes fgspin{to{transform:rotate(360deg)}}
+.fgsunface{opacity:0;transition:opacity .8s}
+#fgField.fgparty .fgsunface{opacity:1}
+.fgtw{animation:fgtw 2.4s ease-in-out infinite}
+@keyframes fgtw{50%{opacity:.15}}
+.fgcloud{position:absolute;width:calc(var(--u)*16);height:calc(var(--u)*5);background:#fff;border-radius:999px;opacity:.9;pointer-events:none;animation:fgcloud 60s linear infinite}
+.fgcloud::before,.fgcloud::after{content:"";position:absolute;background:#fff;border-radius:50%}
+.fgcloud::before{width:45%;height:150%;left:15%;bottom:20%}.fgcloud::after{width:35%;height:120%;left:48%;bottom:25%}
+.fgcloud.c1{top:9%;left:-20%}.fgcloud.c2{top:20%;left:-20%;transform:scale(.7);animation-duration:85s;animation-delay:-40s}.fgcloud.c3{top:4%;left:-20%;transform:scale(.55);animation-duration:110s;animation-delay:-70s}
+@keyframes fgcloud{from{left:-20%}to{left:110%}}
+/* flowers */
+.fgfl{position:absolute;width:calc(var(--u)*15);height:calc(var(--u)*24);transform:translate(-50%,-100%);cursor:pointer}
+.fgfl svg{width:100%;height:100%;overflow:visible;display:block}
+.fgfl .sway{transform-box:view-box;transform-origin:50px 160px}
+.fgfl .petals{transform-box:view-box;transform-origin:50px 55px;transform:scale(0) rotate(-70deg);opacity:0}
+.fgfl .bud{transform-box:view-box;transform-origin:50px 74px;transition:transform .45s,opacity .45s}
+.fgfl .fgglow{animation:fgpulse 1.6s ease-in-out infinite;transform-box:view-box;transform-origin:50px 56px}
+@keyframes fgpulse{50%{opacity:.35;transform:scale(.85)}}
+.fgfl .ring{display:none;stroke:var(--c,#fff);transform-box:view-box;transform-origin:50px 56px;animation:fgspin 3s linear infinite}
+.fgfl.claim .ring{display:block}
+.fgfl.bloom .bud{transform:scale(0);opacity:0}
+.fgfl.bloom .fgglow,.fgfl.bloom .ring{display:none}
+.fgfl.bloom .petals{animation:fgopen 1.1s cubic-bezier(.34,1.56,.64,1) .15s forwards}
+.fgfl.bloom .sway{animation:fgsway 3.6s ease-in-out infinite}
+.fgfl.bloom.instant .petals{animation:none;transform:none;opacity:1}
+.fgfl.bloom.instant .bud{transition:none}
+@keyframes fgopen{to{transform:none;opacity:1}}
+@keyframes fgsway{0%,100%{transform:rotate(-2.5deg)}50%{transform:rotate(2.5deg)}}
+.fgfl.fgwig .sway{animation:fgwig .5s}
+@keyframes fgwig{25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
+.fgfl.fgbig{width:calc(var(--u)*22);height:calc(var(--u)*34);display:none}
+.fgfl.fgbig.fgon{display:block;animation:fggrow 1.4s cubic-bezier(.34,1.56,.64,1)}
+@keyframes fggrow{from{transform:translate(-50%,-100%) scale(.1);opacity:0}}
+.fgfl.fgbig .petals{transform:none;opacity:1;animation:none}
+.fgfl.fgbig .bud{transform:scale(1.25);opacity:1}
+.fgfl.fgbig.p0 .bud{transform:scale(0);opacity:0}
+.fgfl.fgbig .fgglow{display:block}
+.fgfl.fgbig .rp{transform-box:view-box;transform-origin:50px 55px;transform:scale(0);transition:transform .9s cubic-bezier(.34,1.56,.64,1)}
+.fgfl.fgbig.p0 .rp0,.fgfl.fgbig.p1 .rp1,.fgfl.fgbig.p2 .rp2{transform:none}
+.fgfl.fgbig.full .fgcore{animation:fgcore 1.2s ease-in-out infinite}
+.fgfl.fgbig.full .sway{animation:fgsway 3s ease-in-out infinite}
+@keyframes fgcore{50%{opacity:.8}}
+/* rainbows */
+#fgRain path{fill:none;stroke-linecap:butt}
+#fgRain .rb path{stroke-dasharray:1 1;stroke-dashoffset:1;animation:fgdraw 1.6s ease-out forwards}
+#fgRain .rb .cl{opacity:0;animation:fgfade .6s ease-out .9s forwards}
+#fgRain .rb.now path{animation:none;stroke-dashoffset:0}#fgRain .rb.now .cl{animation:none;opacity:1}
+#fgRain .rb.big{opacity:.92}
+@keyframes fgdraw{to{stroke-dashoffset:0}}
+@keyframes fgfade{to{opacity:1}}
+/* fairies */
+.fy svg{display:block;width:100%;height:100%;overflow:visible}
+.fy .fwr{transform-box:view-box;transform-origin:104px 130px;animation:fyflapR var(--flap,.55s) ease-in-out infinite alternate}
+.fy .fwl{transform-box:view-box;transform-origin:96px 130px;animation:fyflapL var(--flap,.55s) ease-in-out infinite alternate}
+@keyframes fyflapR{from{transform:scaleX(1)}to{transform:scaleX(.42) skewY(-5deg)}}
+@keyframes fyflapL{from{transform:scaleX(1)}to{transform:scaleX(.42) skewY(5deg)}}
+.fy .fbody{animation:fybob 2.4s ease-in-out infinite}
+@keyframes fybob{50%{transform:translateY(-3px)}}
+.fy .fsp,.fy .fwstar{transform-box:fill-box;transform-origin:center;animation:fytw 1.6s ease-in-out infinite}
+@keyframes fytw{50%{opacity:.3;transform:scale(.6)}}
+.fy.fast{--flap:.1s}
+.fy.still *{animation:none!important}
+@media (prefers-reduced-motion: reduce){.fy{--flap:1.4s}.fy .fbody{animation:none}}
+.gfy{position:absolute;left:0;top:0;width:calc(var(--u)*20);height:calc(var(--u)*20);margin:calc(var(--u)*-11) 0 0 calc(var(--u)*-10);will-change:transform}
+.gfy .fyin{width:100%;height:100%;transition:transform .2s}
+.gfy .fgtag{position:absolute;left:50%;top:94%;transform:translateX(-50%);background:rgba(255,255,255,.92);border:3px solid var(--k,#C3A6FF);border-radius:999px;padding:1px 10px;white-space:nowrap;text-align:center;line-height:1.1;font-size:calc(var(--u)*1.7)}
+.gfy .fgtag b{font-weight:900}.gfy .fgtag small{display:block;font-size:.72em;opacity:.7;font-weight:700}
+.gfy.me{z-index:2}.gfy.me .fgtag{box-shadow:0 0 0 3px #fff,0 0 12px var(--k)}
+.fgsp{position:absolute;transform:translate(-50%,-50%);pointer-events:none;animation:fgsp .95s ease-out forwards;text-shadow:0 0 6px #fff;font-weight:900}
+@keyframes fgsp{0%{opacity:1;transform:translate(-50%,-50%) scale(.4)}30%{opacity:1;transform:translate(calc(-50% + var(--dx)*.4),calc(-50% + var(--dy)*.4)) scale(1.1)}100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(.5) rotate(90deg)}}
+.fgbfly{position:absolute;pointer-events:none;animation:fgbfly 4.2s ease-in-out forwards}
+@keyframes fgbfly{0%{opacity:0;transform:translate(-50%,0) scale(.3)}15%{opacity:1;transform:translate(-50%,-20px) scale(1)}100%{opacity:0;transform:translate(calc(-50% + var(--tx)),var(--ty)) scale(.8) rotate(15deg)}}
+.fgtip{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);background:rgba(255,255,255,.88);border-radius:18px;padding:6px 16px;font-weight:800;font-size:clamp(13px,2vw,17px);pointer-events:none;width:max-content;max-width:88%;text-align:center}
+.fgbanner{position:absolute;left:50%;top:22%;transform:translate(-50%,-50%);background:#fff;border-radius:24px;padding:12px 26px;font-weight:900;font-size:clamp(24px,5vw,44px);box-shadow:0 6px 0 #C3A6FF,0 0 40px #fff;pointer-events:none;white-space:nowrap;z-index:3}
+.fgbanner.pop{animation:fgpop .5s cubic-bezier(.34,1.56,.64,1)}
+@keyframes fgpop{from{transform:translate(-50%,-50%) scale(.3);opacity:0}}
+.fgdone{position:absolute;inset:0;z-index:4;display:grid;place-items:center;background:rgba(255,240,250,.35);padding:12px}
+.fgcard{background:var(--paper,#fff);border-radius:26px;padding:18px 20px;width:min(520px,94%);max-height:94%;overflow:auto;text-align:center;box-shadow:0 8px 0 #C3A6FF;animation:fgpop2 .6s cubic-bezier(.34,1.56,.64,1)}
+@keyframes fgpop2{from{transform:scale(.4);opacity:0}}
+.fgcard h2{font-size:clamp(22px,4vw,32px)}
+.fgwhos{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin:12px 0}
+.fgwho{display:flex;flex-direction:column;align-items:center;width:96px}.fgwho .fy{width:80px;height:80px}.fgwho small{opacity:.7;font-weight:700}
+/* the maker */
+.fgmaker{position:absolute;inset:0;z-index:5;display:flex;gap:12px;padding:12px;background:linear-gradient(160deg,#FFF0F8,#EFE8FF 60%,#E6F6FF)}
+.fgmleft{flex:0 0 38%;display:flex;flex-direction:column;align-items:center;min-height:0}
+.fgmleft h2{font-size:clamp(20px,3.4vw,30px);margin:0 0 4px;text-align:center}
+.fgmprev{flex:1;min-height:0;width:100%;display:grid;place-items:center}
+.fgmprev .fy{height:100%;max-height:440px;aspect-ratio:1;max-width:100%}
+.fgmname{font-size:clamp(20px,3.2vw,28px);font-weight:900;color:#7C4DFF}
+.fgmbtns{display:flex;gap:10px;align-items:center;margin-top:8px}
+.fgmright{flex:1;min-width:0;display:flex;flex-direction:column;min-height:0}
+.fgmtabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;flex:0 0 auto;-webkit-overflow-scrolling:touch}
+.fgmtabs button{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:2px;background:#fff;border:3px solid transparent;border-radius:16px;padding:6px 10px;min-width:70px;font:inherit;cursor:pointer;box-shadow:0 2px 0 #E3D5FF}
+.fgmtabs button span{font-size:26px;line-height:1}.fgmtabs button small{font-size:12px;font-weight:800;white-space:nowrap}
+.fgmtabs button.on{border-color:#B07CFF;background:#F5EEFF}
+.fgmopts{flex:1;min-height:0;overflow:auto;padding:2px 4px 12px;-webkit-overflow-scrolling:touch}
+.fgmopts h3{margin:10px 0 6px;font-size:17px}
+.fgtiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}
+.fgtile{background:#fff;border:3px solid transparent;border-radius:18px;padding:6px 4px 4px;font:inherit;cursor:pointer;box-shadow:0 2px 0 #E3D5FF;display:flex;flex-direction:column;align-items:center}
+.fgtile .fy{width:100%;aspect-ratio:1.15}.fgtile .fy svg,.fgwho .fy svg{overflow:hidden}.fgtile small{font-weight:800;font-size:13px}
+.fgtile.on{border-color:#B07CFF;background:#F5EEFF;box-shadow:0 0 0 3px #E9DDFF}
+.fgsws{display:flex;flex-wrap:wrap;gap:10px}
+.fgsw{width:44px;height:44px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px #D8CCF0;cursor:pointer;padding:0}
+.fgsw.on{box-shadow:0 0 0 4px #7C4DFF;transform:scale(1.12)}
+.fgsizes{display:flex;gap:8px}.fgsizes button{flex:1;max-width:120px;background:#fff;border:3px solid transparent;border-radius:16px;padding:6px;font:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;min-height:72px;box-shadow:0 2px 0 #E3D5FF}
+.fgsizes button.on{border-color:#B07CFF;background:#F5EEFF}.fgsizes small{font-weight:800}
+.fgtog{margin-top:12px;background:#fff;border:3px solid #E3D5FF;border-radius:14px;padding:8px 14px;font:inherit;font-weight:800;cursor:pointer}.fgtog.on{border-color:#B07CFF}
+.fgnames{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px}
+.fgnames button{background:#fff;border:3px solid transparent;border-radius:14px;padding:10px;font:inherit;font-weight:900;font-size:18px;cursor:pointer;box-shadow:0 2px 0 #E3D5FF}
+.fgnames button.on{border-color:#B07CFF;background:#F5EEFF;color:#7C4DFF}
+.fgnote{background:#FFF7D6;border-radius:12px;padding:8px 12px;font-weight:700}
+@media (max-aspect-ratio:1/1){
+  .fgmaker{flex-direction:column;gap:6px;padding:10px}
+  .fgmleft{flex:0 0 auto;display:grid;grid-template-columns:auto 1fr;align-items:center;gap:2px 10px}
+  .fgmprev{grid-row:1/4;width:min(44vw,28vh);height:min(44vw,28vh)}
+  .fgmprev .fy{height:100%}
+  .fgmleft h2{grid-column:2;text-align:left;font-size:18px;margin:0}
+  .fgmname{grid-column:2;font-size:20px}
+  .fgmbtns{grid-column:2;flex-wrap:wrap;margin-top:4px;gap:6px}
+  .fgmbtns .bigbtn{font-size:15px;padding:10px 14px}
+  .fgtiles{grid-template-columns:repeat(auto-fill,minmax(84px,1fr))}
+  .fgmtabs button{min-width:62px;padding:4px 8px}.fgmtabs button span{font-size:22px}
+}
+@media (max-width:600px){
+  .fghead h1 .fgt{display:none}
+  .fgcount{font-size:14px;padding:3px 8px}.fgcount span{margin-left:4px}
+  .gfy .fgtag{font-size:11px}
+}
+
 </style>
 
 </head>
@@ -1345,6 +1486,7 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
     <button class="game live" id="playColor"><span class="tag">Play</span><span class="icon">🎨</span><h3>Color Together</h3><p>Everyone colors their own part of one big picture.</p></button>
     <button class="game live" id="playStory"><span class="tag">Play</span><span class="icon">🌙</span><h3>Bedtime Story</h3><p>Make a silly story with your own characters and send it as a gift.</p></button>
     <button class="game live" id="playFarm"><span class="tag">Play</span><span class="icon">🥕</span><h3>Kapanigan Farmstand</h3><p>Feed the animals and pick crops on the family farm.</p></button>
+    <button class="game live" id="playFairy"><span class="tag beta">Beta Version</span><span class="icon">🧚</span><h3>Violet's Fairy Garden</h3><p>Make your own fairy, then help the flowers bloom and the rainbows come out.</p></button>
     <button class="game live" id="playCtf"><span class="tag beta">Beta Version</span><span class="icon">🚩</span><h3>Capture the Flag</h3><p>Grab the other team's flag. Watch out for Jeppson's poops!</p></button>
     <button class="game live" id="playSnake"><span class="tag beta">Beta Version</span><span class="icon">🐍</span><h3>Snake Race</h3><p>Eat snacks to grow the longest snake. Don't bump the others!</p></button>
     <button class="game live" id="playInbox"><span class="tag">Play</span><span class="icon">💌</span><h3>Inbox</h3><p>Send stickers, drawings and voice notes to the family.</p></button>
@@ -1468,6 +1610,38 @@ em.up{color:#1B998B;font-style:normal}em.down{color:var(--fox);font-style:normal
     <div class="sncrash" id="snCrash" hidden><b>💥 Crash!</b><button class="bigbtn" id="snCrashBtn">🧩 Get back in</button></div>
   </div>
   <div class="snover" id="snOver" hidden><div class="sncard"><h2 id="snWinner"></h2><div id="snPodium"></div><div class="rowbtns"><button class="bigbtn" id="snAgain">🔁 Play again</button><button class="ghost" id="snOverHome">🏠 Home</button></div></div></div>
+</section>
+
+<!-- ============ VIOLET'S FAIRY GARDEN (#21) ============ -->
+<section class="screen" id="fairy" hidden>
+  <div class="shead fghead">
+    <button class="round" id="fgHome" aria-label="Home">🏠</button>
+    <h1>🧚<span class="fgt"> Violet's Fairy Garden</span></h1>
+    <button class="round" id="fgEdit" aria-label="Change my fairy">✏️</button>
+    <button class="round" id="fgSay" aria-label="What do I do?">🔊</button>
+  </div>
+  <div id="fgField">
+    <svg id="fgBg" preserveAspectRatio="none"></svg>
+    <div class="fgcloud c1"></div><div class="fgcloud c2"></div><div class="fgcloud c3"></div>
+    <svg id="fgRain"></svg>
+    <span class="fgcount" id="fgCount"></span>
+    <div id="fgFlowers"></div>
+    <div id="fgFairies"></div>
+    <div id="fgFx"></div>
+    <div class="fgtip" id="fgTip"></div>
+    <div class="fgbanner" id="fgBanner" hidden></div>
+    <div class="fgdone" id="fgDone" hidden><div class="fgcard">
+      <h2>🌈 The whole garden is blooming!</h2>
+      <p>Thank you, fairies!</p>
+      <div class="fgwhos" id="fgDoneWho"></div>
+      <div class="rowbtns"><button class="bigbtn" id="fgNew">🌱 Grow a new garden</button><button class="ghost" id="fgDoneHome">🏠 Home</button></div>
+    </div></div>
+    <div class="fgmaker" id="fgMaker" hidden>
+      <div class="fgmleft"><h2 id="fgMkTitle">✨ Make your fairy!</h2><div class="fgmprev" id="fgMkPrev"></div><b class="fgmname" id="fgMkName"></b>
+        <div class="fgmbtns"><button class="round" id="fgMkDice" aria-label="Surprise me">🎲</button><button class="bigbtn" id="fgMkDone">🌸 Fly to the garden!</button></div></div>
+      <div class="fgmright"><div class="fgmtabs" id="fgMkTabs"></div><div class="fgmopts" id="fgMkOpts"></div></div>
+    </div>
+  </div>
 </section>
 
 <!-- ============ FARMSTAND ============ -->
@@ -1618,7 +1792,7 @@ function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i)
 function rng(seed){let a=seed>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 function esc(s){return String(s).replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]))}
 function kidOf(k){return KIDS[k] || (k==="kapanigans"?SYS:KIDS.bear)}
-function show(id){const prevScr=screen;{const t=document.getElementById("a2hs");if(t&&id!=="lobby")t.remove()}if(screen==="reader"&&id!=="reader")hush();if(screen==="inbox"&&id!=="inbox"&&typeof stopRec==="function")stopRec();if(prevScr==="snake"&&id!=="snake"&&typeof snLeave==="function")snLeave();if(prevScr==="ctf"&&id!=="ctf"&&typeof ctfLeave==="function")ctfLeave(); for(const s of ["setup","pick","lobby","game","story","reader","inbox","grown","farm","dress","ctf","snake"]) $("#"+s).hidden = s!==id; if(id!=="farm"&&id!=="ctf"&&tk) closeTask(true); screen=id; if(typeof renderVideoUI==="function") renderVideoUI(); if(id==="pick"&&typeof syncMailBadges==="function"){syncMailBadges();renderPickClaims()}
+function show(id){const prevScr=screen;{const t=document.getElementById("a2hs");if(t&&id!=="lobby")t.remove()}if(screen==="reader"&&id!=="reader")hush();if(screen==="inbox"&&id!=="inbox"&&typeof stopRec==="function")stopRec();if(prevScr==="snake"&&id!=="snake"&&typeof snLeave==="function")snLeave();if(prevScr==="ctf"&&id!=="ctf"&&typeof ctfLeave==="function")ctfLeave();if(prevScr==="fairy"&&id!=="fairy"&&typeof fgLeave==="function")fgLeave(); for(const s of ["setup","pick","lobby","game","story","reader","inbox","grown","farm","dress","ctf","snake","fairy"]) $("#"+s).hidden = s!==id; if(id!=="farm"&&id!=="ctf"&&id!=="fairy"&&tk) closeTask(true); screen=id; if(typeof renderVideoUI==="function") renderVideoUI(); if(id==="pick"&&typeof syncMailBadges==="function"){syncMailBadges();renderPickClaims()}
   if(me&&room&&id!=="game"&&id!=="setup") setPresence(id==="farm"?{scr:id}:{scr:id,act:null});
   if(typeof tickStats==="function") tickStats();
   if(id!==prevScr) showHelp(id); else if(!$("#help").hidden&&helpLast!==id) $("#help").hidden=true}
@@ -1648,6 +1822,8 @@ const HELP={
     faq:[["Walls?","They just bonk you back."],["⚡ Boost?","Hold it to go faster. It uses up a little of your snake."],["Not enough players?","Computer snakes fill in."]]},
   farm:{em:"🥕",title:"Farmstand",steps:[["👆","Tap a crop, animal or building. Your farmer walks there."],["🧩","Solve the little puzzle to do the chore."],["🌱","Plant, water and pick crops. Feed animals for 🥚 🥛 🧶."],["🧺","Sell at the farmstand for 🪙 Moolah. Build at the red barn."],["📋","Fill family orders on the board."],["🤏","Pinch or tap ➕ ➖ to zoom. Press and hold to move buildings."]],
     faq:[["Is it our farm?","Yes, the whole family shares one farm."],["Did I lose anything?","Never. Plants and animals just droop until you help."],["How long?","About 30 minutes is a good farm visit."]]},
+  fairy:{em:"🧚",title:"Violet's Fairy Garden",steps:[["✨","First, make your fairy: wings, hair, eyes, clothes, shoes and a name. Tap ✏️ to change her later."],["🌷","Tap a flower bud. Your fairy flies there and a puzzle opens."],["🌸","Solve it and the flower blooms for everyone."],["🌈","Finish a patch of 3 for a rainbow, then help the Rainbow Flower open together."]],
+    faq:[["Is it one garden for everyone?","Yes, the whole family shares one garden, and it's saved until it's finished."],["A bud has a colored ring?","Someone else is solving that one. Pick another."],["Lost a grown-up game?","You get a new one for the same flower."]]},
 };
 let helpLast="";
 // who sees help: grown-ups see each screen's help once (per person, per device); the kids never do (they can't read yet).
@@ -1684,7 +1860,7 @@ addEventListener("resize",()=>requestAnimationFrame(fitHelp));
    "## 1.0: Title" starts a release; "### For everyone" / "### For grown-ups" / any other "###" section follow.
    Grown-up sections ("For grown-ups", "How long it took…") are hidden from the kids.
    Bump APP_VERSION together with a new RELEASES.md entry. */
-const APP_VERSION="1.21";
+const APP_VERSION="1.22";
 const WN={rel:null,loading:null};
 function wnGrownOnly(h){return /grown/i.test(h)}
 function wnParse(md){
@@ -2355,6 +2531,7 @@ function wireRoom(){
     const mine=room.peers().find(p=>p.sameTab); if(mine) myPeer=mine.peer;
     if(screen==="lobby") renderLobby();
     if(screen==="ctf"&&typeof ctfRoomRender==="function") ctfRoomRender();
+    if(screen==="fairy"&&typeof fgOnPeers==="function") fgOnPeers();
     if(screen==="game") {renderSeats();renderCursors();checkParty()}
     videoSync();
   },()=>{});
@@ -3109,7 +3286,7 @@ function vidFitHeight(){
 function vidReserve(){
   const box=$("#vid"); if(!box) return; vidFitHeight(); const on=!box.hidden&&!box.dataset.dragged&&innerWidth>=600&&!box.classList.contains("dock");
   const w=on?Math.round(box.getBoundingClientRect().width+28):0;
-  for(const id of ["dress","story","inbox","grown","snake","game","reader"]){const sc=$("#"+id);if(sc)sc.style.paddingRight=(on&&id===screen)?w+"px":""}
+  for(const id of ["dress","story","inbox","grown","snake","fairy","game","reader"]){const sc=$("#"+id);if(sc)sc.style.paddingRight=(on&&id===screen)?w+"px":""}
   for(const D of document.querySelectorAll(".cdrawsheet")) D.style.paddingRight=(on&&!D.hidden)?w+"px":""; // story drawing pad
   const CB=$("#ctfBody"); if(CB){const want=(on&&screen==="ctf")?`calc(100% - ${w-14}px)`:""; if(CB.style.width!==want){CB.style.width=want; if(screen==="ctf"&&typeof ctfLayout==="function") requestAnimationFrame(ctfLayout)}}
   const T=$("#task"); if(T) T.style.paddingRight=(on&&!T.hidden)?w+"px":"";
@@ -3131,7 +3308,7 @@ function renderVideoUI(){
   const box=$("#vid"); if(!box) return;
   // always visible: everywhere except the home screen, which shows everyone's video on the people cards
   const show=screen!=="lobby"&&!!(vid.local||vid.streams.size);
-  box.hidden=!show; if(!show){if(screen==="game")requestAnimationFrame(fitBoard);for(const id of ["dress","story","inbox","grown","snake","game","reader"]){const sc=$("#"+id);if(sc)sc.style.paddingRight=""}for(const D of document.querySelectorAll(".cdrawsheet"))D.style.paddingRight="";{const CB=$("#ctfBody");if(CB&&CB.style.width){CB.style.width="";if(screen==="ctf"&&typeof ctfLayout==="function")requestAnimationFrame(ctfLayout)}}return}
+  box.hidden=!show; if(!show){if(screen==="game")requestAnimationFrame(fitBoard);for(const id of ["dress","story","inbox","grown","snake","fairy","game","reader"]){const sc=$("#"+id);if(sc)sc.style.paddingRight=""}for(const D of document.querySelectorAll(".cdrawsheet"))D.style.paddingRight="";{const CB=$("#ctfBody");if(CB&&CB.style.width){CB.style.width="";if(screen==="ctf"&&typeof ctfLayout==="function")requestAnimationFrame(ctfLayout)}}return}
   box.classList.toggle("min",vid.min); box.classList.toggle("ingame",screen==="game"); box.classList.toggle("many",videoPeers().filter(p=>vid.streams.has(p.peer)).length>=2);
   if(screen!=="game"&&box.classList.contains("dock")){box.classList.remove("dock");if(!box.dataset.dragged)box.style.left="";const tr=$("#tray");if(tr)tr.style.marginBottom=""}
   const tiles=$("#vTiles"); $("#vid .vbtns").insertBefore($("#vFlip"),$("#vShow")); tiles.innerHTML="";
@@ -3212,6 +3389,8 @@ function renderPeople(){
       const b=el("button","bigbtn","🚩 Join Capture the Flag");b.onclick=()=>{sayLittle("Capture the Flag!");joinCtf(pr.cg)};act.append(b);
     } else if(pr.scr==="snake"&&pr.sg){
       const b=el("button","bigbtn","🐍 Join the race");b.onclick=()=>{sayLittle("Snake race!");joinSnake(pr.sg)};act.append(b);
+    } else if(pr.scr==="fairy"){
+      const b=el("button","bigbtn",`🧚 Join ${esc(K.name)} in the Fairy Garden`);b.onclick=()=>{sayLittle("Fairy garden!");openFairy()};act.append(b);
     } else if(pr.scr==="farm"){
       const b=el("button","bigbtn",`🚜 Join ${esc(K.name)} at the Farm`);b.onclick=()=>{sayLittle(`Let's go to the farm!`);openFarm()};act.append(b);
     } else {
@@ -4992,9 +5171,9 @@ document.addEventListener("visibilitychange",()=>{
    families/<CODE>/reports/lastWeek              = monday of the last week a report was sent
    Kids never see any of this. Only counts and times are stored, never drawings, messages or recordings. */
 const SYS={name:"Kapanigans",face:"📊",hue:"#5E5577"};
-const GAME_NAMES={snake:"Snake Race",ctf:"Capture the Flag",color:"Color Together",watch:"Watching",story:"Bedtime Story",inbox:"Inbox",farm:"Farmstand",dress:"Dressing room",grown:"Grown-ups area",lobby:"Menus"};
-const GAME_COLORS={snake:"#65A30D",ctf:"#DC2626",dress:"#DB2777",grown:"#64748B",color:"#7C4DFF",watch:"#C3A6FF",story:"#25306B",inbox:"#E5484D",farm:"#2ECC40",lobby:"#B9DCFB"};
-const COUNT_NAMES={sessions:"Times played",snakeRounds:"Snake races",snakeSnacks:"Snake snacks eaten",snakeLongest:"Longest snake",snakeCrashes:"Snake crashes",colorGames:"Coloring games",picturesDone:"Pictures finished",watched:"Games watched",storiesSent:"Stories made",storiesRead:"Stories read",messagesSent:"Messages sent"};
+const GAME_NAMES={fairy:"Violet's Fairy Garden",snake:"Snake Race",ctf:"Capture the Flag",color:"Color Together",watch:"Watching",story:"Bedtime Story",inbox:"Inbox",farm:"Farmstand",dress:"Dressing room",grown:"Grown-ups area",lobby:"Menus"};
+const GAME_COLORS={fairy:"#E879F9",snake:"#65A30D",ctf:"#DC2626",dress:"#DB2777",grown:"#64748B",color:"#7C4DFF",watch:"#C3A6FF",story:"#25306B",inbox:"#E5484D",farm:"#2ECC40",lobby:"#B9DCFB"};
+const COUNT_NAMES={sessions:"Times played",fairyBlooms:"Fairy flowers bloomed",fairyGardens:"Fairy gardens finished",snakeRounds:"Snake races",snakeSnacks:"Snake snacks eaten",snakeLongest:"Longest snake",snakeCrashes:"Snake crashes",colorGames:"Coloring games",picturesDone:"Pictures finished",watched:"Games watched",storiesSent:"Stories made",storiesRead:"Stories read",messagesSent:"Messages sent"};
 const DEV=(()=>{let d=load("kp.dev");if(!d){d=Math.random().toString(36).slice(2,8);store("kp.dev",d)}return d})();
 const DEV_LABEL=/iPad/.test(navigator.userAgent)||(/Macintosh/.test(navigator.userAgent)&&navigator.maxTouchPoints>1)?"iPad":/iPhone/.test(navigator.userAgent)?"iPhone":/Android/.test(navigator.userAgent)?"Android":"Computer";
 const DAY=86400000;
@@ -5006,7 +5185,7 @@ const stat={acc:{},hours:{},kid:null,last:Date.now(),lastFlush:Date.now(),hidden
 function activity(){
   if(document.visibilityState!=="visible"||!me) return null;
   if(screen==="game") return game&&game.watch?"watch":"color";
-  return {story:"story",reader:"story",inbox:"inbox",lobby:"lobby",farm:"farm",snake:"snake",ctf:"ctf",dress:"dress",grown:"grown"}[screen]||null;
+  return {story:"story",reader:"story",inbox:"inbox",lobby:"lobby",farm:"farm",snake:"snake",ctf:"ctf",fairy:"fairy",dress:"dress",grown:"grown"}[screen]||null;
 }
 function tickStats(){
   const now=Date.now(), dt=Math.min(now-stat.last,15000); stat.last=now;
@@ -5442,7 +5621,7 @@ function drawReport(box,who,d){
   box.append(card);
   // usage chart: last 14 days stacked by game
   const chart=el("div","rcard");chart.append(el("h4",null,"Time played, last 14 days"));
-  const games=["color","watch","story","inbox","farm","snake","ctf","dress","grown","lobby"]; const cols=[];let max=0;
+  const games=["color","watch","story","inbox","farm","fairy","snake","ctf","dress","grown","lobby"]; const cols=[];let max=0;
   for(let i=13;i>=0;i--){const t=today-i*DAY,dd=(d.days||{})[dayKey(t)]||{},ms=dd.ms||{};let tot=0;for(const g of games)tot+=+ms[g]||0;max=Math.max(max,tot);cols.push({t,ms,tot})}
   const Wd=560,Hd=170,pad=28,bw=(Wd-pad)/14*0.7,step=(Wd-pad)/14, topMin=Math.max(10,Math.ceil(max/60000/10)*10);
   let svg=`<svg viewBox="0 0 ${Wd} ${Hd+26}" class="chart" role="img" aria-label="Minutes played per day">`;
@@ -5486,7 +5665,7 @@ function drawReport(box,who,d){
   box.append(el("p","note","Kids never see any of this. Only times and counts are stored, never drawings, messages or recordings. Detailed records older than 90 days are rolled into weekly summaries."));
 }
 function exportCsv(who,d){
-  const games=["color","watch","story","inbox","farm","snake","ctf","dress","grown","lobby"], cnt=Object.keys(COUNT_NAMES);
+  const games=["color","watch","story","inbox","farm","fairy","snake","ctf","dress","grown","lobby"], cnt=Object.keys(COUNT_NAMES);
   const rows=[["date","person",...games.map(g=>g+"_minutes"),...cnt].join(",")];
   for(const k of Object.keys(d.days||{}).sort()){const x=d.days[k]||{};rows.push([k,who,...games.map(g=>((+((x.ms||{})[g])||0)/60000).toFixed(1)),...cnt.map(c=>(x.counts||{})[c]||0)].join(","))}
   rows.push("","week_of,person,"+games.map(g=>g+"_minutes").join(",")+","+cnt.join(","));
@@ -10187,6 +10366,665 @@ ctfInputs();
 if(/[?&](farmlocal|debugfarm)\b/.test(location.search))window.__jep={get F(){return F},fm,jepAt,fIso,fwNow,get tk(){return tk},closeTask};
 if(/[?&](farmlocal|ctflocal)\b/.test(location.search))window.__ctf={get C(){return C},CN,ctfP,ctfCamera,openCtf,ctfCreate,joinCtf,ctfStart,ctfSwitch,ctfPath,ctfEnd,ctfTag,ctfUpdate,ctfGoTo,ctfTarget,ctfRespawn,ctfDraw,ctfInput,ctfIsHost,closeTask,get tk(){return tk},CTF};
 if(/[?&]vidaudit\b/.test(location.search))window.__nav={STORIES,openReader,draftGift,newDraft,openStory,csDrawSheet,farmPuzzle,closeTask,ctfStart,VQ,tuneSenders,setPresence,repair,vid,get draft(){return draft},set draft(v){draft=v}};
+/* ============ VIOLET'S FAIRY GARDEN (#21) ============
+   Co-op: everyone makes their own fairy, then the family helps one shared garden bloom.
+   Every flower bud opens with an age-appropriate puzzle (same engine as the Farmstand chores).
+   Three flowers in a patch bloom → a rainbow over that patch. All three patches → the Rainbow Flower,
+   which needs 3 more puzzles (anyone can help) → a giant rainbow and the garden is done.
+
+   families/<CODE>/fairies/<kid> = look (see fyClean)
+   families/<CODE>/fairy = { g:{seed,at}, fl:{f0..f8:{k,at}}, cl:{f0..f8:{k,at}} (who is working on a bud),
+                             big:{p0..p2:{k,at}}, done:{at}, pos:{<kid>:{x,y,at}} (0..1 of the garden) }
+   Fairies are drawn in code (layered SVG) so every part can be recolored and the wings can flap.
+   ?fairylocal keeps everything in memory (testing). */
+
+const FY={
+  skins:["#FDE3D0","#F6CDB0","#E7AE82","#C98B5A","#9A6240","#64402A"],
+  hairCs:["#2B2140","#5A3A22","#8B5A2B","#C8742E","#F2C94C","#FFF0B8","#E9E7F2","#FF8FC8","#B79CFF","#5CC8E8","#4FCB8D","rainbow"],
+  hairs:[["waves","Long waves"],["pigtails","Pigtails"],["braid","Side braid"],["pixie","Pixie cut"],["puff","Curly puff"],["pony","Ponytail"],["bob","Bob"],["buns","Two buns"]],
+  eyes:[["#6B4226","Brown"],["#A0742F","Hazel"],["#36A25A","Green"],["#2D8CFF","Blue"],["#8B5CF6","Violet"],["#6F8396","Grey"],["#F0569A","Pink"],["#D99A00","Gold"]],
+  wings:[["butterfly","Butterfly"],["dragonfly","Dragonfly"],["petal","Petal"],["leaf","Leaf"],["heart","Heart"],["moth","Moon moth"]],
+  wsizes:[["s","Small",.8],["m","Medium",1],["l","Big",1.24]],
+  wingCs:["#FF8FC8","#C3A6FF","#7FC8F8","#7EE8C8","#FFE27A","#FFB38A","#FF7A8A","#FFFFFF","rainbow","crystal"],
+  tops:[["petal","Petal dress"],["tutu","Tutu dress"],["gown","Long gown"],["tee","T-shirt"],["puff","Puffy blouse"],["tank","Tank top"]],
+  bottoms:[["skirt","Petal skirt"],["leggings","Leggings"],["pants","Pants"],["shorts","Shorts"]],
+  shoes:[["slippers","Ballet slippers"],["boots","Boots"],["sneakers","Sneakers"],["sandals","Sandals"],["bare","Bare feet"]],
+  clothCs:["#FF5FA2","#FF9CCB","#C084FC","#8B5CF6","#60A5FA","#7DD3FC","#34D399","#A3E635","#FFD43B","#FB923C","#F87171","#FFFFFF","#94A3B8","#1E293B"],
+  crowns:[["none","Nothing"],["flowers","Flower crown"],["tiara","Tiara"],["bow","Big bow"],["antennae","Antennae"]],
+  names:["Sparkle","Petal","Dewdrop","Moonbeam","Bluebell","Twinkle","Clover","Starling","Pip","Juniper","Sunny","Willow","Pebble","Honey","Ruby","Aurora"],
+};
+const FY_DRESS={petal:1,tutu:1,gown:1};
+const FY_RAINBOW=["#FF6B8B","#FFA552","#FFE066","#7EE081","#6CC6FF","#9D8CFF","#E58CFF"];
+const fyHas=(list,x)=>list.some(o=>o[0]===x);
+const fyIdx=(n,len)=>Number.isInteger(n)&&n>=0&&n<len;
+function fyDefault(k){
+  const h=hash(String(k||"fairy"));
+  const L={skin:h%4,hair:FY.hairs[h%FY.hairs.length][0],hairC:(h>>>3)%6,eye:(h>>>5)%FY.eyes.length,wing:FY.wings[(h>>>7)%FY.wings.length][0],wsize:"m",
+    wingC:(h>>>9)%8,sparkle:true,top:FY.tops[(h>>>11)%FY.tops.length][0],topC:(h>>>13)%FY.clothCs.length,bottom:"leggings",bottomC:(h>>>15)%FY.clothCs.length,
+    shoes:FY.shoes[(h>>>17)%4][0],shoeC:(h>>>19)%FY.clothCs.length,crown:FY.crowns[1+((h>>>21)%4)][0],wand:!!(h&1),name:FY.names[(h>>>23)%FY.names.length]};
+  if(k==="violet") Object.assign(L,{hair:"waves",hairC:2,eye:4,wing:"butterfly",wingC:1,top:"petal",topC:3,bottom:"leggings",bottomC:1,shoes:"slippers",shoeC:2,crown:"flowers",wand:true,name:"Sparkle"});
+  if(k==="quinn") Object.assign(L,{hair:"pixie",hairC:1,eye:2,wing:"dragonfly",wingC:3,top:"tee",topC:6,bottom:"pants",bottomC:4,shoes:"sneakers",shoeC:9,crown:"antennae",wand:false,name:"Pip"});
+  return L;
+}
+function fyClean(v,k){
+  const D=fyDefault(k); if(!v||typeof v!=="object") return D;
+  return {skin:fyIdx(v.skin,FY.skins.length)?v.skin:D.skin, hair:fyHas(FY.hairs,v.hair)?v.hair:D.hair, hairC:fyIdx(v.hairC,FY.hairCs.length)?v.hairC:D.hairC,
+    eye:fyIdx(v.eye,FY.eyes.length)?v.eye:D.eye, wing:fyHas(FY.wings,v.wing)?v.wing:D.wing, wsize:fyHas(FY.wsizes,v.wsize)?v.wsize:D.wsize,
+    wingC:fyIdx(v.wingC,FY.wingCs.length)?v.wingC:D.wingC, sparkle:v.sparkle==null?D.sparkle:!!v.sparkle,
+    top:fyHas(FY.tops,v.top)?v.top:D.top, topC:fyIdx(v.topC,FY.clothCs.length)?v.topC:D.topC,
+    bottom:fyHas(FY.bottoms,v.bottom)?v.bottom:D.bottom, bottomC:fyIdx(v.bottomC,FY.clothCs.length)?v.bottomC:D.bottomC,
+    shoes:fyHas(FY.shoes,v.shoes)?v.shoes:D.shoes, shoeC:fyIdx(v.shoeC,FY.clothCs.length)?v.shoeC:D.shoeC,
+    crown:fyHas(FY.crowns,v.crown)?v.crown:D.crown, wand:v.wand==null?D.wand:!!v.wand,
+    name:FY.names.includes(v.name)?v.name:D.name};
+}
+function fyRandom(){
+  const p=a=>a[(Math.random()*a.length)|0], n=a=>(Math.random()*a.length)|0;
+  return {skin:n(FY.skins),hair:p(FY.hairs)[0],hairC:n(FY.hairCs),eye:n(FY.eyes),wing:p(FY.wings)[0],wsize:p(FY.wsizes)[0],wingC:n(FY.wingCs),sparkle:Math.random()<.7,
+    top:p(FY.tops)[0],topC:n(FY.clothCs),bottom:p(FY.bottoms)[0],bottomC:n(FY.clothCs),shoes:p(FY.shoes)[0],shoeC:n(FY.clothCs),crown:p(FY.crowns)[0],wand:Math.random()<.6,name:p(FY.names)};
+}
+// the color most people would call "this fairy's color" (sparkle trails, name tags)
+function fyHue(L){const c=FY.wingCs[L.wingC];return c==="rainbow"?FY_RAINBOW[(Date.now()/200|0)%7]:c==="crystal"?"#BFE7FF":c==="#FFFFFF"?"#E6E1FF":c}
+
+/* ---- the fairy picture (viewBox around 0..200 × 0..236; she faces you) ---- */
+let fySeq=0;
+const FY_INK="#3A2A4D";
+function fyWingPaths(shape){ // the right wing (the left one is mirrored); [outline paths], [vein paths], [light spots]
+  switch(shape){
+    case "butterfly": return {p:["M104 126 C124 72 186 58 188 102 C189 126 156 134 106 132 Z","M106 134 C150 134 176 158 160 184 C146 202 118 180 104 142 Z"],
+      v:["M106 128 Q140 100 172 92","M106 130 Q146 120 178 114","M106 138 Q132 152 150 176"],s:[[160,100,8],[146,160,6]]};
+    case "dragonfly": return {p:["M104 126 C142 94 198 84 199 101 C198 116 152 124 106 131 Z","M106 135 C150 136 194 150 189 164 C182 175 140 158 104 141 Z"],
+      v:["M106 128 Q150 108 192 98","M106 137 Q150 146 184 160"],s:[[178,100,4],[170,158,4]]};
+    case "petal": return {p:["M104 130 C114 62 186 46 184 106 C182 158 132 170 104 140 Z"],
+      v:["M106 132 Q140 104 170 74","M106 134 Q150 124 176 118","M106 138 Q136 150 156 154"],s:[[158,96,9]]};
+    case "leaf": return {p:["M104 132 C126 84 166 62 200 52 C190 100 164 152 104 142 Z"],
+      v:["M106 136 Q150 100 196 56","M130 116 L134 96","M146 104 L154 86","M162 92 L170 76","M124 128 L144 132","M140 118 L162 120"],s:[]};
+    case "heart": return {p:["M104 132 C104 96 142 70 166 86 C190 100 184 140 104 144 Z","M106 140 C140 140 168 150 160 172 C150 192 120 172 104 146 Z"],
+      v:["M106 134 Q138 108 162 98","M106 144 Q134 154 150 168"],s:[[150,104,7]]};
+    case "moth": return {p:["M104 126 C126 76 188 70 190 112 C190 130 152 133 106 132 Z","M106 134 C140 138 162 162 172 214 C150 202 124 172 104 140 Z"],
+      v:["M106 128 Q146 104 180 104","M106 136 Q142 160 166 206"],s:[[156,108,9],[150,170,5]]};
+  }
+  return fyWingPaths("butterfly");
+}
+function fyCrop(mode){return {head:"46 22 108 104",top:"50 96 100 108",bottom:"58 136 84 84",feet:"62 186 76 42",wings:"-14 40 228 190",eyes:"68 64 64 40"}[mode]||"-16 4 232 232"}
+function fairySVG(L,o={}){
+  L=fyClean(L); const id="fy"+(fySeq++), ink=`stroke="${FY_INK}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"`;
+  const S=FY.skins[L.skin], SD=shade(S,-.16), HCr=FY.hairCs[L.hairC], CC=FY.clothCs[L.topC], BC=FY.clothCs[L.bottomC], SC=FY.clothCs[L.shoeC];
+  const WCr=FY.wingCs[L.wingC], EC=FY.eyes[L.eye][0], ws=(FY.wsizes.find(w=>w[0]===L.wsize)||FY.wsizes[1])[2];
+  const defs=[], out=[];
+  const grad=(gid,stops,x2=0,y2=1,op)=>{defs.push(`<linearGradient id="${gid}" x1="0" y1="0" x2="${x2}" y2="${y2}">${stops.map((c,i)=>`<stop offset="${i/(stops.length-1)}" stop-color="${c}"${op!=null?` stop-opacity="${op}"`:""}/>`).join("")}</linearGradient>`);return `url(#${gid})`};
+  // hair, wing and clothes fills (rainbow / crystal are special)
+  const HC=HCr==="rainbow"?grad(id+"h",FY_RAINBOW):grad(id+"h",[shade(HCr,.18),HCr,shade(HCr,-.12)]);
+  const HD=HCr==="rainbow"?"#B983FF":shade(HCr,-.28);
+  let WF,WS,WV="rgba(255,255,255,.8)";
+  if(WCr==="rainbow"){WF=grad(id+"w",FY_RAINBOW,1,0);WS="#B983FF"}
+  else if(WCr==="crystal"){WF=grad(id+"w",["#FFFFFF","#CDEBFF","#F8D7FF","#D2FFF2","#FFFFFF"],1,1);WS="#9FC7E8";WV="rgba(255,255,255,.95)"}
+  else{WF=grad(id+"w",[shade(WCr,.62),WCr,shade(WCr,-.06)],1,.4);WS=WCr==="#FFFFFF"?"#B8B2D6":shade(WCr,-.32)}
+  const cloth=(c,gid)=>grad(id+gid,[shade(c,.16),c,shade(c,-.14)]);
+  const TF=cloth(CC,"t"), BF=cloth(BC,"b"), SF=cloth(SC,"s");
+  defs.push(`<radialGradient id="${id}sk" cx=".42" cy=".38" r=".7"><stop offset="0" stop-color="${shade(S,.14)}"/><stop offset=".75" stop-color="${S}"/><stop offset="1" stop-color="${SD}"/></radialGradient>`);
+  defs.push(`<radialGradient id="${id}e" cx=".5" cy=".7" r=".7"><stop offset="0" stop-color="${shade(EC,.45)}"/><stop offset=".6" stop-color="${EC}"/><stop offset="1" stop-color="${shade(EC,-.35)}"/></radialGradient>`);
+  const SK=`url(#${id}sk)`;
+  if(o.aura){defs.push(`<radialGradient id="${id}a"><stop offset="0" stop-color="${WCr==="rainbow"||WCr==="crystal"?"#FFF6C9":shade(WCr,.3)}" stop-opacity=".75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>`);
+    out.push(`<circle cx="100" cy="128" r="96" fill="url(#${id}a)"/>`)}
+
+  // --- wings (behind everything) ---
+  const W=fyWingPaths(L.wing);
+  const wing=()=>`<g transform="translate(100 130) scale(${ws}) translate(-100 -130)">`+
+    W.p.map(d=>`<path d="${d}" fill="${WF}" fill-opacity="${WCr==="crystal"?.7:.86}" stroke="${WS}" stroke-width="2.2" stroke-linejoin="round"/>`).join("")+
+    W.s.map(([x,y,r])=>`<ellipse cx="${x}" cy="${y}" rx="${r}" ry="${r*.8}" fill="#fff" opacity=".45"/>`).join("")+
+    `<g fill="none" stroke="${WV}" stroke-width="1.5" stroke-linecap="round">${W.v.map(d=>`<path d="${d}"/>`).join("")}</g>`+
+    W.p.map(d=>`<path d="${d}" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="1" transform="translate(-1.5 -1.5)"/>`).join("")+
+    (L.sparkle?[[150,92],[172,112],[140,170],[128,106]].map(([x,y],i)=>`<path class="fsp" style="animation-delay:${i*.35}s" d="M${x} ${y-4} L${x+1.2} ${y-1.2} L${x+4} ${y} L${x+1.2} ${y+1.2} L${x} ${y+4} L${x-1.2} ${y+1.2} L${x-4} ${y} L${x-1.2} ${y-1.2} Z" fill="#fff"/>`).join(""):"")+`</g>`;
+  out.push(`<g class="fwl"><g transform="matrix(-1 0 0 1 200 0)">${wing()}</g></g><g class="fwr">${wing()}</g>`);
+  out.push(`<g class="fbody">`);
+
+  // --- hair behind the head ---
+  const hb={
+    waves:`<path d="M63 76 C54 118 58 150 68 172 C76 164 82 172 90 166 C96 170 104 170 110 166 C118 172 124 164 132 172 C142 150 146 118 137 76 Z" fill="${HC}" ${ink}/><path d="M72 120 Q70 146 76 162 M128 120 Q130 146 124 162" stroke="${HD}" stroke-width="2" fill="none" opacity=".6"/>`,
+    pigtails:`<path d="M68 88 C44 96 36 128 48 156 C52 160 56 156 56 150 C54 132 60 112 74 98 Z" fill="${HC}" ${ink}/><path d="M132 88 C156 96 164 128 152 156 C148 160 144 156 144 150 C146 132 140 112 126 98 Z" fill="${HC}" ${ink}/>`,
+    braid:`<path d="M65 80 C63 100 68 112 78 114 L122 114 C132 112 137 100 135 80 Z" fill="${HC}" ${ink}/>`,
+    puff:Array.from({length:12},(_,i)=>{const a=i/12*Math.PI*2-Math.PI/2,x=100+Math.cos(a)*40,y=78+Math.sin(a)*38*(a>0&&a<Math.PI?.7:1);return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="15" fill="${HC}" ${ink}/>`}).join(""),
+    pony:`<path d="M116 48 C152 34 168 78 154 124 C150 136 142 132 144 122 C150 96 142 74 124 64 Z" fill="${HC}" ${ink}/><path d="M146 70 Q156 92 150 116" stroke="${HD}" stroke-width="2" fill="none" opacity=".6"/>`,
+    bob:`<path d="M63 78 C60 104 64 118 76 120 L124 120 C136 118 140 104 137 78 Z" fill="${HC}" ${ink}/>`,
+    buns:`<circle cx="70" cy="50" r="15" fill="${HC}" ${ink}/><circle cx="130" cy="50" r="15" fill="${HC}" ${ink}/><path d="M62 44 Q70 40 78 46 M122 46 Q130 40 138 44" stroke="${HD}" stroke-width="2" fill="none" opacity=".6"/>`,
+    pixie:"",
+  }[L.hair]||"";
+  out.push(hb);
+
+  // --- legs and feet ---
+  const legFill=L.bottom==="leggings"?BF:SK;
+  out.push(`<path d="M89 150 L88 208 Q88 212 93 212 L97 212 Q99 212 99 208 L99 150 Z" fill="${legFill}" ${ink}/><path d="M101 150 L101 208 Q101 212 103 212 L107 212 Q112 212 112 208 L111 150 Z" fill="${legFill}" ${ink}/>`);
+  const foot=(x,flip)=>{const f=flip?-1:1;
+    switch(L.shoes){
+      case "boots": return `<path d="M${x-7} 192 L${x-7} 214 Q${x-7} 220 ${x-1} 220 L${x+9*f} 220 Q${x+12*f} 220 ${x+12*f} 216 Q${x+12*f} 212 ${x+6*f} 211 L${x+6} 192 Z" fill="${SF}" ${ink}/><path d="M${x-8} 194 H${x+7}" stroke="${shade(SC,.4)}" stroke-width="3"/>`;
+      case "sneakers": return `<path d="M${x-7} 208 Q${x-8} 220 ${x} 220 L${x+10*f} 220 Q${x+13*f} 218 ${x+11*f} 213 Q${x+7*f} 208 ${x+5} 206 Z" fill="${SF}" ${ink}/><path d="M${x-8} 218 L${x+12*f} 218" stroke="#fff" stroke-width="3"/><path d="M${x-3} 210 l4 0 M${x-3} 213 l4 0" stroke="#fff" stroke-width="1.4"/>`;
+      case "sandals": return `<path d="M${x-6} 210 Q${x-7} 220 ${x} 219 L${x+9*f} 219 Q${x+11*f} 216 ${x+8*f} 212 Q${x+4*f} 209 ${x+5} 207 Z" fill="${SK}" ${ink}/><path d="M${x-7} 220 L${x+11*f} 220" stroke="${SC}" stroke-width="3.5" stroke-linecap="round"/><path d="M${x-6} 211 L${x+6} 215 M${x+6} 209 L${x-4} 216" stroke="${SC}" stroke-width="2.6" stroke-linecap="round"/>`;
+      case "bare": return `<path d="M${x-6} 208 Q${x-7} 220 ${x} 219 L${x+9*f} 219 Q${x+11*f} 216 ${x+8*f} 212 Q${x+4*f} 208 ${x+5} 206 Z" fill="${SK}" ${ink}/>`;
+      default: return `<path d="M${x-6} 208 Q${x-7} 220 ${x} 219 L${x+9*f} 219 Q${x+12*f} 216 ${x+8*f} 211 Q${x+4*f} 208 ${x+5} 206 Z" fill="${SF}" ${ink}/><path d="M${x-6} 206 L${x+5} 199 M${x+5} 206 L${x-6} 199" stroke="${shade(SC,-.2)}" stroke-width="1.8" stroke-linecap="round"/><circle cx="${x+5*f}" cy="${213}" r="1.8" fill="#fff" opacity=".8"/>`;
+    }};
+  out.push(foot(94,true)+foot(106,false));
+
+  // --- bottoms ---
+  if(L.bottom==="pants") out.push(`<path d="M84 148 L116 148 L118 206 L104 206 L101 166 L99 166 L96 206 L82 206 Z" fill="${BF}" ${ink}/><path d="M100 152 V164" stroke="${shade(BC,-.3)}" stroke-width="1.6"/>`);
+  if(L.bottom==="shorts") out.push(`<path d="M83 148 L117 148 L120 172 L102 172 L100 162 L98 172 L80 172 Z" fill="${BF}" ${ink}/>`);
+  if(L.bottom==="skirt") out.push(`<path d="M84 148 L116 148 L128 178 L116 172 L108 184 L100 174 L92 184 L84 172 L72 178 Z" fill="${BF}" ${ink}/><path d="M92 152 L88 172 M108 152 L112 172 M100 152 V170" stroke="${shade(BC,-.22)}" stroke-width="1.4" opacity=".7"/>`);
+  if(L.bottom!=="skirt") out.push(`<rect x="83" y="147" width="34" height="6" rx="3" fill="${shade(BC,-.15)}" ${ink}/>`);
+
+  // --- top (and the skirt part of dresses) ---
+  const torso=L.top==="tank"?"M84 124 L116 124 L118 152 L82 152 Z":"M80 126 Q82 117 93 116 L107 116 Q118 117 120 126 L118 152 L82 152 Z";
+  const skirt={
+    petal:`<path d="M83 148 L70 186 L84 180 L92 194 L100 182 L108 194 L116 180 L130 186 L117 148 Z" fill="${shade(CC,-.12)}" ${ink}/><path d="M85 148 L78 178 L90 174 L100 186 L110 174 L122 178 L115 148 Z" fill="${TF}" ${ink}/><path d="M92 156 L88 172 M108 156 L112 172 M100 154 V178" stroke="#fff" stroke-opacity=".45" stroke-width="1.6"/>`,
+    tutu:`<path d="M84 150 Q60 160 64 172 Q72 178 80 172 Q86 180 94 174 Q100 182 106 174 Q114 180 120 172 Q128 178 136 172 Q140 160 116 150 Z" fill="${shade(CC,-.1)}" ${ink}/><path d="M86 150 Q70 158 72 166 Q80 170 86 165 Q93 171 100 166 Q107 171 114 165 Q120 170 128 166 Q130 158 114 150 Z" fill="${shade(CC,.35)}" ${ink}/>`,
+    gown:`<path d="M83 148 C76 176 66 196 62 210 Q100 222 138 210 C134 196 124 176 117 148 Z" fill="${TF}" ${ink}/><path d="M92 156 Q86 186 80 210 M108 156 Q114 186 120 210 M100 156 V214" stroke="#fff" stroke-opacity=".35" stroke-width="1.8" fill="none"/><path d="M66 206 Q100 216 134 206" stroke="${shade(CC,.4)}" stroke-width="3" fill="none"/>`,
+  }[L.top]||"";
+  out.push(skirt);
+  out.push(`<path d="${torso}" fill="${TF}" ${ink}/><path d="M86 122 Q84 136 86 150" stroke="#fff" stroke-opacity=".4" stroke-width="2.4" fill="none"/>`);
+  if(FY_DRESS[L.top]) out.push(`<path d="M82 146 Q100 152 118 146 L118 152 Q100 158 82 152 Z" fill="${L.top==="petal"?"#FFE27A":shade(CC,.55)}" ${ink}/>`);
+  if(L.top==="puff") out.push(`<path d="M90 116 L100 126 L110 116" fill="#fff" ${ink}/>`);
+  if(L.top==="tee") out.push(`<path d="M93 116 Q100 122 107 116" fill="none" ${ink}/>`);
+  if(L.top==="tank") out.push(`<path d="M88 124 L90 114 M112 124 L110 114" stroke="${CC}" stroke-width="3.4" stroke-linecap="round"/>`);
+  if(L.top==="petal") out.push(`<path d="M90 117 L95 128 L100 118 L105 128 L110 117" fill="${shade(CC,.3)}" ${ink}/>`);
+
+  // --- arms (the right one holds the wand) ---
+  const arm=(d)=>`<path d="${d}" fill="none" stroke="${FY_INK}" stroke-width="10.5" stroke-linecap="round" stroke-linejoin="round"/><path d="${d}" fill="none" stroke="${S}" stroke-width="6.6" stroke-linecap="round" stroke-linejoin="round"/>`;
+  out.push(arm("M84 124 Q74 140 76 158"));
+  out.push(L.wand?arm("M116 124 Q128 136 136 140"):arm("M116 124 Q126 140 124 158"));
+  if(L.top==="tee") out.push(`<path d="M80 126 Q76 120 84 116 L90 117 L88 134 L79 133 Z" fill="${TF}" ${ink}/><path d="M120 126 Q124 120 116 116 L110 117 L112 134 L121 133 Z" fill="${TF}" ${ink}/>`);
+  if(L.top==="puff") out.push(`<ellipse cx="82" cy="125" rx="9" ry="8" fill="${TF}" ${ink}/><ellipse cx="118" cy="125" rx="9" ry="8" fill="${TF}" ${ink}/>`);
+  if(L.top==="gown"||L.top==="tutu") out.push(`<path d="M80 120 Q86 114 92 118 Q86 126 80 128 Z" fill="${shade(CC,.35)}" ${ink}/><path d="M120 120 Q114 114 108 118 Q114 126 120 128 Z" fill="${shade(CC,.35)}" ${ink}/>`);
+  if(L.wand) out.push(`<path d="M136 140 L156 104" stroke="${FY_INK}" stroke-width="5" stroke-linecap="round"/><path d="M136 140 L156 104" stroke="#FFD43B" stroke-width="2.6" stroke-linecap="round"/>`+
+    `<g class="fwstar"><path d="M157 90 L160.5 98.5 L169.5 99 L162.5 104.5 L165 113.5 L157 108.5 L149 113.5 L151.5 104.5 L144.5 99 L153.5 98.5 Z" fill="#FFE066" ${ink}/><circle cx="157" cy="102" r="14" fill="#FFF3A0" opacity=".35"/></g>`);
+
+  // --- neck, ears, head ---
+  out.push(`<rect x="95" y="108" width="10" height="11" rx="3" fill="${SK}" ${ink}/>`);
+  out.push(`<path d="M68 82 L50 66 L58 92 Z" fill="${SK}" ${ink}/><path d="M132 82 L150 66 L142 92 Z" fill="${SK}" ${ink}/>`);
+  out.push(`<path d="M58 72 L64 88 M142 72 L136 88" stroke="${shade(S,-.25)}" stroke-width="1.4" opacity=".6"/>`);
+  out.push(`<ellipse cx="100" cy="80" rx="36" ry="34" fill="${SK}" ${ink}/>`);
+  // face
+  const eye=x=>`<ellipse cx="${x}" cy="84" rx="8.6" ry="10.4" fill="#fff" ${ink} stroke-width="1.6"/>`+
+    `<ellipse cx="${x}" cy="85.5" rx="6.6" ry="8.2" fill="url(#${id}e)"/><ellipse cx="${x}" cy="86" rx="3.2" ry="4.2" fill="#1E1530"/>`+
+    `<circle cx="${x+2.6}" cy="81.4" r="2.5" fill="#fff"/><circle cx="${x-2.4}" cy="89" r="1.2" fill="#fff" opacity=".9"/>`+
+    `<path d="M${x-9.5} 79 Q${x} 71 ${x+9.5} 79" fill="none" stroke="${FY_INK}" stroke-width="3" stroke-linecap="round"/>`+
+    (x<100?`<path d="M${x-8.6} 79.5 L${x-12.5} 76.5 M${x-7} 76.6 L${x-9.6} 72.8" stroke="${FY_INK}" stroke-width="1.8" stroke-linecap="round"/>`
+          :`<path d="M${x+8.6} 79.5 L${x+12.5} 76.5 M${x+7} 76.6 L${x+9.6} 72.8" stroke="${FY_INK}" stroke-width="1.8" stroke-linecap="round"/>`)+
+    `<path d="M${x-6} 69 Q${x} 66 ${x+6} 68.5" fill="none" stroke="${HD}" stroke-width="2.2" stroke-linecap="round"/>`;
+  out.push(eye(86)+eye(114));
+  out.push(`<ellipse cx="76" cy="97" rx="6" ry="3.6" fill="#FF7FA3" opacity=".45"/><ellipse cx="124" cy="97" rx="6" ry="3.6" fill="#FF7FA3" opacity=".45"/>`);
+  out.push(`<path d="M98.6 93 Q100 94.6 101.4 93" fill="none" stroke="${shade(S,-.35)}" stroke-width="1.6" stroke-linecap="round"/>`);
+  out.push(`<path d="M93 99 Q100 106.5 107 99 Q100 102 93 99 Z" fill="#C2335F" stroke="${FY_INK}" stroke-width="1.8" stroke-linejoin="round"/><path d="M96.5 102 Q100 104.6 103.5 102" fill="none" stroke="#FF9DB8" stroke-width="1.6" stroke-linecap="round"/>`);
+
+  // --- hair in front ---
+  const cap="M63 84 C60 52 78 40 100 40 C122 40 140 52 137 84 C132 68 120 58 108 60 C100 68 86 72 76 66 C70 70 66 76 63 84 Z";
+  const locks=`<path d="M64 76 C60 96 62 112 68 122 C72 112 72 96 74 80 Z" fill="${HC}" ${ink}/><path d="M136 76 C140 96 138 112 132 122 C128 112 128 96 126 80 Z" fill="${HC}" ${ink}/>`;
+  const strands=`<path d="M84 46 Q96 52 104 60 M112 48 Q122 56 128 66" stroke="${HD}" stroke-width="2" fill="none" opacity=".55" stroke-linecap="round"/><path d="M78 50 Q90 44 104 45" stroke="#fff" stroke-width="2.4" fill="none" opacity=".35" stroke-linecap="round"/>`;
+  const front={
+    waves:locks+`<path d="${cap}" fill="${HC}" ${ink}/>`+strands,
+    bob:locks+`<path d="${cap}" fill="${HC}" ${ink}/>`+strands,
+    pigtails:`<path d="${cap}" fill="${HC}" ${ink}/>`+strands+`<circle cx="66" cy="88" r="4.5" fill="${CC}" ${ink}/><circle cx="134" cy="88" r="4.5" fill="${CC}" ${ink}/>`,
+    braid:`<path d="${cap}" fill="${HC}" ${ink}/>`+strands+[0,1,2,3,4].map(i=>`<ellipse cx="${128+i*1.2}" cy="${104+i*11}" rx="8" ry="7" fill="${HC}" ${ink}/>`).join("")+`<circle cx="134" cy="156" r="3.6" fill="${CC}" ${ink}/><path d="M132 160 Q134 170 128 172 M136 160 Q138 170 142 170" stroke="${HD}" stroke-width="3" stroke-linecap="round"/>`,
+    pixie:`<path d="M61 88 C56 52 78 36 100 37 C124 37 144 52 139 88 L133 72 L127 81 L121 64 L113 75 L105 60 L97 73 L87 62 L81 76 L73 66 L68 80 Z" fill="${HC}" ${ink}/>`+strands,
+    puff:[[70,56],[82,46],[96,41],[110,42],[124,48],[132,60]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="11" fill="${HC}" ${ink}/>`).join("")+`<path d="M66 66 Q82 60 92 64 Q104 58 116 64 Q126 60 134 66" fill="${HC}" stroke="none"/>`,
+    pony:`<path d="${cap}" fill="${HC}" ${ink}/>`+strands+`<circle cx="122" cy="52" r="4.5" fill="${CC}" ${ink}/>`,
+    buns:`<path d="${cap}" fill="${HC}" ${ink}/>`+strands+`<path d="M60 52 Q70 60 82 52 M118 52 Q130 60 140 52" stroke="${CC}" stroke-width="3.6" fill="none" stroke-linecap="round"/>`,
+  }[L.hair];
+  out.push(front);
+
+  // --- crown ---
+  if(L.crown==="flowers") out.push(`<path d="M66 60 Q100 34 134 60" fill="none" stroke="#3FA34D" stroke-width="3"/>`+[[68,58,"#FF6FAE"],[80,48,"#FFD43B"],[93,43,"#7FC8F8"],[107,43,"#FF6FAE"],[120,48,"#FFD43B"],[132,58,"#C084FC"]].map(([x,y,c])=>
+    `<g transform="translate(${x} ${y})">${[0,72,144,216,288].map(a=>`<ellipse cx="0" cy="-4.4" rx="3.2" ry="4.6" transform="rotate(${a})" fill="${c}" stroke="${FY_INK}" stroke-width="1.2"/>`).join("")}<circle r="2.4" fill="#FFF3B0" stroke="${FY_INK}" stroke-width="1"/></g>`).join(""));
+  if(L.crown==="tiara") out.push(`<path d="M78 52 L84 38 L92 48 L100 30 L108 48 L116 38 L122 52 Q100 46 78 52 Z" fill="#E8EEF8" stroke="#8A9BB8" stroke-width="2" stroke-linejoin="round"/><circle cx="100" cy="44" r="4" fill="#FF5FA2" stroke="#8A9BB8" stroke-width="1.4"/><circle cx="85" cy="47" r="2" fill="#7FC8F8"/><circle cx="115" cy="47" r="2" fill="#7FC8F8"/><path d="M98 39 l1.4 -1.4" stroke="#fff" stroke-width="1.4"/>`);
+  if(L.crown==="bow") out.push(`<g transform="translate(126 50) rotate(18)"><path d="M0 0 C-10 -14 -22 -8 -18 4 C-14 12 -6 6 0 0 Z M0 0 C10 -14 22 -8 18 4 C14 12 6 6 0 0 Z" fill="${TF}" ${ink}/><circle r="4.6" fill="${shade(CC,-.12)}" ${ink}/></g>`);
+  if(L.crown==="antennae") out.push(`<path d="M90 44 Q80 24 72 18 M110 44 Q120 24 128 18" fill="none" stroke="${FY_INK}" stroke-width="2.4" stroke-linecap="round"/><circle class="fsp" cx="71" cy="16" r="5" fill="#FFE066" ${ink} stroke-width="1.6"/><circle class="fsp" style="animation-delay:.6s" cx="129" cy="16" r="5" fill="#FFE066" ${ink} stroke-width="1.6"/>`);
+  out.push(`</g>`);
+  const vb=o.crop?fyCrop(o.crop):"-16 4 232 232";
+  return `<svg class="fysvg" xmlns="http://www.w3.org/2000/svg" viewBox="${vb}"${o.size?` width="${o.size}" height="${o.size}"`:""}><defs>${defs.join("")}</defs>${out.join("")}</svg>`;
+}
+
+/* ---- the garden ---- */
+const FG_N=9, FG_BIG=3, FG_CLAIM_MS=90e3;
+const FG_PATCH=[[.2,.79],[.5,.88],[.8,.79]], FG_PATCH_TALL=[[.3,.6],[.7,.75],[.3,.9]]; // wide screens / tall phones
+const fgPatch=p=>(FG.tall?FG_PATCH_TALL:FG_PATCH)[p];
+const FG_KINDS=["daisy","tulip","star","rose","sun"];
+const FG_COLS=["#FF6FAE","#B07CFF","#5CB8FF","#FF9F43","#FF5C7A","#FFD43B","#FF8AD8","#4FD1C5"];
+const FG_KID_PUZZLES=["count","letters","color","pattern","shadow","size","numorder","memory","jigsaw","trace"];
+const FG_GROWN_PUZZLES=["blackjack","mines","jam","wordle"];
+const FG_ITEMS=[{em:"🌸",one:"flower",many:"flowers"},{em:"🌷",one:"tulip",many:"tulips"},{em:"🦋",one:"butterfly",many:"butterflies"},{em:"🍄",one:"mushroom",many:"mushrooms"},{em:"🐞",one:"ladybug",many:"ladybugs"},{em:"⭐",one:"star",many:"stars"}];
+const FG={on:false,local:false,mem:{},refs:[],look:{},lookSeen:false,g:null,fl:{},cl:{},big:{},done:null,pos:{},fy:{},els:{},st:{},rain:{},
+  W:0,H:0,u:6,raf:0,maker:false,edit:null,tab:"wings",enteredAt:0,celebrated:null,ro:null,partyT:0};
+
+function fgIsLocal(){return /[?&]fairylocal\b/.test(location.search)||!mail.ref}
+function fgPath(p){return "fairy"+(p?"/"+p:"")}
+function fgMemSet(path,val){
+  const parts=path.split("/");let o=FG.mem;for(let i=0;i<parts.length-1;i++){o=o[parts[i]]=o[parts[i]]&&typeof o[parts[i]]==="object"?o[parts[i]]:{}}
+  if(val==null) delete o[parts[parts.length-1]]; else o[parts[parts.length-1]]=JSON.parse(JSON.stringify(val));
+}
+function fgSet(path,val){
+  if(!FG.local&&mail.ref){const r=mail.ref.child(fgPath(path));return (val==null?r.remove():r.set(val)).catch(()=>{})}
+  fgMemSet(path,val); fgFromMem(); return Promise.resolve();
+}
+function fgFromMem(){const m=FG.mem;if(m.g&&(!FG.g||FG.g.seed!==m.g.seed)){FG.g=m.g;FG.st={};FG.rain={};fgBuildFlowers()}FG.fl=m.fl||{};FG.cl=m.cl||{};FG.big=m.big||{};FG.done=m.done||null;fgState()}
+function fgHere(){
+  const s=new Set([me]);
+  for(const q of peers()) if(q.presence&&q.presence.scr==="fairy"&&KIDS[q.presence.kid]) s.add(q.presence.kid);
+  return s;
+}
+function fgLookOf(k){return fyClean(FG.look[k]||(k===me?fgCachedLook():null),k)}
+function fgCachedLook(){try{return JSON.parse(load("kp.fairy."+me)||"null")}catch(e){return null}}
+
+/* ---- entering and leaving ---- */
+function openFairy(){
+  if(!me) return;
+  fgLeave(true); hush();
+  FG.local=fgIsLocal();
+  Object.assign(FG,{on:true,fl:{},cl:{},big:{},done:null,g:null,pos:{},st:{},rain:{},enteredAt:Date.now(),lookSeen:false,celebrated:null,maker:false});
+  if(FG.local) FG.mem=FG.mem&&FG.mem.g?FG.mem:{};
+  show("fairy"); setPresence({scr:"fairy",act:null});
+  fgSetup();
+  const cached=fgCachedLook(); if(cached) FG.look[me]=cached;
+  if(FG.local){
+    if(!FG.mem.g) FG.mem.g={seed:Math.random().toString(36).slice(2,10),at:Date.now()};
+    fgFromMem(); FG.lookSeen=true; fgAfterLooks(!cached);
+  } else {
+    const r=mail.ref, on=(ref,ev,fn)=>{ref.on(ev,fn,()=>{});FG.refs.push(()=>ref.off(ev,fn))};
+    on(r.child("fairies"),"value",s=>{const v=s.val()||{};FG.look=Object.assign({},v);if(!v[me]&&cached)FG.look[me]=cached;
+      if(!FG.lookSeen){FG.lookSeen=true;fgAfterLooks(!v[me]&&!cached)} fgSyncFairies()});
+    on(r.child("fairy/g"),"value",s=>{const g=s.val();
+      if(!g||!g.seed){r.child("fairy/g").transaction(v=>v&&v.seed?v:{seed:Math.random().toString(36).slice(2,10),at:Date.now()}).catch(()=>{});return}
+      if(!FG.g||FG.g.seed!==g.seed){FG.g=g;FG.st={};FG.rain={};fgBuildFlowers()} fgState()});
+    on(r.child("fairy/fl"),"value",s=>{FG.fl=s.val()||{};fgState()});
+    on(r.child("fairy/cl"),"value",s=>{FG.cl=s.val()||{};fgState()});
+    on(r.child("fairy/big"),"value",s=>{FG.big=s.val()||{};fgState()});
+    on(r.child("fairy/done"),"value",s=>{FG.done=s.val()||null;fgState()});
+    const posFn=s=>{const k=s.key,v=s.val();if(!v||k===me||!KIDS[k])return;FG.pos[k]=v;if(Date.now()-(v.at||0)<20*60e3&&FG.fy[k])fgFlyTo(k,v,null,true)};
+    on(r.child("fairy/pos"),"child_added",posFn); on(r.child("fairy/pos"),"child_changed",posFn);
+  }
+  if(!FG.raf) FG.raf=requestAnimationFrame(fgFrame);
+}
+function fgAfterLooks(needsFairy){
+  fgSyncFairies();
+  if(needsFairy) fgOpenMaker(true);
+  else {fgArrive();sayLittle("Welcome to the fairy garden! Tap a flower bud to fly there.")}
+}
+function fgArrive(){ // my fairy swoops in from the sky
+  const F=fgFairy(me), h=fgHomeSpot(me); F.x=h.x+.1; F.y=-.15; F.t0=0; fgFlyTo(me,h);
+}
+function fgLeave(silent){
+  for(const f of FG.refs.splice(0)) try{f()}catch(e){}
+  if(FG.on&&me){
+    for(const [i,c] of Object.entries(FG.cl||{})) if(c&&c.k===me&&!(FG.fl||{})[i]) fgSet("cl/"+i,null);
+    if(!FG.local) fgSet("pos/"+me,null);
+  }
+  if(tk&&tk.chore==="fairy") closeTask(false);
+  FG.on=false; if(FG.raf){cancelAnimationFrame(FG.raf);FG.raf=0}
+  clearTimeout(FG.partyT);
+  for(const k in FG.fy) FG.fy[k].el.remove(); FG.fy={};
+  const fx=$("#fgFx"); if(fx) fx.innerHTML="";
+  const d=$("#fgDone"); if(d) d.hidden=true; const m=$("#fgMaker"); if(m) m.hidden=true; FG.maker=false;
+}
+function fgGoHome(){fgLeave();goLobby()}
+
+/* ---- layout ---- */
+function fgSetup(){
+  if(!FG.ro){
+    FG.ro=new ResizeObserver(()=>{if(screen==="fairy")fgLayout()}); FG.ro.observe($("#fgField"));
+    $("#fgHome").onclick=fgGoHome; $("#fgEdit").onclick=()=>{if(!tk)fgOpenMaker(false)};
+    $("#fgSay").onclick=()=>say(fgHint());
+    $("#fgField").addEventListener("click",fgTapField);
+    $("#fgNew").onclick=fgNewGarden; $("#fgDoneHome").onclick=fgGoHome;
+    $("#fgMkDice").onclick=()=>{FG.edit=fyRandom();blip(990,.12,"triangle");fgMakerRender();sayLittle("Surprise!")};
+    $("#fgMkDone").onclick=fgSaveLook;
+  }
+  $("#fgDone").hidden=true; $("#fgField").classList.remove("fgparty");
+  fgLayout();
+}
+function fgLayout(){
+  const F=$("#fgField"), r=F.getBoundingClientRect(); if(!r.width||!r.height) return;
+  FG.W=r.width; FG.H=r.height; FG.tall=FG.W/FG.H<.8; FG.u=FG.tall?Math.min(FG.W/66,FG.H/105):Math.min(FG.W,FG.H*1.15)/100;
+  F.style.setProperty("--u",FG.u+"px");
+  $("#fgBg").innerHTML=fgBgSVG(); fgPlaceFlowers(); fgDrawRain(true);
+}
+function fgBgSVG(){
+  const W=FG.W,H=FG.H,u=FG.u, hz=H*(FG.tall?.4:.56), r=rng(hash(((FG.g&&FG.g.seed)||"garden")+"bg"));
+  const hill=(y,amp,n,ph)=>{let d=`M0 ${H} L0 ${y}`;for(let i=0;i<=n;i++){const x=i/n*W;d+=` Q${x-W/n/2} ${y-amp*(1+Math.sin(i*1.7+ph))*.9} ${x} ${y}`}return d+` L${W} ${H} Z`};
+  let s=`<defs><linearGradient id="fgsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7CC8FF"/><stop offset=".55" stop-color="#BFE6FF"/><stop offset=".9" stop-color="#FFE3F1"/></linearGradient>
+    <linearGradient id="fggr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8EDB7C"/><stop offset="1" stop-color="#4FB862"/></linearGradient>
+    <radialGradient id="fgsun"><stop offset="0" stop-color="#FFF7C2"/><stop offset=".55" stop-color="#FFE066"/><stop offset="1" stop-color="#FFD23F"/></radialGradient>
+    <radialGradient id="fgpond" cx=".5" cy=".4"><stop offset="0" stop-color="#BDEBFF"/><stop offset="1" stop-color="#5DB7E8"/></radialGradient></defs>`;
+  s+=`<rect width="${W}" height="${H}" fill="url(#fgsky)"/>`;
+  const sx=W*.88,sy=H*.14,sr=u*7;
+  s+=`<g class="fgsun" style="transform-origin:${sx}px ${sy}px">${Array.from({length:12},(_,i)=>`<path d="M${sx} ${sy-sr*1.25} L${sx+sr*.18} ${sy-sr*1.7} L${sx-sr*.18} ${sy-sr*1.7}Z" fill="#FFE066" transform="rotate(${i*30} ${sx} ${sy})"/>`).join("")}</g>`;
+  s+=`<circle cx="${sx}" cy="${sy}" r="${sr}" fill="url(#fgsun)" stroke="#F5B700" stroke-width="2"/>`;
+  s+=`<g class="fgsunface"><circle cx="${sx-sr*.32}" cy="${sy-sr*.1}" r="${sr*.1}" fill="#7A4A00"/><circle cx="${sx+sr*.32}" cy="${sy-sr*.1}" r="${sr*.1}" fill="#7A4A00"/><path d="M${sx-sr*.4} ${sy+sr*.25} Q${sx} ${sy+sr*.65} ${sx+sr*.4} ${sy+sr*.25}" fill="none" stroke="#7A4A00" stroke-width="${sr*.1}" stroke-linecap="round"/><circle cx="${sx-sr*.55}" cy="${sy+sr*.2}" r="${sr*.14}" fill="#FF9F6B" opacity=".6"/><circle cx="${sx+sr*.55}" cy="${sy+sr*.2}" r="${sr*.14}" fill="#FF9F6B" opacity=".6"/></g>`;
+  s+=`<path d="${hill(hz-u*2,u*4,4,1)}" fill="#B6E8A8"/><path d="${hill(hz+u*1.5,u*3,5,3)}" fill="#9BDE8A"/><path d="${hill(hz+u*5,u*1.6,6,5)}" fill="url(#fggr)"/>`;
+  // a little pond, mushrooms, a mushroom house, stones and grass
+  const px=FG.tall?W*.86:W*.07; // pond (left on wide screens, right on tall ones, away from the house)
+  s+=`<ellipse cx="${px}" cy="${hz+u*5.5}" rx="${u*8}" ry="${u*2.2}" fill="url(#fgpond)" stroke="#3E9BCB" stroke-width="2"/><ellipse cx="${px-u*1.2}" cy="${hz+u*5}" rx="${u*2.6}" ry="${u*.6}" fill="#fff" opacity=".55"/>`;
+  s+=`<g transform="translate(${px+u*2.4} ${hz+u*4.6})"><ellipse rx="${u*2.2}" ry="${u*.9}" fill="#5FC46B" stroke="#2F8A44" stroke-width="1.5"/></g>`;
+  const mush=(x,y,k)=>`<g transform="translate(${x} ${y}) scale(${u*k/10})"><path d="M-3 0 L-2.4 -7 L2.4 -7 L3 0 Z" fill="#FFF3E0" stroke="${FY_INK}" stroke-width=".7"/><path d="M-8 -6 Q0 -17 8 -6 Z" fill="#FF5C5C" stroke="${FY_INK}" stroke-width=".7"/><circle cx="-3.5" cy="-9" r="1.4" fill="#fff"/><circle cx="2.5" cy="-11" r="1.1" fill="#fff"/><circle cx="4.6" cy="-7.6" r=".9" fill="#fff"/></g>`;
+  s+=mush(W*.35,hz+u*13,2.2)+mush(W*.37,hz+u*14,1.4)+mush(W*.66,hz+u*12,1.8);
+  const hx=FG.tall?W*.1:W*.95,hy=hz+u*3.5,hs=u*.85;
+  s+=`<g transform="translate(${hx} ${hy}) scale(${hs})"><path d="M-5 0 L-4.4 -9 L4.4 -9 L5 0 Z" fill="#FFF3E0" stroke="${FY_INK}" stroke-width=".5"/><path d="M-1.6 0 V-4 Q0 -6 1.6 -4 V0 Z" fill="#B97A4A" stroke="${FY_INK}" stroke-width=".4"/><circle cx="2.8" cy="-6" r="1.1" fill="#FFE27A" stroke="${FY_INK}" stroke-width=".35"/><path d="M-9 -8 Q0 -21 9 -8 Z" fill="#B07CFF" stroke="${FY_INK}" stroke-width=".5"/><circle cx="-4" cy="-11" r="1.3" fill="#fff"/><circle cx="3" cy="-13.5" r="1" fill="#fff"/><circle cx="5" cy="-10" r=".8" fill="#fff"/></g>`;
+  for(let i=0;i<26;i++){const x=r()*W,y=hz+u*6+r()*(H-hz-u*6),k=u*(.6+r()*.6);s+=`<path d="M${x-k} ${y} Q${x-k*.6} ${y-k*1.6} ${x-k*.2} ${y-k*2.2} M${x} ${y} Q${x} ${y-k*1.8} ${x+k*.1} ${y-k*2.6} M${x+k} ${y} Q${x+k*.6} ${y-k*1.6} ${x+k*.4} ${y-k*2}" stroke="#3E9E52" stroke-width="2" fill="none" stroke-linecap="round" opacity=".7"/>`}
+  for(let i=0;i<14;i++){const x=r()*W,y=hz+u*7+r()*(H-hz-u*8),c=["#FFF","#FFE066","#FF9CCB","#C3A6FF"][i%4];s+=`<circle cx="${x}" cy="${y}" r="${u*.45}" fill="${c}" stroke="${FY_INK}" stroke-width=".6"/>`}
+  for(let i=0;i<8;i++){const x=r()*W,y=r()*hz*.9;s+=`<circle class="fgtw" style="animation-delay:${(r()*3).toFixed(2)}s" cx="${x}" cy="${y}" r="${u*.35}" fill="#fff"/>`}
+  return s;
+}
+function fgFlowerAt(i){
+  if(i==="big") return {x:FG.W*(FG.tall?.72:.5),y:FG.H*(FG.tall?.52:.6)};
+  const p=fgPatch(Math.floor(i/3)), j=i%3;
+  return {x:p[0]*FG.W+[-1,0,1][j]*FG.u*12.5, y:p[1]*FG.H+[0,-FG.u*4.5,0][j]};
+}
+function fgPlaceFlowers(){
+  for(const k in FG.els){const e=FG.els[k],p=fgFlowerAt(k==="big"?"big":+k);e.style.left=p.x+"px";e.style.top=p.y+"px"}
+}
+// where my fairy hovers above a flower (fractions of the garden)
+function fgPerch(i){const p=fgFlowerAt(i),big=i==="big";return {x:(p.x+FG.u*(big?9:7))/FG.W,y:(p.y-FG.u*(big?30:22))/FG.H}}
+function fgHomeSpot(k){const list=[...fgHere()].sort(),i=Math.max(0,list.indexOf(k));return {x:.18+((i*.21)%.64),y:(FG.tall?.2:.3)+(i%2)*.06}}
+
+/* ---- flowers ---- */
+let fgSeq=0;
+function fgFlowerSVG(kind,col,big){
+  const id="fgf"+(fgSeq++), D=shade(col,-.25), Lt=shade(col,.45), ink=`stroke="${FY_INK}" stroke-width="1.8" stroke-linejoin="round"`;
+  const pf=`url(#${id}p)`;
+  let petals="";
+  if(kind==="daisy") petals=Array.from({length:12},(_,i)=>`<ellipse cx="50" cy="38" rx="5.4" ry="15" transform="rotate(${i*30} 50 55)" fill="${pf}" ${ink}/>`).join("")+`<circle cx="50" cy="55" r="10" fill="#FFC93C" ${ink}/><circle cx="46" cy="52" r="1.6" fill="#E59A00"/><circle cx="53" cy="56" r="1.6" fill="#E59A00"/><circle cx="49" cy="59" r="1.4" fill="#E59A00"/>`;
+  if(kind==="tulip") petals=`<path d="M30 46 Q30 76 50 78 Q70 76 70 46 Q62 56 58 40 Q54 52 50 36 Q46 52 42 40 Q38 56 30 46 Z" fill="${pf}" ${ink}/><path d="M50 36 Q44 56 50 78 M42 42 Q38 60 44 76 M58 42 Q62 60 56 76" stroke="${D}" stroke-width="1.6" fill="none" opacity=".6"/><path d="M36 50 Q36 64 42 70" stroke="#fff" stroke-width="2.4" fill="none" opacity=".5" stroke-linecap="round"/>`;
+  if(kind==="star") petals=Array.from({length:5},(_,i)=>`<circle cx="50" cy="40" r="12.5" transform="rotate(${i*72} 50 55)" fill="${pf}" ${ink}/>`).join("")+`<circle cx="50" cy="55" r="8" fill="#FFE27A" ${ink}/><circle cx="48" cy="53" r="2.4" fill="#fff" opacity=".7"/>`;
+  if(kind==="rose") petals=`<circle cx="50" cy="55" r="22" fill="${D}" ${ink}/>`+Array.from({length:6},(_,i)=>`<ellipse cx="50" cy="40" rx="11" ry="10" transform="rotate(${i*60+30} 50 55)" fill="${pf}" ${ink}/>`).join("")+`<circle cx="50" cy="55" r="13" fill="${pf}" ${ink}/><path d="M50 47 Q58 50 56 58 Q50 64 44 58 Q42 52 48 50 Q53 52 52 56" fill="none" ${ink}/>`;
+  if(kind==="sun") petals=Array.from({length:16},(_,i)=>`<path d="M50 55 L46 32 L50 26 L54 32 Z" transform="rotate(${i*22.5} 50 55)" fill="${pf}" ${ink}/>`).join("")+`<circle cx="50" cy="55" r="13" fill="#8B5A2B" ${ink}/>`+[[46,51],[54,52],[50,58],[45,59],[56,59]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="1.4" fill="#5A3A1A"/>`).join("");
+  if(kind==="rainbow") petals=FY_RAINBOW.slice(0,6).map((c,i)=>`<g class="rp rp${Math.floor(i/2)}"><ellipse cx="50" cy="33" rx="12" ry="20" transform="rotate(${i*60} 50 55)" fill="${c}" ${ink}/></g>`).join("")+`<circle cx="50" cy="55" r="12" fill="#FFE066" ${ink}/><circle class="fgcore" cx="50" cy="55" r="17" fill="#FFF6B0" opacity="0"/>`;
+  const stem=big?`<path d="M50 160 C44 130 56 104 50 70" stroke="#2F8A44" stroke-width="7" fill="none" stroke-linecap="round"/>`:`<path d="M50 160 C45 130 55 102 50 68" stroke="#3FA34D" stroke-width="5" fill="none" stroke-linecap="round"/>`;
+  return `<svg viewBox="0 0 100 160"><defs><radialGradient id="${id}p" cx=".5" cy=".5" r=".6"><stop offset="0" stop-color="${Lt}"/><stop offset="1" stop-color="${col}"/></radialGradient>
+    <radialGradient id="${id}g"><stop offset="0" stop-color="#FFFBD6" stop-opacity=".95"/><stop offset="1" stop-color="#FFF" stop-opacity="0"/></radialGradient></defs>
+    <g class="sway">${stem}
+    <path d="M50 128 Q30 118 24 102 Q42 104 50 122 Z" fill="#58C26A" ${ink}/><path d="M50 112 Q70 104 78 88 Q60 90 50 106 Z" fill="#58C26A" ${ink}/>
+    <circle class="fgglow" cx="50" cy="56" r="30" fill="url(#${id}g)"/>
+    <circle class="ring" cx="50" cy="56" r="27" fill="none" stroke-width="4" stroke-dasharray="7 6" stroke-linecap="round"/>
+    <g class="bud"><path d="M50 32 C64 44 64 66 50 74 C36 66 36 44 50 32 Z" fill="${col}" ${ink}/><path d="M50 32 C56 46 56 62 50 74" stroke="${D}" stroke-width="1.6" fill="none" opacity=".7"/><path d="M38 66 L44 60 L50 70 L56 60 L62 66 L56 76 L44 76 Z" fill="#58C26A" ${ink}/><ellipse cx="44" cy="48" rx="2.4" ry="5" fill="#fff" opacity=".55"/></g>
+    <g class="petals">${petals}</g></g></svg>`;
+}
+function fgBuildFlowers(){
+  const box=$("#fgFlowers"); if(!box) return; box.innerHTML=""; FG.els={}; if(!FG.g) return;
+  const r=rng(hash(FG.g.seed)), sh=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}; // same garden on every device
+  const kinds=sh(FG_KINDS), pal=sh(FG_COLS);
+  for(let i=0;i<FG_N;i++){
+    const p=Math.floor(i/3), col=pal[(p*2+(i%3===1?1:0))%pal.length];
+    const d=el("div","fgfl"); d.dataset.i=i; d.innerHTML=fgFlowerSVG(kinds[p],col,false);
+    d.addEventListener("click",e=>{e.stopPropagation();fgTapFlower(i)});
+    box.append(d); FG.els[i]=d;
+  }
+  const b=el("div","fgfl fgbig"); b.dataset.i="big"; b.innerHTML=fgFlowerSVG("rainbow","#FF8AD8",true);
+  b.addEventListener("click",e=>{e.stopPropagation();fgTapFlower("big")}); box.append(b); FG.els.big=b;
+  FG.builtAt=Date.now(); fgPlaceFlowers();
+}
+const fgKey=i=>"f"+i;
+function fgBloomed(i){return !!(FG.fl&&FG.fl[fgKey(i)])}
+function fgClaimBy(i){const c=FG.cl&&FG.cl[fgKey(i)];if(!c||fgBloomed(i))return null;if(Date.now()-(c.at||0)>FG_CLAIM_MS)return null;if(c.k!==me&&!fgHere().has(c.k))return null;return c.k}
+function fgBigCount(){return Object.values(FG.big||{}).filter(v=>v&&v.k).length}
+function fgPatchDone(p){return [0,1,2].every(j=>fgBloomed(p*3+j))}
+function fgState(){
+  if(!FG.on||!FG.g) return;
+  if(!Object.keys(FG.els).length) fgBuildFlowers();
+  const first=Date.now()-(FG.builtAt||0)<1500; // what was already there when we arrived appears without a fuss
+  let blooms=0;
+  for(let i=0;i<FG_N;i++){
+    const e=FG.els[i]; if(!e) continue; const b=fgBloomed(i), c=fgClaimBy(i), s=b?"b":c?"c"+c:"o";
+    if(b) blooms++;
+    if(FG.st[i]===s) continue; const was=FG.st[i]; FG.st[i]=s;
+    e.classList.toggle("bloom",b); e.classList.toggle("instant",b&&(first||was==null)); e.classList.toggle("claim",!!c);
+    if(c) e.style.setProperty("--c",kidOf(c).hue);
+    if(b&&was&&was[0]!=="b"&&!first) fgOnBloom(i);
+  }
+  // patch rainbows
+  for(let p=0;p<3;p++){const d=fgPatchDone(p); if(d&&!FG.rain[p]){FG.rain[p]=first?"now":"new"; if(!first) setTimeout(()=>fgOnRainbow(p),900)} if(!d) delete FG.rain[p]}
+  fgDrawRain(false);
+  // the Rainbow Flower
+  const all=blooms>=FG_N, n=fgBigCount(), B=FG.els.big;
+  if(B){const was=B.classList.contains("fgon"); B.classList.toggle("fgon",all); for(let k=0;k<3;k++) B.classList.toggle("p"+k,n>k); B.classList.toggle("full",n>=FG_BIG);
+    if(all&&!was&&!first){setTimeout(()=>{fgBanner("🌈 A Rainbow Flower!");sayLittle("A Rainbow Flower grew! Everyone help it bloom!")},2600)}
+    if(FG.st.big!=null&&n>FG.st.big&&!first){fgBurst(fgFlowerAt("big"),14);fgChime()} FG.st.big=n}
+  $("#fgCount").innerHTML=`🌸 ${blooms}/${FG_N} <span>🌈 ${[0,1,2].filter(fgPatchDone).length}/3</span>`;
+  // done?
+  const finished=all&&n>=FG_BIG;
+  if(finished&&FG.celebrated!==FG.g.seed){FG.celebrated=FG.g.seed; fgFinale(first)}
+  if(!finished){$("#fgDone").hidden=true;$("#fgField").classList.remove("fgparty");FG.bigRain=null}
+  const tip=$("#fgTip"); if(tip) tip.textContent=fgHint();
+}
+function fgHint(){
+  if(!FG.g) return "Getting the garden ready…";
+  const blooms=[...Array(FG_N).keys()].filter(fgBloomed).length;
+  if(blooms>=FG_N&&fgBigCount()<FG_BIG) return "Tap the Rainbow Flower and solve a puzzle to help it bloom!";
+  if(blooms>=FG_N) return "The whole garden is blooming!";
+  return blooms?"Tap a flower bud. Solve the puzzle to make it bloom!":"Tap a flower bud to fly there and make it bloom!";
+}
+
+/* ---- rainbows ---- */
+function fgArc(cx,by,r,bw,cls,delay){
+  return `<g class="${cls}">`+FY_RAINBOW.map((c,i)=>{const rr=r-i*bw;return `<path pathLength="1" style="animation-delay:${(delay||0)+i*.08}s" d="M${cx-rr} ${by} A${rr} ${rr} 0 0 1 ${cx+rr} ${by}" stroke="${c}" stroke-width="${bw+.6}"/>`}).join("")+
+    `<g class="cl" style="animation-delay:${(delay||0)+.2}s">${[cx-r+bw*3.5,cx+r-bw*3.5].map(x=>`<g transform="translate(${x} ${by})"><circle r="${bw*2.6}" cx="${-bw*2}" fill="#fff"/><circle r="${bw*3.2}" fill="#fff"/><circle r="${bw*2.4}" cx="${bw*2.4}" fill="#fff"/></g>`).join("")}</g></g>`;
+}
+function fgDrawRain(instantAll){
+  const sv=$("#fgRain"); if(!sv||!FG.W) return;
+  sv.setAttribute("viewBox",`0 0 ${FG.W} ${FG.H}`);
+  let s="", u=FG.u;
+  for(let p=0;p<3;p++){if(!FG.rain[p])continue;const cx=fgPatch(p)[0]*FG.W, by=fgPatch(p)[1]*FG.H-u*13, r=u*17, bw=u*1.15;
+    s+=fgArc(cx,by,r,bw,"rb"+(FG.rain[p]==="now"||instantAll?" now":""),0)}
+  if($("#fgField").classList.contains("fgparty")||FG.bigRain){const r=Math.min(FG.W*.47,FG.H*.52);s=fgArc(FG.W/2,FG.H*(FG.tall?.44:.6),r,r*.05,"rb big"+(FG.bigRain==="now"||instantAll?" now":""),0)+s}
+  sv.innerHTML=s;
+  for(const p in FG.rain) if(FG.rain[p]==="new") FG.rain[p]="drawn";
+  if(FG.bigRain==="new") FG.bigRain="drawn";
+}
+
+/* ---- tapping ---- */
+function fgTapField(e){
+  if(tk||FG.maker||!FG.on||e.target.closest(".fgfl")) return;
+  if(e.target.closest("#fgDone,#fgMaker,.fgbanner")) return;
+  const r=$("#fgField").getBoundingClientRect(), x=(e.clientX-r.left)/r.width, y=(e.clientY-r.top)/r.height;
+  fgBurst({x:e.clientX-r.left,y:e.clientY-r.top},5); fgFlyTo(me,{x,y:Math.max(.1,y)});
+}
+function fgTapFlower(i){
+  if(tk||FG.maker||!FG.on||!FG.g) return;
+  const big=i==="big";
+  if(big){
+    if(!FG.els.big.classList.contains("fgon")) return;
+    if(fgBigCount()>=FG_BIG){fgWiggle("big");fgChime();return}
+    fgFlyTo(me,fgPerch("big"),()=>fgPuzzle("big")); sayLittle("Let's help the Rainbow Flower!"); return;
+  }
+  if(fgBloomed(i)){fgWiggle(i);fgChime();fgBurst(fgFlowerAt(i),6,-FG.u*16);fgFlyTo(me,fgPerch(i));return}
+  const c=fgClaimBy(i);
+  if(c&&c!==me){const n=kidOf(c).name;toast(`🧚 ${n}'s fairy is helping that flower!`);sayLittle(`${n} is helping that one. Pick another flower!`);fgWiggle(i);return}
+  FG.cl[fgKey(i)]={k:me,at:Date.now()}; fgSet("cl/"+fgKey(i),{k:me,at:Date.now()}); fgState();
+  fgFlyTo(me,fgPerch(i),()=>fgPuzzle(i));
+}
+function fgPuzzle(i){
+  if(tk||!FG.on||screen!=="fairy"||FG.maker) return;
+  const big=i==="big", L=isGrown()?"grown":lvl();
+  if(!big&&fgBloomed(i)) return;
+  if(big&&fgBigCount()>=FG_BIG) return;
+  openTask({type:pickType(L==="grown"?FG_GROWN_PUZZLES:FG_KID_PUZZLES),lvl:L,chore:"fairy",
+    title:big?"🌈 Help the Rainbow Flower bloom!":"🌸 Solve it to make the flower bloom!",
+    ctx:{item:pickOne(FG_ITEMS)},
+    onWin:()=>fgBloom(i),
+    onLose:()=>{if(FG.on)setTimeout(()=>fgPuzzle(i),250)}, // grown-ups: a fresh game for the same flower
+    onQuit:()=>{if(!big)fgRelease(i)}});
+}
+function fgRelease(i){const c=FG.cl[fgKey(i)];if(c&&c.k===me){delete FG.cl[fgKey(i)];fgSet("cl/"+fgKey(i),null);fgState()}}
+function fgBloom(i){
+  if(!FG.on) return; bump("fairyBlooms");
+  if(i==="big"){
+    const add=v=>{v=v&&typeof v==="object"?v:{};for(let j=0;j<FG_BIG;j++)if(!v["p"+j]){v["p"+j]={k:me,at:Date.now()};break}return v};
+    if(!FG.local&&mail.ref) mail.ref.child("fairy/big").transaction(add).then(r=>{if(r.committed&&Object.keys(r.snapshot.val()||{}).length>=FG_BIG)fgSet("done",{at:Date.now(),by:me})}).catch(()=>{});
+    else {FG.mem.big=add(FG.mem.big);if(Object.keys(FG.mem.big).length>=FG_BIG)FG.mem.done={at:Date.now(),by:me};fgFromMem()}
+    return;
+  }
+  FG.fl[fgKey(i)]={k:me,at:Date.now()};
+  fgSet("fl/"+fgKey(i),{k:me,at:Date.now()}).then(()=>fgSet("cl/"+fgKey(i),null));
+  fgState();
+}
+function fgNewGarden(){
+  const g={seed:Math.random().toString(36).slice(2,10),at:Date.now()};
+  FG.bigRain=null; FG.rain={}; FG.st={}; $("#fgField").classList.remove("fgparty"); $("#fgDone").hidden=true;
+  if(!FG.local&&mail.ref) mail.ref.child("fairy").update({g,fl:null,cl:null,big:null,done:null}).catch(()=>{});
+  else {FG.mem={g};fgFromMem()}
+  sayLittle("A brand new garden! Let's make it bloom!"); fgBanner("🌱 A new garden!");
+}
+
+/* ---- effects ---- */
+function fgOnBloom(i){
+  const p=fgFlowerAt(i); fgBurst({x:p.x,y:p.y-FG.u*17},16); fgChime(true);
+  const who=FG.fl[fgKey(i)]&&FG.fl[fgKey(i)].k;
+  if(who&&who!==me) toast(`🌸 ${fgLookOf(who).name} (${kidOf(who).name}) made a flower bloom!`);
+  else sayLittle(pickOne(["The flower bloomed!","Pretty!","You did it! Look at the flower!"]));
+  fgButterfly(p);
+}
+function fgOnRainbow(p){
+  [523,587,659,784,880,1047,1175].forEach((f,k)=>setTimeout(()=>blip(f,.22,"triangle",.1),k*90));
+  fgBanner("🌈 A rainbow!"); sayLittle("Wow! A rainbow!");
+}
+function fgChime(big){const n=[784,880,988,1175,1319][(Math.random()*5)|0];blip(n,.2,"triangle",.1);if(big)setTimeout(()=>blip(n*1.5,.25,"triangle",.09),110)}
+function fgWiggle(i){const e=FG.els[i];if(!e)return;e.classList.remove("fgwig");void e.offsetWidth;e.classList.add("fgwig")}
+function fgBanner(t){const b=$("#fgBanner");b.textContent=t;b.hidden=false;b.classList.remove("pop");void b.offsetWidth;b.classList.add("pop");clearTimeout(b._t);b._t=setTimeout(()=>b.hidden=true,2300)}
+function fgSpark(x,y,col,big){
+  const fx=$("#fgFx"); if(!fx||fx.childElementCount>120) return;
+  const s=el("span","fgsp",pickOne(["✦","✧","★","✦","•"]));
+  s.style.cssText=`left:${x}px;top:${y}px;color:${col};font-size:${(big?2.6:1.6)*FG.u*(.7+Math.random()*.6)}px;--dx:${(Math.random()-.5)*FG.u*(big?14:4)}px;--dy:${(big?-1:1)*Math.random()*FG.u*(big?12:5)}px`;
+  fx.append(s); setTimeout(()=>s.remove(),1000);
+}
+function fgBurst(p,n,dy=0){for(let k=0;k<n;k++)fgSpark(p.x,p.y+dy,pickOne(FY_RAINBOW),true)}
+function fgButterfly(p){
+  const fx=$("#fgFx"); if(!fx) return; const b=el("span","fgbfly","🦋");
+  b.style.cssText=`left:${p.x}px;top:${p.y-FG.u*18}px;font-size:${FG.u*3.4}px;--tx:${(Math.random()-.5)*FG.u*50}px;--ty:${-FG.u*(20+Math.random()*20)}px`;
+  fx.append(b); setTimeout(()=>b.remove(),4200);
+}
+function fgFinale(instant){
+  FG.bigRain=instant?"now":"new"; $("#fgField").classList.add("fgparty"); fgDrawRain(false);
+  const box=$("#fgDoneWho"), counts={};
+  for(const v of Object.values(FG.fl||{})) if(v&&v.k) counts[v.k]=(counts[v.k]||0)+1;
+  for(const v of Object.values(FG.big||{})) if(v&&v.k) counts[v.k]=(counts[v.k]||0)+1;
+  box.innerHTML=Object.entries(counts).sort((a,b)=>b[1]-a[1]).map(([k,n])=>`<div class="fgwho"><div class="fy still">${fairySVG(fgLookOf(k),{crop:"head"})}</div><b>${esc(fgLookOf(k).name)}</b><small>${esc(kidOf(k).name)} · 🌸 ${n}</small></div>`).join("");
+  if(instant){$("#fgDone").hidden=false;return}
+  bump("fairyGardens"); tada(); setTimeout(()=>{[1047,1319,1568].forEach((f,k)=>setTimeout(()=>blip(f,.3,"triangle",.1),k*140))},700);
+  say(lvl()==="little"||isGrown()?"Hooray! The whole fairy garden is blooming!":"The whole garden is blooming!");
+  // every fairy does a happy loop around the Rainbow Flower
+  const c=fgFlowerAt("big"), pts=[0,1,2,3,4].map(k=>({x:(c.x+Math.cos(k*1.4)*FG.u*24)/FG.W,y:(c.y-FG.u*28+Math.sin(k*1.4)*FG.u*12)/FG.H}));
+  Object.values(FG.fy).forEach((F,j)=>pts.forEach((q,k)=>setTimeout(()=>{if(FG.on)fgFlyLocal(F,q.x+(j-1)*.04,q.y)},k*700+j*150)));
+  for(let k=0;k<40;k++) setTimeout(()=>{if(FG.on)fgSpark(Math.random()*FG.W,Math.random()*FG.H*.5,pickOne(FY_RAINBOW),true)},k*80);
+  clearTimeout(FG.partyT); FG.partyT=setTimeout(()=>{if(FG.on)$("#fgDone").hidden=false},4200);
+}
+
+/* ---- fairies flying around ---- */
+function fgSyncFairies(){
+  if(!FG.on) return; const here=fgHere();
+  for(const k of here) fgFairy(k);
+  for(const k in FG.fy) if(!here.has(k)){FG.fy[k].el.remove();delete FG.fy[k]}
+}
+function fgFairy(k){
+  let F=FG.fy[k]; const look=fgLookOf(k), sig=JSON.stringify(look);
+  if(!F){
+    const d=el("div","gfy"+(k===me?" me":""),`<div class="fyin fy"></div><div class="fgtag"></div>`); $("#fgFairies").append(d);
+    const p=FG.pos[k]&&Date.now()-(FG.pos[k].at||0)<20*60e3?FG.pos[k]:fgHomeSpot(k);
+    F=FG.fy[k]={k,el:d,inner:d.firstChild,x:p.x,y:p.y,sx:p.x,sy:p.y,tx:p.x,ty:p.y,ax:p.x,ay:p.y,t0:0,dur:0,face:1,sig:"",drift:performance.now()+rint(2500,6000),trailAt:0};
+  }
+  if(F.sig!==sig){F.sig=sig;F.inner.innerHTML=fairySVG(look,{aura:true});
+    F.el.querySelector(".fgtag").innerHTML=`<b>${esc(look.name)}</b>${k===me?"":`<small>${esc(kidOf(k).name)}</small>`}`;
+    F.el.style.setProperty("--k",fyHue(look))}
+  return F;
+}
+function fgFlyTo(k,p,done,remote){
+  const F=fgFairy(k); F.ax=clamp(+p.x||.5,.05,.95); F.ay=clamp(+p.y||.4,.08,.95);
+  fgFlyLocal(F,F.ax,F.ay,done);
+  if(k===me&&!remote){const v={x:+F.ax.toFixed(3),y:+F.ay.toFixed(3),at:Date.now()};if(!FG.local)fgSet("pos/"+me,v);blip(1200,.12,"sine",.04)}
+}
+function fgFlyLocal(F,x,y,done){
+  F.sx=F.x;F.sy=F.y;F.tx=clamp(x,.04,.96);F.ty=clamp(y,.06,.96);F.t0=performance.now();
+  const d=Math.hypot((F.tx-F.sx)*FG.W,(F.ty-F.sy)*FG.H); F.dur=clamp(420+d*1.5,450,2000); F.done=done||null;
+  F.inner.classList.add("fast");
+}
+function fgTrail(F){const L=fgLookOf(F.k);fgSpark(F.x*FG.W+(Math.random()-.5)*FG.u*3,F.y*FG.H+FG.u*2,fyHue(L),false)}
+function fgFrame(now){
+  FG.raf=0; if(!FG.on||screen!=="fairy") return; FG.raf=requestAnimationFrame(fgFrame);
+  for(const k in FG.fy){
+    const F=FG.fy[k]; let tilt=0;
+    if(F.t0){
+      let p=(now-F.t0)/F.dur; if(p>=1){p=1;F.t0=0;F.inner.classList.remove("fast");F.drift=now+rint(3500,7500);const d=F.done;F.done=null;if(d)setTimeout(d,150)}
+      const e=p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2, lift=Math.min(.16,Math.hypot(F.tx-F.sx,F.ty-F.sy)*.35);
+      F.x=F.sx+(F.tx-F.sx)*e; F.y=F.sy+(F.ty-F.sy)*e-Math.sin(Math.PI*e)*lift;
+      if(Math.abs(F.tx-F.sx)>.005) F.face=F.tx>=F.sx?1:-1;
+      tilt=clamp((F.tx-F.sx)*60,-12,12)*Math.sin(Math.PI*e);
+      if(now-F.trailAt>50){F.trailAt=now;fgTrail(F)}
+    } else if(now>F.drift&&!(tk&&k===me)){ // idle: flutter around the spot a little
+      const a=Math.random()*6.283,r=.02+Math.random()*.035; fgFlyLocal(F,F.ax+Math.cos(a)*r,F.ay+Math.sin(a)*r*.6); F.dur*=1.6;
+    }
+    F.el.style.transform=`translate(${F.x*FG.W}px,${F.y*FG.H}px)`;
+    F.inner.style.transform=`scaleX(${F.face}) rotate(${tilt*F.face}deg)`;
+  }
+}
+
+/* ---- the fairy maker ---- */
+const FG_TABS=[["wings","🦋","Wings"],["hair","💇","Hair"],["eyes","👀","Eyes"],["skin","🙂","Skin"],["top","👗","Dress or shirt"],["bottom","👖","Skirt or pants"],["shoes","👟","Shoes"],["extra","👑","Crown & wand"],["name","✨","Name"]];
+function fgOpenMaker(first){
+  FG.maker=true; FG.edit=Object.assign({},fgLookOf(me)); FG.first=!!first; FG.tab="wings";
+  $("#fgMaker").hidden=false; $("#fgMkTitle").textContent=first?"✨ Make your fairy!":"✨ Change your fairy";
+  $("#fgMkDone").textContent=first?"🌸 Fly to the garden!":"✔️ All done";
+  fgMakerRender();
+  sayLittle(first?"Let's make your fairy! Pick the wings.":"Let's change your fairy!");
+}
+function fgSwatch(c,on,lbl){
+  const bg=c==="rainbow"?`conic-gradient(${FY_RAINBOW.join(",")},${FY_RAINBOW[0]})`:c==="crystal"?"linear-gradient(135deg,#fff,#CDEBFF,#F8D7FF,#D2FFF2)":c;
+  return `<button class="fgsw${on?" on":""}" style="background:${bg}" aria-label="${esc(lbl||c)}"></button>`;
+}
+function fgMakerRender(){
+  const L=FG.edit; $("#fgMkPrev").innerHTML=`<div class="fy">${fairySVG(L,{aura:true})}</div>`;
+  $("#fgMkName").textContent=L.name;
+  $("#fgMkTabs").innerHTML=FG_TABS.map(([k,em,t])=>`<button data-t="${k}" class="${FG.tab===k?"on":""}"><span>${em}</span><small>${t}</small></button>`).join("");
+  $("#fgMkTabs").querySelectorAll("button").forEach(b=>b.onclick=()=>{FG.tab=b.dataset.t;blip(700,.08,"triangle",.08);fgMakerRender();sayLittle(FG_TABS.find(t=>t[0]===FG.tab)[2])});
+  const box=$("#fgMkOpts"); box.innerHTML="";
+  const set=(patch,spoken)=>{Object.assign(FG.edit,patch);blip(880,.08,"triangle",.08);if(spoken)sayLittle(spoken);fgMakerRender()};
+  const tiles=(title,list,key,crop)=>{
+    if(title) box.append(el("h3",null,title));
+    const g=el("div","fgtiles");
+    for(const [v,name] of list){const b=el("button","fgtile"+(L[key]===v?" on":""),`<div class="fy still">${fairySVG(Object.assign({},L,{[key]:v}),{crop})}</div><small>${esc(name)}</small>`);
+      b.onclick=()=>set({[key]:v},name); g.append(b)}
+    box.append(g);
+  };
+  const swatches=(title,list,key,names)=>{
+    if(title) box.append(el("h3",null,title));
+    const g=el("div","fgsws"); g.innerHTML=list.map((c,i)=>fgSwatch(c,L[key]===i,names?names[i]:c)).join("");
+    g.querySelectorAll("button").forEach((b,i)=>b.onclick=()=>set({[key]:i},names?names[i]:null)); box.append(g);
+  };
+  const toggle=(label,key)=>{const b=el("button","fgtog"+(L[key]?" on":""),`${L[key]?"✅":"⬜"} ${label}`);b.onclick=()=>set({[key]:!L[key]},label);box.append(b)};
+  const T=FG.tab;
+  if(T==="wings"){
+    tiles("Wing shape",FY.wings,"wing","wings");
+    box.append(el("h3",null,"Wing size"));
+    const sz=el("div","fgsizes"); for(const [v,name,k] of FY.wsizes){const b=el("button",L.wsize===v?"on":"",`<span style="font-size:${18*k}px">🦋</span><small>${name}</small>`);b.onclick=()=>set({wsize:v},name);sz.append(b)} box.append(sz);
+    swatches("Wing color",FY.wingCs,"wingC",FY.wingCs.map(c=>c==="rainbow"?"Rainbow":c==="crystal"?"Crystal":null));
+    toggle("Sparkles","sparkle");
+  }
+  if(T==="hair"){tiles("Hair style",FY.hairs,"hair","head");swatches("Hair color",FY.hairCs,"hairC",FY.hairCs.map(c=>c==="rainbow"?"Rainbow":null))}
+  if(T==="eyes"){box.append(el("h3",null,"Eye color"));const g=el("div","fgtiles");
+    FY.eyes.forEach(([c,name],i)=>{const b=el("button","fgtile"+(L.eye===i?" on":""),`<div class="fy still">${fairySVG(Object.assign({},L,{eye:i}),{crop:"eyes"})}</div><small>${name}</small>`);b.onclick=()=>set({eye:i},name);g.append(b)});box.append(g)}
+  if(T==="skin") swatches("Skin",FY.skins,"skin");
+  if(T==="top"){tiles("Dress or shirt",FY.tops,"top","top");swatches("Color",FY.clothCs,"topC")}
+  if(T==="bottom"){
+    if(FY_DRESS[L.top]) box.append(el("p","fgnote","👗 Your dress is on top. Leggings and pants peek out underneath!"));
+    tiles("Skirt or pants",FY.bottoms,"bottom","bottom");swatches("Color",FY.clothCs,"bottomC")}
+  if(T==="shoes"){tiles("Shoes",FY.shoes,"shoes","feet");if(L.shoes!=="bare")swatches("Color",FY.clothCs,"shoeC")}
+  if(T==="extra"){tiles("On your head",FY.crowns,"crown","head");toggle("Magic wand","wand")}
+  if(T==="name"){box.append(el("h3",null,"Your fairy's name"));const g=el("div","fgnames");
+    for(const n of FY.names){const b=el("button",L.name===n?"on":"",esc(n));b.onclick=()=>set({name:n},n);g.append(b)} box.append(g)}
+}
+function fgSaveLook(){
+  const L=fyClean(FG.edit,me); FG.look[me]=L; store("kp.fairy."+me,JSON.stringify(L));
+  if(!FG.local&&mail.ref) mail.ref.child("fairies/"+me).set(L).catch(()=>{});
+  $("#fgMaker").hidden=true; FG.maker=false;
+  const F=fgFairy(me); if(FG.first){fgArrive()} else fgFlyTo(me,{x:F.ax,y:F.ay});
+  tada(); sayLittle(`Here comes ${L.name}! Tap a flower bud to fly there.`); fgBanner(`🧚 ${L.name} is here!`);
+}
+function fgOnPeers(){if(screen==="fairy"&&FG.on){fgSyncFairies();fgState()}}
+if(/[?&]fairylocal\b/.test(location.search))window.__fairy={FG,FY,openFairy,fgTapFlower,fgPuzzle,fgBloom,fgNewGarden,fgOpenMaker,fgSaveLook,fairySVG,fyClean,tk:()=>tk,win:finishTask,quit:()=>closeTask(true)}; // testing only
+
+$("#playFairy").onclick=()=>{sayLittle("Fairy garden!");openFairy()};
 })();
 </script>
 </body>
