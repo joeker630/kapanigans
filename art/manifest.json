@@ -535,19 +535,28 @@
   "file": "art/fairy/fx_cloud3.webp",
   "w": 512,
   "h": 256,
-  "prompt": "a soft fluffy white and pale pink watercolor cloud",
+  "prompt": "a soft fluffy white and pale pink watercolor cloud, nothing else",
   "model": "klein",
   "cutout": true,
-  "made": "2026-11-01"
+  "made": "2026-11-02"
  },
  "fairy/fx_heart": {
   "file": "art/fairy/fx_heart.webp",
   "w": 128,
   "h": 128,
-  "prompt": "a small soft painted golden heart with a gentle glow",
+  "prompt": "a simple soft painted golden heart with a gentle glow, nothing else, no petals",
   "model": "klein",
   "cutout": true,
-  "made": "2026-11-01"
+  "made": "2026-11-02"
+ },
+ "fairy/fx_petalglow": {
+  "file": "art/fairy/fx_petalglow.webp",
+  "w": 256,
+  "h": 256,
+  "prompt": "a soft round golden burst of warm glowing light with gentle rays and tiny sparkles",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-02"
  },
  "fairy/fx_sparkle1": {
   "file": "art/fairy/fx_sparkle1.webp",
@@ -580,10 +589,28 @@
   "file": "art/fairy/fx_sparkle4.webp",
   "w": 64,
   "h": 64,
-  "prompt": "a cluster of three tiny golden sparkles",
+  "prompt": "a tiny soft golden sparkle star of light, no flower",
   "model": "klein",
   "cutout": true,
-  "made": "2026-11-01"
+  "made": "2026-11-02"
+ },
+ "fairy/garden_tall": {
+  "file": "art/fairy/garden_tall.webp",
+  "w": 1152,
+  "h": 2048,
+  "prompt": "a dreamy fairy meadow garden scene, warm golden-pink sky glowing from the upper right, misty soft meadow, faint lilac and foxglove silhouettes in the distance, faded pressed-leaf shapes in the corners, soft green grass with tiny wildflowers, paper grain, no people, no fairies, no animals, no big flowers in the middle, no text, tall portrait view, full bleed painting filling the entire frame edge to edge, no border, no white margin, no paper edge, horizon at about 40 percent from the top, the whole middle and lower area is open empty grass, any bushes or details only near the left and right edges",
+  "model": "klein",
+  "cutout": false,
+  "made": "2026-11-02"
+ },
+ "fairy/garden_wide": {
+  "file": "art/fairy/garden_wide.webp",
+  "w": 2048,
+  "h": 1152,
+  "prompt": "a dreamy fairy meadow garden scene, warm golden-pink sky glowing from the upper right, misty soft meadow, faint lilac and foxglove silhouettes in the distance, faded pressed-leaf shapes in the corners, soft green grass with tiny wildflowers, paper grain, no people, no fairies, no animals, no big flowers in the middle, no text, wide landscape view, horizon at a little above the middle, the middle of the lower half is open empty grass, any bushes or details only near the far left and right edges",
+  "model": "klein",
+  "cutout": false,
+  "made": "2026-11-02"
  },
  "fairy/hair_bob": {
   "file": "art/fairy/hair_bob.webp",
@@ -720,6 +747,69 @@
   "cutout": true,
   "made": "2026-11-01"
  },
+ "fairy/icon_game": {
+  "file": "art/fairy/icon_game.webp",
+  "w": 256,
+  "h": 256,
+  "prompt": "a little fairy girl with gauzy wings flying over a pink wildflower, round storybook vignette",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-02"
+ },
+ "fairy/paper": {
+  "file": "art/fairy/paper.webp",
+  "w": 1024,
+  "h": 1024,
+  "prompt": "plain warm cream watercolor paper grain, cropped from a generated sheet, flattened and blended to tile seamlessly",
+  "model": "klein",
+  "cutout": false,
+  "made": "2026-11-02"
+ },
+ "fairy/prop_pond": {
+  "file": "art/fairy/prop_pond.webp",
+  "w": 512,
+  "h": 200,
+  "prompt": "a small shallow oval pond seen from a low angle, still blue-green water with soft reflections, one round lily pad with a tiny pink water lily, a few reeds at one end",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-02"
+ },
+ "fairy/prop_stump": {
+  "file": "art/fairy/prop_stump.webp",
+  "w": 512,
+  "h": 512,
+  "prompt": "an old mossy tree stump with a tiny arched round-topped wooden fairy door with a little brass knob and a small brass lantern hanging on a hook beside the door, original design, nothing floating, no smoke",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-02"
+ },
+ "fairy/prop_toadstool": {
+  "file": "art/fairy/prop_toadstool.webp",
+  "w": 256,
+  "h": 256,
+  "prompt": "one single speckled brown-capped toadstool mushroom with a cream stem, nothing else",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-02"
+ },
+ "fairy/prop_toadstool2": {
+  "file": "art/fairy/prop_toadstool2.webp",
+  "w": 256,
+  "h": 256,
+  "prompt": "two small speckled tan and russet toadstool mushrooms growing together, one taller",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-02"
+ },
+ "fairy/rainbow_arc": {
+  "file": "art/fairy/rainbow_arc.webp",
+  "w": 2048,
+  "h": 1024,
+  "prompt": "one huge soft watercolor rainbow arc, a wide gentle half circle with soft pastel bands, misty white cloud puffs at both feet of the rainbow",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-02"
+ },
  "fairy/rainbow_bud": {
   "file": "art/fairy/rainbow_bud.webp",
   "w": 512,
@@ -746,6 +836,42 @@
   "model": "klein",
   "cutout": true,
   "made": "2026-11-01"
+ },
+ "fairy/rainbow_stage0": {
+  "file": "art/fairy/rainbow_stage0.webp",
+  "w": 768,
+  "h": 1200,
+  "prompt": "one tall plump closed flower bud wrapped in green sepals, petals barely showing soft pastel rainbow tints at the tip, a soft golden glow around it, lovely and magical, no stem",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-02"
+ },
+ "fairy/rainbow_stage1": {
+  "file": "art/fairy/rainbow_stage1.webp",
+  "w": 768,
+  "h": 1200,
+  "prompt": "the same bud just beginning to open: two soft pastel petals (rose pink and apricot) unfurling at the front, the rest still closed, soft golden glow, no stem",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-02"
+ },
+ "fairy/rainbow_stage2": {
+  "file": "art/fairy/rainbow_stage2.webp",
+  "w": 768,
+  "h": 1200,
+  "prompt": "the same flower half open: four soft pastel petals (rose, apricot, buttercup yellow, sage green) opened, two still closed, a golden center peeking out, soft golden glow, no stem",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-02"
+ },
+ "fairy/rainbow_stage3": {
+  "file": "art/fairy/rainbow_stage3.webp",
+  "w": 768,
+  "h": 1200,
+  "prompt": "a fully open magical flower seen from the front with six large rounded pastel rainbow petals in order rose pink, apricot, buttercup yellow, sage green, sky blue, lavender around a glowing golden center, no stem",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-02"
  },
  "fairy/shoes_boots": {
   "file": "art/fairy/shoes_boots.webp",
@@ -782,6 +908,87 @@
   "model": "klein",
   "cutout": true,
   "made": "2026-11-01"
+ },
+ "fairy/tab_bottom": {
+  "file": "art/fairy/tab_bottom.webp",
+  "w": 128,
+  "h": 128,
+  "prompt": "a small flared petal skirt, simple icon",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-02"
+ },
+ "fairy/tab_extra": {
+  "file": "art/fairy/tab_extra.webp",
+  "w": 128,
+  "h": 128,
+  "prompt": "a golden fairy wand with a star, simple icon",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-02"
+ },
+ "fairy/tab_eyes": {
+  "file": "art/fairy/tab_eyes.webp",
+  "w": 128,
+  "h": 128,
+  "prompt": "a gentle painted eye with long lashes, simple icon",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-02"
+ },
+ "fairy/tab_hair": {
+  "file": "art/fairy/tab_hair.webp",
+  "w": 128,
+  "h": 128,
+  "prompt": "a soft curl of hair tied with a little ribbon, simple icon",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-02"
+ },
+ "fairy/tab_name": {
+  "file": "art/fairy/tab_name.webp",
+  "w": 128,
+  "h": 128,
+  "prompt": "a small blank parchment name tag on a ribbon, simple icon",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-02"
+ },
+ "fairy/tab_shoes": {
+  "file": "art/fairy/tab_shoes.webp",
+  "w": 128,
+  "h": 128,
+  "prompt": "a pair of tiny ballet slippers, simple icon",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-02"
+ },
+ "fairy/tab_skin": {
+  "file": "art/fairy/tab_skin.webp",
+  "w": 128,
+  "h": 128,
+  "prompt": "a small round watercolor paint palette with six round wells of soft skin-tone paints from light peach to deep brown and a tiny paintbrush, nothing in the middle, simple icon",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-02"
+ },
+ "fairy/tab_top": {
+  "file": "art/fairy/tab_top.webp",
+  "w": 128,
+  "h": 128,
+  "prompt": "a little petal dress on a hanger, simple icon",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-02"
+ },
+ "fairy/tab_wings": {
+  "file": "art/fairy/tab_wings.webp",
+  "w": 128,
+  "h": 128,
+  "prompt": "a pair of gauzy fairy wings, simple icon",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-02"
  },
  "fairy/top_gown": {
   "file": "art/fairy/top_gown.webp",
@@ -837,6 +1044,15 @@
   "model": "klein",
   "cutout": true,
   "made": "2026-11-01"
+ },
+ "fairy/ui_goal": {
+  "file": "art/fairy/ui_goal.webp",
+  "w": 512,
+  "h": 128,
+  "prompt": "a long horizontal parchment ribbon banner with a thin gold edge and gently folded ends, plain empty middle, no text",
+  "model": "klein",
+  "cutout": true,
+  "made": "2026-11-02"
  },
  "fairy/wand": {
   "file": "art/fairy/wand.webp",
